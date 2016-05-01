@@ -1,0 +1,237 @@
+/*
+  ParkBench, a versatile benchmark environment
+  Copyright (C) 2015-2016 Sylvain Hallé
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+package ca.uqac.lif.parkbench;
+
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * A plot is responsible for converting data extracted from experiments
+ * into a graphical representation.
+ * 
+ * @author Sylvain Hallé
+ */
+public abstract class Plot
+{
+	/**
+	 * The terminal used for displaying the plot
+	 */
+	public static enum Terminal {PNG, DUMB, PDF, CACA};
+
+	/**
+	 * The plot's title
+	 */
+	protected String m_title;
+
+	/**
+	 * The plot's ID
+	 */
+	protected int m_id;
+
+	/**
+	 * A counter for auto-incrementing plot IDs
+	 */
+	protected static int s_idCounter = 0;
+
+	/**
+	 * The set of experiment IDs this plot is supposed to display
+	 */
+	protected Set<Integer> m_experimentIds;
+
+	/**
+	 * The assistant responsible for executing the experiments this plot is
+	 * drawing
+	 */
+	protected transient Laboratory m_assistant;
+
+	/**
+	 * The path to launch GnuPlot
+	 */
+	protected static transient String s_path = "gnuplot";
+	
+	/**
+	 * Whether gnuplot is present on the system
+	 */
+	protected static transient final boolean s_gnuplotPresent = checkGnuplot();
+
+	/**
+	 * The time to wait before polling GnuPlot's result
+	 */
+	protected static transient long s_waitInterval = 100;
+
+	/**
+	 * Creates a new plot
+	 */
+	Plot()
+	{
+		super();
+		m_experimentIds = new HashSet<Integer>();
+	}
+
+	/**
+	 * Creates a new plot
+	 * @param title
+	 * @param a
+	 */
+	Plot(String title, Laboratory a)
+	{
+		this();
+		m_title = title;
+		m_assistant = a;
+		m_id = s_idCounter++;
+	}
+
+	/**
+	 * Assigns this plot to a lab assistant
+	 * @param a The assistant
+	 * @return This plot
+	 */
+	public Plot assignTo(Laboratory a)
+	{
+		m_assistant = a;
+		a.add(this);
+		return this;
+	}
+
+	/**
+	 * Adds an experiment to the plot
+	 * @param e The experiment
+	 * @return This plot
+	 */
+	public Plot add(Experiment e)
+	{
+		return add(e.getId());
+	}
+
+	/**
+	 * Adds an experiment to the plot
+	 * @param id The experiment's ID
+	 * @return This plot
+	 */
+	public Plot add(int id)
+	{
+		m_experimentIds.add(id);
+		return this;
+	}
+
+	/**
+	 * Sets the plot's title
+	 * @param t The title
+	 * @return This plot
+	 */
+	public Plot setTitle(String t)
+	{
+		m_title = t;
+		return this;
+	}
+
+	/**
+	 * Gets the plot's title
+	 * @return The title
+	 */
+	public String getTitle()
+	{
+		return m_title;
+	}
+
+	public static String getTerminalName(Terminal t)
+	{
+		switch (t)
+		{
+		case PNG:
+			return "png";
+		case PDF:
+			return "pdf";
+		case DUMB:
+			return "dumb";
+		case CACA:
+			return "caca";
+		}
+		return "dumb";
+	}
+
+	/**
+	 * Generates a stand-alone Gnuplot file for this plot
+	 * @param term The terminal used to display the plot
+	 * @return The Gnuplot file contents
+	 */
+	public abstract String toGnuplot(Terminal term);
+
+	/**
+	 * Runs GnuPlot on a file and returns the resulting graph
+	 * @param term The terminal (i.e. PNG, etc.) to use for the image
+	 * @return The (binary) contents of the image produced by Gnuplot
+	 */
+	public final byte[] getImage(Terminal term)
+	{
+		String instructions = toGnuplot(term);
+		byte[] image = null;
+		String[] command = {s_path};
+		CommandRunner runner = new CommandRunner(command, instructions);
+		runner.start();
+		// Wait until the command is done
+		while (runner.isAlive())
+		{
+			// Wait 0.1 s and check again
+			try
+			{
+				Thread.sleep(s_waitInterval);
+			}
+			catch (InterruptedException e)
+			{
+				// This happens if the user cancels the command manually
+				runner.stopCommand();
+				runner.interrupt();
+				return null;
+			}
+		}
+		image = runner.getBytes();
+		return image;
+	}
+
+	/**
+	 * Gets the plot's ID
+	 * @return The ID
+	 */
+	public int getId()
+	{
+		return m_id;
+	}
+	
+	/**
+	 * Checks if Gnuplot is present by attempting to run it
+	 * @return true if Gnuplot is present, false otherwise
+	 */
+	protected static boolean checkGnuplot()
+	{
+		// Check if Gnuplot is present
+		String[] args = {s_path, "--version"};
+		CommandRunner runner = new CommandRunner(args);
+		runner.run();
+		return runner.getErrorCode() == 0;
+	}
+	
+	public static String getHeader()
+	{
+		StringBuilder out = new StringBuilder();
+		out.append("# File generated by ParkBench ").append(Laboratory.s_versionString);
+		out.append(" on ").append(String.format("%1$te-%1$tm-%1$tY", Calendar.getInstance())).append("\n");
+		return out.toString();
+	}
+}

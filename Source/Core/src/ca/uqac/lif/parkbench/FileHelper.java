@@ -1,0 +1,198 @@
+/*
+  ParkBench, a versatile benchmark environment
+  Copyright (C) 2015-2016 Sylvain Hallé
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+package ca.uqac.lif.parkbench;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+/**
+ * A number of helpful utilities to read, write and manage files
+ *
+ */
+public class FileHelper
+{
+	/**
+	 * Reads the contents of a file and puts it into a string.
+	 * @param f The file to read
+	 * @return The string with the file's contents, or the empty string if
+	 *   an error occurred. 
+	 */
+	public static String readToString(File f)
+	{
+		BufferedReader br = null;
+		StringBuilder sb = new StringBuilder();
+		try 
+		{
+			String sCurrentLine;
+			br = new BufferedReader(new FileReader(f));
+			while ((sCurrentLine = br.readLine()) != null)
+			{
+				sb.append(sCurrentLine).append("\n");
+			}
+
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
+		finally 
+		{
+			try 
+			{
+				if (br != null)
+					br.close();
+			} 
+			catch (IOException ex) 
+			{
+				ex.printStackTrace();
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Reads the contents of a file and puts it into an array of bytes.
+	 * @param f The file to read
+	 * @return The array with the file's contents
+	 */
+	public static byte[] readToBytes(File f)
+	{
+		FileInputStream fileInputStream = null;
+		byte[] bFile = new byte[(int) f.length()];
+		try 
+		{
+			//convert file into array of bytes
+			fileInputStream = new FileInputStream(f);
+			fileInputStream.read(bFile);
+			fileInputStream.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return bFile;
+	}
+
+	/**
+	 * Writes the content of a string to a file
+	 * @param f The file to write to. If the file does not exist, it will be
+	 *   created
+	 * @param content The content to write
+	 */
+	public static void writeFromString(File f, String content)
+	{
+		try 
+		{
+			// if file doesnt exists, then create it
+			if (!f.exists()) 
+			{
+				f.createNewFile();
+			}
+			FileWriter fw = new FileWriter(f.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(content);
+			bw.close();
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Writes to a file from an array of bytes
+	 * @param f The file to write to. If the file does not exist, it will be
+	 *   created
+	 * @param bFile The content to write
+	 */
+	public static void writeFromBytes(File f, byte[] bFile)
+	{
+		try 
+		{
+			// if file doesnt exists, then create it
+			if (!f.exists()) 
+			{
+				f.createNewFile();
+			}
+			//convert array of bytes into file
+			FileOutputStream fileOuputStream = new FileOutputStream(f); 
+			fileOuputStream.write(bFile);
+			fileOuputStream.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Deletes a file
+	 * @param filename The filename
+	 * @return true if the file could be deleted, false otherwise
+	 */
+	public static boolean deleteFile(String filename)
+	{
+		File f = new File(filename);
+		return f.delete();
+	}
+	
+	/**
+	 * Checks whether a file exists in the filesystem
+	 * @param filename The filename to look for
+	 * @return true if file exists, false otherwise
+	 */
+	public static boolean fileExists(String filename)
+	{
+		File f = new File(filename);
+		return f.exists();
+	}
+	
+	/**
+	 * Replace the extension of a filename with another. For example,
+	 * one can replace /my/path/foo.bar with /my/path/foo.baz.
+	 * @param filename The original filename
+	 * @param extension The extension to replace with
+	 * @return The modified filename
+	 */
+	public static String replaceExtension(String filename, String extension)
+	{
+		String without_extension = trimExtension(filename);
+		return without_extension + "." + extension;
+	}
+	
+	/**
+	 * Trims the extension of a filename. For example, with /my/path/foo.bar,
+	 * would return /my/path/foo
+	 * @param filename The filename
+	 * @return The filename without the extension
+	 */
+	public static String trimExtension(String filename)
+	{
+		int position = filename.lastIndexOf(".");
+		if (position < 0)
+			return filename;
+		return filename.substring(0, position);
+	}
+
+}

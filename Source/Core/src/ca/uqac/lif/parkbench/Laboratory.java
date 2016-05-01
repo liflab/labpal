@@ -21,9 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ca.uqac.lif.azrael.SerializerException;
-import ca.uqac.lif.azrael.json.JsonListHandler;
 import ca.uqac.lif.azrael.json.JsonSerializer;
-import ca.uqac.lif.azrael.json.JsonSetHandler;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
@@ -53,7 +51,7 @@ public abstract class Laboratory
 	/**
 	 * The set of plots associated with this lab
 	 */
-	private HashSet<Plot> m_plots;
+	private transient HashSet<Plot> m_plots;
 	
 	/**
 	 * The title given to this lab
@@ -63,12 +61,12 @@ public abstract class Laboratory
 	/**
 	 * The version string of this lab
 	 */
-	public static final String s_versionString = "v2.0";
+	public static final transient String s_versionString = "v2.0";
 	
 	/**
 	 * The default file extension to save experiment results
 	 */
-	public static final String s_fileExtension = "labo";
+	public static final transient String s_fileExtension = "labo";
 	
 	/**
 	 * The dispatcher that currently executes an experiment (if any)
@@ -94,94 +92,7 @@ public abstract class Laboratory
 	/**
 	 * The serializer used to save/load the assistant's status
 	 */
-	private static transient JsonSerializer s_serializer;
-	
-	static
-	{
-		// Serializer setup
-		s_serializer = new JsonSerializer();
-		s_serializer.addObjectHandler(0, new JsonSetHandler(s_serializer));
-		s_serializer.addObjectHandler(0, new JsonListHandler(s_serializer));
-	}
-
-	/**
-	 * Creates a new lab assistant from the contents of a JSON string
-	 * @param s The JSON string with the assistant's state
-	 * @return The lab assistant, or null if some error occurred
-	 */
-	public static Laboratory loadFromString(String s)
-	{
-		JsonParser jp = new JsonParser();
-		JsonElement je;
-		try
-		{
-			je = jp.parse(s);
-			return loadFromJson(je);
-		}
-		catch (JsonParseException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-		
-	/**
-	 * Creates a new lab assistant from the contents of a JSON element
-	 * @param je The JSON element with the assistant's state
-	 * @return The lab assistant, or null if some error occurred
-	 */
-	public static Laboratory loadFromJson(JsonElement je)
-	{
-		Laboratory a = null;
-		try
-		{
-			a = (Laboratory) s_serializer.deserializeAs(je, Laboratory.class);
-		}
-		catch (SerializerException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return a;		
-	}
-
-	/**
-	 * Saves the state of a lab assistant to a JSON string
-	 * @param a The assistant
-	 * @return The JSON string with the assistant's state, or null
-	 *   if some error occurred
-	 */
-	public static String saveToString(Laboratory a)
-	{
-		JsonElement je = saveToJson(a);
-		if (je != null)
-		{
-			return je.toString();
-		}
-		return null;
-	}
-
-	/**
-	 * Saves the state of a lab assistant to a JSON element
-	 * @param a The assistant
-	 * @return The JSON element with the assistant's state, or null
-	 *   if some error occurred
-	 */
-	public static JsonElement saveToJson(Laboratory a)
-	{
-		try
-		{
-			JsonElement js_out = s_serializer.serialize(a);
-			return js_out;
-		}
-		catch (SerializerException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
+	private transient JsonSerializer m_serializer;
 	
 	/**
 	 * Creates a new lab assistant
@@ -192,6 +103,8 @@ public abstract class Laboratory
 		m_experiments = new HashSet<Experiment>();
 		m_plots = new HashSet<Plot>();
 		m_assistant = null;
+		m_serializer = new JsonSerializer();
+		m_serializer.addClassLoader(ca.uqac.lif.parkbench.Laboratory.class.getClassLoader());
 	}
 	
 	public Laboratory setAssistant(LabAssistant a)
@@ -326,6 +239,104 @@ public abstract class Laboratory
 		return this;
 	}
 	
+	/**
+	 * Creates a new lab assistant from the contents of a JSON string
+	 * @param s The JSON string with the assistant's state
+	 * @return The lab assistant, or null if some error occurred
+	 */
+	public Laboratory loadFromString(String s)
+	{
+		JsonParser jp = new JsonParser();
+		JsonElement je;
+		try
+		{
+			je = jp.parse(s);
+			Laboratory lab = loadFromJson(je);
+			// Don't forget to transplant the plots
+			for (Plot p : m_plots)
+			{
+				p.assignTo(lab);
+			}
+			lab.m_plots = m_plots;
+			return lab;
+		}
+		catch (JsonParseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+		
+	/**
+	 * Creates a new lab assistant from the contents of a JSON element
+	 * @param je The JSON element with the assistant's state
+	 * @return The lab assistant, or null if some error occurred
+	 */
+	public Laboratory loadFromJson(JsonElement je)
+	{
+		Laboratory a = null;
+		try
+		{
+			a = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
+		}
+		catch (SerializerException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return a;		
+	}
+
+	/**
+	 * Saves the state of the lab assistant to a JSON string
+	 * @return The JSON string with the assistant's state, or null
+	 *   if some error occurred
+	 */
+	public String saveToString()
+	{
+		JsonElement je = saveToJson();
+		if (je != null)
+		{
+			return je.toString();
+		}
+		return null;
+	}
+
+	/**
+	 * Saves the state of the lab to a JSON element
+	 * @return The JSON element with the assistant's state, or null
+	 *   if some error occurred
+	 */
+	public JsonElement saveToJson()
+	{
+		try
+		{
+			JsonElement js_out = m_serializer.serializeAs(this, this.getClass());
+			return js_out;
+		}
+		catch (SerializerException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Adds a class that must be serialized with the benchmark
+	 * @param clazz The class
+	 * @return This lab
+	 */
+	public Laboratory addClassToSerialize(Class<?> clazz)
+	{
+		if (clazz != null)
+		{
+			m_serializer.addClassLoader(clazz.getClassLoader());
+		}
+		return this;
+	}
+	
 	public static final void initialize(String[] args, Class<? extends Laboratory> clazz)
 	{
 		initialize(args, clazz, new LinearAssistant());
@@ -430,7 +441,7 @@ public abstract class Laboratory
 		{
 			i++;
 		}
-		return i / 5061974;
+		return (float) i / 5061974f;
 	}
 	
 }

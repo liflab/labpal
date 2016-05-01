@@ -121,10 +121,12 @@ public abstract class Experiment implements Runnable
 	 * {@link #prerequisitesFulfilled(JsonMap)}.
 	 * 
 	 * @param params The input parameters for this experiment
+	 * @return true if the prerequisites have been successfully generated,
+	 *   false otherwise
 	 */
-	public void fulfillPrerequisites(final JsonMap params)
+	public boolean fulfillPrerequisites(final JsonMap params)
 	{
-		return;
+		return true;
 	}
 	
 	/**

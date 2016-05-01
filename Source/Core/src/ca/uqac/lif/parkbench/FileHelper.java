@@ -107,7 +107,7 @@ public class FileHelper
 			// if file doesnt exists, then create it
 			if (!f.exists()) 
 			{
-				f.createNewFile();
+				createIfNotExists(f);
 			}
 			FileWriter fw = new FileWriter(f.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
@@ -118,6 +118,21 @@ public class FileHelper
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Creates a file and its parent directory if they do not exist
+	 * @param f The file to create
+	 */
+	public static void createIfNotExists(File f)
+	{
+		File parent = f.getParentFile();
+		if (parent == null)
+		{
+			return;
+		}
+		File directory = new File(parent.getAbsolutePath());
+		directory.mkdirs();
 	}
 
 	/**
@@ -133,7 +148,7 @@ public class FileHelper
 			// if file doesnt exists, then create it
 			if (!f.exists()) 
 			{
-				f.createNewFile();
+				createIfNotExists(f);
 			}
 			//convert array of bytes into file
 			FileOutputStream fileOuputStream = new FileOutputStream(f); 

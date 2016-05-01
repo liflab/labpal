@@ -55,10 +55,10 @@ public abstract class Plot
 	protected Set<Integer> m_experimentIds;
 
 	/**
-	 * The assistant responsible for executing the experiments this plot is
+	 * The lab that contains the experiments this plot is
 	 * drawing
 	 */
-	protected transient Laboratory m_assistant;
+	protected transient Laboratory m_lab;
 
 	/**
 	 * The path to launch GnuPlot
@@ -93,7 +93,7 @@ public abstract class Plot
 	{
 		this();
 		m_title = title;
-		m_assistant = a;
+		m_lab = a;
 		m_id = s_idCounter++;
 	}
 
@@ -104,7 +104,7 @@ public abstract class Plot
 	 */
 	public Plot assignTo(Laboratory a)
 	{
-		m_assistant = a;
+		m_lab = a;
 		a.add(this);
 		return this;
 	}

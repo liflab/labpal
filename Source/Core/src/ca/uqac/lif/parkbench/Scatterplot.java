@@ -17,6 +17,7 @@
 */
 package ca.uqac.lif.parkbench;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
@@ -43,7 +44,7 @@ public class Scatterplot extends Plot
 	 * The input parameter in an experiment used to determine to which data
 	 * series it belongs
 	 */
-	protected String[] m_seriesNames;
+	protected ArrayList<String> m_seriesNames;
 	
 	/**
 	 * The input parameter in an experiment to use as the x-value of the plot
@@ -64,7 +65,15 @@ public class Scatterplot extends Plot
 	 * The label used for the y-axis
 	 */
 	protected String m_yLabel;
-
+	
+	/**
+	 * Creates an empty scatterplot
+	 */
+	public Scatterplot()
+	{
+		super();
+		m_seriesNames = new ArrayList<String>();
+	}
 	
 	/**
 	 * Tells the plot to draw each data series with lines between each
@@ -95,7 +104,10 @@ public class Scatterplot extends Plot
 	 */
 	public Scatterplot groupBy(String ... param)
 	{
-		m_seriesNames = param;
+		for (String p : param)
+		{
+			m_seriesNames.add(p);
+		}
 		return this;
 	}
 	
@@ -161,7 +173,7 @@ public class Scatterplot extends Plot
 		Vector<String> series = new Vector<String>();
 		for (int id : m_experimentIds)
 		{
-			Experiment e = m_assistant.getExperiment(id);
+			Experiment e = m_lab.getExperiment(id);
 			if (e == null)
 				continue;
 			String s_name = createSeriesName(e);
@@ -207,7 +219,7 @@ public class Scatterplot extends Plot
 		Vector<Float> values = new Vector<Float>();
 		for (int id : m_experimentIds)
 		{
-			Experiment e = m_assistant.getExperiment(id);
+			Experiment e = m_lab.getExperiment(id);
 			if (e == null)
 				continue;
 			JsonElement j_val = e.getInputParameters().get(m_xName);
@@ -221,14 +233,6 @@ public class Scatterplot extends Plot
 		}
 		Collections.sort(values);
 		return values;
-	}
-	
-
-	
-	static class Point
-	{
-		float x;
-		float y;
 	}
 
 	@Override
@@ -252,7 +256,7 @@ public class Scatterplot extends Plot
 		Table tab = new Table(series, x_values);
 		for (int id : m_experimentIds)
 		{
-			Experiment e = m_assistant.getExperiment(id);
+			Experiment e = m_lab.getExperiment(id);
 			if (e == null || e.getStatus() != Experiment.Status.DONE)
 				continue;
 			String ser = createSeriesName(e);

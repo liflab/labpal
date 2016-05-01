@@ -19,6 +19,7 @@ package ca.uqac.lif.parkbench;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
@@ -72,7 +73,29 @@ public class ParkbenchTui
 	public ParkbenchTui(Laboratory lab, LabAssistant assistant, AnsiPrinter printer, ArgumentMap args)
 	{
 		super();
-		m_lab = lab;
+		List<String> others = args.getOthers();
+		if (!others.isEmpty())
+		{
+			String filename = others.get(0);
+			if (!FileHelper.fileExists(filename))
+			{
+				printer.print("ERROR: file " + filename + " not found\n");
+				System.exit(-1);
+			}
+			String contents = FileHelper.readToString(new File(filename));
+			lab.addClassToSerialize(this.getClass());
+			m_lab = lab.loadFromString(contents);
+			m_lab.setAssistant(assistant);
+			if (m_lab == null)
+			{
+				printer.print("ERROR: cannot load lab data from " + filename + "\n");
+				System.exit(-1);
+			}
+		}
+		else
+		{
+			m_lab = lab;
+		}
 		m_assistant = assistant;
 		m_printer = printer;
 		if (args.hasOption("color"))
@@ -304,7 +327,7 @@ public class ParkbenchTui
 			{
 				filename = line;
 			}
-			String json_string = Laboratory.saveToString(m_lab);
+			String json_string = m_lab.saveToString();
 			FileHelper.writeFromString(new File(filename), json_string);
 			printer.print("Wrote " + json_string.length() + " bytes\n");
 		}

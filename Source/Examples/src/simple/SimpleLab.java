@@ -36,9 +36,9 @@ public class SimpleLab extends Laboratory
 		
 		// Prepare a scatterplot
 		Scatterplot my_plot = new Scatterplot();
-		my_plot.groupBy("name").useForX("a", "Value of a")
-			.useForY("y", "Return value").setTitle("My plot")
-			.assignTo(this);
+		my_plot.useForX("a", "Value of a")
+			.useForY("y", "Return value").groupBy("name")
+			.setTitle("My plot").assignTo(this);
 		
 		// Create the experiments
 		for (int i = 0; i < 5; i++)

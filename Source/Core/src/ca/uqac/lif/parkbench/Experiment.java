@@ -284,7 +284,15 @@ public abstract class Experiment implements Runnable
 		if (!prerequisitesFulfilled(m_inputParameters))
 		{
 			m_status = Status.PREREQ_F;
-			fulfillPrerequisites(m_inputParameters);
+			if (!fulfillPrerequisites(m_inputParameters))
+			{
+				m_status = Status.FAILED;
+				if (m_errorMessage.isEmpty())
+				{
+					m_errorMessage = "Failed while generating prerequisites";
+				}
+				return;
+			}
 		}
 		m_status = Status.RUNNING;
 		m_status = execute(m_inputParameters, m_outputParameters);

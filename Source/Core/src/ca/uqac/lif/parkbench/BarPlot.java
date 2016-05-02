@@ -55,6 +55,52 @@ import java.util.Vector;
  */
 public class BarPlot extends TwoDeePlot
 {
+	/**
+	 * Whether the histogram is of type "row stacked".
+	 * @see {@link #rowStacked()}
+	 */
+	protected boolean m_rowStacked = false;
+	
+	/**
+	 * The width of the box in the histogram. A value of -1 means the
+	 * default setting will be used.
+	 */
+	protected float m_boxWidth = -1;
+	
+	/**
+	 * Sets whether the histogram is of type "row stacked".
+	 * Using the example given above, the rowstacked setting will rather
+	 * produce this plot:
+	 * <pre>
+   * |                     # video
+   * |                     $ audio
+   * |    @                @ text
+   * |    @         @
+   * |    $         @ 
+   * |    $         $ 
+   * |    #         # 
+   * +----+---------+-----&gt;
+   *   Firefox     IE
+	 * </pre> 
+	 * @return This plot
+	 */
+	public BarPlot rowStacked()
+	{
+		m_rowStacked = true;
+		return this;
+	}
+	
+	/**
+	 * Sets the box width of the histogram. This is equivalent to the
+	 * <tt>boxwidth</tt> setting of Gnuplot.
+	 * @param w The width (generally a value between 0 and 1)
+	 * @return This plot
+	 */
+	public BarPlot boxWidth(float w)
+	{
+		m_boxWidth = w;
+		return this;
+	}
 
 	@Override
 	public String toGnuplot(Terminal term, String lab_title)
@@ -66,9 +112,20 @@ public class BarPlot extends TwoDeePlot
 		out.append(getHeader(term, lab_title));
 		out.append("set xtics rotate out\n");
 		out.append("set style data histogram\n");
+		if (m_rowStacked)
+		{
+			out.append("set style histogram rowstacked\n");
+		}
+		else
+		{
+			out.append("set style histogram clustered gap 1\n");
+		}
+		if (m_boxWidth > 0)
+		{
+			out.append("set boxwidth ").append(m_boxWidth).append("\n");
+		}
 		out.append("set auto x\n");
 		out.append("set yrange [0:*]\n");
-		out.append("set style histogram clustered gap 1\n");
 		out.append("set style fill solid border rgb \"black\"\n");
 		out.append("plot");
 		for (int i = 0; i < series.size(); i++)

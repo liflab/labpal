@@ -2,6 +2,8 @@ package ca.uqac.lif.tui;
 
 import java.util.ArrayList;
 
+import ca.uqac.lif.parkbench.Experiment;
+
 public class Menu extends TuiElement
 {
 	private ArrayList<MenuItem> m_items;
@@ -55,6 +57,11 @@ public class Menu extends TuiElement
 			}
 			choice = s_pendingSequence.substring(0, 1);
 			s_pendingSequence = s_pendingSequence.substring(1);
+			if (choice.compareTo(",") == 0)
+			{
+				Experiment.wait(1000);
+				continue;
+			}
 			for (MenuItem mi : m_items)
 			{
 				if (mi.fires(choice))

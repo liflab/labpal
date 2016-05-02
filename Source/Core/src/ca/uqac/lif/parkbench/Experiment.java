@@ -110,10 +110,9 @@ public abstract class Experiment implements Runnable
 	 * satisfy the prerequisites here: rather use
 	 * {@link #fulfillPrerequisites(JsonMap)}.
 	 * 
-	 * @param params The input parameters for this experiment
 	 * @return true if the prerequisites are fulfilled, false otherwise
 	 */
-	public boolean prerequisitesFulfilled(final JsonMap params)
+	public boolean prerequisitesFulfilled()
 	{
 		return true;
 	}
@@ -125,11 +124,10 @@ public abstract class Experiment implements Runnable
 	 * should be some form of coherence between this method and 
 	 * {@link #prerequisitesFulfilled(JsonMap)}.
 	 * 
-	 * @param params The input parameters for this experiment
 	 * @return true if the prerequisites have been successfully generated,
 	 *   false otherwise
 	 */
-	public boolean fulfillPrerequisites(final JsonMap params)
+	public boolean fulfillPrerequisites()
 	{
 		return true;
 	}
@@ -138,22 +136,18 @@ public abstract class Experiment implements Runnable
 	 * Cleans any prerequisites this experiment may have generated.
 	 * For example: deleting files that were generated, etc.
 	 * @see {@link #fulfillPrerequisites(JsonMap)}
-	 * @param params The input parameters for this experiment
 	 */
-	public void cleanPrerequisites(final JsonMap params)
+	public void cleanPrerequisites()
 	{
 		return;
 	}
 	
 	/**
 	 * Executes the experiment.
-	 * @param input The input parameters for this experiment
-	 * @param output The output parameters for this experiment. Once the
-	 *   experiment is over, it writes its results into this object.
 	 * @return The status of the experiment once it has finished. This should
 	 *   normally be either <tt>DONE</tt> or <tt>FAILED</tt>.
 	 */
-	public abstract Status execute(final JsonMap input, final JsonMap output);
+	public abstract Status execute();
 	
 	/**
 	 * Reads an output parameter for this experiment
@@ -370,7 +364,7 @@ public abstract class Experiment implements Runnable
 	 */
 	public final void clean()
 	{
-		cleanPrerequisites(m_inputParameters);
+		cleanPrerequisites();
 		reset();
 	}
 	
@@ -382,7 +376,7 @@ public abstract class Experiment implements Runnable
 	{
 		if (m_status == Status.DUNNO)
 		{
-			if (prerequisitesFulfilled(m_inputParameters))
+			if (prerequisitesFulfilled())
 			{
 				m_status = Status.PREREQ_OK;
 			}
@@ -398,10 +392,10 @@ public abstract class Experiment implements Runnable
 	public final void run()
 	{
 		m_startTime = System.currentTimeMillis();
-		if (!prerequisitesFulfilled(m_inputParameters))
+		if (!prerequisitesFulfilled())
 		{
 			m_status = Status.PREREQ_F;
-			if (!fulfillPrerequisites(m_inputParameters))
+			if (!fulfillPrerequisites())
 			{
 				m_status = Status.FAILED;
 				if (m_errorMessage.isEmpty())
@@ -412,7 +406,7 @@ public abstract class Experiment implements Runnable
 			}
 		}
 		m_status = Status.RUNNING;
-		m_status = execute(m_inputParameters, m_outputParameters);
+		m_status = execute();
 		m_endTime = System.currentTimeMillis();
 
 	}

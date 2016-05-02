@@ -1,6 +1,5 @@
 package browser;
 
-import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.parkbench.Experiment;
 
 public class BrowserExperiment extends Experiment
@@ -17,7 +16,7 @@ public class BrowserExperiment extends Experiment
 	}
 
 	@Override
-	public Status execute(JsonMap input, JsonMap output)
+	public Status execute()
 	{
 		write("market", name);
 		write("share", value);

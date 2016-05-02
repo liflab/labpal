@@ -1,20 +1,20 @@
 /*
   ParkBench, a versatile benchmark environment
   Copyright (C) 2015-2016 Sylvain Hallé
-  
+
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package ca.uqac.lif.parkbench;
 
 import java.util.Collections;
@@ -22,36 +22,40 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonList;
+import ca.uqac.lif.json.JsonString;
+
 public class Table
 {
 	/**
 	 * The set of experiments this table is supposed to handle
 	 */
 	protected Set<Experiment> m_experiments;
-	
+
 	/**
 	 * The set of experiments this table is supposed to handle
 	 */
 	protected Vector<String> m_seriesNames;
-	
+
 	/**
 	 * The input parameter in an experiment to use as the x-value of the plot
 	 */
 	protected String m_xName;
-	
+
 	/**
 	 * The input parameter in an experiment to use as the y-value of the plot
 	 */
 	protected String m_yName;
 
-	
+
 	public Table()
 	{
 		super();
 		m_experiments = new HashSet<Experiment>();
 		m_seriesNames = new Vector<String>();
 	}
-	
+
 	/**
 	 * Adds an experiment to the table
 	 * @param e The experiment
@@ -62,7 +66,7 @@ public class Table
 		m_experiments.add(e);
 		return this;
 	}
-	
+
 	/**
 	 * Tells the plot to group experiment results into data series, according
 	 * to a parameter present in the experiments
@@ -78,7 +82,7 @@ public class Table
 		}
 		return this;
 	}
-		
+
 	/**
 	 * Tells the plot what input parameter of the experiments to use as the
 	 * "x" value 
@@ -90,7 +94,7 @@ public class Table
 		m_xName = param;
 		return this;
 	}
-	
+
 	/**
 	 * Tells the plot what input parameter of the experiments to use as the
 	 * "y" value 
@@ -112,7 +116,7 @@ public class Table
 		Vector<String> series = getSeriesNames();
 		return toCsv(series, false);
 	}
-	
+
 	/**
 	 * Returns the contents of the table as a CSV string.
 	 * @param series The list of the column headers
@@ -128,7 +132,7 @@ public class Table
 		}
 		return t.toCsv();
 	}
-	
+
 	/**
 	 * Gets the sorted list of all distinct series names found in the set of
 	 * experiments associated to this plot
@@ -150,7 +154,7 @@ public class Table
 		Collections.sort(series);
 		return series;
 	}
-	
+
 	/**
 	 * Creates the name of the series an experiment belongs to, based on
 	 * the filtering criteria
@@ -180,7 +184,7 @@ public class Table
 		}
 		return s_name;
 	}
-	
+
 	/**
 	 * Gets the sorted list of all x values occurring in at least one experiment
 	 * @return The list of x values
@@ -192,12 +196,39 @@ public class Table
 		{
 			if (e == null)
 				continue;
-			String f_val = e.readString(m_xName);
-			if (f_val == null)
-				continue;
-			if (!values.contains(f_val))
+			// Check if value is a list
+			JsonElement je = e.read(m_xName);
+			if (je instanceof JsonList)
 			{
-				values.add(f_val);
+				// Yes: add all values of that list
+				JsonList jl = (JsonList) je;
+				for (JsonElement jel : jl)
+				{
+					String f_val;
+					if (jel instanceof JsonString)
+					{
+						f_val = ((JsonString) jel).stringValue();
+					}
+					else
+					{
+						f_val = jel.toString();
+					}
+					if (!values.contains(f_val))
+					{
+						values.add(f_val);
+					}
+				}
+			}
+			else
+			{
+				// No: add that single value
+				String f_val = e.readString(m_xName);
+				if (f_val == null)
+					continue;
+				if (!values.contains(f_val))
+				{
+					values.add(f_val);
+				}
 			}
 		}
 		Collections.sort(values);
@@ -220,23 +251,60 @@ public class Table
 			if (e == null || e.getStatus() != Experiment.Status.DONE)
 				continue;
 			String ser = createSeriesName(e);
-			String n_x = e.readString(m_xName);
-			if (n_x == null)
-				continue;
-			String n_y = e.readString(m_yName);
-			if (n_y == null)
-				continue;
-			values.put(n_x, ser, n_y);
+			JsonElement je_x = e.read(m_xName);
+			if (je_x instanceof JsonList)
+			{
+				JsonList jl_x = (JsonList) je_x;
+				JsonElement je_y = e.read(m_yName);
+				if (!(je_y instanceof JsonList))
+				{
+					// If the x element is an array, the y element should
+					// be an array too
+					assert false;
+				}
+				JsonList jl_y = (JsonList) je_y;
+				for (int i = 0; i < jl_x.size(); i++)
+				{
+					String n_x = elementToString(jl_x.get(i));
+					String n_y = elementToString(jl_y.get(i));
+					if (n_x == null || n_y == null)
+						continue;
+					values.put(n_x, ser, n_y);
+				}
+			}
+			else
+			{
+				String n_x = e.readString(m_xName);
+				if (n_x == null)
+					continue;
+				String n_y = e.readString(m_yName);
+				if (n_y == null)
+					continue;
+				values.put(n_x, ser, n_y);
+			}
 		}
 		return values;
 	}
 	
+	protected static String elementToString(JsonElement je)
+	{
+		if (je == null)
+		{
+			return null;
+		}
+		if (je instanceof JsonString)
+		{
+			return ((JsonString) je).stringValue();
+		}
+		return je.toString();
+	}
+
 	protected static class Tabular
 	{
 		Vector<String> m_columnHeaders = new Vector<String>();
 		Vector<String> m_lineHeaders = new Vector<String>();
 		String[][] m_values;
-		
+
 		public Tabular(Vector<String> column_headers, Vector<String> line_headers)
 		{
 			super();
@@ -244,7 +312,7 @@ public class Table
 			m_lineHeaders.addAll(line_headers);
 			m_values = new String[m_lineHeaders.size()][m_columnHeaders.size()];
 		}
-		
+
 		public Tabular put(String line, String column, String value)
 		{
 			int p_l = m_lineHeaders.indexOf(line);
@@ -252,14 +320,14 @@ public class Table
 			m_values[p_l][p_c] = value;
 			return this;
 		}
-		
+
 		public String get(String line, String column)
 		{
 			int p_l = m_lineHeaders.indexOf(line);
 			int p_c = m_columnHeaders.indexOf(column);
 			return m_values[p_l][p_c];
 		}
-		
+
 		public Tabular transpose()
 		{
 			// Swap lines and columns
@@ -278,7 +346,7 @@ public class Table
 			m_values = transposed;
 			return this;
 		}
-		
+
 		/**
 		 * Returns the contents of the table as a CSV string.
 		 * @param series The data series in the table 
@@ -307,7 +375,7 @@ public class Table
 			}
 			return out.toString();
 		}
-		
+
 	}
 
 }

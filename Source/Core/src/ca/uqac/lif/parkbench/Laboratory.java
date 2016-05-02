@@ -115,7 +115,7 @@ public abstract class Laboratory
 	
 	/**
 	 * Adds an experiment to the lab
-	 * @param id The experiment
+	 * @param e The experiment
 	 * @param plots Optional: a number of plots this experiment should be
 	 *   associated with
 	 * @return This assistant

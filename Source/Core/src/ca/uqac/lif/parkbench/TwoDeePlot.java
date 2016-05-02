@@ -149,6 +149,14 @@ public abstract class TwoDeePlot extends Plot
 		StringBuilder out = super.getHeader(term, lab_title);
 		out.append("set xlabel \"").append(m_xLabel).append("\"\n");
 		out.append("set ylabel \"").append(m_yLabel).append("\"\n");
+		if (m_logscaleX)
+		{
+			out.append("set logscale x\n");
+		}
+		if (m_logscaleY)
+		{
+			out.append("set logscale y\n");
+		}
 		return out;
 	}
 

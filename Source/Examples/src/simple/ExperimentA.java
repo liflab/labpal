@@ -1,7 +1,5 @@
 package simple;
 
-import ca.uqac.lif.json.JsonMap;
-import ca.uqac.lif.json.JsonPath;
 import ca.uqac.lif.parkbench.Experiment;
 
 public class ExperimentA extends Experiment
@@ -14,16 +12,16 @@ public class ExperimentA extends Experiment
 	}
 
 	@Override
-	public Status execute(JsonMap input, JsonMap output)
+	public Status execute()
 	{
-		int a = JsonPath.getNumber(input, "a").intValue();
+		int a = readInt("a");
 		if (a == 2)
 		{
 			// Just to test the "fail" case
 			setErrorMessage("The experiment failed");
 			return Status.FAILED;
 		}
-		output.put("y", a * 2);
+		write("y", a * 2);
 		return Status.DONE;
 	}
 	

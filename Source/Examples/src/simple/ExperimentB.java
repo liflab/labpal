@@ -9,17 +9,15 @@ public class ExperimentB extends Experiment
 	public ExperimentB(int a)
 	{
 		super();
-		JsonMap params = new JsonMap();
-		params.put("name", "Experiment B");
-		params.put("a", a);
-		setInputParameters(params);
+		setInput("name", "Experiment B");
+		setInput("a", a);
 	}
 
 	@Override
 	public Status execute(JsonMap input, JsonMap output)
 	{
 		int a = JsonPath.getNumber(input, "a").intValue();
-		Experiment.wait(1000);
+		//Experiment.wait(1000);
 		output.put("y", a * 3 + 1);
 		return Status.DONE;
 	}
@@ -33,6 +31,6 @@ public class ExperimentB extends Experiment
 	@Override
 	public String toString()
 	{
-		return "B a=" + JsonPath.getNumber(getInputParameters(), "a").intValue();
+		return "B a=" + readInt("a");
 	}
 }

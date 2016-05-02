@@ -88,10 +88,10 @@ public class Scatterplot extends TwoDeePlot
 	}
 	
 	@Override
-	public String toGnuplot(Terminal term)
+	public String toGnuplot(Terminal term, String lab_title)
 	{
 		Vector<String> series = m_table.getSeriesNames();
-		String csv_values = m_table.toCsv(series);
+		String csv_values = m_table.toCsv(series, false);
 		String point_string = " with points";
 		if (m_withLines)
 		{
@@ -106,7 +106,7 @@ public class Scatterplot extends TwoDeePlot
 		}
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
-		out.append(getHeader(term));
+		out.append(getHeader(term, lab_title));
 		out.append("plot");
 		for (int i = 0; i < series.size(); i++)
 		{

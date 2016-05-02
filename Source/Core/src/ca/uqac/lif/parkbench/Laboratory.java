@@ -116,12 +116,18 @@ public abstract class Laboratory
 	/**
 	 * Adds an experiment to the lab
 	 * @param id The experiment
+	 * @param plots Optional: a number of plots this experiment should be
+	 *   associated with
 	 * @return This assistant
 	 */
-	public Laboratory add(Experiment e)
+	public Laboratory add(Experiment e, Plot ... plots)
 	{
 		e.setId(s_idCounter++);
 		m_experiments.add(e);
+		for (Plot p : plots)
+		{
+			p.add(e);
+		}
 		return this;
 	}
 	

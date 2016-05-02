@@ -18,15 +18,9 @@
 package ca.uqac.lif.parkbench;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
-import ca.uqac.lif.json.JsonElement;
-import ca.uqac.lif.json.JsonNumber;
-import ca.uqac.lif.json.JsonString;
 
 public class Table
 {
@@ -71,7 +65,7 @@ public class Table
 	
 	/**
 	 * Tells the plot to group experiment results into data series, according
-	 * to an input parameter present in the experiments
+	 * to a parameter present in the experiments
 	 * @param param The input parameters in an experiment used to determine
 	 * to which data series it belongs
 	 * @return This table
@@ -84,7 +78,7 @@ public class Table
 		}
 		return this;
 	}
-	
+		
 	/**
 	 * Tells the plot what input parameter of the experiments to use as the
 	 * "x" value 
@@ -108,37 +102,6 @@ public class Table
 		m_yName = param;
 		return this;
 	}
-	
-	/**
-	 * Returns the contents of the table as a CSV string.
-	 * @param series The data series in the table 
-	 * @return A CSV string
-	 */
-	public String toCsv(Vector<String> series)
-	{
-		Vector<Float> x_values = getXValues();
-		Map<Float,Map<String,Float>> values = getValues(series, x_values);
-		StringBuilder out = new StringBuilder();
-		for (float x : x_values)
-		{
-			out.append(x);
-			Map<String,Float> m = values.get(x);
-			for (String s : series)
-			{
-				out.append(",");
-				if (m.get(s) != null)
-				{
-					out.append(m.get(s));
-				}
-				else
-				{
-					out.append("?");
-				}
-			}
-			out.append("\n");
-		}
-		return out.toString();
-	}
 
 	/**
 	 * Returns the contents of the table as a CSV string.
@@ -147,7 +110,23 @@ public class Table
 	public String toCsv()
 	{
 		Vector<String> series = getSeriesNames();
-		return toCsv(series);
+		return toCsv(series, false);
+	}
+	
+	/**
+	 * Returns the contents of the table as a CSV string.
+	 * @param series The list of the column headers
+	 * @return A CSV string
+	 */
+	public String toCsv(Vector<String> series, boolean transposed)
+	{
+		Vector<String> x_values = getXValues();
+		Tabular t = getValues(series, x_values);
+		if (transposed)
+		{
+			t.transpose();
+		}
+		return t.toCsv();
 	}
 	
 	/**
@@ -181,21 +160,21 @@ public class Table
 	protected String createSeriesName(Experiment e)
 	{
 		String s_name = "";
+		if (m_seriesNames.size() == 1)
+		{
+			// If only one parameter, don't put its name
+			return e.readString(m_seriesNames.get(0));
+		}
 		for (String series_param : m_seriesNames)
 		{
 			if (!s_name.isEmpty())
 			{
 				s_name += ",";
 			}
-			JsonElement j_name = e.getInputParameters().get(series_param);
-			String ser_name = "";
-			if (j_name instanceof JsonString)
+			String ser_name = e.readString(series_param);
+			if (ser_name == null)
 			{
-				ser_name = ((JsonString) j_name).stringValue();
-			}
-			else
-			{
-				ser_name = j_name.toString();
+				continue;
 			}
 			s_name += series_param + "=" + ser_name;
 		}
@@ -206,17 +185,16 @@ public class Table
 	 * Gets the sorted list of all x values occurring in at least one experiment
 	 * @return The list of x values
 	 */
-	protected Vector<Float> getXValues()
+	protected Vector<String> getXValues()
 	{
-		Vector<Float> values = new Vector<Float>();
+		Vector<String> values = new Vector<String>();
 		for (Experiment e : m_experiments)
 		{
 			if (e == null)
 				continue;
-			JsonElement j_val = e.getInputParameters().get(m_xName);
-			if (!(j_val instanceof JsonNumber))
+			String f_val = e.readString(m_xName);
+			if (f_val == null)
 				continue;
-			float f_val = ((JsonNumber) j_val).numberValue().floatValue();
 			if (!values.contains(f_val))
 			{
 				values.add(f_val);
@@ -233,49 +211,103 @@ public class Table
 	 *   occurring in the table
 	 * @return The map
 	 */
-	protected Map<Float,Map<String,Float>> getValues(Vector<String> series, Vector<Float> x_values)
+	protected Tabular getValues(Vector<String> series, Vector<String> x_values)
 	{
 		// Build the table from the values
-		Map<Float,Map<String,Float>> values = createMap(series, x_values);
+		Tabular values = new Tabular(series, x_values);
 		for (Experiment e : m_experiments)
 		{
 			if (e == null || e.getStatus() != Experiment.Status.DONE)
 				continue;
 			String ser = createSeriesName(e);
-			JsonNumber n_x = (JsonNumber) e.getInputParameters().get(m_xName);
+			String n_x = e.readString(m_xName);
 			if (n_x == null)
 				continue;
-			float x = n_x.numberValue().floatValue();
-			JsonNumber n_y = (JsonNumber) e.getOutputParameters().get(m_yName);
+			String n_y = e.readString(m_yName);
 			if (n_y == null)
 				continue;
-			float y = n_y.numberValue().floatValue();
-			Map<String,Float> m = values.get(x);
-			m.put(ser, y);
+			values.put(n_x, ser, n_y);
 		}
 		return values;
 	}
-
-	/**
-	 * Creates a map
-	 * @param series The data series in the table
-	 * @param x_values A <em>sorted</em> list of all the x-values
-	 *   occurring in the table
-	 * @return The map
-	 */
-	protected static Map<Float,Map<String,Float>> createMap(Vector<String> series, Vector<Float> x_values)
+	
+	protected static class Tabular
 	{
-		Map<Float,Map<String,Float>> out_values = new HashMap<Float,Map<String,Float>>();
-		for (float v : x_values)
+		Vector<String> m_columnHeaders = new Vector<String>();
+		Vector<String> m_lineHeaders = new Vector<String>();
+		String[][] m_values;
+		
+		public Tabular(Vector<String> column_headers, Vector<String> line_headers)
 		{
-			Map<String,Float> values = new HashMap<String ,Float>();
-			for (String s : series)
-			{
-				values.put(s, null);
-			}
-			out_values.put(v, values);
+			super();
+			m_columnHeaders.addAll(column_headers);
+			m_lineHeaders.addAll(line_headers);
+			m_values = new String[m_lineHeaders.size()][m_columnHeaders.size()];
 		}
-		return out_values;
+		
+		public Tabular put(String line, String column, String value)
+		{
+			int p_l = m_lineHeaders.indexOf(line);
+			int p_c = m_columnHeaders.indexOf(column);
+			m_values[p_l][p_c] = value;
+			return this;
+		}
+		
+		public String get(String line, String column)
+		{
+			int p_l = m_lineHeaders.indexOf(line);
+			int p_c = m_columnHeaders.indexOf(column);
+			return m_values[p_l][p_c];
+		}
+		
+		public Tabular transpose()
+		{
+			// Swap lines and columns
+			Vector<String> temp = m_lineHeaders;
+			m_lineHeaders = m_columnHeaders;
+			m_columnHeaders = temp;
+			// Transpose the array of values
+			String[][] transposed = new String[m_values[0].length][m_values.length];
+			for (int i = 0; i < m_values.length; i++)
+			{
+				for (int j = 0; j < m_values[0].length; j++)
+				{
+					transposed[j][i] = m_values[i][j];
+				}
+			}
+			m_values = transposed;
+			return this;
+		}
+		
+		/**
+		 * Returns the contents of the table as a CSV string.
+		 * @param series The data series in the table 
+		 * @return A CSV string
+		 */
+		public String toCsv()
+		{
+			StringBuilder out = new StringBuilder();
+			for (String x : m_lineHeaders)
+			{
+				out.append(x);
+				for (String s : m_columnHeaders)
+				{
+					out.append(Plot.s_datafileSeparator);
+					String val = get(x,s);
+					if (val != null)
+					{
+						out.append(val);
+					}
+					else
+					{
+						out.append(Plot.s_datafileMissing);
+					}
+				}
+				out.append("\n");
+			}
+			return out.toString();
+		}
+		
 	}
 
 }

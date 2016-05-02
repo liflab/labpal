@@ -9,10 +9,8 @@ public class ExperimentA extends Experiment
 	public ExperimentA(int a)
 	{
 		super();
-		JsonMap params = new JsonMap();
-		params.put("name", "Experiment A");
-		params.put("a", a);
-		setInputParameters(params);
+		setInput("name", "Experiment A");
+		setInput("a", a);
 	}
 
 	@Override
@@ -32,7 +30,7 @@ public class ExperimentA extends Experiment
 	@Override
 	public String toString()
 	{
-		return "A a=" + JsonPath.getNumber(getInputParameters(), "a").intValue();
+		return "A a=" + readInt("a");
 	}
 
 }

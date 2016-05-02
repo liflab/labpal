@@ -1,3 +1,20 @@
+/*
+  ParkBench, a versatile benchmark environment
+  Copyright (C) 2015-2016 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.parkbench;
 
 public abstract class TwoDeePlot extends Plot
@@ -65,7 +82,7 @@ public abstract class TwoDeePlot extends Plot
 	
 	/**
 	 * Tells the plot to group experiment results into data series, according
-	 * to an input parameter present in the experiments
+	 * to a parameter present in the experiments
 	 * @param param The input parameters in an experiment used to determine
 	 * to which data series it belongs
 	 * @return This plot
@@ -93,6 +110,17 @@ public abstract class TwoDeePlot extends Plot
 	/**
 	 * Tells the plot what input parameter of the experiments to use as the
 	 * "x" value 
+	 * @param param The output parameter to use for the "x" value
+	 * @return This plot
+	 */
+	public TwoDeePlot useForX(String param)
+	{
+		return useForX(param, "");
+	}
+	
+	/**
+	 * Tells the plot what input parameter of the experiments to use as the
+	 * "x" value 
 	 * @param param The output parameter to use for the "y" value
 	 * @param label The label for the y axis in the resulting plot
 	 * @return This plot
@@ -104,10 +132,21 @@ public abstract class TwoDeePlot extends Plot
 		return this;
 	}
 	
-	@Override
-	public StringBuilder getHeader(Terminal term)
+	/**
+	 * Tells the plot what input parameter of the experiments to use as the
+	 * "x" value 
+	 * @param param The output parameter to use for the "y" value
+	 * @return This plot
+	 */
+	public TwoDeePlot useForY(String param)
 	{
-		StringBuilder out = super.getHeader(term);
+		return useForY(param, "");
+	}
+	
+	@Override
+	public StringBuilder getHeader(Terminal term, String lab_title)
+	{
+		StringBuilder out = super.getHeader(term, lab_title);
 		out.append("set xlabel \"").append(m_xLabel).append("\"\n");
 		out.append("set ylabel \"").append(m_yLabel).append("\"\n");
 		return out;

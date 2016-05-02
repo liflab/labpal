@@ -17,7 +17,12 @@
 */
 package ca.uqac.lif.parkbench;
 
+import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonMap;
+import ca.uqac.lif.json.JsonNumber;
+import ca.uqac.lif.json.JsonPath;
+import ca.uqac.lif.json.JsonString;
 
 /**
  * An experiment is a runnable process that takes input parameters and
@@ -151,42 +156,154 @@ public abstract class Experiment implements Runnable
 	public abstract Status execute(final JsonMap input, final JsonMap output);
 	
 	/**
-	 * Gets the input parameters for this experiment
-	 * @return The parameters
+	 * Reads an output parameter for this experiment
+	 * @param key The path leading to the parameter
+	 * @return The parameter
 	 */
-	public final JsonMap getInputParameters()
+	public final int readInt(String key)
 	{
-		return m_inputParameters;
+		JsonElement e = read(key);
+		if (e != null && e instanceof JsonNumber)
+		{
+			return ((JsonNumber) e).numberValue().intValue();
+		}
+		return 0;
 	}
 	
 	/**
-	 * Sets the input parameters for this experiment
-	 * @param params The parameters
-	 * @return This experiment
+	 * Reads an output parameter for this experiment
+	 * @param key The path leading to the parameter
+	 * @return The parameter
 	 */
-	public final Experiment setInputParameters(JsonMap params)
+	public final float readFloat(String key)
 	{
-		m_inputParameters = params;
-		return this;
+		JsonElement e = read(key);
+		if (e != null && e instanceof JsonNumber)
+		{
+			return ((JsonNumber) e).numberValue().intValue();
+		}
+		return 0;
 	}
 
 	/**
-	 * Gets the output parameters for this experiment
-	 * @return The parameters
+	 * Reads an output parameter for this experiment
+	 * @param key The path leading to the parameter
+	 * @return The parameter
 	 */
-	public final JsonMap getOutputParameters()
+	public final String readString(String key)
 	{
-		return m_outputParameters;
+		JsonElement e = read(key);
+		if (e == null)
+		{
+			return null;
+		}
+		if (e instanceof JsonString)
+		{
+			return ((JsonString) e).stringValue();
+		}
+		return e.toString();
 	}
 	
 	/**
-	 * Sets the output parameters for this experiment
-	 * @param params The parameters
+	 * Reads an output parameter for this experiment
+	 * @param key The path leading to the parameter
+	 * @return The parameter
+	 */
+	public final JsonMap readMap(String key)
+	{
+		JsonElement e = read(key);
+		if (e != null && e instanceof JsonMap)
+		{
+			return (JsonMap) e;
+		}
+		return null;
+	}
+	
+	/**
+	 * Reads an output parameter for this experiment
+	 * @param key The path leading to the parameter
+	 * @return The parameter
+	 */
+	public final JsonList readList(String key)
+	{
+		JsonElement e = read(key);
+		if (e != null && e instanceof JsonList)
+		{
+			return (JsonList) e;
+		}
+		return null;
+	}
+	
+	/**
+	 * Sets an output parameter for this experiment
+	 * @param key The key for this parameter
+	 * @param value The parameter's value
 	 * @return This experiment
 	 */
-	public final Experiment setOutputParameters(JsonMap params)
+	public final Experiment write(String key, JsonElement value)
 	{
-		m_outputParameters = params;
+		m_outputParameters.put(key, value);
+		return this;
+	}
+	
+	/**
+	 * Sets an output parameter for this experiment
+	 * @param key The key for this parameter
+	 * @param value The parameter's value
+	 * @return This experiment
+	 */
+	public final Experiment write(String key, Number value)
+	{
+		m_outputParameters.put(key, value);
+		return this;
+	}
+	
+	/**
+	 * Sets an output parameter for this experiment
+	 * @param key The key for this parameter
+	 * @param value The parameter's value
+	 * @return This experiment
+	 */
+	public final Experiment write(String key, String value)
+	{
+		m_outputParameters.put(key, value);
+		return this;
+	}
+
+	
+	/**
+	 * Sets an input parameter for this experiment
+	 * @param key The key for this parameter
+	 * @param value The parameter's value
+	 * @return This experiment
+	 */
+	public final Experiment setInput(String key, String value)
+	{
+		m_inputParameters.put(key, value);
+		return this;
+	}
+	
+	/**
+	 * Sets an input parameter for this experiment
+	 * @param key The key for this parameter
+	 * @param value The parameter's value
+	 * @return This experiment
+	 */
+	public final Experiment setInput(String key, Number value)
+	{
+		m_inputParameters.put(key, value);
+		return this;
+	}
+	
+	/**
+	 * Sets an input parameter for this experiment
+	 * @param key The key for this parameter
+	 * @param value The parameter's value
+	 * @return This experiment
+	 */
+	public final Experiment setInput(String key, JsonElement value)
+	{
+		m_inputParameters.put(key, value);
 		return this;
 	}
 	
@@ -352,5 +469,49 @@ public abstract class Experiment implements Runnable
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Retrieves a value, either from the input or the output parameters.
+	 * The method starts by fetching it from the input parameters; if this
+	 * fails, it fetches it from the output parameters.
+	 * @param path The path to the element.
+	 * @return The element; null if the path cannot be found in either the
+	 *   input or the output parameters
+	 */
+	protected final JsonElement read(String path)
+	{
+		JsonElement e = null;
+		e = JsonPath.get(m_inputParameters, path);
+		if (e == null)
+		{
+			e = JsonPath.get(m_outputParameters, path);
+		}
+		return e;
+	}
+
+	/**
+	 * Returns the set of all parameters of this experiment. This is effectively
+	 * a merging between the input and the output parameter maps.
+	 * @return The parameters
+	 */
+	public final JsonMap getAllParameters()
+	{
+		JsonMap out = new JsonMap();
+		for (String s : m_inputParameters.keySet())
+		{
+			out.put(s, m_inputParameters.get(s));
+		}
+		for (String s : m_outputParameters.keySet())
+		{
+			out.put(s, m_outputParameters.get(s));
+		}
+		return out;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return m_inputParameters.toString();
 	}
 }

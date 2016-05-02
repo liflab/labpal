@@ -48,7 +48,7 @@ public class LinearAssistant extends LabAssistant
 	 * The time (in ms) to wait before checking the state of the
 	 * thread again
 	 */
-	private static final transient int s_sleepInterval = 500;
+	private static final transient int s_sleepInterval = 333;
 
 	/**
 	 * Creates a new dispatcher

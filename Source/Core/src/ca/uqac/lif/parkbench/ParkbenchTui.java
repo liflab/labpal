@@ -199,7 +199,7 @@ public class ParkbenchTui
 		public void doSomething(AnsiPrinter printer)
 		{
 			m_lab.start();
-			printer.print("Started\n");
+			showStatus(printer, m_lab, m_assistant);
 		}
 	}
 	
@@ -242,69 +242,9 @@ public class ParkbenchTui
 		@Override
 		public void doSomething(AnsiPrinter printer)
 		{
-			int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0;
-			for (int id : m_lab.getExperimentIds())
-			{
-				num_ex++;
-				Experiment ex = m_lab.getExperiment(id);
-				switch (ex.getStatus())
-				{
-				case DONE:
-					num_done++;
-					break;
-				case FAILED:
-					num_failed++;
-					break;
-				default:
-					break;
-				}
-				if (m_assistant.isQueued(id))
-				{
-					num_q++;
-				}
-			}
-			printer.print("\n");
-			printer.setForegroundColor(Color.YELLOW).print(num_ex);
-			printer.resetColors();
-			printer.print(" experiments: ");
-			printer.setForegroundColor(Color.YELLOW).print(num_q);
-			printer.resetColors();
-			printer.print(" queued, ");
-			printer.setForegroundColor(Color.YELLOW).print(num_done);
-			printer.resetColors();
-			printer.print(" done, ");
-			printer.setForegroundColor(Color.YELLOW).print(num_failed);
-			printer.resetColors();
-			printer.print(" failed\n");
-			printer.print("ETA: " + formatEta(m_assistant.getTimeEstimate()));
-			if (m_assistant.isRunning())
-			{
-				printer.print(" (running)\n");
-			}
-			else
-			{
-				printer.print(" (not running)\n");
-			}
-			printer.print(String.format("Scaling factor: %.2f\n", Laboratory.s_parkMips));
-			printer.print("\n");
+			showStatus(printer, m_lab, m_assistant);
 		}
 		
-		public String formatEta(float n)
-		{
-			if (n < 90)
-			{
-				return String.format("%ds", (int) n);
-			}
-			int seconds = (int) n % 60;
-			n = (n - seconds) / 60;
-			if (n < 60)
-			{
-				return String.format("%dm", (int) n);
-			}
-			int minutes = (int) n % 60;
-			n = (n - minutes) / 60;
-			return String.format("%dh%dm", (int) n, minutes);
-		}
 	}
 	
 	protected class SaveMenuItem extends MenuItem
@@ -470,7 +410,7 @@ public class ParkbenchTui
 		@Override
 		protected void doWithPlot(AnsiPrinter printer, Plot p)
 		{
-			String gnuplot = p.toGnuplot(Terminal.PDF);
+			String gnuplot = p.toGnuplot(Terminal.PDF, m_lab.getTitle());
 			String filename = p.getTitle() + ".gp";
 			printer.print("Save to [" + filename + "] ");
 			String line = printer.readLine();
@@ -703,8 +643,7 @@ public class ParkbenchTui
 					{
 						printer.print(ex.getErrorMessage() + "\n");
 					}
-					printer.print(ex.getInputParameters() + "\n");
-					printer.print(ex.getOutputParameters() + "\n");
+					printer.print(ex.getAllParameters() + "\n");
 				}
 			}
 		}
@@ -776,5 +715,71 @@ public class ParkbenchTui
 			}
 			printer.print(" ");
 		}
+	}
+	
+	protected static void showStatus(AnsiPrinter printer, Laboratory lab, LabAssistant assistant)
+	{
+		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0;
+		for (int id : lab.getExperimentIds())
+		{
+			num_ex++;
+			Experiment ex = lab.getExperiment(id);
+			switch (ex.getStatus())
+			{
+			case DONE:
+				num_done++;
+				break;
+			case FAILED:
+				num_failed++;
+				break;
+			default:
+				break;
+			}
+			if (assistant.isQueued(id))
+			{
+				num_q++;
+			}
+		}
+		printer.print("\n");
+		printer.setForegroundColor(Color.YELLOW).print(num_ex);
+		printer.resetColors();
+		printer.print(" experiments: ");
+		printer.setForegroundColor(Color.YELLOW).print(num_q);
+		printer.resetColors();
+		printer.print(" queued, ");
+		printer.setForegroundColor(Color.YELLOW).print(num_done);
+		printer.resetColors();
+		printer.print(" done, ");
+		printer.setForegroundColor(Color.YELLOW).print(num_failed);
+		printer.resetColors();
+		printer.print(" failed\n");
+		printer.print("ETA: " + formatEta(assistant.getTimeEstimate()));
+		if (assistant.isRunning())
+		{
+			printer.print(" (running)\n");
+		}
+		else
+		{
+			printer.print(" (not running)\n");
+		}
+		printer.print(String.format("Scaling factor: %.2f\n", Laboratory.s_parkMips));
+		printer.print("\n");
+	}
+	
+	protected static String formatEta(float n)
+	{
+		if (n < 90)
+		{
+			return String.format("%ds", (int) n);
+		}
+		int seconds = (int) n % 60;
+		n = (n - seconds) / 60;
+		if (n < 60)
+		{
+			return String.format("%dm", (int) n);
+		}
+		int minutes = (int) n % 60;
+		n = (n - minutes) / 60;
+		return String.format("%dh%dm", (int) n, minutes);
 	}
 }

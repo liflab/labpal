@@ -10,6 +10,8 @@ public class Menu extends TuiElement
 	
 	public static String s_promptCharacterColor = "\u25ba";
 	
+	protected static String s_pendingSequence = "";
+	
 	public Menu()
 	{
 		super();
@@ -38,7 +40,21 @@ public class Menu extends TuiElement
 				printer.print(s_promptCharacterBlack);
 			printer.resetColors();
 			printer.print(" ");
-			String choice = printer.readLine();
+			String choice = "";
+			if (s_pendingSequence.isEmpty())
+			{
+				s_pendingSequence = printer.readLine();
+			}
+			else
+			{
+				printer.print("\n");
+			}
+			if (s_pendingSequence.isEmpty())
+			{
+				continue;
+			}
+			choice = s_pendingSequence.substring(0, 1);
+			s_pendingSequence = s_pendingSequence.substring(1);
 			for (MenuItem mi : m_items)
 			{
 				if (mi.fires(choice))

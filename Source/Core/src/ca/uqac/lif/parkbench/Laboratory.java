@@ -1,20 +1,20 @@
 /*
   ParkBench, a versatile benchmark environment
   Copyright (C) 2015-2016 Sylvain Hallé
-  
+
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package ca.uqac.lif.parkbench;
 
 import java.util.HashSet;
@@ -27,6 +27,7 @@ import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.parkbench.CliParser.Argument;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
+import ca.uqac.lif.parkbench.server.ParkbenchServer;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**
@@ -42,58 +43,58 @@ public abstract class Laboratory
 	public static transient int ERR_LAB = 1;
 	public static transient int ERR_REQUIREMENTS = 2;
 	public static transient int ERR_IO = 3;
-	
+
 	/**
 	 * The set of experiments this lab has access to
 	 */
 	private HashSet<Experiment> m_experiments;
-	
+
 	/**
 	 * The set of plots associated with this lab
 	 */
 	private transient HashSet<Plot> m_plots;
-	
+
 	/**
 	 * The title given to this lab
 	 */
 	private String m_title = "Untitled";
-	
+
 	/**
 	 * The version string of this lab
 	 */
 	public static final transient String s_versionString = "v2.0";
-	
+
 	/**
 	 * The default file extension to save experiment results
 	 */
 	public static final transient String s_fileExtension = "labo";
-	
+
 	/**
 	 * The dispatcher that currently executes an experiment (if any)
 	 */
 	private transient LabAssistant m_assistant;
-	
+
 	/**
 	 * The thread that runs this assistant
 	 */
 	private transient Thread m_thread;
-	
+
 	/**
 	 * The number of parkmips
 	 * @see {@link #countParkMips()}
 	 */
 	public transient static float s_parkMips = countParkMips(); 
-	
+
 	/**
 	 * A counter for auto-incrementing experiment IDs
 	 */
 	private static transient int s_idCounter = 0;
-	
+
 	/**
 	 * The serializer used to save/load the assistant's status
 	 */
 	private transient JsonSerializer m_serializer;
-	
+
 	/**
 	 * Creates a new lab assistant
 	 */
@@ -106,13 +107,13 @@ public abstract class Laboratory
 		m_serializer = new JsonSerializer();
 		m_serializer.addClassLoader(ca.uqac.lif.parkbench.Laboratory.class.getClassLoader());
 	}
-	
+
 	public Laboratory setAssistant(LabAssistant a)
 	{
 		m_assistant = a;
 		return this;
 	}
-	
+
 	/**
 	 * Adds an experiment to the lab
 	 * @param e The experiment
@@ -130,7 +131,7 @@ public abstract class Laboratory
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Adds an experiment to the lab and queues it to the
 	 * assistant
@@ -143,7 +144,7 @@ public abstract class Laboratory
 		m_assistant.queue(e);
 		return this;
 	}
-	
+
 	/**
 	 * Assigns a plot to this lab
 	 * @param p The plot
@@ -154,7 +155,7 @@ public abstract class Laboratory
 		m_plots.add(p);
 		return this;
 	}
-	
+
 	/**
 	 * Gets the IDs of all the plots for this lab assistant
 	 * @return The set of IDs
@@ -168,7 +169,7 @@ public abstract class Laboratory
 		}
 		return ids;
 	}
-	
+
 	/**
 	 * Gets the plot with given ID
 	 * @param id The ID
@@ -186,7 +187,7 @@ public abstract class Laboratory
 		return null;
 	}
 
-	
+
 	/**
 	 * Gets the title given to this assistant
 	 * @return The title
@@ -195,7 +196,7 @@ public abstract class Laboratory
 	{
 		return m_title;
 	}
-	
+
 	/**
 	 * Sets the title for this lab assistant
 	 * @param t The title
@@ -206,7 +207,7 @@ public abstract class Laboratory
 		m_title = t;
 		return this;
 	}
-	
+
 	/**
 	 * Fetches an experiment based on its ID
 	 * @param id The ID
@@ -223,7 +224,7 @@ public abstract class Laboratory
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets the IDs of all the experiments for this lab assistant
 	 * @return The set of IDs
@@ -237,14 +238,14 @@ public abstract class Laboratory
 		}
 		return ids;
 	}
-	
+
 	public Laboratory start()
 	{
 		m_thread = new Thread(m_assistant);
 		m_thread.start();
 		return this;
 	}
-	
+
 	/**
 	 * Creates a new lab assistant from the contents of a JSON string
 	 * @param s The JSON string with the assistant's state
@@ -273,7 +274,7 @@ public abstract class Laboratory
 		}
 		return null;
 	}
-		
+
 	/**
 	 * Creates a new lab assistant from the contents of a JSON element
 	 * @param je The JSON element with the assistant's state
@@ -328,7 +329,7 @@ public abstract class Laboratory
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Adds a class that must be serialized with the benchmark
 	 * @param clazz The class
@@ -342,18 +343,21 @@ public abstract class Laboratory
 		}
 		return this;
 	}
-	
+
 	public static final void initialize(String[] args, Class<? extends Laboratory> clazz)
 	{
 		initialize(args, clazz, new LinearAssistant());
 	}
-	
-	public static final void initialize(String[] args, Class<? extends Laboratory> clazz, LabAssistant assistant)
+
+	public static final void initialize(String[] args, Class<? extends Laboratory> clazz, final LabAssistant assistant)
 	{
 		CliParser parser = new CliParser();
 		parser.addArgument(new Argument()
-				.withLongName("color")
-				.withDescription("Enables color and Unicode in text interface"));
+		.withLongName("color")
+		.withDescription("Enables color and Unicode in text interface"));
+		parser.addArgument(new Argument()
+		.withLongName("web")
+		.withDescription("Start ParkBench as a web server"));
 		Laboratory new_lab = null;
 		try
 		{
@@ -375,18 +379,44 @@ public abstract class Laboratory
 		}
 		new_lab.setAssistant(assistant);
 		new_lab.setupCli(parser);
-		ArgumentMap map = parser.parse(args);
+		final ArgumentMap map = parser.parse(args);
 		new_lab.setupExperiments(map);
-		AnsiPrinter stdout = new AnsiPrinter(System.out);
+		final AnsiPrinter stdout = new AnsiPrinter(System.out);
 		stdout.resetColors();
-		stdout.print("ParkBench " + s_versionString + " - A versatile environment for running experiments\n");
-		stdout.print("(C) 2015-2016 Laboratoire d'informatique formelle\n");
-		ParkbenchTui tui = new ParkbenchTui(new_lab, assistant, stdout, map);
-		int code = tui.run();		
+		int code = ERR_OK;
+		// Properly close print streams when closing the program
+		// https://www.securecoding.cert.org/confluence/display/java/FIO14-J.+Perform+proper+cleanup+at+program+termination
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				assistant.stop();
+				stdout.close();
+			}
+		}));
+		stdout.print(getCliHeader());
+		if (map.hasOption("web"))
+		{
+			// Start ParkBench's web interface
+			ParkbenchServer server = new ParkbenchServer(map, new_lab, assistant);
+			stdout.print("Server started on " + server.getServerName() + ":" + server.getServerPort() + "\n");
+			server.startServer();
+			while (true)
+			{
+				Experiment.wait(10000);
+			}
+		}
+		else
+		{
+			// Start ParkBench's text interface
+			ParkbenchTui tui = new ParkbenchTui(new_lab, assistant, stdout, map);
+			code = tui.run();
+		}
 		stdout.close();
 		System.exit(code);
 	}
-		
+
 	/**
 	 * Checks whether the environment for running the experiments in this lab
 	 * is appropriate. Override this method if you want to check that some
@@ -404,7 +434,7 @@ public abstract class Laboratory
 	{
 		return true;
 	}
-	
+
 	/**
 	 * Sets up the command-line parser to accept arguments specific to this
 	 * lab. Your lab should override this method if you wish to receive custom
@@ -417,7 +447,7 @@ public abstract class Laboratory
 	{
 		return;
 	}
-	
+
 	/**
 	 * Sets up the experiments and plots that this lab will contain. You
 	 * <em>must</em> implement this method and add at least one experiment
@@ -429,7 +459,7 @@ public abstract class Laboratory
 	 *   and read their values.
 	 */
 	public abstract void setupExperiments(ArgumentMap map);
-	
+
 	/**
 	 * Counts the number of "parkmips" of this system. This is a very rough
 	 * indicator of the system's speed, measured in the number of increments
@@ -449,5 +479,19 @@ public abstract class Laboratory
 		}
 		return (float) i / 5061974f;
 	}
+
+	public static void main(String[] args)
+	{
+		System.out.println(getCliHeader());
+		System.out.println("You are running parkbench.jar, which is only a library to create\nyour own test suites. As a result nothing will happen here. Read the \nonline documentation to learn how to use ParkBench.");
+	}
 	
+	protected static String getCliHeader()
+	{
+		String out = "";
+		out += "ParkBench " + s_versionString + " - A versatile environment for running experiments\n";
+		out += "(C) 2015-2016 Laboratoire d'informatique formelle\n";
+		return out;
+	}
+
 }

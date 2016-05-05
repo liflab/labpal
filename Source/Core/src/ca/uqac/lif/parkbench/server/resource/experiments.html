@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="jquery-1.12.3.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="screen.css" />
+<title>Experiments - ParkBench</title>
+</head>
+<body>
+<h1>Experiments</h1>
+
+<p>In this page, you will find all the experiments that have been created for this lab.</p>
+
+<h2>Filter</h2>
+
+<p>The filter</p>
+
+<h2>Current view</h2>
+
+<form name="experiments" method="post" action="queue">
+{%EXP_LIST%}
+
+<div>
+<input type="submit" value="Add to queue" />
+</div>
+</form>
+
+<ul>
+<li><a href="experiments">Experiments</a></li>
+<li><a href="assistant">Lab assistant</a></li>
+<li><a href="plots">Plots</a></li>
+</ul>
+</body>
+</html>

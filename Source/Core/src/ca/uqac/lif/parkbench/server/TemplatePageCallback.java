@@ -1,5 +1,11 @@
 package ca.uqac.lif.parkbench.server;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -10,32 +16,26 @@ import ca.uqac.lif.parkbench.PackageFileReader;
 
 public class TemplatePageCallback extends ParkBenchCallback
 {
-	protected String m_pagePrefix;
+	protected static final transient String s_path = "resource";
 	
-	protected static final String s_path = "resource";
+	protected static final transient Pattern s_pattern = Pattern.compile("\\{!(.*?)!\\}");
 
 	public TemplatePageCallback(String prefix, Laboratory lab, LabAssistant assistant)
 	{
-		super(lab, assistant);
-		m_pagePrefix = prefix;
-	}
-
-	@Override
-	public boolean fire(HttpExchange h)
-	{
-		return h.getRequestURI().getPath().startsWith(m_pagePrefix);
+		super(prefix, lab, assistant);
 	}
 
 	@Override
 	public CallbackResponse process(HttpExchange t)
 	{
 		CallbackResponse response = new CallbackResponse(t);
+		Map<String,String> params = getParameters(t);
 		//Give the right content-type to the browser by giving it what it's looking for
 		Headers headers = t.getRequestHeaders();
 		String accept_Header = headers.get("Accept").get(0);
 		response.setContentType(accept_Header.split(",")[0]);
 		// Read file and put into response
-		String filename = s_path + m_pagePrefix + ".html";
+		String filename = s_path + m_path + ".html";
 		System.out.println("Reading " + filename);
 		String file_contents = PackageFileReader.readPackageFile(ParkbenchServer.class, filename);
 		
@@ -44,12 +44,34 @@ public class TemplatePageCallback extends ParkBenchCallback
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
-		response.setContents(render(file_contents));
+		response.setContents(render(file_contents, params));
 		response.setCode(CallbackResponse.HTTP_OK);
 		return response;
 	}
 	
-	public String render(String s)
+	public final String render(String s, Map<String,String> params)
+	{
+		Matcher mat = s_pattern.matcher(s);
+		Set<String> includes = new HashSet<String>();
+		while (mat.find())
+		{
+			includes.add(mat.group(1));
+		}
+		for (String filename : includes)
+		{
+			String file_contents = PackageFileReader.readPackageFile(ParkbenchServer.class, s_path + "/" + filename);
+			if (file_contents == null)
+				continue;
+			s = s.replace("{!" + filename + "!}", file_contents);
+		}
+		s = fill(s, params);
+		s = s.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
+		s = s.replaceAll("\\{%LAB_NAME%\\}", m_lab.getTitle());
+		s = s.replaceAll("\\{%.*?%\\}", "");
+		return s;
+	}
+	
+	protected String fill(String s, Map<String,String> params)
 	{
 		return s;
 	}

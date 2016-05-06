@@ -1,21 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-<script type="text/javascript" src="jquery-1.12.3.min.js"></script>
-<link rel="stylesheet" type="text/css" media="screen" href="screen.css" />
-<title>Experiment {%EXP_NB%} - ParkBench</title>
-</head>
-<body>
-<h1>Experiment {%EXP_NB%}</h1>
+{!header.inc.html!}
 
-<h2>Status</h2>
+<h2>About experiment #{%EXP_NB%}</h2>
 
-TODO
+<table>
+<tr><th>Status:</th><td>{%EXP_STATUS%}</td></tr>
+<tr><th>Started on:</th><td>{%EXP_START%}</td></tr>
+<tr><th>Ended on:</th><td>{%EXP_END%}</td></tr>
+<tr><th>Duration:</th><td>{%EXP_DURATION%}</td></tr>
+<tr><th>Executed by:</th><td>{%EXP_BY%}</td></tr>
+</table>
 
-<ul>
-<li><a href="experiments">Experiments</a></li>
-<li><a href="assistant">Lab assistant</a></li>
-<li><a href="plots">Plots</a></li>
-</ul>
-</body>
-</html>
+<h2>Experiment data</h2>
+
+{%EXP_DATA%}
+
+{!footer.inc.html!}

@@ -88,7 +88,7 @@ public abstract class Laboratory
 	/**
 	 * A counter for auto-incrementing experiment IDs
 	 */
-	private static transient int s_idCounter = 0;
+	private static transient int s_idCounter = 1;
 
 	/**
 	 * The serializer used to save/load the assistant's status

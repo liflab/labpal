@@ -45,7 +45,7 @@ public abstract class Plot
 	/**
 	 * A counter for auto-incrementing plot IDs
 	 */
-	protected static int s_idCounter = 0;
+	protected static int s_idCounter = 1;
 	
 	/**
 	 * The symbol used to separate data values in a file

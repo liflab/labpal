@@ -1,5 +1,7 @@
 package ca.uqac.lif.parkbench.server;
 
+import java.util.Map;
+
 import ca.uqac.lif.parkbench.Experiment;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
@@ -12,10 +14,11 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	}
 	
 	@Override
-	public String render(String page)
+	public String fill(String page, Map<String,String> params)
 	{
-		String out = page.replaceAll("\\{%LAB_NAME%\\}", m_lab.getTitle());
+		String out = page.replaceAll("\\{%TITLE%\\}", "Experiments");
 		out = out.replaceAll("\\{%EXP_LIST%\\}", getExperimentList());
+		out = out.replaceAll("\\{%SEL_EXPERIMENTS%\\}", "selected");
 		return out;
 	}
 	

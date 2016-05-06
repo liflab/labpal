@@ -1,3 +1,147 @@
-html {
-  background: url('graph-paper.png');
+html, body {
+  font-family: Tahoma, sans-serif;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+
+.text-only {
+  display: none;
+}
+
+#content {
+  border: solid 1px darkgrey;
+  margin: 20px;
+  margin-top: 104px;
+  background: url('images/graph-paper-50.png');
+  padding: 8px;
+  padding-bottom: 44px;
+}
+
+h1 {
+  margin-top: 0px;
+}
+
+#top-menu {
+  position: fixed;
+  top: 0px;
+  margin: 0px;
+  width: 100%;
+  height: 80px;
+  border-bottom: solid 4px darkgrey;
+  background: #eee;
+}
+
+#top-menu ul {
+  list-style-type: none;
+  margin: 0px;
+  margin-top: 12px;
+}
+
+#top-menu ul li {
+  display: inline-block;
+  margin: 0px;
+  margin-right: 8px;
+  padding: 4px;
+  border: solid 1px #d8d8d8;
+  border-radius: 4px;
+}
+
+#top-menu ul li:hover {
+  background: white;
+  border-color: #ccc;
+}
+
+#top-menu ul li a {
+  text-decoration: none;
+  color: #222;
+  height: 48px;
+  line-height: 48px;
+  display: inline-block;
+}
+
+#top-menu ul li.selected {
+  color: #422;
+  background: white;
+}
+
+
+#top-menu-home {
+  background: url('images/home-48.png') left center no-repeat;
+  padding-left: 56px;
+}
+
+#top-menu-experiments {
+  background: url('images/erlenmeyer-48.png') left center no-repeat;
+  padding-left: 56px;
+}
+
+#top-menu-assistant {
+  background: url('images/assistant-48.png') left center no-repeat;
+  padding-left: 32px;
+}
+
+#top-menu-plots {
+  background: url('images/graph-48.png') left center no-repeat;
+  padding-left: 56px;
+}
+
+#footer {
+  position: fixed;
+  height: 24px;
+  line-height: 24px;
+  border-top: solid 4px darkgrey;
+  bottom: 0px;
+  width: 100%;
+  background: #eee;
+  padding: 8px;
+  font-size: 80%;
+}
+
+#footer a {
+  text-decoration: none;
+  color: #444;
+}
+
+.btn {
+  border: solid 1px darkgrey;
+  border-radius: 4px;
+  height: 48px;
+  line-height: 56px;
+  background: #e0e0e0;
+  padding: 4px;
+  display: inline-block;
+  text-decoration: none;
+  color: #222;
+}
+
+.btn:hover {
+  background-color: #e8e8e8;
+}
+
+#btn-download {
+  background: #e0e0e0 url('images/download-48.png') 4px 4px no-repeat;
+  padding-left: 56px;
+}
+
+#btn-upload {
+  background: #e0e0e0 url('images/upload-48.png') 4px 4px no-repeat;
+  padding-left: 56px;
+}
+
+.json-table th {
+  text-align: left;
+  background: #ccc;
+  margin: 2px;
+  padding: 2px;
+  border-radius: 2px;
+}
+
+.json-table td {
+  margin: 2px;
+  padding: 2px;
+}
+
+table th {
+  text-align: left;
 }

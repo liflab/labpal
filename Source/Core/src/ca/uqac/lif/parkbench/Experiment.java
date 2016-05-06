@@ -17,6 +17,8 @@
 */
 package ca.uqac.lif.parkbench;
 
+import java.util.Set;
+
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonMap;
@@ -473,7 +475,7 @@ public abstract class Experiment implements Runnable
 	 * @return The element; null if the path cannot be found in either the
 	 *   input or the output parameters
 	 */
-	protected final JsonElement read(String path)
+	public final JsonElement read(String path)
 	{
 		JsonElement e = null;
 		e = JsonPath.get(m_inputParameters, path);
@@ -507,5 +509,14 @@ public abstract class Experiment implements Runnable
 	public String toString()
 	{
 		return m_inputParameters.toString();
+	}
+	
+	/**
+	 * Gets the set of all input parameter <em>names</em>
+	 * @return The set of names
+	 */
+	public final Set<String> getInputKeys()
+	{
+		return m_inputParameters.keySet();
 	}
 }

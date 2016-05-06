@@ -145,3 +145,12 @@ h1 {
 table th {
   text-align: left;
 }
+
+table tr:hover td {
+  background-color: rgba(255, 255, 0, 128);
+}
+
+table.exp-table td.exp-chk {
+  background: url('images/erlenmeyer-16.png') left center no-repeat;
+  padding-left: 20px;
+}

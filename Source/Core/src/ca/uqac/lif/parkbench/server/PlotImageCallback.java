@@ -38,6 +38,12 @@ public class PlotImageCallback extends ParkBenchCallback
 			response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
 			return response;
 		}
+		if (!Plot.isGnuplotPresent())
+		{
+			// Asking for an image, but Gnuplot not available: stop right here
+			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+			return response;
+		}
 		Terminal term = Terminal.PNG;
 		response.setContentType(ContentType.PNG);
 		if (params.get("format").compareToIgnoreCase("pdf") == 0)

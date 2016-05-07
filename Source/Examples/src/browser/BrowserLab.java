@@ -20,8 +20,8 @@ public class BrowserLab extends Laboratory
 		.useForY("share", "Share").groupBy("market")
 		.setTitle("My bar plot").assignTo(this);
 		BarPlot stacked_plot = new BarPlot();
-		stacked_plot.rowStacked().useForX("market", "Browser")
-		.useForY("share", "Share").groupBy("browser")
+		stacked_plot.rowStacked().useForX("browser", "Browser")
+		.useForY("share", "Share").groupBy("market")
 		.setTitle("My bar plot").assignTo(this);
 
 		add(new BrowserExperiment("IE", "video", 30), plot, stacked_plot);

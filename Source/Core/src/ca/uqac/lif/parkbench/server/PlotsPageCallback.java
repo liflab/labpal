@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
+import ca.uqac.lif.parkbench.Plot;
 
 
 public class PlotsPageCallback extends TemplatePageCallback
@@ -23,7 +24,14 @@ public class PlotsPageCallback extends TemplatePageCallback
 	public String fill(String page, Map<String,String> params)
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", "Plots");
-		out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
+		if (Plot.isGnuplotPresent())
+		{
+			out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
+		}
+		else
+		{
+			out = out.replaceAll("\\{%PLOTS%\\}", "<p>Gnuplot was not detected on this system. The plot functionality is disabled.</p>");
+		}
 		out = out.replaceAll("\\{%SEL_PLOTS%\\}", "selected");
 		return out;
 	}

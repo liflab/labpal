@@ -249,4 +249,13 @@ public abstract class Plot
 		out.append("set terminal ").append(getTerminalName(term)).append("\n");
 		return out;
 	}
+	
+	/**
+	 * Checks if Gnuplot is present in the system
+	 * @return true if Gnuplot is present, false otherwise
+	 */
+	public static boolean isGnuplotPresent()
+	{
+		return s_gnuplotPresent;
+	}
 }

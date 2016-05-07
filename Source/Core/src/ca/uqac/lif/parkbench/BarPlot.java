@@ -106,7 +106,7 @@ public class BarPlot extends TwoDeePlot
 	public String toGnuplot(Terminal term, String lab_title)
 	{
 		Vector<String> series = m_table.getSeriesNames();
-		String csv_values = m_table.toCsv(series, true);
+		String csv_values = m_table.toCsv(series, false);
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
 		out.append(getHeader(term, lab_title));

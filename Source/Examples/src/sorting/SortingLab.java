@@ -38,7 +38,8 @@ public class SortingLab extends Laboratory
 		plot.withLines()
 			.useForX("size", "List size")
 			.useForY("time", "Time (ms)")
-			.groupBy("name");
+			.groupBy("name")
+			.setTitle("Comparison of sorting algorithms");
 		plot.assignTo(this);
 
 		// Initialize experiments

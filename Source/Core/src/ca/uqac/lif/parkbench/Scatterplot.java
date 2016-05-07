@@ -115,7 +115,7 @@ public class Scatterplot extends TwoDeePlot
 				out.append(", ");
 			}
 			String s_name = series.get(i);
-			out.append(" '-' using 0:").append(i + 1).append(" title '").append(s_name).append("'").append(point_string);
+			out.append(" '-' using 1:").append(i + 2).append(" title '").append(s_name).append("'").append(point_string);
 		}
 		out.append("\n");
 		// In Gnuplot, if we use the special "-" filename, we must repeat

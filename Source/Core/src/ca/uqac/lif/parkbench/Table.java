@@ -18,6 +18,7 @@
 package ca.uqac.lif.parkbench;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -231,7 +232,7 @@ public class Table
 				}
 			}
 		}
-		Collections.sort(values);
+		Collections.sort(values, new XComparator());
 		return values;
 	}
 
@@ -376,6 +377,26 @@ public class Table
 			return out.toString();
 		}
 
+	}
+	
+	protected class XComparator implements Comparator<String>
+	{
+
+		@Override
+		public int compare(String arg0, String arg1)
+		{
+			try
+			{
+				Float.parseFloat(arg0);
+				// We are comparing numbers
+				return Float.valueOf(arg0).compareTo(Float.valueOf(arg1));
+			}
+			catch (NumberFormatException nfe)
+			{
+				// We are comparing strings
+				return arg0.compareTo(arg1);
+			}
+		}
 	}
 
 }

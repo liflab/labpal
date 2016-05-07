@@ -45,6 +45,11 @@ public class PlotImageCallback extends ParkBenchCallback
 			term = Terminal.PDF;
 			response.setContentType(ContentType.PDF);
 		}
+		if (params.get("format").compareToIgnoreCase("dumb") == 0)
+		{
+			term = Terminal.DUMB;
+			response.setContentType(ContentType.TEXT);
+		}
 		byte[] image = p.getImage(term);
 		if (image == null)
 		{

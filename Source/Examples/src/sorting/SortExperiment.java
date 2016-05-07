@@ -42,6 +42,7 @@ public abstract class SortExperiment extends Experiment
 		super();
 		setInput("name", name);
 		setInput("size", size);
+		setDescription("Sorts an array of size " + size + " with " + name);
 	}
 	
 	@Override

@@ -44,8 +44,16 @@ public class TemplatePageCallback extends ParkBenchCallback
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
-		response.setContents(render(file_contents, params));
-		response.setCode(CallbackResponse.HTTP_OK);
+		String contents = render(file_contents, params);
+		if (contents == null)
+		{
+			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+		}
+		else
+		{
+			response.setContents(contents);
+			response.setCode(CallbackResponse.HTTP_OK);
+		}
 		return response;
 	}
 	
@@ -65,6 +73,10 @@ public class TemplatePageCallback extends ParkBenchCallback
 			s = s.replace("{!" + filename + "!}", file_contents);
 		}
 		s = fill(s, params);
+		if (s == null)
+		{
+			return null;
+		}
 		s = s.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
 		s = s.replaceAll("\\{%LAB_NAME%\\}", m_lab.getTitle());
 		s = s.replaceAll("\\{%.*?%\\}", "");

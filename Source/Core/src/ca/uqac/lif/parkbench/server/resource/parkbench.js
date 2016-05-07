@@ -8,3 +8,7 @@ function select_all() {
     $("table.exp-table tr td input:checkbox").prop("checked", false);
   }
 }
+
+$(document).ready(function() {
+    $("table.exp-table").tablesorter();
+});

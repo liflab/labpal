@@ -75,6 +75,11 @@ public abstract class Experiment implements Runnable
 	private String m_errorMessage;
 	
 	/**
+	 * A short description for this experiment
+	 */
+	private String m_description;
+	
+	/**
 	 * The name of the lab assistant that ran the experiment (if any)
 	 */
 	private String m_runBy;
@@ -86,6 +91,7 @@ public abstract class Experiment implements Runnable
 		m_outputParameters = new JsonMap();
 		m_runBy = "";
 		m_status = Status.DUNNO;
+		m_errorMessage = "";
 	}
 	
 	public Experiment(JsonMap params)
@@ -142,6 +148,26 @@ public abstract class Experiment implements Runnable
 	public void cleanPrerequisites()
 	{
 		return;
+	}
+	
+	/**
+	 * Sets the description for this experiment
+	 * @param d The description
+	 * @return This experiment
+	 */
+	public final Experiment setDescription(String d)
+	{
+		m_description = d;
+		return this;
+	}
+	
+	/**
+	 * Gets the description for this experiment
+	 * @return The description
+	 */
+	public final String getDescription()
+	{
+		return m_description;
 	}
 	
 	/**
@@ -357,6 +383,7 @@ public abstract class Experiment implements Runnable
 		m_endTime = -1;
 		m_runBy = "";
 		m_status = Status.DUNNO;
+		m_errorMessage = "";
 	}
 	
 	/**

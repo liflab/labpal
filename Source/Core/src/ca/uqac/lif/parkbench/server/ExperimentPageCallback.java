@@ -29,6 +29,10 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			return "";
 		int experiment_nb = Integer.parseInt(params.get("id"));
 		Experiment e = m_lab.getExperiment(experiment_nb);
+		if (e == null)
+		{
+			return "";
+		}
 		String out = page.replaceAll("\\{%TITLE%\\}", "Experiment #" + experiment_nb);
 		out = out.replaceAll("\\{%EXP_NB%\\}", Integer.toString(experiment_nb));
 		out = out.replaceAll("\\{%EXP_START%\\}", formatDate(e.getStartTime()));
@@ -41,6 +45,12 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		out = out.replaceAll("\\{%EXP_BY%\\}", e.getWhoRan());
 		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters()).toString());
+		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", e.getDescription());
+		String error_msg = e.getErrorMessage();
+		if (!error_msg.isEmpty())
+		{
+			out = out.replaceAll("\\{%FAIL_MSG%\\}", "<h2>Error message</h2><pre>" + error_msg + "</pre>");
+		}
 		return out;
 	}
 	

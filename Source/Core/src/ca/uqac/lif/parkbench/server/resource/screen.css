@@ -115,8 +115,20 @@ h1 {
   color: #222;
 }
 
-.btn:hover {
+.btn:hover, .btn-24:hover {
   background-color: #e8e8e8;
+}
+
+.btn-24 {
+  border: solid 1px darkgrey;
+  border-radius: 4px;
+  height: 24px;
+  line-height: 24px;
+  background: #e0e0e0;
+  padding: 4px;
+  display: inline-block;
+  text-decoration: none;
+  color: #222;
 }
 
 #btn-download {
@@ -193,4 +205,42 @@ table.exp-table td {
 
 .status-icon.status-queued {
   background: url('images/status-queued-24.png') left center no-repeat;
+}
+
+.plot {
+  width: 340px;
+  height: 280px;
+  float: left;
+  margin: 20px;
+}
+
+.plot img {
+  width: 320px;
+  height: 240px;
+  border: solid 1px darkgrey;
+}
+
+.plot img:hover {
+  border: solid 1px blue;
+}
+
+.plot ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.plot ul li {
+  list-style-type: none;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.btn-pdf {
+  background: #e0e0e0 url('images/icon-pdf-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
+}
+
+.btn-gp {
+  background: #e0e0e0 url('images/graph-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
 }

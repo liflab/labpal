@@ -84,6 +84,7 @@ public abstract class Plot
 	Plot()
 	{
 		super();
+		m_title = "Untitled";
 		m_id = s_idCounter++;
 	}
 

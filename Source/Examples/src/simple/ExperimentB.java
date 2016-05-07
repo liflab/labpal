@@ -9,6 +9,7 @@ public class ExperimentB extends Experiment
 		super();
 		setInput("name", "Experiment B");
 		setInput("a", a);
+		setDescription("Simply returns as its output a linear function of its input parameter 'a'");
 	}
 
 	@Override

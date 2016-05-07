@@ -9,6 +9,7 @@ public class ExperimentA extends Experiment
 		super();
 		setInput("name", "Experiment A");
 		setInput("a", a);
+		setDescription("Simply returns as its output the value of its input parameter 'a'");
 	}
 
 	@Override

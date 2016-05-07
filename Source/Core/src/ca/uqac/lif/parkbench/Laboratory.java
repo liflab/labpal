@@ -58,6 +58,11 @@ public abstract class Laboratory
 	 * The title given to this lab
 	 */
 	private String m_title = "Untitled";
+	
+	/**
+	 * The lab's author
+	 */
+	private String m_author= "Fred Filntstone";
 
 	/**
 	 * The version string of this lab
@@ -113,13 +118,33 @@ public abstract class Laboratory
 		m_assistant = a;
 		return this;
 	}
+	
+	/**
+	 * Sets the lab's author
+	 * @param author The author's name
+	 * @return This lab
+	 */
+	public final Laboratory setAuthorName(String author)
+	{
+		m_author = author;
+		return this;
+	}
+	
+	/**
+	 * Gets the lab's author
+	 * @return The author's name
+	 */
+	public final String getAuthorName()
+	{
+		return m_author;
+	}
 
 	/**
 	 * Adds an experiment to the lab
 	 * @param e The experiment
 	 * @param plots Optional: a number of plots this experiment should be
 	 *   associated with
-	 * @return This assistant
+	 * @return This lab
 	 */
 	public Laboratory add(Experiment e, Plot ... plots)
 	{

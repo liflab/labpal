@@ -15,7 +15,7 @@ public class UnqueueCallback extends TemplatePageCallback
 	public UnqueueCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/unqueue", lab, assistant);
-		
+		setMethod(Method.POST);
 	}
 	
 	@Override

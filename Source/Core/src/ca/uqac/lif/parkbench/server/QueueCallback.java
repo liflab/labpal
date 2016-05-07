@@ -16,7 +16,7 @@ public class QueueCallback extends TemplatePageCallback
 	public QueueCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/queue", lab, assistant);
-		
+		setMethod(Method.POST);
 	}
 	
 	@Override

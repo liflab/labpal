@@ -6,9 +6,12 @@
 <tr><th>Estimated time left working:</th><td>{%TIME_ESTIMATE%}</td></tr>
 </table>
 
+{%BTN_START%}
+{%BTN_STOP%}
+
 <h2>Experiments in queue</h2>
 
-<form name="experiments" method="get" action="unqueue">
+<form name="experiments" method="post" action="unqueue">
 {%EXP_LIST%}
 
 <div>

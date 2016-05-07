@@ -19,7 +19,9 @@ package ca.uqac.lif.parkbench;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -125,6 +127,24 @@ public class Table
 	 */
 	public String toCsv(Vector<String> series, boolean transposed)
 	{
+		Vector<String> x_values = getXValues();
+		Tabular t = getValues(series, x_values);
+		if (transposed)
+		{
+			t.transpose();
+		}
+		return t.toCsv();
+	}
+	
+	/**
+	 * Returns the contents of the table as a CSV string.
+	 * @param series The list of the column headers
+	 * @return A CSV string
+	 */
+	public String toCsv(boolean transposed)
+	{
+		Vector<String> series = new Vector<String>();
+		series.add("");
 		Vector<String> x_values = getXValues();
 		Tabular t = getValues(series, x_values);
 		if (transposed)
@@ -397,6 +417,17 @@ public class Table
 				return arg0.compareTo(arg1);
 			}
 		}
+	}
+	
+	public Map<String,Float> getTotalY()
+	{
+		Map<String,Float> out = new HashMap<String,Float>();
+		for (String series_name : m_seriesNames)
+		{
+			
+		}
+		return out;
+		
 	}
 
 }

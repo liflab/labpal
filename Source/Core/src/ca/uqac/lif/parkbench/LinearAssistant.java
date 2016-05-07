@@ -18,6 +18,8 @@
 package ca.uqac.lif.parkbench;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import ca.uqac.lif.parkbench.Experiment.Status;
 
@@ -189,6 +191,17 @@ public class LinearAssistant extends LabAssistant
 	public boolean isRunning()
 	{
 		return !m_stop;
+	}
+
+	@Override
+	public List<Integer> getCurrentQueue()
+	{
+		List<Integer> out = new LinkedList<Integer>();
+		for (Experiment e : m_queue)
+		{
+			out.add(e.getId());
+		}
+		return out;
 	}
 
 }

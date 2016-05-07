@@ -1,5 +1,7 @@
 package ca.uqac.lif.parkbench;
 
+import java.util.List;
+
 /**
  * A lab assistant is in charge of running a set of experiments according
  * to a queue.
@@ -72,6 +74,12 @@ public abstract class LabAssistant implements Runnable
 	 * @return True if the experiment is waiting in the queue, false otherwise
 	 */
 	public abstract boolean isQueued(int id);
+	
+	/**
+	 * Gets the list of experiments that are currently queued
+	 * @return The list of experiment IDs
+	 */
+	public abstract List<Integer> getCurrentQueue(); 
 	
 	/**
 	 * Interrupts the execution of the current experiment. If experiments

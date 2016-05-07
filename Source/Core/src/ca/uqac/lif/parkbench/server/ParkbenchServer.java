@@ -23,6 +23,11 @@ public class ParkbenchServer extends InnerFileServer
 		registerCallback(0, new IndexPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentsPageCallback(lab, assistant));
+		registerCallback(0, new AssistantPageCallback(lab, assistant));
+		registerCallback(0, new PlotsPageCallback(lab, assistant));
+		registerCallback(0, new DownloadCallback(lab, assistant));
+		registerCallback(0, new QueueCallback(lab, assistant));
+		registerCallback(0, new UnqueueCallback(lab, assistant));
 	}
 	
 	public static void setupCli(CliParser parser)

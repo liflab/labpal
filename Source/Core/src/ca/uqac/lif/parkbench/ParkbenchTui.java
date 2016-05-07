@@ -766,7 +766,7 @@ public class ParkbenchTui
 		printer.print("\n");
 	}
 	
-	protected static String formatEta(float n)
+	public static String formatEta(float n)
 	{
 		if (n < 90)
 		{

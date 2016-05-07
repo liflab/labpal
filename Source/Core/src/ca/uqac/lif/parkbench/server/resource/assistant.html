@@ -1,0 +1,20 @@
+{!header.inc.html!}
+
+<h2>About {%ASSISTANT_NAME%}</h2>
+
+<table>
+<tr><th>Estimated time left working:</th><td>{%TIME_ESTIMATE%}</td></tr>
+</table>
+
+<h2>Experiments in queue</h2>
+
+<form name="experiments" method="get" action="unqueue">
+{%EXP_LIST%}
+
+<div>
+<input type="submit" value="Remove from queue" />
+</div>
+</form>
+
+
+{!footer.inc.html!}

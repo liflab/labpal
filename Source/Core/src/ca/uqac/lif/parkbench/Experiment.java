@@ -308,7 +308,7 @@ public abstract class Experiment implements Runnable
 	 * laboratory, and should not be used for anything meaningful.
 	 * @return The ID
 	 */
-	final int getId()
+	public final int getId()
 	{
 		return m_id;
 	}
@@ -319,7 +319,7 @@ public abstract class Experiment implements Runnable
 	 *   between the start time and midnight, January 1, 1970 UTC. The
 	 *   value is -1 if the experiment has not started yet.
 	 */
-	final long getStartTime()
+	public final long getStartTime()
 	{
 		return m_startTime;
 	}
@@ -331,7 +331,7 @@ public abstract class Experiment implements Runnable
 	 *   value is -1 if the experiment has not started yet or is still
 	 *   running.
 	 */
-	final long getEndTime()
+	public final long getEndTime()
 	{
 		return m_endTime;
 	}
@@ -340,7 +340,7 @@ public abstract class Experiment implements Runnable
 	 * Gets the name of the lab assistant that ran the experiment
 	 * @return The name, or the empty string if the experiment has not run yet
 	 */
-	final String getWhoRan()
+	public final String getWhoRan()
 	{
 		return m_runBy;
 	}
@@ -518,5 +518,5 @@ public abstract class Experiment implements Runnable
 	public final Set<String> getInputKeys()
 	{
 		return m_inputParameters.keySet();
-	}
+	}	
 }

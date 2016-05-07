@@ -1,5 +1,7 @@
 package ca.uqac.lif.parkbench.server;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import ca.uqac.lif.json.JsonElement;
@@ -9,9 +11,12 @@ import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.parkbench.Experiment;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
+import ca.uqac.lif.parkbench.ParkbenchTui;
 
 public class ExperimentPageCallback extends TemplatePageCallback
 {
+	protected static final SimpleDateFormat s_dateFormat = new SimpleDateFormat();
+	
 	public ExperimentPageCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/experiment", lab, assistant);
@@ -26,8 +31,26 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		Experiment e = m_lab.getExperiment(experiment_nb);
 		String out = page.replaceAll("\\{%TITLE%\\}", "Experiment #" + experiment_nb);
 		out = out.replaceAll("\\{%EXP_NB%\\}", Integer.toString(experiment_nb));
+		out = out.replaceAll("\\{%EXP_START%\\}", formatDate(e.getStartTime()));
+		out = out.replaceAll("\\{%EXP_END%\\}", formatDate(e.getEndTime()));
+		out = out.replaceAll("\\{%EXP_STATUS%\\}", ExperimentsPageCallback.getStatusLabel(m_assistant, e));
+		out = out.replaceAll("\\{%EXP_ESTIMATE%\\}", ParkbenchTui.formatEta(e.getDurationEstimate(Laboratory.s_parkMips)));
+		if (e.getEndTime() > 0)
+		{
+			out = out.replaceAll("\\{%EXP_DURATION%\\}", Long.toString(e.getEndTime() - e.getStartTime()));
+		}
+		out = out.replaceAll("\\{%EXP_BY%\\}", e.getWhoRan());
 		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters()).toString());
 		return out;
+	}
+	
+	protected static String formatDate(long timestamp)
+	{
+		if (timestamp < 0)
+		{
+			return "";
+		}
+		return s_dateFormat.format(new Date(timestamp));
 	}
 	
 	public static StringBuilder renderHtml(JsonElement e)

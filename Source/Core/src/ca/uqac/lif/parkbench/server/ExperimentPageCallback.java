@@ -33,6 +33,14 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		{
 			return "";
 		}
+		if (params.containsKey("reset"))
+		{
+			e.reset();
+		}
+		if (params.containsKey("clean"))
+		{
+			e.clean();
+		}
 		String out = page.replaceAll("\\{%TITLE%\\}", "Experiment #" + experiment_nb);
 		out = out.replaceAll("\\{%EXP_NB%\\}", Integer.toString(experiment_nb));
 		out = out.replaceAll("\\{%EXP_START%\\}", formatDate(e.getStartTime()));
@@ -41,10 +49,10 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%EXP_ESTIMATE%\\}", ParkbenchTui.formatEta(e.getDurationEstimate(Laboratory.s_parkMips)));
 		if (e.getEndTime() > 0)
 		{
-			out = out.replaceAll("\\{%EXP_DURATION%\\}", Long.toString(e.getEndTime() - e.getStartTime()));
+			out = out.replaceAll("\\{%EXP_DURATION%\\}", ParkbenchTui.formatEta((e.getEndTime() - e.getStartTime()) / 1000f));
 		}
 		out = out.replaceAll("\\{%EXP_BY%\\}", e.getWhoRan());
-		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters()).toString());
+		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters(), "", e).toString());
 		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", e.getDescription());
 		String error_msg = e.getErrorMessage();
 		if (!error_msg.isEmpty())
@@ -63,7 +71,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		return s_dateFormat.format(new Date(timestamp));
 	}
 	
-	public static StringBuilder renderHtml(JsonElement e)
+	public static StringBuilder renderHtml(JsonElement e, String path, Experiment exp)
 	{
 		StringBuilder out = new StringBuilder();
 		if (e instanceof JsonString)
@@ -80,10 +88,25 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			out.append("<table class=\"json-table\">\n");
 			for (String k : m.keySet())
 			{
-				out.append("<tr><th>").append(k).append("</th>");
+				String path_append = "";
+				if (!path.isEmpty())
+				{
+					path_append += ".";
+				}
+				path_append += k;
+				out.append("<tr>");
+				String p_desc = exp.getDescription(path_append);
+				if (p_desc.isEmpty())
+				{
+					out.append("<th>").append(k).append("</th>");
+				}
+				else
+				{
+					out.append("<th class=\"with-desc\" title=\"").append(p_desc).append("\">").append(k).append("</th>");
+				}
 				out.append("<td>");
 				JsonElement v = m.get(k);
-				out.append(renderHtml(v));
+				out.append(renderHtml(v, path_append, exp));
 				out.append("</td></tr>\n");
 			}
 			out.append("</table>\n");

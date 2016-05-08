@@ -424,7 +424,11 @@ public class Table
 		Map<String,Float> out = new HashMap<String,Float>();
 		for (String series_name : m_seriesNames)
 		{
-			
+			out.put(series_name, 0f);
+		}
+		for (Experiment e : m_experiments)
+		{
+			// TODO
 		}
 		return out;
 		

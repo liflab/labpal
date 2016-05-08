@@ -35,11 +35,14 @@ public abstract class SortExperiment extends Experiment
 	SortExperiment()
 	{
 		super();
+		describe("name", "Name of the sorting algorithm");
+		describe("size", "Size of the array to sort");
+		describe("time", "Sorting time (in ms)");
 	}
 	
 	public SortExperiment(String name, int size)
 	{
-		super();
+		this();
 		setInput("name", name);
 		setInput("size", size);
 		setDescription("Sorts an array of size " + size + " with " + name);

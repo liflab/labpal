@@ -142,12 +142,37 @@ h1 {
 }
 
 #btn-start {
-  background: #e0e0e0 url('images/running-32.png') 4px 4px no-repeat;
+  background: #e0e0e0 url('images/running-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 #btn-stop {
-  background: #e0e0e0 url('images/abort-32.png') 4px 4px no-repeat;
+  background: #e0e0e0 url('images/abort-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
+.btn-queue {
+  background: #e0e0e0 url('images/queue-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
+.btn-unqueue {
+  background: #e0e0e0 url('images/remove-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
+.btn-reset {
+  background: #e0e0e0 url('images/reset-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
+.btn-clean {
+  background: #e0e0e0 url('images/clean-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
+.btn-clean {
+  background: #e0e0e0 url('images/clean-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
@@ -243,4 +268,24 @@ table.exp-table td {
 .btn-gp {
   background: #e0e0e0 url('images/graph-24.png') 4px 4px no-repeat;
   padding-left: 32px;
+}
+
+.with-desc {
+  cursor: help;
+}
+
+.message {
+  background: white url('images/info-32.png') left center no-repeat;
+  padding-left: 40px;
+  border: solid 1px darkgrey;
+  border-radius: 4px;
+  min-height: 48px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.message span {
+  margin: auto;
+  display: block;
+  margin: 6px;
 }

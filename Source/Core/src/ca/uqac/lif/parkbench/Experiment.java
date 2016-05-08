@@ -17,6 +17,8 @@
 */
 package ca.uqac.lif.parkbench;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import ca.uqac.lif.json.JsonElement;
@@ -60,6 +62,11 @@ public abstract class Experiment implements Runnable
 	private int m_id;
 	
 	/**
+	 * Association of experiment parameters with a short textual description 
+	 */
+	private transient Map<String,String> m_parameterDescriptions;
+	
+	/**
 	 * The start time of the experiment
 	 */
 	private long m_startTime = -1;
@@ -89,6 +96,7 @@ public abstract class Experiment implements Runnable
 		super();
 		m_inputParameters = new JsonMap();
 		m_outputParameters = new JsonMap();
+		m_parameterDescriptions = new HashMap<String,String>();
 		m_runBy = "";
 		m_status = Status.DUNNO;
 		m_errorMessage = "";
@@ -372,6 +380,17 @@ public abstract class Experiment implements Runnable
 	}
 	
 	/**
+	 * Sets the name of the lab assistant that ran the experiment
+	 * @param name The name of the assistant that ran the experiment
+	 * @return This experiment
+	 */
+	public final Experiment setWhoRan(String name)
+	{
+		m_runBy = name;
+		return this;
+	}
+	
+	/**
 	 * Resets the experiment. This puts the experiment in the same state as if
 	 * it were not run. However, if prerequisites were generated, they are not
 	 * deleted. Use {@link #clean()} to do so.
@@ -545,5 +564,33 @@ public abstract class Experiment implements Runnable
 	public final Set<String> getInputKeys()
 	{
 		return m_inputParameters.keySet();
-	}	
+	}
+	
+	/**
+	 * Sets a textual description for a parameter of the experiment
+	 * @param path The XPath corresponding to the parameter's location
+	 *   in the JSON structure
+	 * @param text The textual description
+	 * @return This experiment
+	 */
+	public final Experiment describe(String path, String text)
+	{
+		m_parameterDescriptions.put(path, text);
+		return this;
+	}
+	
+	/**
+	 * Gets the textual description for a parameter of the experiment
+	 * @param path The XPath corresponding to the parameter's location
+	 *   in the JSON structure
+	 * @return The textual description
+	 */
+	public final String getDescription(String path)
+	{
+		if (!m_parameterDescriptions.containsKey(path))
+		{
+			return "";
+		}
+		return m_parameterDescriptions.get(path);
+	}
 }

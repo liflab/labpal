@@ -85,6 +85,7 @@ public class LinearAssistant extends LabAssistant
 			{
 				// Experiment not started: start
 				m_experimentThread = new Thread(e);
+				e.setWhoRan(m_name);
 				m_experimentThread.start();					
 				while (m_experimentThread.isAlive() && !m_stop)
 				{

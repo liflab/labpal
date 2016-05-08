@@ -1,13 +1,17 @@
 {!header.inc.html!}
 
+{%MESSAGE%}
+
 <h2>About {%ASSISTANT_NAME%}</h2>
 
 <table>
 <tr><th>Estimated time left working:</th><td>{%TIME_ESTIMATE%}</td></tr>
 </table>
 
+<form name="assistant" method="post" action="assistant">
 {%BTN_START%}
 {%BTN_STOP%}
+</form>
 
 <h2>Experiments in queue</h2>
 
@@ -15,7 +19,10 @@
 {%EXP_LIST%}
 
 <div>
-<input type="submit" value="Remove from queue" />
+<p>With selected experiments&hellip;</p>
+<input class="btn btn-unqueue" type="submit" value="Remove from queue" />
+<input class="btn btn-reset" type="submit" value="Reset" />
+<input class="btn btn-clean" type="submit" value="Clean" />
 </div>
 </form>
 

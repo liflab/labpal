@@ -1,6 +1,7 @@
 package ca.uqac.lif.parkbench.server;
 
 import ca.uqac.lif.jerrydog.InnerFileServer;
+import ca.uqac.lif.jerrydog.RequestCallback;
 import ca.uqac.lif.parkbench.CliParser;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.LabAssistant;
@@ -27,6 +28,15 @@ public class ParkbenchServer extends InnerFileServer
 		registerCallback(0, new PlotsPageCallback(lab, assistant));
 		registerCallback(0, new PlotImageCallback(lab, assistant));
 		registerCallback(0, new DownloadCallback(lab, assistant));
+		registerCallback(0, new LoadCallback(lab, assistant));
+	}
+	
+	public void changeLab(Laboratory lab)
+	{
+		for (RequestCallback cb : m_callbacks)
+		{
+			
+		}
 	}
 	
 	public static void setupCli(CliParser parser)

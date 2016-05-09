@@ -5,7 +5,6 @@ import java.util.Map;
 import ca.uqac.lif.parkbench.Experiment;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
-import ca.uqac.lif.parkbench.Experiment.Status;
 
 public class IndexPageCallback extends TemplatePageCallback
 {

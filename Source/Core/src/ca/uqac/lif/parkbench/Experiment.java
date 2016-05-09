@@ -593,4 +593,15 @@ public abstract class Experiment implements Runnable
 		}
 		return m_parameterDescriptions.get(path);
 	}
+	
+	/**
+	 * Interrupts the experiment
+	 * @return This experiment
+	 */
+	public final Experiment interrupt()
+	{
+		m_status = Status.FAILED;
+		m_errorMessage = "The experiment was manually interrupted";
+		return this;
+	}
 }

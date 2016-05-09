@@ -111,6 +111,13 @@ public class LinearAssistant extends LabAssistant
 				m_queue.remove(0);
 			}
 		}
+		// If some experiment is running, interrupt it
+		m_experimentThread.stop();
+		if (!m_queue.isEmpty())
+		{
+			Experiment e = m_queue.get(0);
+			e.interrupt();
+		}
 	}
 
 	@Override

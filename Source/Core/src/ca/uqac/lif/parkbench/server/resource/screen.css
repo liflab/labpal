@@ -289,3 +289,51 @@ table.exp-table td {
   display: block;
   margin: 6px;
 }
+
+#progress-bar {
+  border: solid 1px darkgrey;
+  height: 16px;
+  width: auto;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 12pt;
+  margin-right: 12pt;
+  float: left;
+}
+
+#progress-bar li {
+  float: left;
+  display: block;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+#progress-bar .done {
+  background-color: green;
+}
+
+#progress-bar .done:hover {
+  background-color: lightgreen;
+}
+
+#progress-bar .queued {
+  background-color: gray;
+}
+
+#progress-bar .queued:hover {
+  background-color: lightgray;
+}
+
+#progress-bar .failed {
+  background-color: red;
+}
+
+#progress-bar .failed:hover {
+  background-color: #f88;
+}
+
+#progress-bar .other {
+  background-color: white;
+}

@@ -48,6 +48,21 @@ import ca.uqac.lif.parkbench.plot.Table.Tabular;
  */
 public class PieChart extends TwoDeePlot
 {
+	public PieChart()
+	{
+		super();
+	}
+	
+	@Override
+	public PieChart setPalette(Palette p)
+	{
+		if (p != null)
+		{
+			// A pie chart needs to have a palette explicitly declared
+			super.setPalette(p);
+		}
+		return this;
+	}
 
 	@Override
 	public String toGnuplot(Terminal term, String lab_title)
@@ -67,11 +82,11 @@ public class PieChart extends TwoDeePlot
 			String s_val = tab.get(x, "");
 			float f_val = Float.parseFloat(s_val);
 			arc_end = arc_start + f_val * 360;
-			out.append("set object ").append(i).append(" circle at screen 0.5,0.5 size screen 0.45 arc [").append(arc_start).append(":").append(arc_end).append("] fillcolor rgb \"red\" front\n");
+			out.append("set object ").append(i).append(" circle at screen 0.5,0.5 size screen 0.3 arc [").append(arc_start).append(":").append(arc_end).append("] ").append(getFillColor(i - 1)).append(" front\n");
 			arc_start = arc_end;
 			i++;
 		}
-		out.append("plot x with lines lc rgc \"#ffffff\"\n");
+		out.append("plot x with lines lc rgb \"#ffffff\"\n");
 		return out.toString();
 	}
 

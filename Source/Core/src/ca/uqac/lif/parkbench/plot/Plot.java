@@ -36,7 +36,60 @@ public abstract class Plot
 	 */
 	public static enum Terminal {PNG, DUMB, PDF, CACA};
 	
-	public static String[] s_paletteQualitative = {"red", "orange", "forest-green", "dark-magenta"};
+	/**
+	 * An 8-color preset palette for qualitative data:
+	 * <span style="color:#E41A1C">&#x25A0;</span>
+	 * <span style="color:#377EB8">&#x25A0;</span>
+	 * <span style="color:#4DAF4A">&#x25A0;</span>
+	 * <span style="color:#984EA3">&#x25A0;</span>
+	 * <span style="color:#FF7F00">&#x25A0;</span>
+	 * <span style="color:#FFFF33">&#x25A0;</span>
+	 * <span style="color:#A65628">&#x25A0;</span>
+	 * <span style="color:#F781BF">&#x25A0;</span>
+	 * <p>
+	 * This palette corresponds to the preset <tt>Set1.ptl</tt> from
+	 * <a href="https://github.com/aschn/gnuplot-colorbrewer">gnuplot-colorbrewer</a>.
+	 * 
+	 */
+	public static final transient Palette QUALITATIVE_1;
+	
+	/**
+	 * An 8-color preset palette for qualitative data:
+	 * <span style="color:#66C2A5">&#x25A0;</span>
+	 * <span style="color:#FC8D62">&#x25A0;</span>
+	 * <span style="color:#8DA0CB">&#x25A0;</span>
+	 * <span style="color:#E78AC3">&#x25A0;</span>
+	 * <span style="color:#A6D854">&#x25A0;</span>
+	 * <span style="color:#FFD92F">&#x25A0;</span>
+	 * <span style="color:#E5C494">&#x25A0;</span>
+	 * <span style="color:#B3B3B3">&#x25A0;</span>
+	 * <p>
+	 * This palette corresponds to the preset <tt>Set2.ptl</tt> from
+	 * <a href="https://github.com/aschn/gnuplot-colorbrewer">gnuplot-colorbrewer</a>.
+	 */
+	public static final transient Palette QUALITATIVE_2; 
+	
+	/**
+	 * An 8-color preset palette for qualitative data:
+	 * <span style="color:#8DD3C7">&#x25A0;</span>
+	 * <span style="color:#FFFFB3">&#x25A0;</span>
+	 * <span style="color:#BEBADA">&#x25A0;</span>
+	 * <span style="color:#FB8072">&#x25A0;</span>
+	 * <span style="color:#80B1D3">&#x25A0;</span>
+	 * <span style="color:#FDB462">&#x25A0;</span>
+	 * <span style="color:#B3DE69">&#x25A0;</span>
+	 * <span style="color:#FCCDE5">&#x25A0;</span>
+	 * <p>
+	 * This palette corresponds to the preset <tt>Set3.ptl</tt> from
+	 * <a href="https://github.com/aschn/gnuplot-colorbrewer">gnuplot-colorbrewer</a>.
+	 */
+	public static final transient Palette QUALITATIVE_3;
+	
+	/**
+	 * A 16-color preset palette for qualitative data, corresponding to the
+	 * 16 EGA colors.
+	 */
+	public static final transient Palette EGA;
 
 	/**
 	 * The plot's title
@@ -68,6 +121,11 @@ public abstract class Plot
 	 * drawing
 	 */
 	protected transient Laboratory m_lab;
+	
+	/**
+	 * Whether the plot is to be displayed in black and white
+	 */
+	protected transient boolean m_blackAndWhite = false;
 
 	/**
 	 * The path to launch GnuPlot
@@ -78,11 +136,25 @@ public abstract class Plot
 	 * Whether gnuplot is present on the system
 	 */
 	protected static transient final boolean s_gnuplotPresent = checkGnuplot();
+	
+	/**
+	 * The palette used to draw the graph
+	 */
+	protected transient Palette m_palette = null;
 
 	/**
 	 * The time to wait before polling GnuPlot's result
 	 */
 	protected static transient long s_waitInterval = 100;
+	
+	static {
+		// Setup of discrete palettes
+		// Found from https://github.com/aschn/gnuplot-colorbrewer
+		QUALITATIVE_1 = new DiscretePalette("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628", "#F781BF");
+		QUALITATIVE_2 = new DiscretePalette("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3");
+		QUALITATIVE_3 = new DiscretePalette("#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5");
+		EGA = new DiscretePalette("#5555FF", "#55FF55", "#55FFFF", "#FF5555", "#FF55FF", "#FFFF55", "#0000AA", "#00AA00", "#00AAAA", "#AA0000", "#AA00AA", "#AA5500", "#AAAAAA", "#555555", "#FFFFFF", "#000000");
+	}
 
 	/**
 	 * Creates a new plot
@@ -92,6 +164,7 @@ public abstract class Plot
 		super();
 		m_title = "Untitled";
 		m_id = s_idCounter++;
+		setPalette(EGA);
 	}
 
 	/**
@@ -116,6 +189,17 @@ public abstract class Plot
 	{
 		m_lab = a;
 		a.add(this);
+		return this;
+	}
+	
+	/**
+	 * Sets the palette to display the graph
+	 * @param p The palette. Set to <tt>null</tt> to use the default palette.
+	 * @return This plot
+	 */
+	public Plot setPalette(Palette p)
+	{
+		m_palette = p;
 		return this;
 	}
 
@@ -160,6 +244,16 @@ public abstract class Plot
 			return "caca";
 		}
 		return "dumb";
+	}
+	
+	/**
+	 * Sets the plot to display in black and white
+	 * @return
+	 */
+	public final Plot blackAndWhite()
+	{
+		m_blackAndWhite = true;
+		return this;
 	}
 
 	/**
@@ -253,6 +347,18 @@ public abstract class Plot
 		out.append("set datafile separator \"").append(s_datafileSeparator).append("\"\n");
 		out.append("set datafile missing \"").append(s_datafileMissing).append("\"\n");
 		out.append("set terminal ").append(getTerminalName(term)).append("\n");
+		if (m_blackAndWhite)
+		{
+			out.append("set style fill pattern\n");
+		}
+		else
+		{
+			out.append("set style fill solid\n");
+		}
+		if (m_palette != null)
+		{
+			out.append(m_palette.getDeclaration());
+		}
 		return out;
 	}
 	
@@ -263,5 +369,21 @@ public abstract class Plot
 	public static boolean isGnuplotPresent()
 	{
 		return s_gnuplotPresent;
+	}
+	
+	/**
+	 * Gets the fill color associated with a number, based on the palette
+	 * defined for this plot.
+	 * @param color_nb The color number
+	 * @return An empty string if no palette is defined, otherwise the
+	 *   <tt>fillcolor</tt> expression corresponding to the color
+	 */
+	protected String getFillColor(int color_nb)
+	{
+		if (m_palette == null && m_blackAndWhite)
+		{
+			return "";
+		}
+		return "fillcolor rgb \"" + m_palette.getHexColor(color_nb) + "\"";
 	}
 }

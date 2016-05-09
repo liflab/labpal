@@ -243,10 +243,12 @@ table.exp-table td {
   width: 320px;
   height: 240px;
   border: solid 1px darkgrey;
+  opacity: 0.67;
 }
 
 .plot img:hover {
   border: solid 1px blue;
+  opacity: 1;
 }
 
 .plot ul {

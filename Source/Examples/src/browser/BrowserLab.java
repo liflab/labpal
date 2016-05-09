@@ -3,6 +3,7 @@ package browser;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.BarPlot;
 import ca.uqac.lif.parkbench.plot.PieChart;
+import ca.uqac.lif.parkbench.plot.Plot;
 import ca.uqac.lif.parkbench.Laboratory;
 
 public class BrowserLab extends Laboratory
@@ -20,6 +21,7 @@ public class BrowserLab extends Laboratory
 		plot.useForX("browser", "Browser")
 		.useForY("share", "Share").groupBy("market")
 		.setTitle("My bar plot").assignTo(this);
+		plot.setPalette(Plot.QUALITATIVE_1);
 		BarPlot stacked_plot = new BarPlot();
 		stacked_plot.rowStacked().useForX("browser", "Browser")
 		.useForY("share", "Share").groupBy("market")

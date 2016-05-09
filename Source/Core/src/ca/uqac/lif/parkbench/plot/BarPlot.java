@@ -65,7 +65,7 @@ public class BarPlot extends TwoDeePlot
 	 * The width of the box in the histogram. A value of -1 means the
 	 * default setting will be used.
 	 */
-	protected float m_boxWidth = -1;
+	protected float m_boxWidth = 0.75f;
 	
 	/**
 	 * Sets whether the histogram is of type "row stacked".
@@ -126,7 +126,7 @@ public class BarPlot extends TwoDeePlot
 		}
 		out.append("set auto x\n");
 		out.append("set yrange [0:*]\n");
-		out.append("set style fill solid border rgb \"black\"\n");
+		out.append("set style border rgb \"black\"\n");
 		out.append("plot");
 		for (int i = 0; i < series.size(); i++)
 		{
@@ -135,7 +135,7 @@ public class BarPlot extends TwoDeePlot
 				out.append(", ");
 			}
 			String s_name = series.get(i);
-			out.append(" \"-\" using ").append(i + 2).append(":xtic(1) title \"").append(s_name).append("\"");
+			out.append(" \"-\" using ").append(i + 2).append(":xtic(1) title \"").append(s_name).append("\" ").append(getFillColor(i));
 		}
 		out.append("\n");
 		// In Gnuplot, if we use the special "-" filename, we must repeat

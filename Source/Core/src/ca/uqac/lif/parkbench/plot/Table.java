@@ -27,7 +27,6 @@ import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.parkbench.Experiment;
-import ca.uqac.lif.parkbench.Experiment.Status;
 
 public class Table
 {

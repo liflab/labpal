@@ -19,9 +19,7 @@ package ca.uqac.lif.parkbench;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -152,6 +150,15 @@ public class Table
 			t.transpose();
 		}
 		return t.toCsv();
+	}
+	
+	public Tabular getTabular()
+	{
+		Vector<String> series = new Vector<String>();
+		series.add("");
+		Vector<String> x_values = getXValues();
+		Tabular t = getValues(series, x_values);
+		return t;
 	}
 
 	/**
@@ -367,6 +374,26 @@ public class Table
 			m_values = transposed;
 			return this;
 		}
+		
+		/**
+		 * Replaces the content of each entry by its fraction of the
+		 * sum of all values for the column
+		 */
+		public void normalizeColumns()
+		{
+			for (int j = 0; j < m_values[0].length; j++)
+			{
+				float total = 0;
+				for (int i = 0; i < m_values.length; i++)
+				{
+					total += Float.parseFloat(m_values[i][j]);
+				}
+				for (int i = 0; i < m_values.length; i++)
+				{
+					m_values[i][j] = Float.toString(Float.parseFloat(m_values[i][j]) / total);
+				}
+			}
+		}
 
 		/**
 		 * Returns the contents of the table as a CSV string.
@@ -396,12 +423,10 @@ public class Table
 			}
 			return out.toString();
 		}
-
 	}
 	
 	protected class XComparator implements Comparator<String>
 	{
-
 		@Override
 		public int compare(String arg0, String arg1)
 		{
@@ -419,19 +444,21 @@ public class Table
 		}
 	}
 	
-	public Map<String,Float> getTotalY()
+	/**
+	 * Checks if a given string contains a number
+	 * @param s The string
+	 * @return true if it contains a number, false otherwise
+	 */
+	public static boolean isNumeric(String s)
 	{
-		Map<String,Float> out = new HashMap<String,Float>();
-		for (String series_name : m_seriesNames)
+		try
 		{
-			out.put(series_name, 0f);
+			Float.parseFloat(s);
+			return true;
 		}
-		for (Experiment e : m_experiments)
+		catch (NumberFormatException nfe)
 		{
-			// TODO
+			return false;
 		}
-		return out;
-		
 	}
-
 }

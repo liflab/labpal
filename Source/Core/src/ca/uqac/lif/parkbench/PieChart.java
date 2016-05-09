@@ -17,6 +17,8 @@
  */	
 package ca.uqac.lif.parkbench;
 
+import ca.uqac.lif.parkbench.Table.Tabular;
+
 /**
  * Two-dimensional pie chart.
  * <p>
@@ -44,22 +46,32 @@ package ca.uqac.lif.parkbench;
  * @author Sylvain Hallé
  *
  */
-
 public class PieChart extends TwoDeePlot
 {
 
 	@Override
 	public String toGnuplot(Terminal term, String lab_title)
 	{
-		String csv_values = m_table.toCsv(false);
+		Tabular tab = m_table.getTabular();
+		tab.normalizeColumns();
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
 		out.append(getHeader(term, lab_title));
-		m_table.getXValues();
-		for (int i = 0; i < 5; i++)
+		out.append("set style fill solid 1.0 border -1\n");
+		out.append("unset border\nunset tics\nunset key\n");
+		int i = 1;
+		float arc_start = 0;
+		float arc_end = 0;
+		for (String x : m_table.getXValues())
 		{
-			out.append(csv_values).append("\nend\n");
+			String s_val = tab.get(x, "");
+			float f_val = Float.parseFloat(s_val);
+			arc_end = arc_start + f_val * 360;
+			out.append("set object ").append(i).append(" circle at screen 0.5,0.5 size screen 0.45 arc [").append(arc_start).append(":").append(arc_end).append("] fillcolor rgb \"red\" front\n");
+			arc_start = arc_end;
+			i++;
 		}
+		out.append("plot x with lines lc rgc \"#ffffff\"\n");
 		return out.toString();
 	}
 

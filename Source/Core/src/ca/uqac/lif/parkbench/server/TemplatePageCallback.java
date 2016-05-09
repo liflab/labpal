@@ -10,6 +10,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
+import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
 import ca.uqac.lif.parkbench.PackageFileReader;
@@ -29,6 +30,8 @@ public class TemplatePageCallback extends ParkBenchCallback
 	public CallbackResponse process(HttpExchange t)
 	{
 		CallbackResponse response = new CallbackResponse(t);
+		response.disableCaching();
+		response.setContentType(ContentType.HTML);
 		Map<String,String> params = getParameters(t);
 		//Give the right content-type to the browser by giving it what it's looking for
 		Headers headers = t.getRequestHeaders();

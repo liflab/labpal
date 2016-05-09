@@ -24,7 +24,8 @@ import java.util.Map;
 
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.Experiment.Status;
-import ca.uqac.lif.parkbench.Plot.Terminal;
+import ca.uqac.lif.parkbench.plot.Plot;
+import ca.uqac.lif.parkbench.plot.Plot.Terminal;
 import ca.uqac.lif.tui.AnsiPrinter;
 import ca.uqac.lif.tui.AnsiPrinter.Color;
 import ca.uqac.lif.tui.Checkbox;
@@ -151,7 +152,7 @@ public class ParkbenchTui
 		{
 			PlotMenu plot_menu = new PlotMenu();
 			//plot_menu.addItem(new SelectPlotMenuItem());
-			if (Plot.s_gnuplotPresent)
+			if (Plot.isGnuplotPresent())
 				plot_menu.addItem(new ViewPlotMenuItem());
 			plot_menu.addItem(new SavePlotMenuItem());
 			plot_menu.addItem(new BackMenuItem());
@@ -172,7 +173,7 @@ public class ParkbenchTui
 		m_printer.setForegroundColor(AnsiPrinter.Color.LIGHT_PURPLE);
 		m_printer.print(m_assistant.getName());
 		m_printer.resetColors();
-		if (!Plot.s_gnuplotPresent)
+		if (!Plot.isGnuplotPresent())
 		{
 			m_printer.print("\nWarning: Gnuplot was not found on your system");
 		}

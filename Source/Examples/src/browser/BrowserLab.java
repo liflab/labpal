@@ -1,9 +1,9 @@
 package browser;
 
-import ca.uqac.lif.parkbench.BarPlot;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
+import ca.uqac.lif.parkbench.plot.BarPlot;
+import ca.uqac.lif.parkbench.plot.PieChart;
 import ca.uqac.lif.parkbench.Laboratory;
-import ca.uqac.lif.parkbench.PieChart;
 
 public class BrowserLab extends Laboratory
 {

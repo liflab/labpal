@@ -7,8 +7,8 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
-import ca.uqac.lif.parkbench.Plot;
-import ca.uqac.lif.parkbench.Plot.Terminal;
+import ca.uqac.lif.parkbench.plot.Plot;
+import ca.uqac.lif.parkbench.plot.Plot.Terminal;
 
 import com.sun.net.httpserver.HttpExchange;
 

@@ -18,8 +18,8 @@
 package sorting;
 
 import ca.uqac.lif.parkbench.Laboratory;
-import ca.uqac.lif.parkbench.Scatterplot;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
+import ca.uqac.lif.parkbench.plot.Scatterplot;
 
 public class SortingLab extends Laboratory
 {

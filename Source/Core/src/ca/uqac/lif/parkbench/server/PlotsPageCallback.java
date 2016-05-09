@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
-import ca.uqac.lif.parkbench.Plot;
+import ca.uqac.lif.parkbench.plot.Plot;
 
 
 public class PlotsPageCallback extends TemplatePageCallback

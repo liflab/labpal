@@ -15,7 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.parkbench;
+package ca.uqac.lif.parkbench.plot;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +26,8 @@ import java.util.Vector;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.parkbench.Experiment.Status;
 
 public class Table
 {

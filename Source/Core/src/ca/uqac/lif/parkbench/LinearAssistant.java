@@ -62,6 +62,7 @@ public class LinearAssistant extends LabAssistant
 		m_queue = new ArrayList<Experiment>();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void run()
 	{

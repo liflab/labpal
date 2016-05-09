@@ -18,8 +18,8 @@
 package multipoint;
 
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
+import ca.uqac.lif.parkbench.plot.Scatterplot;
 import ca.uqac.lif.parkbench.Laboratory;
-import ca.uqac.lif.parkbench.Scatterplot;
 
 public class MultipointLab extends Laboratory 
 {

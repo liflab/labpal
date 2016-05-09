@@ -15,9 +15,9 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */	
-package ca.uqac.lif.parkbench;
+package ca.uqac.lif.parkbench.plot;
 
-import ca.uqac.lif.parkbench.Table.Tabular;
+import ca.uqac.lif.parkbench.plot.Table.Tabular;
 
 /**
  * Two-dimensional pie chart.

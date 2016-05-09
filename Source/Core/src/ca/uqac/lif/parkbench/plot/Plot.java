@@ -15,9 +15,13 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package ca.uqac.lif.parkbench;
+package ca.uqac.lif.parkbench.plot;
 
 import java.util.Calendar;
+
+import ca.uqac.lif.parkbench.CommandRunner;
+import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.parkbench.Laboratory;
 
 /**
  * A plot is responsible for converting data extracted from experiments
@@ -31,6 +35,8 @@ public abstract class Plot
 	 * The terminal used for displaying the plot
 	 */
 	public static enum Terminal {PNG, DUMB, PDF, CACA};
+	
+	public static String[] s_paletteQualitative = {"red", "orange", "forest-green", "dark-magenta"};
 
 	/**
 	 * The plot's title

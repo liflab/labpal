@@ -1,6 +1,6 @@
 /*
   ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  Copyright (C) 2015-2016 Sylvain Hallï¿½
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
  */
 package simple;
 
-import ca.uqac.lif.parkbench.BarPlot;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
+import ca.uqac.lif.parkbench.plot.BarPlot;
+import ca.uqac.lif.parkbench.plot.Scatterplot;
 import ca.uqac.lif.parkbench.Laboratory;
-import ca.uqac.lif.parkbench.Scatterplot;
 
 public class SimpleLab extends Laboratory
 {

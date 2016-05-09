@@ -27,6 +27,7 @@ import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.parkbench.CliParser.Argument;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
+import ca.uqac.lif.parkbench.plot.Plot;
 import ca.uqac.lif.parkbench.server.ParkbenchServer;
 import ca.uqac.lif.tui.AnsiPrinter;
 

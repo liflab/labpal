@@ -9,6 +9,7 @@ batch.</p>
 <tr><th>Lab name:</th><td>{%LAB_NAME%}</td></tr>
 <tr><th>Lab assistant:</th><td>{%LAB_ASSISTANT%}</td></tr>
 <tr><th>Author:</th><td>{%LAB_AUTHOR%}</td></tr>
+<tr><th>Random seed:</th><td>{%LAB_SEED%}</td></tr>
 </table>
 
 <h2>Progress</h2>
@@ -17,7 +18,7 @@ batch.</p>
 
 <a class="btn" id="btn-download" href="download">Save lab data</a>
 
-<form name="upload" method="post" enctype="multipart/form-data" action="load">
+<form name="upload" method="post" enctype="multipart/form-data" action="upload">
 <input class="btn" id="btn-upload" type="submit" value="Upload lab data"/>
 <input type="file" name="filename" size="40"/>
 </form>

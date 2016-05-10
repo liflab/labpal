@@ -18,6 +18,7 @@
 package ca.uqac.lif.parkbench;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import ca.uqac.lif.azrael.SerializerException;
@@ -89,7 +90,17 @@ public abstract class Laboratory
 	 * The number of parkmips
 	 * @see {@link #countParkMips()}
 	 */
-	public transient static float s_parkMips = countParkMips(); 
+	public transient static float s_parkMips = countParkMips();
+	
+	/**
+	 * A random number generator associated with this lab
+	 */
+	private transient Random m_random = new Random(0);
+	
+	/**
+	 * The seed used to initialize the random number generator
+	 */
+	private int m_seed = 0;
 
 	/**
 	 * A counter for auto-incrementing experiment IDs
@@ -384,6 +395,10 @@ public abstract class Laboratory
 		parser.addArgument(new Argument()
 		.withLongName("web")
 		.withDescription("Start ParkBench as a web server"));
+		parser.addArgument(new Argument()
+		.withLongName("seed")
+		.withArgument("x")
+		.withDescription("Sets the seed for the random number generator to x"));
 		Laboratory new_lab = null;
 		try
 		{
@@ -406,6 +421,12 @@ public abstract class Laboratory
 		new_lab.setAssistant(assistant);
 		new_lab.setupCli(parser);
 		final ArgumentMap map = parser.parse(args);
+		if (map.hasOption("seed"))
+		{
+			// Sets random seed
+			int seed = Integer.parseInt(map.getOptionValue("seed"));
+			new_lab.setRandomSeed(seed);
+		}
 		new_lab.setupExperiments(map);
 		final AnsiPrinter stdout = new AnsiPrinter(System.out);
 		stdout.resetColors();
@@ -518,6 +539,36 @@ public abstract class Laboratory
 		out += "ParkBench " + s_versionString + " - A versatile environment for running experiments\n";
 		out += "(C) 2015-2016 Laboratoire d'informatique formelle\n";
 		return out;
+	}
+	
+	/**
+	 * Sets the seed of the lab's random number generator
+	 * @param seed The seed
+	 * @return This lab
+	 */
+	public final Laboratory setRandomSeed(int seed)
+	{
+		m_random = new Random(seed);
+		m_seed = seed;
+		return this;
+	}
+	
+	/**
+	 * Gets the seed of the lab's random number generator
+	 * @return The seed
+	 */
+	public final int getRandomSeed()
+	{
+		return m_seed;
+	}
+	
+	/**
+	 * Gets a reference to the lab's random number generator
+	 * @return The generator
+	 */
+	public final Random getRandom()
+	{
+		return m_random;
 	}
 
 }

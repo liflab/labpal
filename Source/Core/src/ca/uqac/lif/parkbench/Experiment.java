@@ -84,7 +84,7 @@ public abstract class Experiment implements Runnable
 	/**
 	 * A short description for this experiment
 	 */
-	private String m_description;
+	private String m_description = "";
 	
 	/**
 	 * The name of the lab assistant that ran the experiment (if any)
@@ -165,7 +165,8 @@ public abstract class Experiment implements Runnable
 	 */
 	public final Experiment setDescription(String d)
 	{
-		m_description = d;
+		if (d != null)
+			m_description = d;
 		return this;
 	}
 	

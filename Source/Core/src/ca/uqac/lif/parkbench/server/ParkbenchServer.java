@@ -28,14 +28,17 @@ public class ParkbenchServer extends InnerFileServer
 		registerCallback(0, new PlotsPageCallback(lab, assistant));
 		registerCallback(0, new PlotImageCallback(lab, assistant));
 		registerCallback(0, new DownloadCallback(lab, assistant));
-		registerCallback(0, new LoadCallback(lab, assistant));
+		registerCallback(0, new UploadCallback(this, lab, assistant));
 	}
 	
 	public void changeLab(Laboratory lab)
 	{
 		for (RequestCallback cb : m_callbacks)
 		{
-			
+			if (cb instanceof ParkBenchCallback)
+			{
+				((ParkBenchCallback) cb).changeLab(lab);
+			}
 		}
 	}
 	

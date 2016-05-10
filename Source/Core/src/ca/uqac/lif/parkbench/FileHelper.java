@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * A number of helpful utilities to read, write and manage files
@@ -69,6 +70,24 @@ public class FileHelper
 			}
 		}
 		return sb.toString();
+	}
+	
+	/**
+	 * Reads an input stream and puts its contents into a string
+	 * @param is The input stream
+	 * @return The contents
+	 */
+	public static String readToString(InputStream is)
+	{
+		String out = "";
+		java.util.Scanner s = new java.util.Scanner(is);
+		s.useDelimiter("\\A");
+		if (s.hasNext())
+		{
+			out = s.next();
+		}
+    s.close();
+    return out;
 	}
 
 	/**

@@ -20,9 +20,10 @@ public class DownloadCallback extends ParkBenchCallback
 	}
 
 	/**
-	 * Whether to zip the response
+	 * Whether to zip the response. Currently, downloading as a zip
+	 * works OK, but uploading as a zip does not work.
 	 */
-	protected static final boolean s_zip = true;
+	public static final boolean s_zip = false;
 
 	@Override
 	public CallbackResponse process(HttpExchange t)
@@ -57,7 +58,7 @@ public class DownloadCallback extends ParkBenchCallback
 			// Send in clear text
 			response.setContents(lab_contents);
 			response.setContentType(CallbackResponse.ContentType.JSON);
-			filename += ".json";
+			filename += "." + Laboratory.s_fileExtension;
 		}
 		// Tell the browser to download the document rather than display it
 		response.setAttachment(filename);

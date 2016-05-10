@@ -4,9 +4,14 @@ import ca.uqac.lif.parkbench.Experiment;
 
 public class ExperimentA extends Experiment
 {
-	public ExperimentA(int a)
+	ExperimentA()
 	{
 		super();
+	}
+	
+	public ExperimentA(int a)
+	{
+		this();
 		setInput("name", "Experiment A");
 		setInput("a", a);
 		setDescription("Simply returns as its output the value of its input parameter 'a'");

@@ -173,6 +173,10 @@ public class ParkbenchTui
 		m_printer.setForegroundColor(AnsiPrinter.Color.LIGHT_PURPLE);
 		m_printer.print(m_assistant.getName());
 		m_printer.resetColors();
+		m_printer.print("\nRandom seed: ");
+		m_printer.setForegroundColor(AnsiPrinter.Color.LIGHT_PURPLE);
+		m_printer.print(m_lab.getRandomSeed());
+		m_printer.resetColors();
 		if (!Plot.isGnuplotPresent())
 		{
 			m_printer.print("\nWarning: Gnuplot was not found on your system");

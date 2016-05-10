@@ -7,6 +7,11 @@ public class BrowserExperiment extends Experiment
 	float value;
 	String name;
 	
+	BrowserExperiment()
+	{
+		super();
+	}
+	
 	public BrowserExperiment(String browser, String name, float value)
 	{
 		super();

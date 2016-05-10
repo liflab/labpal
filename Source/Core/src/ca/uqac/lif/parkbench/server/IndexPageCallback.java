@@ -19,6 +19,7 @@ public class IndexPageCallback extends TemplatePageCallback
 		String out = page.replaceAll("\\{%TITLE%\\}", m_lab.getTitle());
 		out = out.replaceAll("\\{%LAB_ASSISTANT%\\}", m_assistant.getName());
 		out = out.replaceAll("\\{%LAB_AUTHOR%\\}", m_lab.getAuthorName());
+		out = out.replaceAll("\\{%LAB_SEED%\\}", Integer.toString(m_lab.getRandomSeed()));
 		out = out.replaceAll("\\{%SPEED_FACTOR%\\}", String.format("%.2f", Laboratory.s_parkMips));
 		out = out.replaceAll("\\{%SEL_HOME%\\}", "selected");
 		out = out.replaceAll("\\{%OS_NAME%\\}", System.getProperty("os.name"));

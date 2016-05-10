@@ -16,4 +16,13 @@ public abstract class ParkBenchCallback extends RestCallback
 		m_lab = lab;
 		m_assistant = assistant;
 	}
+	
+	/**
+	 * Changes the laboratory associated with this callback
+	 * @param lab The new laboratory
+	 */
+	public void changeLab(Laboratory lab)
+	{
+		m_lab = lab;
+	}
 }

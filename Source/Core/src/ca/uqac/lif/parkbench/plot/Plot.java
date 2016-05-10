@@ -181,7 +181,7 @@ public abstract class Plot
 	}
 
 	/**
-	 * Assigns this plot to a lab assistant
+	 * Assigns this plot to a laboratory
 	 * @param a The assistant
 	 * @return This plot
 	 */

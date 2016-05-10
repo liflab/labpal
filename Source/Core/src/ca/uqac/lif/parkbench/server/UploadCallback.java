@@ -18,6 +18,7 @@ import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.parkbench.FileHelper;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
+import ca.uqac.lif.parkbench.PackageFileReader;
 
 public class UploadCallback extends ParkBenchCallback
 {	
@@ -45,7 +46,7 @@ public class UploadCallback extends ParkBenchCallback
 		if (parts == null || !parts.containsKey("filename"))
 		{
 			// Baaaad request
-			cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
+			doBadRequest(cbr, "No file was uploaded");
 			return cbr;
 		}
 		byte[] part = parts.get("filename");
@@ -69,8 +70,7 @@ public class UploadCallback extends ParkBenchCallback
 			catch (IOException e) 
 			{
 				// Baaaad request
-				cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-				return cbr;
+				doBadRequest(cbr, "Could not extract a lab from the file");
 			}
 			if (contents != null)
 			{
@@ -87,20 +87,41 @@ public class UploadCallback extends ParkBenchCallback
 		if (json == null)
 		{
 			// Baaaad request
-			cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
+			doBadRequest(cbr, "No JSON was found in the uploaded file");
+			return cbr;
+		}
+		if (json.isEmpty())
+		{
+			// Baaaad request
+			doBadRequest(cbr, "No file was uploaded");
 			return cbr;
 		}
 		Laboratory new_lab = m_lab.loadFromString(json);
 		if (new_lab == null)
 		{
 			// Baaaad request
-			cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-			
-			return cbr;			
+			doBadRequest(cbr, "The file's contents could not be loaded into the "
+					+ "current laboratory. This can occur when you try loading the data from a different "
+					+ "lab.");
+			return cbr;
 		}
 		m_server.changeLab(new_lab);
+		String file_contents = PackageFileReader.readPackageFile(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-ok.html");
+		file_contents = TemplatePageCallback.resolve(file_contents);
+		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "File uploaded");
 		cbr.setCode(CallbackResponse.HTTP_OK);
+		cbr.setContents(file_contents);
 		return cbr;
+	}
+	
+	protected void doBadRequest(CallbackResponse cbr, String message)
+	{
+		cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
+		String file_contents = PackageFileReader.readPackageFile(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-nok.html");
+		file_contents = TemplatePageCallback.resolve(file_contents);
+		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Error uploading file");
+		file_contents = file_contents.replaceAll("\\{%MESSAGE%\\}", message);
+		cbr.setContents(file_contents);
 	}
 
 	/**

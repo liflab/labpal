@@ -195,7 +195,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				}
 			}
 		}
-		return "<p class=\"message\"><span>" + queued + " experiment(s) added to the queue</span></p>";
+		return "<p class=\"message info\"><span>" + queued + " experiment(s) added to the queue</span></p>";
 	}
 	
 	protected String reset(Map<String,String> params)
@@ -215,7 +215,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				}
 			}
 		}
-		return "<p class=\"message\"><span>" + queued + " experiment(s) reset</span></p>";
+		return "<p class=\"message info\"><span>" + queued + " experiment(s) reset</span></p>";
 	}
 	
 	protected String unqueue(Map<String,String> params)
@@ -235,7 +235,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				}
 			}
 		}
-		return "<p class=\"message\"><span>Removed " + queued + " experiment(s) from the queue</span></p>";
+		return "<p class=\"message info\"><span>Removed " + queued + " experiment(s) from the queue</span></p>";
 	}
 	
 	protected String clean(Map<String,String> params)
@@ -255,6 +255,6 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				}
 			}
 		}
-		return "<p class=\"message\"><span>Cleaned" + queued + " experiment(s)</span></p>";
+		return "<p class=\"message info\"><span>Cleaned" + queued + " experiment(s)</span></p>";
 	}
 }

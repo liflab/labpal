@@ -277,7 +277,6 @@ table.exp-table td {
 }
 
 .message {
-  background: white url('images/info-32.png') left center no-repeat;
   padding-left: 40px;
   border: solid 1px darkgrey;
   border-radius: 4px;
@@ -290,6 +289,14 @@ table.exp-table td {
   margin: auto;
   display: block;
   margin: 6px;
+}
+
+.message.info {
+  background: white url('images/info-32.png') left center no-repeat;
+}
+
+.message.error {
+  background: white url('images/error-32.png') left center no-repeat;
 }
 
 #progress-bar {

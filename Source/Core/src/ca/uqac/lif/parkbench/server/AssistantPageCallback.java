@@ -26,17 +26,17 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 			if (!m_assistant.isRunning())
 			{
 				m_lab.start();
-				message = "<p class=\"message\"><span>Assistant started</span></p>";
+				message = "<p class=\"message info\"><span>Assistant started</span></p>";
 			}
 			else
 			{
-				message = "<p class=\"message\"><span>Assistant already started</span></p>";
+				message = "<p class=\"message info\"><span>Assistant already started</span></p>";
 			}
 		}
 		else if (params.containsKey("stop"))
 		{
 			m_assistant.stop();
-			message = "<p class=\"message\"><span>Assistant stopped</span></p>";
+			message = "<p class=\"message info\"><span>Assistant stopped</span></p>";
 		}
 		String out = page.replaceAll("\\{%TITLE%\\}", "Lab assistant");
 		if (params.containsKey("unqueue"))

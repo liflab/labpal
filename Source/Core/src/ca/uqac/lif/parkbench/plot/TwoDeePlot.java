@@ -18,6 +18,7 @@
 package ca.uqac.lif.parkbench.plot;
 
 import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.parkbench.Laboratory;
 
 public abstract class TwoDeePlot extends Plot
 {
@@ -59,6 +60,24 @@ public abstract class TwoDeePlot extends Plot
 	public TwoDeePlot add(Experiment e)
 	{
 		m_table.addExperiment(e);
+		return this;
+	}
+	
+	@Override
+	public Plot assignTo(Laboratory a)
+	{
+		Table tab = new Table();
+		tab.m_xName = m_table.m_xName;
+		tab.m_yName = m_table.m_yName;
+		tab.m_seriesNames = m_table.m_seriesNames;
+		for (Experiment e : m_table.m_experiments)
+		{
+			int exp_id = e.getId();
+			Experiment new_e = a.getExperiment(exp_id);
+			tab.addExperiment(new_e);
+		}
+		m_table = tab;
+		super.assignTo(a);
 		return this;
 	}
 	

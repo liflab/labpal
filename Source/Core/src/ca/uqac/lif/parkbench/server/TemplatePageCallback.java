@@ -60,7 +60,7 @@ public class TemplatePageCallback extends ParkBenchCallback
 		return response;
 	}
 	
-	public final String render(String s, Map<String,String> params)
+	public static final String resolve(String s)
 	{
 		Matcher mat = s_pattern.matcher(s);
 		Set<String> includes = new HashSet<String>();
@@ -75,6 +75,12 @@ public class TemplatePageCallback extends ParkBenchCallback
 				continue;
 			s = s.replace("{!" + filename + "!}", file_contents);
 		}
+		return s;
+	}
+	
+	public final String render(String s, Map<String,String> params)
+	{
+		s = resolve(s);
 		s = fill(s, params);
 		if (s == null)
 		{

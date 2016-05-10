@@ -296,12 +296,6 @@ public abstract class Laboratory
 		{
 			je = jp.parse(s);
 			Laboratory lab = loadFromJson(je);
-			// Don't forget to transplant the plots
-			for (Plot p : m_plots)
-			{
-				p.assignTo(lab);
-			}
-			lab.m_plots = m_plots;
 			return lab;
 		}
 		catch (JsonParseException e)
@@ -319,17 +313,23 @@ public abstract class Laboratory
 	 */
 	public Laboratory loadFromJson(JsonElement je)
 	{
-		Laboratory a = null;
+		Laboratory lab = null;
 		try
 		{
-			a = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
+			lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
 		}
 		catch (SerializerException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return a;		
+		// Don't forget to transplant the plots
+		for (Plot p : m_plots)
+		{
+			p.assignTo(lab);
+		}
+		lab.m_plots = m_plots;
+		return lab;		
 	}
 
 	/**

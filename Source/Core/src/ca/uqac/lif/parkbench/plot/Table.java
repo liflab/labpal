@@ -175,7 +175,7 @@ public class Table
 			if (e == null)
 				continue;
 			String s_name = createSeriesName(e);
-			if (!series.contains(s_name))
+			if (s_name != null && !series.contains(s_name))
 			{
 				series.add(s_name);
 			}

@@ -11,9 +11,9 @@ import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
+import ca.uqac.lif.parkbench.FileHelper;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
-import ca.uqac.lif.parkbench.PackageFileReader;
 
 public class TemplatePageCallback extends ParkBenchCallback
 {
@@ -40,7 +40,7 @@ public class TemplatePageCallback extends ParkBenchCallback
 		// Read file and put into response
 		String filename = s_path + m_path + ".html";
 		System.out.println("Reading " + filename);
-		String file_contents = PackageFileReader.readPackageFile(ParkbenchServer.class, filename);
+		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, filename);
 		
 		if (file_contents == null)
 		{
@@ -70,7 +70,7 @@ public class TemplatePageCallback extends ParkBenchCallback
 		}
 		for (String filename : includes)
 		{
-			String file_contents = PackageFileReader.readPackageFile(ParkbenchServer.class, s_path + "/" + filename);
+			String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, s_path + "/" + filename);
 			if (file_contents == null)
 				continue;
 			s = s.replace("{!" + filename + "!}", file_contents);

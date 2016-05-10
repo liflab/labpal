@@ -18,7 +18,6 @@ import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.parkbench.FileHelper;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
-import ca.uqac.lif.parkbench.PackageFileReader;
 
 public class UploadCallback extends ParkBenchCallback
 {	
@@ -106,7 +105,7 @@ public class UploadCallback extends ParkBenchCallback
 			return cbr;
 		}
 		m_server.changeLab(new_lab);
-		String file_contents = PackageFileReader.readPackageFile(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-ok.html");
+		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-ok.html");
 		file_contents = TemplatePageCallback.resolve(file_contents);
 		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "File uploaded");
 		cbr.setCode(CallbackResponse.HTTP_OK);
@@ -117,7 +116,7 @@ public class UploadCallback extends ParkBenchCallback
 	protected void doBadRequest(CallbackResponse cbr, String message)
 	{
 		cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-		String file_contents = PackageFileReader.readPackageFile(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-nok.html");
+		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-nok.html");
 		file_contents = TemplatePageCallback.resolve(file_contents);
 		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Error uploading file");
 		file_contents = file_contents.replaceAll("\\{%MESSAGE%\\}", message);

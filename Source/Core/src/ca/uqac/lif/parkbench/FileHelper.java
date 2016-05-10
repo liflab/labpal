@@ -27,6 +27,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
+import ca.uqac.lif.jerrydog.InnerFileServer;
+
 /**
  * A number of helpful utilities to read, write and manage files
  *
@@ -228,5 +230,70 @@ public class FileHelper
 			return filename;
 		return filename.substring(0, position);
 	}
+	
+  public static String internalFileToString(Class<?> c, String path)
+  {
+    InputStream in = c.getResourceAsStream(path);
+    String out;
+    try
+    {
+      out = streamToString(in);
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+      return null;
+    }
+    return out;
+  }
+  
+  public static byte[] internalFileToBytes(Class<?> c, String path)
+  {
+    InputStream in = internalFileToStream(c, path);
+    byte[] file_contents = null;
+    if (in != null)
+    {
+      file_contents = InnerFileServer.readBytes(in);
+    }
+    return file_contents;
+  }
+  
+  public static InputStream internalFileToStream(Class<?> c, String path)
+  {
+    InputStream in = c.getResourceAsStream(path);
+    return in;
+  }
+  
+  /**
+   * Reads a file and puts its contents in a string
+   * @param in The input stream to read
+   * @return The file's contents, and empty string if the file
+   * does not exist
+   * @throws IOException If something bad occurs
+   */
+  public static String streamToString(InputStream in) throws IOException
+  {
+    if (in == null)
+    {
+      throw new IOException();
+    }
+    java.util.Scanner scanner = null;
+    StringBuilder out = new StringBuilder();
+    try
+    {
+      scanner = new java.util.Scanner(in, "UTF-8");
+      while (scanner.hasNextLine())
+      {
+        String line = scanner.nextLine();
+        out.append(line).append(System.getProperty("line.separator"));
+      }
+    }
+    finally
+    {
+      if (scanner != null)
+        scanner.close();
+    }
+    return out.toString();
+  }
 
 }

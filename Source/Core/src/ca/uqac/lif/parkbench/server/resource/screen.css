@@ -1,5 +1,5 @@
 html, body {
-  font-family: Tahoma, sans-serif;
+  font-family: Arial, sans-serif;
   height: 100%;
   margin: 0px;
   padding: 0px;
@@ -88,19 +88,23 @@ h1 {
 
 #footer {
   position: fixed;
-  height: 24px;
-  line-height: 24px;
+  height: 40px;
+  line-height: 40px;
   border-top: solid 4px darkgrey;
   bottom: 0px;
   width: 100%;
-  background: #eee;
-  padding: 8px;
   font-size: 80%;
+  background: #eee url('images/lif-24.png') right center no-repeat;
 }
 
 #footer a {
   text-decoration: none;
   color: #444;
+}
+
+#footer > div {
+  line-height: 40px;
+  margin-left: 8px;
 }
 
 .btn {

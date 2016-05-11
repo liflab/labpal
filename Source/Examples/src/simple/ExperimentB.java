@@ -33,7 +33,8 @@ public class ExperimentB extends Experiment
 	@Override
 	public float getDurationEstimate(float factor)
 	{
-		return 1f;
+		// Since we wait 10 seconds no matter what
+		return 10f;
 	}
 	
 	@Override

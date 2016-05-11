@@ -410,7 +410,12 @@ public class Table
 			StringBuilder out = new StringBuilder();
 			for (String x : m_lineHeaders)
 			{
-				out.append(x);
+				if (isNumeric(x))
+					out.append(x);
+				else
+				{
+					out.append("\"" + x + "\"");
+				}
 				for (String s : m_columnHeaders)
 				{
 					out.append(Plot.s_datafileSeparator);

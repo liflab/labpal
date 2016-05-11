@@ -126,7 +126,7 @@ public class BarPlot extends TwoDeePlot
 		}
 		out.append("set auto x\n");
 		out.append("set yrange [0:*]\n");
-		out.append("set style border rgb \"black\"\n");
+		out.append("set style fill border rgb \"black\"\n");
 		out.append("plot");
 		for (int i = 0; i < series.size(); i++)
 		{

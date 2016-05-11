@@ -42,7 +42,7 @@ public class SimpleLab extends Laboratory
 			.setTitle("My plot").assignTo(this);
 		BarPlot b_plot = new BarPlot();
 		b_plot.useForX("name", "Name")
-			.useForY("y", "Return value").groupBy("x")
+			.useForY("y", "Return value").groupBy("a")
 			.setTitle("My bar plot").assignTo(this);
 
 		// Create the experiments

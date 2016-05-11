@@ -382,6 +382,10 @@ public class Table
 		 */
 		public void normalizeColumns()
 		{
+			if (m_values.length == 0)
+			{
+				return;
+			}
 			for (int j = 0; j < m_values[0].length; j++)
 			{
 				float total = 0;

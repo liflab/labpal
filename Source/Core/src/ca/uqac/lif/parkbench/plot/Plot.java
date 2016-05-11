@@ -91,6 +91,12 @@ public abstract class Plot
 	 * 16 EGA colors.
 	 */
 	public static final transient Palette EGA;
+	
+	/**
+	 * The bytes of a blank image, used as a placeholder when no plot can
+	 * be drawn by Gnuplot
+	 */
+	private static final transient byte[] s_blankImage = FileHelper.internalFileToBytes(Plot.class, "blank.png");
 
 	/**
 	 * The plot's title
@@ -305,6 +311,11 @@ public abstract class Plot
 			}
 		}
 		image = runner.getBytes();
+		if (image == null || image.length == 0)
+		{
+			// Gnuplot could not produce a picture; return the blank image
+			image = s_blankImage;
+		}
 		return image;
 	}
 

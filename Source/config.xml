@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Configuration file for AntRun.
+  
+  Use this file to override the default properties contained
+  in build.xml. For example, to override the build.jar.filename
+  property (which sets the name of the compiled jar file), add
+  an element
+  
+  <jar>
+    <filename>foo</filename>
+  </jar>
+  
+  inside the <build> element.
+  
+  **Caveat emptor:** in some cases, changing this file and running ant
+  again will result in Ant using a cached version of the old file! Run
+  "ant dummy" to make sure that the correct data is being read. Otherwise
+  you might need to run "ant clean" and start over.
+-->
+<build>
+  <!-- Uncomment any of these if you want to override the build
+       script's default values -->
+
+  <!-- The project's name -->
+  <name>ParkBench</name>
+  
+  <!-- The project's version number -->
+  <version>2.0</version>
+  
+  <!-- The project's author. Currently this only
+  shows up in the footer of the Javadoc documentation. -->
+  <author>Sylvain Hallé</author>
+  
+  <!-- The project's main class -->
+  <mainclass>ca.uqac.lif.parkbench.Laboratory</mainclass>
+  
+  <!-- Output jar -->
+  <jar>
+    <filename>../parkbench.jar</filename>
+    <withdeps>true</withdeps>
+    <withdoc>false</withdoc>
+  </jar>
+  
+  <!-- Redefine directories -->
+  <srcdir>Core/src</srcdir>
+  <bindir>Core/bin</bindir>
+  <docdir>Core/doc</docdir>
+  <libdir>Core/lib</libdir>
+  <depdir>Core/dep</depdir>
+  
+  <!--
+    Write JAR dependencies here.
+  -->
+  <dependencies>
+    <dependency>
+      <!--
+      json-lif. Used to parse JSON messages
+      -->
+      <name>json-lif</name>
+      <classname>ca.uqac.lif.json.JsonParser</classname>
+      <files>
+        <jar>https://github.com/liflab/json-lif/releases/download/v1.3/json-lif-1.3.zip</jar>
+      </files>
+    </dependency>
+    <dependency>
+      <!--
+      Jerrydog. Simple servlet library
+      -->
+      <name>Jerrydog</name>
+      <classname>ca.uqac.lif.jerrydog.Server</classname>
+      <files>
+        <jar>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.1.3-alpha/jerrydog-0.1.3-alpha.zip</jar>
+      </files>
+    </dependency>
+  </dependencies>
+</build>

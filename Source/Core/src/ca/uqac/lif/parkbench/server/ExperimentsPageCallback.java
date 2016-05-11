@@ -1,3 +1,20 @@
+/*
+  ParkBench, a versatile benchmark environment
+  Copyright (C) 2015-2016 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.parkbench.server;
 
 import java.util.Collections;
@@ -15,8 +32,17 @@ import ca.uqac.lif.parkbench.Experiment;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
 
+/**
+ * Callback to display the list of experiments in the lab
+ * 
+ * @author Sylvain Hallé
+ *
+ */
 public class ExperimentsPageCallback extends TemplatePageCallback
 {
+	/**
+	 * The regex pattern used to parse incoming form data
+	 */
 	protected static final transient Pattern s_pattern = Pattern.compile("exp-chk-(\\d+)");
 	
 	public ExperimentsPageCallback(Laboratory lab, LabAssistant assistant)
@@ -52,13 +78,27 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		return out;
 	}
 	
+	/**
+	 * Produces an HTML structure displaying a list of experiments
+	 * @param lab The lab that contains the experiments to display
+	 * @param assistant The lab assistant associated to the lab
+	 * @param ids A set of experiment IDs to display
+	 * @return A well-formatted HTML list of experiments
+	 */
 	public static String getExperimentList(Laboratory lab, LabAssistant assistant, Set<Integer> ids)
 	{
 		Vector<Integer> v_ids = new Vector<Integer>();
 		v_ids.addAll(ids);
 		return getExperimentList(lab, assistant, v_ids);
 	}
-	
+
+	/**
+	 * Produces an HTML structure displaying a list of experiments
+	 * @param lab The lab that contains the experiments to display
+	 * @param assistant The lab assistant associated to the lab
+	 * @param ids A list of experiment IDs to display
+	 * @return A well-formatted HTML list of experiments
+	 */
 	public static String getExperimentList(Laboratory lab, LabAssistant assistant, List<Integer> ids)
 	{
 		StringBuilder out = new StringBuilder();
@@ -103,14 +143,21 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				}
 				out.append("</td>");
 			}
-			out.append("<td>").append(getStatusIcon(assistant, e)).append("</td>");
+			out.append("<td>").append(getStatusIcon(e, assistant)).append("</td>");
 			out.append("</tr>\n");
 		}
 		out.append("</tbody>\n</table>\n");
 		return out.toString();
 	}
-	
-	public static String getStatusIcon(LabAssistant assistant, Experiment e)
+
+	/**
+	 * Produces an icon from the status of an experiment (e.g. "Failed",
+	 * "Ready", etc.)
+	 * @param e The experiment
+	 * @param assistant The assistant this experiment is associated with 
+	 * @return HTML code for the corresponding icon
+	 */
+	public static String getStatusIcon(Experiment e, LabAssistant assistant)
 	{
 		switch (e.getStatus())
 		{
@@ -144,7 +191,14 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		return "";
 	}
 	
-	public static String getStatusLabel(LabAssistant assistant, Experiment e)
+	/**
+	 * Produces a text label from the status of an experiment (e.g. "Failed",
+	 * "Ready", etc.)
+	 * @param e The experiment
+	 * @param assistant The assistant this experiment is associated with 
+	 * @return A label
+	 */
+	public static String getStatusLabel(Experiment e, LabAssistant assistant)
 	{
 		switch (e.getStatus())
 		{
@@ -178,6 +232,13 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		return "";		
 	}
 	
+	/**
+	 * Performs the "queue" action on every experiment selected in the
+	 * input form
+	 * @see {@link LabAssistant#queue(Experiment)}
+	 * @param params The input parameters of the HTML form
+	 * @return A message indicating the success of the operation
+	 */
 	protected String queue(Map<String,String> params)
 	{
 		int queued = 0;
@@ -198,6 +259,13 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		return "<p class=\"message info\"><span>" + queued + " experiment(s) added to the queue</span></p>";
 	}
 	
+	/**
+	 * Performs the "reset" action on every experiment selected in the
+	 * input form
+	 * @see {@link Experiment#reset()}
+	 * @param params The input parameters of the HTML form
+	 * @return A message indicating the success of the operation
+	 */
 	protected String reset(Map<String,String> params)
 	{
 		int queued = 0;
@@ -217,7 +285,14 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		}
 		return "<p class=\"message info\"><span>" + queued + " experiment(s) reset</span></p>";
 	}
-	
+
+	/**
+	 * Performs the "unqueue" action on every experiment selected in the
+	 * input form
+	 * @see {@link LabAssistant#unqueue(Experiment)}
+	 * @param params The input parameters of the HTML form
+	 * @return A message indicating the success of the operation
+	 */
 	protected String unqueue(Map<String,String> params)
 	{
 		int queued = 0;
@@ -237,7 +312,14 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		}
 		return "<p class=\"message info\"><span>Removed " + queued + " experiment(s) from the queue</span></p>";
 	}
-	
+
+	/**
+	 * Performs the "clean" action on every experiment selected in the
+	 * input form
+	 * @see {@link Experiment#clean()}
+	 * @param params The input parameters of the HTML form
+	 * @return A message indicating the success of the operation
+	 */
 	protected String clean(Map<String,String> params)
 	{
 		int queued = 0;

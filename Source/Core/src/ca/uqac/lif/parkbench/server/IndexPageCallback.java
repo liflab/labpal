@@ -1,3 +1,20 @@
+/*
+  ParkBench, a versatile benchmark environment
+  Copyright (C) 2015-2016 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.parkbench.server;
 
 import java.util.Map;
@@ -6,6 +23,13 @@ import ca.uqac.lif.parkbench.Experiment;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
 
+/**
+ * Callback for the home page, showing various statistics and basic
+ * data about the current lab.
+ * 
+ * @author Sylvain Hallé
+ *
+ */
 public class IndexPageCallback extends TemplatePageCallback
 {
 	public IndexPageCallback(Laboratory lab, LabAssistant assistant)
@@ -29,8 +53,15 @@ public class IndexPageCallback extends TemplatePageCallback
 		return out;
 	}
 	
+	/**
+	 * Produces a status bar indicating the relative completion of the
+	 * experiments in this lab.
+	 * @return HTML code for the status bar
+	 */
 	public String getBar()
 	{
+		// Width of the bar, in pixels
+		final int bar_width_px = 400;
 		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0;
 		for (int id : m_lab.getExperimentIds())
 		{
@@ -53,7 +84,7 @@ public class IndexPageCallback extends TemplatePageCallback
 			}
 		}
 		StringBuilder out = new StringBuilder();
-		int scale = 400 / num_ex;
+		int scale = bar_width_px / num_ex;
 		int num_remaining = num_ex - num_done - num_q - num_failed;
 		out.append("<ul id=\"progress-bar\" style=\"width:").append(num_ex * scale).append("px;\">");
 		out.append("<li class=\"done\" title=\"Done: ").append(num_done).append("\" style=\"width:").append(num_done * scale).append("px\"><span class=\"text-only\">Done: ").append(num_done).append("</span></li>");

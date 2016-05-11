@@ -33,7 +33,7 @@ import ca.uqac.lif.parkbench.plot.Table.Tabular;
  * its height corresponds to the share, with one group of bars for each
  * browser. To is done by writing:
  * <pre>
- * BarPlot plot = new BarPlot();
+ * PieChart plot = new PieChart();
  * ...
  * plot.useForX("market").useForY("share");
  * </pre>
@@ -42,7 +42,10 @@ import ca.uqac.lif.parkbench.plot.Table.Tabular;
  * <p>
  * Note that Gnuplot does not support pie charts; the drawing routine
  * implemented here was found on
- * <a href="http://gnuplot-surprising.blogspot.ca/2012/11/plot-pie-chart-using-gnuplot.html">StackOverflow</a>.
+ * <a href="http://gnuplot-surprising.blogspot.ca/2012/11/plot-pie-chart-using-gnuplot.html">Gnuplot
+ * Surprising</a>. Also note that currently, this chart only displays the
+ * "pie", but has no legend or labels.
+ * 
  * @author Sylvain Hallé
  *
  */

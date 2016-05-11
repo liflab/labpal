@@ -1,3 +1,20 @@
+/*
+  ParkBench, a versatile benchmark environment
+  Copyright (C) 2015-2016 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.parkbench.server;
 
 import java.text.SimpleDateFormat;
@@ -13,6 +30,12 @@ import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
 import ca.uqac.lif.parkbench.ParkbenchTui;
 
+/**
+ * Callback to display the details of one specific experiment.
+ * 
+ * @author Sylvain Hallé
+ *
+ */
 public class ExperimentPageCallback extends TemplatePageCallback
 {
 	protected static final SimpleDateFormat s_dateFormat = new SimpleDateFormat();
@@ -45,7 +68,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%EXP_NB%\\}", Integer.toString(experiment_nb));
 		out = out.replaceAll("\\{%EXP_START%\\}", formatDate(e.getStartTime()));
 		out = out.replaceAll("\\{%EXP_END%\\}", formatDate(e.getEndTime()));
-		out = out.replaceAll("\\{%EXP_STATUS%\\}", ExperimentsPageCallback.getStatusLabel(m_assistant, e));
+		out = out.replaceAll("\\{%EXP_STATUS%\\}", ExperimentsPageCallback.getStatusLabel(e, m_assistant));
 		out = out.replaceAll("\\{%EXP_ESTIMATE%\\}", ParkbenchTui.formatEta(e.getDurationEstimate(Laboratory.s_parkMips)));
 		if (e.getEndTime() > 0)
 		{
@@ -62,6 +85,11 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		return out;
 	}
 	
+	/**
+	 * Formats the date
+	 * @param timestamp A Unix timestamp 
+	 * @return A formatted date
+	 */
 	protected static String formatDate(long timestamp)
 	{
 		if (timestamp < 0)
@@ -71,6 +99,13 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		return s_dateFormat.format(new Date(timestamp));
 	}
 	
+	/**
+	 * Creates HTML code displaying (recursively) the experiment's parameters
+	 * @param e The current JSON element in the parameters
+	 * @param path The path in the experiment's parameters from the root
+	 * @param exp The experiment
+	 * @return A well-formatted HTML structure showing the parameters 
+	 */
 	public static StringBuilder renderHtml(JsonElement e, String path, Experiment exp)
 	{
 		StringBuilder out = new StringBuilder();
@@ -112,10 +147,5 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			out.append("</table>\n");
 		}
 		return out;
-	}
-	
-	public String getExperimentList()
-	{
-		return "";
 	}
 }

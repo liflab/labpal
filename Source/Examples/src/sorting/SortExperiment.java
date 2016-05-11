@@ -32,6 +32,7 @@ public abstract class SortExperiment extends Experiment
 	 */
 	protected static final transient String s_dataDir = "data/";
 	
+	
 	SortExperiment()
 	{
 		super();
@@ -69,7 +70,7 @@ public abstract class SortExperiment extends Experiment
 	{
 		// Generates a random list of integers of given size, and saves it
 		// to a file
-		Random random = new Random();
+		Random random = getRandom();
 		String filename = getDataFilename();
 		StringBuilder out = new StringBuilder();
 		int size = readInt("size");
@@ -101,6 +102,7 @@ public abstract class SortExperiment extends Experiment
 	@Override
 	public Status execute()
 	{
+		System.out.println("I AM RUNNING");
 		int[] array = getArray();
 		if (array == null)
 		{

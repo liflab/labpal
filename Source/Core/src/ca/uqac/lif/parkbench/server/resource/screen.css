@@ -246,6 +246,10 @@ table.exp-table td {
   background: url('images/status-queued-24.png') left center no-repeat;
 }
 
+.status-icon.status-prereq {
+  background: url('images/status-prereq-24.png') left center no-repeat;
+}
+
 .plot {
   width: 340px;
   height: 280px;

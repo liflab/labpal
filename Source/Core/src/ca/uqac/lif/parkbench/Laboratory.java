@@ -169,6 +169,7 @@ public abstract class Laboratory
 	{
 		e.setId(s_idCounter++);
 		m_experiments.add(e);
+		e.m_random = m_random;
 		for (Plot p : plots)
 		{
 			p.add(e);
@@ -336,6 +337,11 @@ public abstract class Laboratory
 			p.assignTo(lab);
 		}
 		lab.m_plots = m_plots;
+		// Don't forget to transplant the RNG
+		for (Experiment e : lab.m_experiments)
+		{
+			e.m_random = lab.m_random;
+		}
 		return lab;		
 	}
 

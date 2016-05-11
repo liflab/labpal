@@ -130,6 +130,7 @@ public class UploadCallback extends ParkBenchCallback
 					+ "lab.");
 			return cbr;
 		}
+		new_lab.setAssistant(m_assistant);
 		m_server.changeLab(new_lab);
 		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-ok.html");
 		file_contents = TemplatePageCallback.resolve(file_contents);

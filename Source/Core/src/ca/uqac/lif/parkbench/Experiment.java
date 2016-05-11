@@ -19,6 +19,7 @@ package ca.uqac.lif.parkbench;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import ca.uqac.lif.json.JsonElement;
@@ -91,6 +92,11 @@ public abstract class Experiment implements Runnable
 	 */
 	private String m_runBy;
 	
+	/**
+	 * A random number generator associated with this experiment
+	 */
+	transient Random m_random;
+	
 	public Experiment()
 	{
 		super();
@@ -100,6 +106,7 @@ public abstract class Experiment implements Runnable
 		m_runBy = "";
 		m_status = Status.DUNNO;
 		m_errorMessage = "";
+		m_random = null;
 	}
 	
 	public Experiment(JsonMap params)
@@ -423,7 +430,7 @@ public abstract class Experiment implements Runnable
 	 */
 	public synchronized final Status getStatus()
 	{
-		if (m_status == Status.DUNNO)
+		if (m_status == Status.DUNNO || m_status == Status.PREREQ_NOK)
 		{
 			if (prerequisitesFulfilled())
 			{
@@ -604,5 +611,14 @@ public abstract class Experiment implements Runnable
 		m_status = Status.FAILED;
 		m_errorMessage = "The experiment was manually interrupted";
 		return this;
+	}
+	
+	/**
+	 * Gets the random number generator for this experiment
+	 * @return The generator
+	 */
+	public final Random getRandom()
+	{
+		return m_random;
 	}
 }

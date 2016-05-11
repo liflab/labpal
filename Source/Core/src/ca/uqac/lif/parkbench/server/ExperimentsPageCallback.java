@@ -73,6 +73,14 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		{
 			message = reset(params);
 		}
+		if (params.containsKey("clean"))
+		{
+			message = clean(params);
+		}
+		if (params.containsKey("unqueue"))
+		{
+			message = unqueue(params);
+		}
 		out = out.replaceAll("\\{%MESSAGE%\\}", message);
 		out = out.replaceAll("\\{%EXP_LIST%\\}", getExperimentList(m_lab, m_assistant, m_lab.getExperimentIds()));
 		return out;
@@ -174,6 +182,10 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			{
 				return "<div class=\"status-icon status-queued\" title=\"Queued\"><span class=\"text-only\">Q</span></div>";
 			}
+			else
+			{
+				return "<div class=\"status-icon status-prereq\" title=\"Prerequisites not fulfilled\"><span class=\"text-only\">P</span></div>";
+			}
 		case PREREQ_OK:
 			if (assistant.isQueued(e.getId()))
 			{
@@ -214,6 +226,10 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			if (assistant.isQueued(e.getId()))
 			{
 				return "Queued";
+			}
+			else
+			{
+				return "Prerequisites not fulfilled";
 			}
 		case PREREQ_OK:
 			if (assistant.isQueued(e.getId()))
@@ -337,6 +353,6 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				}
 			}
 		}
-		return "<p class=\"message info\"><span>Cleaned" + queued + " experiment(s)</span></p>";
+		return "<p class=\"message info\"><span>Cleaned " + queued + " experiment(s)</span></p>";
 	}
 }

@@ -586,7 +586,12 @@ public abstract class Laboratory
 	}
 	
 	/**
-	 * Gives a textual description to the laboratory 
+	 * Gives a textual description to the laboratory.
+	 * @param description The description. This string must be
+	 *  valid HTML; in particular, HTML special characters
+	 *  (<tt>&amp;</tt>, <tt>&lt;</tt>, etc.) <em>must</em> be escaped;
+	 *  otherwise there may be problems displaying the description in
+	 *  the web interface.
 	 * @return This lab
 	 */
 	public final Laboratory setDescription(String description)

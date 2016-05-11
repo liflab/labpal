@@ -49,8 +49,9 @@ public class HomePageCallback extends TemplatePageCallback
 	@Override
 	public String fill(String page, Map<String,String> params)
 	{
-		String out = page.replaceAll("\\{%TITLE%\\}", m_lab.getTitle());
+		String out = page.replaceAll("\\{%TITLE%\\}", htmlEscape(m_lab.getTitle()));
 		out = out.replaceAll("\\{%SEL_HOME%\\}", "selected");
+		// We deliberately DON'T escape the description, as it is already valid HTML 
 		out = out.replaceAll("\\{%LAB_DESCRIPTION%\\}", m_labDescription);
 		return out;
 	}	

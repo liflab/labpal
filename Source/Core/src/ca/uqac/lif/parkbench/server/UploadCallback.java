@@ -147,6 +147,7 @@ public class UploadCallback extends ParkBenchCallback
 		file_contents = TemplatePageCallback.resolve(file_contents);
 		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Error uploading file");
 		file_contents = file_contents.replaceAll("\\{%MESSAGE%\\}", message);
+		file_contents = file_contents.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
 		cbr.setContents(file_contents);
 	}
 

@@ -83,7 +83,7 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 		{
 			out = out.replaceAll("\\{%EXP_LIST%\\}", ExperimentsPageCallback.getExperimentList(m_lab, m_assistant, queue));
 		}
-		out = out.replaceAll("\\{%ASSISTANT_NAME%\\}", m_assistant.getName());
+		out = out.replaceAll("\\{%ASSISTANT_NAME%\\}", htmlEscape(m_assistant.getName()));
 		out = out.replaceAll("\\{%SEL_ASSISTANT%\\}", "selected");
 		out = out.replaceAll("\\{%TIME_ESTIMATE%\\}", ParkbenchTui.formatEta(m_assistant.getTimeEstimate()));
 		if (m_assistant.isRunning())

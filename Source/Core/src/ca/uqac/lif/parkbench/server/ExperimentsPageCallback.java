@@ -143,11 +143,11 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				}
 				else if (val instanceof JsonString)
 				{
-					out.append(((JsonString) val).stringValue());
+					out.append(htmlEscape(((JsonString) val).stringValue()));
 				}
 				else
 				{
-					out.append(val.toString());
+					out.append(htmlEscape(val.toString()));
 				}
 				out.append("</td>");
 			}

@@ -74,9 +74,9 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		{
 			out = out.replaceAll("\\{%EXP_DURATION%\\}", ParkbenchTui.formatEta((e.getEndTime() - e.getStartTime()) / 1000f));
 		}
-		out = out.replaceAll("\\{%EXP_BY%\\}", e.getWhoRan());
+		out = out.replaceAll("\\{%EXP_BY%\\}", htmlEscape(e.getWhoRan()));
 		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters(), "", e).toString());
-		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", e.getDescription());
+		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", htmlEscape(e.getDescription()));
 		String error_msg = e.getErrorMessage();
 		if (!error_msg.isEmpty())
 		{
@@ -133,11 +133,11 @@ public class ExperimentPageCallback extends TemplatePageCallback
 				String p_desc = exp.getDescription(path_append);
 				if (p_desc.isEmpty())
 				{
-					out.append("<th>").append(k).append("</th>");
+					out.append("<th>").append(htmlEscape(k)).append("</th>");
 				}
 				else
 				{
-					out.append("<th class=\"with-desc\" title=\"").append(p_desc).append("\">").append(k).append("</th>");
+					out.append("<th class=\"with-desc\" title=\"").append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");
 				}
 				out.append("<td>");
 				JsonElement v = m.get(k);

@@ -60,4 +60,20 @@ public abstract class ParkBenchCallback extends RestCallback
 	{
 		m_lab = lab;
 	}
+	
+	/**
+	 * Escapes characters to HTML entities
+	 * @param s The input string
+	 * @return The escaped string
+	 */
+	public static String htmlEscape(String s)
+	{
+		if (s == null)
+			return s;
+		s = s.replaceAll("&", "&amp;");
+		s = s.replaceAll("<", "&lt;");
+		s = s.replaceAll(">", "&gt;");
+		return s;
+	}
+
 }

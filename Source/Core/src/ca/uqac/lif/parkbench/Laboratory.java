@@ -20,6 +20,8 @@ package ca.uqac.lif.parkbench;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.uqac.lif.azrael.SerializerException;
 import ca.uqac.lif.azrael.json.JsonSerializer;
@@ -91,6 +93,11 @@ public abstract class Laboratory
 	 * @see {@link #countParkMips()}
 	 */
 	public transient static float s_parkMips = countParkMips();
+	
+	/**
+	 * A (possibly long) textual description for what the lab does
+	 */
+	protected transient String m_description = null;
 	
 	/**
 	 * A random number generator associated with this lab
@@ -475,11 +482,12 @@ public abstract class Laboratory
 	 * simply quit. If your experiments
 	 * have prerequisites they can generate, don't use this method.
 	 *  
-	 * @return true if the tests can be run, false otherwise.
+	 * @return null if the tests <em>can</em> be run, a String with an
+	 *   explanation otherwise.
 	 */
-	public boolean isEnvironmentOk()
+	public String isEnvironmentOk()
 	{
-		return true;
+		return null;
 	}
 
 	/**
@@ -570,5 +578,43 @@ public abstract class Laboratory
 	{
 		return m_random;
 	}
-
+	
+	/**
+	 * Gives a textual description to the laboratory 
+	 * @return This lab
+	 */
+	public final Laboratory setDescription(String description)
+	{
+		m_description = description;
+		return this;
+	}
+	
+	/**
+	 * Gets the lab's textual description. This description is either the
+	 * text given in a previous call to {@link #setDescription(String)}, or,
+	 * if no such call was made, the contents of a file called
+	 * <tt>description.html</tt> that resides beside the lab. If no such file
+	 * exists, the empty string is returned.
+	 *  
+	 * @return The lab's description
+	 */
+	public final String getDescription()
+	{
+		if (m_description != null)
+		{
+			return m_description;
+		}
+		String s = FileHelper.internalFileToString(getClass(), "description.html");
+		if (s != null)
+		{
+			// Get only body
+			Pattern pat = Pattern.compile("<body.*?>(.*?)</body", Pattern.DOTALL);
+			Matcher mat = pat.matcher(s);
+			if (mat.find())
+			{
+				return mat.group(1);
+			}			
+		}
+		return "";
+	}
 }

@@ -1,0 +1,32 @@
+{!header.inc.html!}
+
+<h2>Lab info</h2>
+
+<table>
+<tr><th>Lab name:</th><td>{%LAB_NAME%}</td></tr>
+<tr><th>Lab assistant:</th><td>{%LAB_ASSISTANT%}</td></tr>
+<tr><th>Author:</th><td>{%LAB_AUTHOR%}</td></tr>
+<tr><th>Random seed:</th><td>{%LAB_SEED%}</td></tr>
+</table>
+
+<h2>Progress</h2>
+
+{%PROGRESS_BAR%}
+
+<form name="upload" method="post" enctype="multipart/form-data" action="upload">
+<a class="btn" id="btn-download" href="download">Save lab data</a>
+<input class="btn" id="btn-upload" type="submit" style="font-size:12pt;height:40px" value="Upload lab data"/>
+<input type="file" name="filename" size="40"/>
+</form>
+
+<h2>Environment parameters</h2>
+
+{%ENVIRONMENT_MESSAGE%}
+
+<table>
+<tr><th>OS name:</th><td>{%OS_NAME%}, version {%OS_VERSION%}</td></tr>
+<tr><th>Architecture:</th><td>{%OS_ARCH%}</td></tr>
+<tr><th>Relative speed:</th><td>{%SPEED_FACTOR%}</td></tr>
+</table>
+
+{!footer.inc.html!}

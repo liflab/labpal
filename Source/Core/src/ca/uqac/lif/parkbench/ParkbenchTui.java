@@ -181,7 +181,7 @@ public class ParkbenchTui
 		{
 			m_printer.print("\nWarning: Gnuplot was not found on your system");
 		}
-		if (!m_lab.isEnvironmentOk())
+		if (m_lab.isEnvironmentOk() != null)
 		{
 			m_printer.print("\nError: some of the environment requirements for this lab are not met");
 			m_printer.print("\nThis means you are missing something to run the experiments.");

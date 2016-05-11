@@ -30,17 +30,33 @@ import ca.uqac.lif.parkbench.Laboratory;
  * @author Sylvain Hallé
  *
  */
-public class IndexPageCallback extends TemplatePageCallback
+public class StatusPageCallback extends TemplatePageCallback
 {
-	public IndexPageCallback(Laboratory lab, LabAssistant assistant)
+	/**
+	 * If the lab's environment requirements are not met, the error message
+	 * is stored here. Since environment checks can be long, this check is
+	 * done only once, and the result is cached for future calls to this
+	 * class. 
+	 */
+	protected final transient String m_environmentMessage;
+	
+	/**
+	 * The description associated to the lab
+	 */
+	protected final transient String m_labDescription;
+	
+	public StatusPageCallback(Laboratory lab, LabAssistant assistant)
 	{
-		super("/index", lab, assistant);
+		super("/status", lab, assistant);
+		m_environmentMessage = lab.isEnvironmentOk();
+		m_labDescription = lab.getDescription();
 	}
 	
 	@Override
 	public String fill(String page, Map<String,String> params)
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", m_lab.getTitle());
+		out = out.replaceAll("\\{%LAB_DESCRIPTION%\\}", m_labDescription);
 		out = out.replaceAll("\\{%LAB_ASSISTANT%\\}", m_assistant.getName());
 		out = out.replaceAll("\\{%LAB_AUTHOR%\\}", m_lab.getAuthorName());
 		out = out.replaceAll("\\{%LAB_SEED%\\}", Integer.toString(m_lab.getRandomSeed()));
@@ -50,6 +66,13 @@ public class IndexPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%OS_ARCH%\\}", System.getProperty("os.arch"));
 		out = out.replaceAll("\\{%OS_VERSION%\\}", System.getProperty("os.version"));
 		out = out.replaceAll("\\{%PROGRESS_BAR%\\}", getBar());
+		if (m_environmentMessage != null)
+		{
+			out = out.replaceAll("\\{%ENVIRONMENT_MESSAGE%\\}", "<p class=\"message error\">" 
+					+ "<span>The lab's environment requirements are not met. " 
+					+ m_environmentMessage 
+					+ " This means you may not be able to run the experiments propertly.</span></p>");
+		}
 		return out;
 	}
 	

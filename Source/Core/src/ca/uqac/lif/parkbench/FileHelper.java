@@ -241,7 +241,6 @@ public class FileHelper
     }
     catch (IOException e)
     {
-      e.printStackTrace();
       return null;
     }
     return out;

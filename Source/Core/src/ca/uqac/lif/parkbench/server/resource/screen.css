@@ -71,6 +71,11 @@ h1 {
   padding-left: 56px;
 }
 
+#top-menu-status {
+  background: url('images/status-48.png') left center no-repeat;
+  padding-left: 56px;
+}
+
 #top-menu-experiments {
   background: url('images/erlenmeyer-48.png') left center no-repeat;
   padding-left: 56px;
@@ -86,6 +91,11 @@ h1 {
   padding-left: 56px;
 }
 
+#top-menu-help {
+  background: url('images/help-48.png') left center no-repeat;
+  padding-left: 56px;
+}
+
 #footer {
   position: fixed;
   height: 40px;
@@ -94,7 +104,7 @@ h1 {
   bottom: 0px;
   width: 100%;
   font-size: 80%;
-  background: #eee url('images/lif-24.png') right center no-repeat;
+  background: #eee url('images/lif-24.png') center right 8px no-repeat;
 }
 
 #footer a {
@@ -287,6 +297,7 @@ table.exp-table td {
   min-height: 48px;
   display: table-cell;
   vertical-align: middle;
+  margin-bottom: 12pt;
 }
 
 .message span {
@@ -300,7 +311,7 @@ table.exp-table td {
 }
 
 .message.error {
-  background: white url('images/error-32.png') left center no-repeat;
+  background: #fcc url('images/error-32.png') left center no-repeat;
 }
 
 #progress-bar {

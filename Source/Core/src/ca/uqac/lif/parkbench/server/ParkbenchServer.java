@@ -44,7 +44,8 @@ public class ParkbenchServer extends InnerFileServer
 		{
 			setServerPort(21212);
 		}
-		registerCallback(0, new IndexPageCallback(lab, assistant));
+		registerCallback(0, new StatusPageCallback(lab, assistant));
+		registerCallback(0, new HomePageCallback(lab, assistant));
 		registerCallback(0, new ExperimentPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentsPageCallback(lab, assistant));
 		registerCallback(0, new AssistantPageCallback(lab, assistant));
@@ -52,6 +53,7 @@ public class ParkbenchServer extends InnerFileServer
 		registerCallback(0, new PlotImageCallback(lab, assistant));
 		registerCallback(0, new DownloadCallback(lab, assistant));
 		registerCallback(0, new UploadCallback(this, lab, assistant));
+		registerCallback(0, new HelpPageCallback(lab, assistant));
 	}
 	
 	/**

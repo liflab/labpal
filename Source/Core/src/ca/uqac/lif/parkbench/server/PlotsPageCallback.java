@@ -49,6 +49,10 @@ public class PlotsPageCallback extends TemplatePageCallback
 		if (Plot.isGnuplotPresent())
 		{
 			out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
+			if (AllPlotsCallback.s_pdftkPresent)
+			{
+				out = out.replaceAll("\\{%ALL_PLOTS%\\}", "<p><a class=\"btn btn-all-plots\" title=\"Download all plots as a single PDF file\" href=\"all-plots\">Download all plots</a></p>");
+			}
 		}
 		else
 		{

@@ -294,5 +294,19 @@ public class FileHelper
     }
     return out.toString();
   }
+  
+	/**
+	 * Checks if a command exists in the system by attempting to run it
+	 * @param command The command's name
+	 * @return true if the command could execute, false otherwise
+	 */
+	public static boolean commandExists(String command)
+	{
+		// Check if Gnuplot is present
+		String[] args = {command, "--version"};
+		CommandRunner runner = new CommandRunner(args);
+		runner.run();
+		return runner.getErrorCode() == 0;
+	}
 
 }

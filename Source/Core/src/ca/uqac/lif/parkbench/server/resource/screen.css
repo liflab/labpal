@@ -290,6 +290,11 @@ table.exp-table td {
   padding-left: 32px;
 }
 
+.btn-all-plots {
+  background: #e0e0e0 url('images/pages-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
+}
+
 .with-desc {
   cursor: help;
 }

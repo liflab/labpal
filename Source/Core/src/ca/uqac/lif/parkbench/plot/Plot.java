@@ -21,6 +21,7 @@ import java.util.Calendar;
 
 import ca.uqac.lif.parkbench.CommandRunner;
 import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.parkbench.FileHelper;
 import ca.uqac.lif.parkbench.Laboratory;
 
 /**
@@ -135,7 +136,7 @@ public abstract class Plot
 	/**
 	 * Whether gnuplot is present on the system
 	 */
-	protected static transient final boolean s_gnuplotPresent = checkGnuplot();
+	protected static transient final boolean s_gnuplotPresent = FileHelper.commandExists(s_path);
 	
 	/**
 	 * The palette used to draw the graph
@@ -314,19 +315,6 @@ public abstract class Plot
 	public int getId()
 	{
 		return m_id;
-	}
-	
-	/**
-	 * Checks if Gnuplot is present by attempting to run it
-	 * @return true if Gnuplot is present, false otherwise
-	 */
-	protected static boolean checkGnuplot()
-	{
-		// Check if Gnuplot is present
-		String[] args = {s_path, "--version"};
-		CommandRunner runner = new CommandRunner(args);
-		runner.run();
-		return runner.getErrorCode() == 0;
 	}
 	
 	/**

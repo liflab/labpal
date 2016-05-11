@@ -224,6 +224,7 @@ table.exp-table td {
   display: inline-block;
   height: 24px;
   min-width: 24px;
+  margin-right: 12px;
 }
 
 .status-icon.status-done {
@@ -330,9 +331,9 @@ table.exp-table td {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  margin-bottom: 12pt;
   margin-right: 12pt;
-  float: left;
+  background: white;
+  display: inline-block;
 }
 
 #progress-bar li {

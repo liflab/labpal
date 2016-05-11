@@ -196,7 +196,9 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				return "<div class=\"status-icon status-ready\" title=\"Ready\"><span class=\"text-only\">r</span></div>";
 			}
 		case RUNNING:
-			return "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span></div>";
+			String out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span></div>";
+			out += getProgressionBar(e.getProgression());
+			return out;
 		default:
 			return "";		
 		}
@@ -241,7 +243,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				return "Ready";
 			}
 		case RUNNING:
-			return "Running";
+			return "Running " + getProgressionBar(e.getProgression());
 		default:
 			return "";		
 		}
@@ -354,5 +356,15 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			}
 		}
 		return "<p class=\"message info\"><span>Cleaned " + queued + " experiment(s)</span></p>";
+	}
+	
+	public static String getProgressionBar(float f)
+	{
+		float width = 50;
+		StringBuilder out = new StringBuilder();
+		out.append("<ul id=\"progress-bar\" style=\"width:").append(width).append("px\">");
+		out.append("<li class=\"done\" style=\"width:").append((int)(f * width)).append("px\"><span class=\"text-only\">").append(f*100).append("% completed</span></li>");
+		out.append("</ul>");
+		return out.toString();
 	}
 }

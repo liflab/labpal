@@ -78,6 +78,11 @@ public abstract class Experiment implements Runnable
 	private long m_endTime = -1;
 	
 	/**
+	 * An approximate measurement of the experiment's progression
+	 */
+	private transient float m_progression = 0;
+	
+	/**
 	 * If the experiment fails, the error message associated with the failure
 	 */
 	private String m_errorMessage;
@@ -620,5 +625,40 @@ public abstract class Experiment implements Runnable
 	public final Random getRandom()
 	{
 		return m_random;
+	}
+	
+	/**
+	 * Sets the current progression of the execution of the
+	 * experiment
+	 * @param p The current progression. This should be a value between
+	 *   0 (not done at all) and 1 (finished or failed)
+	 * @return This experiment
+	 */
+	public synchronized final Experiment setProgression(float p)
+	{
+		if (p >= 0 && p <= 1)
+			m_progression = p;
+		return this;
+	}
+	
+	/**
+	 * Gets the current progression of the execution of the
+	 * experiment
+	 * @return The current progression. This should be a value between
+	 *   0 (not done at all) and 1 (finished or failed)
+	 */
+	public synchronized final float getProgression()
+	{
+		Status s = getStatus();
+		if (s == Status.DONE)
+		{
+			return 1;
+		}
+		if (s == Status.PREREQ_F || s == Status.PREREQ_NOK || s == Status.FAILED)
+		{
+			return 0;
+		}
+		return m_progression;
+		
 	}
 }

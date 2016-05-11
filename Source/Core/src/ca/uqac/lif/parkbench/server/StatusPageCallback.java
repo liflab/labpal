@@ -109,7 +109,7 @@ public class StatusPageCallback extends TemplatePageCallback
 		StringBuilder out = new StringBuilder();
 		int scale = bar_width_px / num_ex;
 		int num_remaining = num_ex - num_done - num_q - num_failed;
-		out.append("<ul id=\"progress-bar\" style=\"width:").append(num_ex * scale).append("px;\">");
+		out.append("<ul id=\"progress-bar\" style=\"float:left;margin-bottom:20px;width:").append(num_ex * scale).append("px;\">");
 		out.append("<li class=\"done\" title=\"Done: ").append(num_done).append("\" style=\"width:").append(num_done * scale).append("px\"><span class=\"text-only\">Done: ").append(num_done).append("</span></li>");
 		out.append("<li class=\"queued\" title=\"Queued: ").append(num_q).append("\" style=\"width:").append(num_q * scale).append("px\"><span class=\"text-only\">Queued: ").append(num_q).append("</span></li>");
 		out.append("<li class=\"failed\" title=\"Failed/cancelled: ").append(num_failed).append("\" style=\"width:").append(num_failed * scale).append("px\"><span class=\"text-only\">Failed/cancelled: ").append(num_failed).append("</span></li>");

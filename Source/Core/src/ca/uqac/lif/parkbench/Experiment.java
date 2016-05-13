@@ -443,7 +443,7 @@ public abstract class Experiment implements Runnable
 	 */
 	public synchronized final Status getStatus()
 	{
-		if (m_status == Status.DUNNO || m_status == Status.PREREQ_NOK)
+		if (m_status == Status.DUNNO || m_status == Status.PREREQ_NOK || m_status == Status.PREREQ_OK)
 		{
 			if (prerequisitesFulfilled())
 			{

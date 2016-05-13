@@ -18,7 +18,6 @@
 package ca.uqac.lif.parkbench;
 
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,7 +106,7 @@ public abstract class Laboratory
 	/**
 	 * A random number generator associated with this lab
 	 */
-	private transient Random m_random = new Random(0);
+	private transient Random m_random = new Random();
 	
 	/**
 	 * The seed used to initialize the random number generator
@@ -596,7 +595,7 @@ public abstract class Laboratory
 	 */
 	public final Laboratory setRandomSeed(int seed)
 	{
-		m_random = new Random(seed);
+		m_random.setSeed(seed);
 		m_seed = seed;
 		return this;
 	}
@@ -614,7 +613,7 @@ public abstract class Laboratory
 	 * Gets a reference to the lab's random number generator
 	 * @return The generator
 	 */
-	public final Random getRandom()
+	public final ca.uqac.lif.parkbench.Random getRandom()
 	{
 		return m_random;
 	}

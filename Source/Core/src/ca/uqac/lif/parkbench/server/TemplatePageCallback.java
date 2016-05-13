@@ -66,7 +66,6 @@ public class TemplatePageCallback extends ParkBenchCallback
 		response.setContentType(accept_Header.split(",")[0]);
 		// Read file and put into response
 		String filename = s_path + m_path + ".html";
-		System.out.println("Reading " + filename);
 		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, filename);
 		
 		if (file_contents == null)

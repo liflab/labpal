@@ -1,6 +1,7 @@
 package browser;
 
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
+import ca.uqac.lif.parkbench.Group;
 import ca.uqac.lif.parkbench.plot.BarPlot;
 import ca.uqac.lif.parkbench.plot.PieChart;
 import ca.uqac.lif.parkbench.plot.Plot;
@@ -28,17 +29,18 @@ public class BrowserLab extends Laboratory
 		.setTitle("My bar plot").assignTo(this);
 		PieChart pc_ie = new PieChart();
 		pc_ie.useForX("market").useForY("share").setTitle("Market share for IE").assignTo(this);
-
-		add(new BrowserExperiment("IE", "video", 30), plot, stacked_plot, pc_ie);
-		add(new BrowserExperiment("IE", "audio", 10), plot, stacked_plot, pc_ie);
-		add(new BrowserExperiment("IE", "flash", 25), plot, stacked_plot, pc_ie);
-		add(new BrowserExperiment("IE", "html", 20), plot, stacked_plot, pc_ie);
-		add(new BrowserExperiment("IE", "js", 15), plot, stacked_plot, pc_ie);
+		Group group_ie = new Group("Experiments for IE");
+		add(new BrowserExperiment("IE", "video", 30), group_ie, plot, stacked_plot, pc_ie);
+		add(new BrowserExperiment("IE", "audio", 10), group_ie, plot, stacked_plot, pc_ie);
+		add(new BrowserExperiment("IE", "flash", 25), group_ie, plot, stacked_plot, pc_ie);
+		add(new BrowserExperiment("IE", "html", 20), group_ie, plot, stacked_plot, pc_ie);
+		add(new BrowserExperiment("IE", "js", 15), group_ie, plot, stacked_plot, pc_ie);
 		add(new BrowserExperiment("Firefox", "video", 20), plot, stacked_plot);
 		add(new BrowserExperiment("Firefox", "audio", 5), plot, stacked_plot);
 		add(new BrowserExperiment("Firefox", "flash", 35), plot, stacked_plot);
 		add(new BrowserExperiment("Firefox", "html", 30), plot, stacked_plot);
-		add(new BrowserExperiment("Firefox", "js", 10), plot, stacked_plot);		
+		add(new BrowserExperiment("Firefox", "js", 10), plot, stacked_plot);
+		add(group_ie);
 	}
 
 }

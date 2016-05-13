@@ -57,6 +57,11 @@ public abstract class Laboratory
 	 * The set of plots associated with this lab
 	 */
 	private transient HashSet<Plot> m_plots;
+	
+	/**
+	 * The set of groups associated with this lab
+	 */
+	private transient HashSet<Group> m_groups;
 
 	/**
 	 * The title given to this lab
@@ -127,6 +132,7 @@ public abstract class Laboratory
 		super();
 		m_experiments = new HashSet<Experiment>();
 		m_plots = new HashSet<Plot>();
+		m_groups = new HashSet<Group>();
 		m_assistant = null;
 		m_serializer = new JsonSerializer();
 		m_serializer.addClassLoader(ca.uqac.lif.parkbench.Laboratory.class.getClassLoader());
@@ -161,11 +167,12 @@ public abstract class Laboratory
 	/**
 	 * Adds an experiment to the lab
 	 * @param e The experiment
+	 * @param group The group to add this experiment to
 	 * @param plots Optional: a number of plots this experiment should be
 	 *   associated with
 	 * @return This lab
 	 */
-	public Laboratory add(Experiment e, Plot ... plots)
+	public Laboratory add(Experiment e, Group group, Plot ... plots)
 	{
 		e.setId(s_idCounter++);
 		m_experiments.add(e);
@@ -174,7 +181,23 @@ public abstract class Laboratory
 		{
 			p.add(e);
 		}
+		if (group != null)
+		{
+			group.add(e);
+		}
 		return this;
+	}
+	
+	/**
+	 * Adds an experiment to the lab
+	 * @param e The experiment
+	 * @param plots Optional: a number of plots this experiment should be
+	 *   associated with
+	 * @return This lab
+	 */
+	public Laboratory add(Experiment e, Plot ... plots)
+	{
+		return add(e, null, plots);
 	}
 
 	/**
@@ -308,8 +331,7 @@ public abstract class Laboratory
 		}
 		catch (JsonParseException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Do nothing
 		}
 		return null;
 	}
@@ -328,8 +350,7 @@ public abstract class Laboratory
 		}
 		catch (SerializerException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Do nothing
 		}
 		// Don't forget to transplant the plots
 		for (Plot p : m_plots)
@@ -367,6 +388,9 @@ public abstract class Laboratory
 	 */
 	public JsonElement saveToJson()
 	{
+		/* NOTE: this method should instead throw the exception and let
+		 * higher levels of the GUI handle it, rather than silently fail
+		 */
 		try
 		{
 			JsonElement js_out = m_serializer.serializeAs(this, this.getClass());
@@ -374,8 +398,7 @@ public abstract class Laboratory
 		}
 		catch (SerializerException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Do nothing
 		}
 		return null;
 	}
@@ -391,6 +414,17 @@ public abstract class Laboratory
 		{
 			m_serializer.addClassLoader(clazz.getClassLoader());
 		}
+		return this;
+	}
+	
+	/**
+	 * Adds a group to this lab
+	 * @param g The group
+	 * @return This lab
+	 */
+	public Laboratory add(Group g)
+	{
+		m_groups.add(g);
 		return this;
 	}
 
@@ -627,5 +661,30 @@ public abstract class Laboratory
 			}			
 		}
 		return "";
+	}
+	
+	/**
+	 * Gets the set of all groups in this lab
+	 * @return The set of groups
+	 */
+	public Set<Group> getGroups()
+	{
+		return m_groups;
+	}
+	
+	/**
+	 * Gets the set of all experiment IDs that don't belong to any
+	 * group.
+	 * @return The set of IDs
+	 */
+	public Set<Integer> getOrphanExperiments()
+	{
+		HashSet<Integer> out = new HashSet<Integer>();
+		out.addAll(getExperimentIds());
+		for (Group g : m_groups)
+		{
+			out.removeAll(g.getExperimentIds());
+		}
+		return out;
 	}
 }

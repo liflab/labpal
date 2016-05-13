@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.parkbench.Group;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
 
@@ -82,7 +83,25 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			message = unqueue(params);
 		}
 		out = out.replaceAll("\\{%MESSAGE%\\}", message);
-		out = out.replaceAll("\\{%EXP_LIST%\\}", getExperimentList(m_lab, m_assistant, m_lab.getExperimentIds()));
+		StringBuilder list_of_lists = new StringBuilder();
+		boolean has_groups = false;
+		for (Group g : m_lab.getGroups())
+		{
+			has_groups = true;
+			list_of_lists.append("<h3>").append(g.getName()).append("</h3>\n");
+			list_of_lists.append("<p class=\"group-description\">").append(g.getDescription()).append("</p>\n");
+			list_of_lists.append(getExperimentList(m_lab, m_assistant, g.getExperimentIds()));
+		}
+		Set<Integer> orphan_ids = m_lab.getOrphanExperiments();
+		if (!orphan_ids.isEmpty())
+		{
+			if (has_groups)
+			{
+				list_of_lists.append("<h3>Ungrouped</h3>\n");
+			}
+			list_of_lists.append(getExperimentList(m_lab, m_assistant, orphan_ids));
+		}
+		out = out.replaceAll("\\{%EXP_LIST%\\}", list_of_lists.toString());
 		return out;
 	}
 	
@@ -106,7 +125,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	 * @param assistant The lab assistant associated to the lab
 	 * @param ids A list of experiment IDs to display
 	 * @return A well-formatted HTML list of experiments
-	 */
+	 */	
 	public static String getExperimentList(Laboratory lab, LabAssistant assistant, List<Integer> ids)
 	{
 		StringBuilder out = new StringBuilder();
@@ -121,7 +140,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		param_list.addAll(param_set);
 		Collections.sort(param_list);
 		// Step 2: create the table
-		out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><th><input type=\"checkbox\" id=\"top-checkbox\" onclick=\"select_all();\"/></th><th>#</th>");
+		out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><td><input type=\"checkbox\" class=\"top-checkbox\" /></td><th>#</th>");
 		for (String p_name : param_list)
 		{
 			out.append("<th>").append(p_name).append("</th>");
@@ -131,7 +150,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		{
 			Experiment e = lab.getExperiment(id);
 			out.append("<tr>");
-			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
+			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
 			out.append("<td><a href=\"experiment?id=").append(id).append("\">").append(id).append("</a></td>");
 			for (String p_name : param_list)
 			{

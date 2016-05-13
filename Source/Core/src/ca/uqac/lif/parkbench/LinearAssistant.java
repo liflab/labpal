@@ -62,7 +62,6 @@ public class LinearAssistant extends LabAssistant
 		m_queue = new ArrayList<Experiment>();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void run()
 	{
@@ -104,6 +103,16 @@ public class LinearAssistant extends LabAssistant
 					Status s1  = e.getStatus();
 					if (s1 == Status.DONE || s == Status.FAILED)
 						break; // Move on to next experiment
+					long duration = System.currentTimeMillis() - e.getStartTime();
+					long max_duration = e.getMaxDuration();
+					if (max_duration > 0 && duration > max_duration)
+					{
+						// Experiment takes too long: kill it
+						m_experimentThread.interrupt();
+						e.kill();
+						m_queue.remove(0);
+						break;
+					}
 				}
 			}
 			else
@@ -113,7 +122,7 @@ public class LinearAssistant extends LabAssistant
 			}
 		}
 		// If some experiment is running, interrupt it
-		m_experimentThread.stop();
+		m_experimentThread.interrupt();
 		if (!m_queue.isEmpty())
 		{
 			Experiment e = m_queue.get(0);

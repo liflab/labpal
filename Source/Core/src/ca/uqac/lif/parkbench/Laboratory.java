@@ -686,4 +686,32 @@ public abstract class Laboratory
 		}
 		return out;
 	}
+	
+	/**
+	 * Fetches the groups an experiment belongs to
+	 * @param id The experiment's ID
+	 * @return The groups this experiment belongs to
+	 */
+	public Set<Group> getGroups(int id)
+	{
+		HashSet<Group> groups = new HashSet<Group>();
+		for (Group g : m_groups)
+		{
+			if (g.belongsTo(id))
+			{
+				groups.add(g);
+			}
+		}
+		return groups;
+	}
+	
+	/**
+	 * Fetches the groups an experiment belongs to
+	 * @param e The experiment
+	 * @return The groups this experiment belongs to
+	 */
+	public Set<Group> getGroup(Experiment e)
+	{
+		return getGroups(e.getId());
+	}
 }

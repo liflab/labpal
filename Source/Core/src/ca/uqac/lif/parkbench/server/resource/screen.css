@@ -371,3 +371,12 @@ table.exp-table td {
 #progress-bar .other {
   background-color: white;
 }
+
+h2.pulldown {
+  padding-left: 24px;
+  background: url('images/expanded-24.png') top left no-repeat;
+}
+
+h2.pulldown.closed {
+  background: url('images/collapsed-24.png') top left no-repeat;
+}

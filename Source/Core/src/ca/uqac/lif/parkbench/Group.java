@@ -132,6 +132,16 @@ public class Group
 	}
 	
 	/**
+	 * Checks if an experiment belongs to this group
+	 * @param id The experiment's ID
+	 * @return true if it is part of the group, false otherwise
+	 */
+	public boolean belongsTo(int id)
+	{
+		return m_members.contains(id);
+	}
+	
+	/**
 	 * Gets the set of IDs for experiments belonging to this group
 	 * @return The set of IDs
 	 */

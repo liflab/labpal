@@ -88,9 +88,12 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		for (Group g : m_lab.getGroups())
 		{
 			has_groups = true;
-			list_of_lists.append("<h3>").append(g.getName()).append("</h3>\n");
+			list_of_lists.append("<div class=\"around-pulldown\">\n");
+			list_of_lists.append("<h2 class=\"pulldown\" title=\"Click to show/hide the list of experiments for this group\">").append(g.getName()).append("</h2>\n");
 			list_of_lists.append("<p class=\"group-description\">").append(g.getDescription()).append("</p>\n");
+			list_of_lists.append("<div class=\"pulldown-contents\">\n");
 			list_of_lists.append(getExperimentList(m_lab, m_assistant, g.getExperimentIds()));
+			list_of_lists.append("</div></div>\n");
 		}
 		Set<Integer> orphan_ids = m_lab.getOrphanExperiments();
 		if (!orphan_ids.isEmpty())
@@ -194,6 +197,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			break;
 		case FAILED:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
+		case KILLED:
+			return "<div class=\"status-icon status-failed\" title=\"Timed out\"><span class=\"text-only\">K</span></div>";
 		case PREREQ_F:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
 		case PREREQ_NOK:
@@ -241,6 +246,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			break;
 		case FAILED:
 			return "Failed";
+		case KILLED:
+			return "Timed out";
 		case PREREQ_F:
 			return "Failed when generating prerequisites";
 		case PREREQ_NOK:

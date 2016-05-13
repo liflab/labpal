@@ -20,12 +20,14 @@ package ca.uqac.lif.parkbench.server;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.parkbench.Group;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
 import ca.uqac.lif.parkbench.ParkbenchTui;
@@ -77,10 +79,26 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%EXP_BY%\\}", htmlEscape(e.getWhoRan()));
 		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters(), "", e).toString());
 		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", htmlEscape(e.getDescription()));
+		String timeout_string = "No timeout";
+		if (e.getMaxDuration() > 0)
+		{
+			timeout_string = (e.getMaxDuration() / 1000) + " s";
+		}
+		out = out.replaceAll("\\{%EXP_TIMEOUT%\\}", timeout_string);
 		String error_msg = e.getErrorMessage();
 		if (!error_msg.isEmpty())
 		{
 			out = out.replaceAll("\\{%FAIL_MSG%\\}", "<h2>Error message</h2><pre>" + error_msg + "</pre>");
+		}
+		Set<Group> groups = m_lab.getGroups(experiment_nb);
+		String group_description = "";
+		for (Group g : groups)
+		{
+			group_description += g.getDescription();
+		}
+		if (!group_description.isEmpty())
+		{
+			out = out.replaceAll("\\{%GROUP_DESC%\\}", "<p class=\"group-description\">" + group_description + "</p>");
 		}
 		return out;
 	}

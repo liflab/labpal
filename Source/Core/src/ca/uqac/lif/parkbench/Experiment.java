@@ -40,7 +40,7 @@ public abstract class Experiment implements Runnable
 	/**
 	 * The status of the experiment
 	 */
-	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, DONE, FAILED};
+	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, DONE, FAILED, KILLED};
 
 	/**
 	 * The input parameters given to this experiment
@@ -61,6 +61,14 @@ public abstract class Experiment implements Runnable
 	 * A numerical value that uniquely identifies each experiment in a lab
 	 */
 	private int m_id;
+	
+	/**
+	 * The maximum duration for this experiment (in milliseconds).
+	 * If the experiment lasts longer than this duration, the lab assistant
+	 * can interrupt it. A negative value indicates that no timeout
+	 * applies.
+	 */
+	private long m_maxDuration = -1;
 	
 	/**
 	 * Association of experiment parameters with a short textual description 
@@ -615,6 +623,7 @@ public abstract class Experiment implements Runnable
 	{
 		m_status = Status.FAILED;
 		m_errorMessage = "The experiment was manually interrupted";
+		m_endTime = System.currentTimeMillis();
 		return this;
 	}
 	
@@ -659,6 +668,39 @@ public abstract class Experiment implements Runnable
 			return 0;
 		}
 		return m_progression;
-		
+	}
+	
+	/**
+	 * Gets the maximum duration for this experiment
+	 * @return The duration
+	 */
+	public final long getMaxDuration()
+	{
+		return m_maxDuration;
+	}
+	
+	/**
+	 * Sets the maximum duration for this experiment.
+	 * If the experiment lasts longer than this duration, the lab assistant
+	 * can interrupt it.
+	 * @return The duration, in milliseconds. A negative value indicates
+	 * that no timeout applies.
+	 */
+	public final Experiment setMaxDuration(long duration)
+	{
+		m_maxDuration = duration;
+		return this;
+	}
+	
+	/**
+	 * Interrupts the current experiment
+	 * @return This experiment
+	 */
+	public final Experiment kill()
+	{
+		m_status = Status.KILLED;
+		m_errorMessage = "The experiment was interrupted by the lab assistant because it was taking too long";
+		m_endTime = System.currentTimeMillis();
+		return this;
 	}
 }

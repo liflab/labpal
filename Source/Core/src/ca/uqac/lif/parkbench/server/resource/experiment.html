@@ -2,6 +2,8 @@
 
 <h2>About experiment #{%EXP_NB%}</h2>
 
+{%GROUP_DESC%}
+
 <p>{%EXP_DESCRIPTION%}</p>
 
 <table>
@@ -11,6 +13,7 @@
 <tr><th>Duration:</th><td>{%EXP_DURATION%}</td></tr>
 <tr><th>Executed by:</th><td>{%EXP_BY%}</td></tr>
 <tr><th>Estimated duration:</th><td>{%EXP_ESTIMATE%}</td></tr>
+<tr><th>Timeout:</th><td>{%EXP_TIMEOUT%}</td></tr>
 </table>
 
 <p><a class="btn btn-reset" title="Resets the state of this experiment" href="experiment?id={%EXP_NB%}&amp;reset">Reset</a>

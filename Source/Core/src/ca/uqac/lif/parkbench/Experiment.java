@@ -179,7 +179,7 @@ public abstract class Experiment implements Runnable
 	
 	/**
 	 * Sets the description for this experiment
-	 * @param d The description
+	 * @param d The description. It must be valid HTML.
 	 * @return This experiment
 	 */
 	public Experiment setDescription(String d)
@@ -191,7 +191,9 @@ public abstract class Experiment implements Runnable
 	
 	/**
 	 * Gets the description for this experiment
-	 * @return The description
+	 * @return The description. If you override this method, make sure it
+	 * outputs valid HTML. Its contents are <em>not</em> escaped by the
+	 * server.
 	 */
 	public String getDescription()
 	{

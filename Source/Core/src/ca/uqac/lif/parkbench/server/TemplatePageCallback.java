@@ -46,7 +46,7 @@ public class TemplatePageCallback extends ParkBenchCallback
 {
 	protected static final transient String s_path = "resource";
 	
-	protected static final transient Pattern s_pattern = Pattern.compile("\\{!(.*?)!\\}");
+	protected static final transient Pattern s_patternInclude = Pattern.compile("\\{!(.*?)!\\}");
 
 	public TemplatePageCallback(String prefix, Laboratory lab, LabAssistant assistant)
 	{
@@ -86,9 +86,9 @@ public class TemplatePageCallback extends ParkBenchCallback
 		return response;
 	}
 	
-	public static final String resolve(String s)
+	public static final String resolveInclude(String s)
 	{
-		Matcher mat = s_pattern.matcher(s);
+		Matcher mat = s_patternInclude.matcher(s);
 		Set<String> includes = new HashSet<String>();
 		while (mat.find())
 		{
@@ -103,10 +103,10 @@ public class TemplatePageCallback extends ParkBenchCallback
 		}
 		return s;
 	}
-	
+		
 	public final String render(String s, Map<String,String> params)
 	{
-		s = resolve(s);
+		s = resolveInclude(s);
 		s = fill(s, params);
 		if (s == null)
 		{
@@ -115,6 +115,7 @@ public class TemplatePageCallback extends ParkBenchCallback
 		s = s.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
 		s = s.replaceAll("\\{%LAB_NAME%\\}", m_lab.getTitle());
 		s = s.replaceAll("\\{%.*?%\\}", "");
+		s = s.replaceAll("\\{J.*?J\\}", "");
 		return s;
 	}
 	

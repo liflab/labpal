@@ -183,7 +183,7 @@ public abstract class Experiment implements Runnable
 	 * @param d The description
 	 * @return This experiment
 	 */
-	public final Experiment setDescription(String d)
+	public Experiment setDescription(String d)
 	{
 		if (d != null)
 			m_description = d;
@@ -194,9 +194,14 @@ public abstract class Experiment implements Runnable
 	 * Gets the description for this experiment
 	 * @return The description
 	 */
-	public final String getDescription()
+	public String getDescription()
 	{
 		return m_description;
+	}
+	
+	public static String getClassText()
+	{
+		return "A generic experiment";
 	}
 	
 	/**

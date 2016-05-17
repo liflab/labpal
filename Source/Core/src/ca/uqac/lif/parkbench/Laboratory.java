@@ -175,6 +175,7 @@ public abstract class Laboratory
 	{
 		e.setId(s_idCounter++);
 		m_experiments.add(e);
+		addClassToSerialize(e.getClass());
 		e.m_random = m_random;
 		for (Plot p : plots)
 		{
@@ -666,7 +667,7 @@ public abstract class Laboratory
 	 * Gets the set of all groups in this lab
 	 * @return The set of groups
 	 */
-	public Set<Group> getGroups()
+	public final Set<Group> getGroups()
 	{
 		return m_groups;
 	}
@@ -676,7 +677,7 @@ public abstract class Laboratory
 	 * group.
 	 * @return The set of IDs
 	 */
-	public Set<Integer> getOrphanExperiments()
+	public final Set<Integer> getOrphanExperiments()
 	{
 		HashSet<Integer> out = new HashSet<Integer>();
 		out.addAll(getExperimentIds());
@@ -692,7 +693,7 @@ public abstract class Laboratory
 	 * @param id The experiment's ID
 	 * @return The groups this experiment belongs to
 	 */
-	public Set<Group> getGroups(int id)
+	public final Set<Group> getGroups(int id)
 	{
 		HashSet<Group> groups = new HashSet<Group>();
 		for (Group g : m_groups)
@@ -710,8 +711,20 @@ public abstract class Laboratory
 	 * @param e The experiment
 	 * @return The groups this experiment belongs to
 	 */
-	public Set<Group> getGroup(Experiment e)
+	public final Set<Group> getGroup(Experiment e)
 	{
 		return getGroups(e.getId());
+	}
+	
+	/**
+	 * Attempts to get a reference to one of the classes defined in this
+	 * lab
+	 * @param name The fully qualified name of the class
+	 * @return The class, or null if the class could not be found
+	 * @throws ClassNotFoundException
+	 */
+	public final Class<?> findClass(String name) throws ClassNotFoundException
+	{
+		return m_serializer.findClass(name);
 	}
 }

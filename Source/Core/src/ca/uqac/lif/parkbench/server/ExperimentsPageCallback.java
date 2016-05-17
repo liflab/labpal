@@ -90,8 +90,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			has_groups = true;
 			list_of_lists.append("<div class=\"around-pulldown\">\n");
 			list_of_lists.append("<h2 class=\"pulldown\" title=\"Click to show/hide the list of experiments for this group\">").append(g.getName()).append("</h2>\n");
-			list_of_lists.append("<p class=\"group-description\">").append(g.getDescription()).append("</p>\n");
 			list_of_lists.append("<div class=\"pulldown-contents\">\n");
+			list_of_lists.append("<p class=\"group-description\">").append(g.getDescription()).append("</p>\n");
 			list_of_lists.append(getExperimentList(m_lab, m_assistant, g.getExperimentIds()));
 			list_of_lists.append("</div></div>\n");
 		}

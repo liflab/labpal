@@ -17,7 +17,12 @@
  */
 package ca.uqac.lif.parkbench.server;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
@@ -30,6 +35,8 @@ import ca.uqac.lif.parkbench.Laboratory;
  */
 public class HomePageCallback extends TemplatePageCallback
 {
+	protected static final transient Pattern s_patternExecute = Pattern.compile("\\{J(.*?)J\\}");
+	
 	/**
 	 * The description associated to the lab
 	 */
@@ -53,6 +60,70 @@ public class HomePageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%SEL_HOME%\\}", "selected");
 		// We deliberately DON'T escape the description, as it is already valid HTML 
 		out = out.replaceAll("\\{%LAB_DESCRIPTION%\\}", m_labDescription);
+		out = resolveClassText(out);
 		return out;
 	}	
+	
+	/**
+	 * Replaces all the bits of text of the form <tt>{J xyz J}</tt> by
+	 * a call to the static method <tt>xyz.getClassText()</tt>. If class
+	 * xyz does not exist or static method <tt>getClassText()</tt> does
+	 * not exist, the empty string is used for the replacement.
+	 * @param s The input HTML string
+	 * @return The same string with the replacements made
+	 */
+	public final String resolveClassText(String s)
+	{
+		Matcher mat = s_patternExecute.matcher(s);
+		Set<String> includes = new HashSet<String>();
+		while (mat.find())
+		{
+			includes.add(mat.group(1));
+		}
+		for (String filename : includes)
+		{
+			try 
+			{
+				Class<?> clazz = m_lab.findClass(filename.trim());
+				java.lang.reflect.Method method = clazz.getMethod("getClassText");
+				Object o_desc = method.invoke(null);
+				String description = (String) o_desc; 
+				if (description == null)
+					continue;
+				s = s.replace("{J" + filename + "J}", description);
+			} 
+			catch (ClassNotFoundException e) 
+			{
+				// Silently fail
+				e.printStackTrace();
+			}
+			catch (NoSuchMethodException e) 
+			{
+				// Silently fail
+				e.printStackTrace();
+			} 
+			catch (SecurityException e) 
+			{
+				// Silently fail
+				e.printStackTrace();
+			}
+			catch (IllegalAccessException e) 
+			{
+				// Silently fail
+				e.printStackTrace();
+			} 
+			catch (IllegalArgumentException e) 
+			{
+				// Silently fail
+				e.printStackTrace();
+			}
+			catch (InvocationTargetException e)
+			{
+				// Silently fail
+				e.printStackTrace();
+			}
+		}
+		return s;
+	}
+
 }

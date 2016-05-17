@@ -133,7 +133,7 @@ public class UploadCallback extends ParkBenchCallback
 		new_lab.setAssistant(m_assistant);
 		m_server.changeLab(new_lab);
 		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-ok.html");
-		file_contents = TemplatePageCallback.resolve(file_contents);
+		file_contents = TemplatePageCallback.resolveInclude(file_contents);
 		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "File uploaded");
 		cbr.setCode(CallbackResponse.HTTP_OK);
 		cbr.setContents(file_contents);
@@ -144,7 +144,7 @@ public class UploadCallback extends ParkBenchCallback
 	{
 		cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
 		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-nok.html");
-		file_contents = TemplatePageCallback.resolve(file_contents);
+		file_contents = TemplatePageCallback.resolveInclude(file_contents);
 		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Error uploading file");
 		file_contents = file_contents.replaceAll("\\{%MESSAGE%\\}", message);
 		file_contents = file_contents.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);

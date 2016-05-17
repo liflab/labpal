@@ -19,7 +19,6 @@ package ca.uqac.lif.parkbench;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import ca.uqac.lif.json.JsonElement;
@@ -108,7 +107,7 @@ public abstract class Experiment implements Runnable
 	/**
 	 * A random number generator associated with this experiment
 	 */
-	transient Random m_random;
+	transient ca.uqac.lif.parkbench.Random m_random;
 	
 	public Experiment()
 	{
@@ -636,7 +635,7 @@ public abstract class Experiment implements Runnable
 	 * Gets the random number generator for this experiment
 	 * @return The generator
 	 */
-	public final Random getRandom()
+	public final ca.uqac.lif.parkbench.Random getRandom()
 	{
 		return m_random;
 	}

@@ -36,6 +36,11 @@ import ca.uqac.lif.jerrydog.InnerFileServer;
 public class FileHelper
 {
 	/**
+	 * The system-dependent carriage return symbol
+	 */
+	public static final transient String CRLF = System.getProperty("line.separator");
+	
+	/**
 	 * Reads the contents of a file and puts it into a string.
 	 * @param f The file to read
 	 * @return The string with the file's contents, or the empty string if
@@ -284,7 +289,8 @@ public class FileHelper
       while (scanner.hasNextLine())
       {
         String line = scanner.nextLine();
-        out.append(line).append(System.getProperty("line.separator"));
+        out.append(line).append(CRLF);
+        //out.append(line).append("\n");
       }
     }
     finally

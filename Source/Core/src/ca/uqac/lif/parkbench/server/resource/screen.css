@@ -91,6 +91,11 @@ h1 {
   padding-left: 56px;
 }
 
+#top-menu-tables {
+  background: url('images/table-48.png') left center no-repeat;
+  padding-left: 56px;
+}
+
 #top-menu-help {
   background: url('images/help-48.png') left center no-repeat;
   padding-left: 56px;

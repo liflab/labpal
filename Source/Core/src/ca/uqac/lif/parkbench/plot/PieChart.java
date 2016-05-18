@@ -17,7 +17,8 @@
  */	
 package ca.uqac.lif.parkbench.plot;
 
-import ca.uqac.lif.parkbench.plot.Table.Tabular;
+import ca.uqac.lif.parkbench.table.ValueTable;
+import ca.uqac.lif.parkbench.table.Tabular;
 
 /**
  * Two-dimensional pie chart.
@@ -51,9 +52,9 @@ import ca.uqac.lif.parkbench.plot.Table.Tabular;
  */
 public class PieChart extends TwoDeePlot
 {
-	public PieChart()
+	public PieChart(ValueTable t)
 	{
-		super();
+		super(t);
 	}
 	
 	@Override

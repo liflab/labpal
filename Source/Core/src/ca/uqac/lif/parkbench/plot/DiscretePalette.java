@@ -17,6 +17,8 @@
 */
 package ca.uqac.lif.parkbench.plot;
 
+import ca.uqac.lif.parkbench.FileHelper;
+
 /**
  * Palette with a fixed number of colors
  */
@@ -34,12 +36,12 @@ public class DiscretePalette extends Palette
 	public String getDeclaration() 
 	{
 		StringBuilder out = new StringBuilder();
-		out.append("# line styles\n");
+		out.append("# line styles").append(FileHelper.CRLF);
 		for (int i = 0; i < m_colors.length; i++)
 		{
-			out.append("set style line ").append(i + 1).append(" lc rgb \"").append(m_colors[i]).append("\"\n");
+			out.append("set style line ").append(i + 1).append(" lc rgb \"").append(m_colors[i]).append("\"").append(FileHelper.CRLF);
 		}
-		out.append("set palette maxcolors ").append(m_colors.length).append("\n");
+		out.append("set palette maxcolors ").append(m_colors.length).append(FileHelper.CRLF);
 		out.append("set palette defined (");
 		for (int i = 0; i < m_colors.length; i++)
 		{
@@ -49,7 +51,7 @@ public class DiscretePalette extends Palette
 			}
 			out.append(i).append(" \"").append(m_colors[i]).append("\"");
 		}
-		out.append(")\n");
+		out.append(")").append(FileHelper.CRLF);
 		return out.toString();
 	}
 

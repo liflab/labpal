@@ -17,10 +17,9 @@
  */
 package ca.uqac.lif.parkbench.plot;
 
-import java.util.Vector;
-
+import ca.uqac.lif.parkbench.FileHelper;
+import ca.uqac.lif.parkbench.table.Table;
 import ca.uqac.lif.parkbench.table.Tabular;
-import ca.uqac.lif.parkbench.table.ValueTable;
 
 /**
  * Two-dimensional bar diagram, also called a "clustered histogram".
@@ -56,46 +55,17 @@ import ca.uqac.lif.parkbench.table.ValueTable;
  * @author Sylvain Hallé
  *
  */
-public class BarPlot extends TwoDeePlot
-{
-	/**
-	 * Whether the histogram is of type "row stacked".
-	 * @see {@link #rowStacked()}
-	 */
-	protected boolean m_rowStacked = false;
-	
+public class CandlesticksPlot extends TwoDeePlot
+{	
 	/**
 	 * The width of the box in the histogram. A value of -1 means the
 	 * default setting will be used.
 	 */
 	protected float m_boxWidth = 0.75f;
 	
-	public BarPlot(ValueTable t)
+	public CandlesticksPlot(Table t)
 	{
 		super(t);
-	}
-	
-	/**
-	 * Sets whether the histogram is of type "row stacked".
-	 * Using the example given above, the rowstacked setting will rather
-	 * produce this plot:
-	 * <pre>
-   * |                     # video
-   * |                     $ audio
-   * |    @                @ text
-   * |    @         @
-   * |    $         @ 
-   * |    $         $ 
-   * |    #         # 
-   * +----+---------+-----&gt;
-   *   Firefox     IE
-	 * </pre> 
-	 * @return This plot
-	 */
-	public BarPlot rowStacked()
-	{
-		m_rowStacked = true;
-		return this;
 	}
 	
 	/**
@@ -104,7 +74,7 @@ public class BarPlot extends TwoDeePlot
 	 * @param w The width (generally a value between 0 and 1)
 	 * @return This plot
 	 */
-	public BarPlot boxWidth(float w)
+	public CandlesticksPlot boxWidth(float w)
 	{
 		m_boxWidth = w;
 		return this;
@@ -113,45 +83,23 @@ public class BarPlot extends TwoDeePlot
 	@Override
 	public String toGnuplot(Terminal term, String lab_title)
 	{
-		Tabular tab = m_table.getTabular();
-		Vector<String> series = tab.getSeriesNames();
-		String csv_values = tab.toCsv();
+		Tabular tabu = m_table.getTabular();
+		String csv_values = tabu.toCsv();
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
 		out.append(getHeader(term, lab_title));
-		out.append("set xtics rotate out\n");
-		out.append("set style data histogram\n");
-		if (m_rowStacked)
-		{
-			out.append("set style histogram rowstacked\n");
-		}
-		else
-		{
-			out.append("set style histogram clustered gap 1\n");
-		}
+		out.append("unset key").append(FileHelper.CRLF);
+		out.append("set xrange [0:").append(tabu.getWidth()).append("]").append(FileHelper.CRLF);
 		if (m_boxWidth > 0)
 		{
-			out.append("set boxwidth ").append(m_boxWidth).append("\n");
+			out.append("set boxwidth ").append(m_boxWidth).append(FileHelper.CRLF);
 		}
-		out.append("set auto x\n");
-		out.append("set yrange [0:*]\n");
-		out.append("set style fill border rgb \"black\"\n");
-		out.append("plot");
-		for (int i = 0; i < series.size(); i++)
-		{
-			if (i > 0)
-			{
-				out.append(", ");
-			}
-			String s_name = series.get(i);
-			out.append(" \"-\" using ").append(i + 2).append(":xtic(1) title \"").append(s_name).append("\" ").append(getFillColor(i));
-		}
-		out.append("\n");
+		out.append("plot '-' using 7:4:3:5:4:xticlabels(1) with candlesticks whiskerbars").append(FileHelper.CRLF);
 		// In Gnuplot, if we use the special "-" filename, we must repeat
 		// the data as many times as we use it in the plot command; it does not remember it
-		for (int i = 0; i < series.size(); i++)
+		for (int i = 0; i < 1; i++)
 		{
-			out.append(csv_values).append("end\n");
+			out.append(csv_values).append("end").append(FileHelper.CRLF);
 		}
 		return out.toString();
 	}

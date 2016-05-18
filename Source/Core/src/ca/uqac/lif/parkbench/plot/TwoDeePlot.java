@@ -17,8 +17,8 @@
  */
 package ca.uqac.lif.parkbench.plot;
 
-import ca.uqac.lif.parkbench.Experiment;
-import ca.uqac.lif.parkbench.Laboratory;
+import ca.uqac.lif.parkbench.FileHelper;
+import ca.uqac.lif.parkbench.table.Table;
 
 public abstract class TwoDeePlot extends Plot
 {
@@ -50,35 +50,10 @@ public abstract class TwoDeePlot extends Plot
 	/**
 	 * Creates an empty 2D plot
 	 */
-	public TwoDeePlot()
+	public TwoDeePlot(Table t)
 	{
 		super();
-		m_table = new Table();
-	}
-	
-	@Override
-	public TwoDeePlot add(Experiment e)
-	{
-		m_table.addExperiment(e);
-		return this;
-	}
-	
-	@Override
-	public Plot assignTo(Laboratory a)
-	{
-		Table tab = new Table();
-		tab.m_xName = m_table.m_xName;
-		tab.m_yName = m_table.m_yName;
-		tab.m_seriesNames = m_table.m_seriesNames;
-		for (Experiment e : m_table.m_experiments)
-		{
-			int exp_id = e.getId();
-			Experiment new_e = a.getExperiment(exp_id);
-			tab.addExperiment(new_e);
-		}
-		m_table = tab;
-		super.assignTo(a);
-		return this;
+		m_table = t;
 	}
 	
 	/**
@@ -102,81 +77,40 @@ public abstract class TwoDeePlot extends Plot
 	}
 	
 	/**
-	 * Tells the plot to group experiment results into data series, according
-	 * to a parameter present in the experiments
-	 * @param param The input parameters in an experiment used to determine
-	 * to which data series it belongs
-	 * @return This plot
-	 */
-	public TwoDeePlot groupBy(String ... param)
-	{
-		m_table.groupBy(param);
-		return this;
-	}
-	
-	/**
-	 * Tells the plot what input parameter of the experiments to use as the
-	 * "x" value 
-	 * @param param The output parameter to use for the "x" value
+	 * Tells the plot the label for the "x" axis
 	 * @param label The label for the x axis in the resulting plot
 	 * @return This plot
 	 */
-	public TwoDeePlot useForX(String param, String label)
+	public TwoDeePlot labelX(String label)
 	{
-		m_table.useForX(param);
 		m_xLabel = label;
 		return this;
 	}
 	
 	/**
-	 * Tells the plot what input parameter of the experiments to use as the
-	 * "x" value 
-	 * @param param The output parameter to use for the "x" value
-	 * @return This plot
-	 */
-	public TwoDeePlot useForX(String param)
-	{
-		return useForX(param, "");
-	}
-	
-	/**
-	 * Tells the plot what input parameter of the experiments to use as the
-	 * "x" value 
-	 * @param param The output parameter to use for the "y" value
+	 * Tells the plot the label for the "y" axis
 	 * @param label The label for the y axis in the resulting plot
 	 * @return This plot
 	 */
-	public TwoDeePlot useForY(String param, String label)
+	public TwoDeePlot labelY(String label)
 	{
-		m_table.useForY(param);
 		m_yLabel = label;
 		return this;
 	}
-	
-	/**
-	 * Tells the plot what input parameter of the experiments to use as the
-	 * "x" value 
-	 * @param param The output parameter to use for the "y" value
-	 * @return This plot
-	 */
-	public TwoDeePlot useForY(String param)
-	{
-		return useForY(param, "");
-	}
-	
+		
 	@Override
 	public StringBuilder getHeader(Terminal term, String lab_title)
 	{
 		StringBuilder out = super.getHeader(term, lab_title);
-		out.append("set xlabel \"").append(m_xLabel).append("\"\n");
-		out.append("set ylabel \"").append(m_yLabel).append("\"\n");
+		out.append("set xlabel \"").append(m_xLabel).append("\"").append(FileHelper.CRLF);
+		out.append("set ylabel \"").append(m_yLabel).append("\"").append(FileHelper.CRLF);
 		if (m_logscaleX)
 		{
-			out.append("set logscale x\n");
+			out.append("set logscale x").append(FileHelper.CRLF);
 		}
 		if (m_logscaleY)
 		{
-			out.append("set logscale y\n");
+			out.append("set logscale y").append(FileHelper.CRLF);
 		}
 		return out;
 	}

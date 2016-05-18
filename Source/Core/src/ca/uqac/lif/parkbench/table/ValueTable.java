@@ -15,7 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.parkbench.plot;
+package ca.uqac.lif.parkbench.table;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,8 +27,9 @@ import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.parkbench.Laboratory;
 
-public class Table
+public class ValueTable extends Table
 {
 	/**
 	 * The set of experiments this table is supposed to handle
@@ -50,8 +51,7 @@ public class Table
 	 */
 	protected String m_yName;
 
-
-	public Table()
+	public ValueTable()
 	{
 		super();
 		m_experiments = new HashSet<Experiment>();
@@ -63,7 +63,7 @@ public class Table
 	 * @param e The experiment
 	 * @return This table
 	 */
-	public Table addExperiment(Experiment e)
+	public ValueTable add(Experiment e)
 	{
 		m_experiments.add(e);
 		return this;
@@ -76,7 +76,7 @@ public class Table
 	 * to which data series it belongs
 	 * @return This table
 	 */
-	public Table groupBy(String ... param)
+	public ValueTable groupBy(String ... param)
 	{
 		for (String p : param)
 		{
@@ -91,7 +91,7 @@ public class Table
 	 * @param param The output parameter to use for the "x" value
 	 * @return This table
 	 */
-	public Table useForX(String param)
+	public ValueTable useForX(String param)
 	{
 		m_xName = param;
 		return this;
@@ -103,7 +103,7 @@ public class Table
 	 * @param param The output parameter to use for the "y" value
 	 * @return This table
 	 */
-	public Table useForY(String param)
+	public ValueTable useForY(String param)
 	{
 		m_yName = param;
 		return this;
@@ -155,8 +155,7 @@ public class Table
 	
 	public Tabular getTabular()
 	{
-		Vector<String> series = new Vector<String>();
-		series.add("");
+		Vector<String> series = getSeriesNames();
 		Vector<String> x_values = getXValues();
 		Tabular t = getValues(series, x_values);
 		return t;
@@ -167,7 +166,7 @@ public class Table
 	 * experiments associated to this plot
 	 * @return The list of all series names
 	 */
-	protected Vector<String> getSeriesNames()
+	public Vector<String> getSeriesNames()
 	{
 		Vector<String> series = new Vector<String>();
 		for (Experiment e: m_experiments)
@@ -214,55 +213,6 @@ public class Table
 		return s_name;
 	}
 
-	/**
-	 * Gets the sorted list of all x values occurring in at least one experiment
-	 * @return The list of x values
-	 */
-	protected Vector<String> getXValues()
-	{
-		Vector<String> values = new Vector<String>();
-		for (Experiment e : m_experiments)
-		{
-			if (e == null)
-				continue;
-			// Check if value is a list
-			JsonElement je = e.read(m_xName);
-			if (je instanceof JsonList)
-			{
-				// Yes: add all values of that list
-				JsonList jl = (JsonList) je;
-				for (JsonElement jel : jl)
-				{
-					String f_val;
-					if (jel instanceof JsonString)
-					{
-						f_val = ((JsonString) jel).stringValue();
-					}
-					else
-					{
-						f_val = jel.toString();
-					}
-					if (!values.contains(f_val))
-					{
-						values.add(f_val);
-					}
-				}
-			}
-			else
-			{
-				// No: add that single value
-				String f_val = e.readString(m_xName);
-				if (f_val == null)
-					continue;
-				if (!values.contains(f_val))
-				{
-					values.add(f_val);
-				}
-			}
-		}
-		Collections.sort(values, new XComparator());
-		return values;
-	}
 
 	/**
 	 * Creates a map
@@ -327,114 +277,100 @@ public class Table
 		}
 		return je.toString();
 	}
-
-	protected static class Tabular
+	
+	/**
+	 * Checks if a given string contains a number
+	 * @param s The string
+	 * @return true if it contains a number, false otherwise
+	 */
+	public static boolean isNumeric(String s)
 	{
-		Vector<String> m_columnHeaders = new Vector<String>();
-		Vector<String> m_lineHeaders = new Vector<String>();
-		String[][] m_values;
-
-		public Tabular(Vector<String> column_headers, Vector<String> line_headers)
+		if (s == null)
 		{
-			super();
-			m_columnHeaders.addAll(column_headers);
-			m_lineHeaders.addAll(line_headers);
-			m_values = new String[m_lineHeaders.size()][m_columnHeaders.size()];
+			return false;
 		}
-
-		public Tabular put(String line, String column, String value)
+		try
 		{
-			int p_l = m_lineHeaders.indexOf(line);
-			int p_c = m_columnHeaders.indexOf(column);
-			m_values[p_l][p_c] = value;
-			return this;
+			Float.parseFloat(s);
+			return true;
 		}
-
-		public String get(String line, String column)
+		catch (NumberFormatException nfe)
 		{
-			int p_l = m_lineHeaders.indexOf(line);
-			int p_c = m_columnHeaders.indexOf(column);
-			return m_values[p_l][p_c];
-		}
-
-		public Tabular transpose()
-		{
-			// Swap lines and columns
-			Vector<String> temp = m_lineHeaders;
-			m_lineHeaders = m_columnHeaders;
-			m_columnHeaders = temp;
-			// Transpose the array of values
-			String[][] transposed = new String[m_values[0].length][m_values.length];
-			for (int i = 0; i < m_values.length; i++)
-			{
-				for (int j = 0; j < m_values[0].length; j++)
-				{
-					transposed[j][i] = m_values[i][j];
-				}
-			}
-			m_values = transposed;
-			return this;
-		}
-		
-		/**
-		 * Replaces the content of each entry by its fraction of the
-		 * sum of all values for the column
-		 */
-		public void normalizeColumns()
-		{
-			if (m_values.length == 0)
-			{
-				return;
-			}
-			for (int j = 0; j < m_values[0].length; j++)
-			{
-				float total = 0;
-				for (int i = 0; i < m_values.length; i++)
-				{
-					total += Float.parseFloat(m_values[i][j]);
-				}
-				for (int i = 0; i < m_values.length; i++)
-				{
-					m_values[i][j] = Float.toString(Float.parseFloat(m_values[i][j]) / total);
-				}
-			}
-		}
-
-		/**
-		 * Returns the contents of the table as a CSV string.
-		 * @param series The data series in the table 
-		 * @return A CSV string
-		 */
-		public String toCsv()
-		{
-			StringBuilder out = new StringBuilder();
-			for (String x : m_lineHeaders)
-			{
-				if (isNumeric(x))
-					out.append(x);
-				else
-				{
-					out.append("\"" + x + "\"");
-				}
-				for (String s : m_columnHeaders)
-				{
-					out.append(Plot.s_datafileSeparator);
-					String val = get(x,s);
-					if (val != null)
-					{
-						out.append(val);
-					}
-					else
-					{
-						out.append(Plot.s_datafileMissing);
-					}
-				}
-				out.append("\n");
-			}
-			return out.toString();
+			return false;
 		}
 	}
 	
+	/**
+	 * Assigns this table to a laboratory
+	 * @param a The assistant
+	 * @return This table
+	 */
+	public ValueTable assignTo(Laboratory a)
+	{
+		m_lab = a;
+		a.add(this);
+		HashSet<Experiment> exps = new HashSet<Experiment>();
+		for (Experiment e : m_experiments)
+		{
+			int exp_id = e.getId();
+			Experiment new_e = a.getExperiment(exp_id);
+			exps.add(new_e);
+		}
+		m_experiments = exps;
+		return this;
+	}
+	
+	/**
+	 * Gets the sorted list of all x values occurring in at least one experiment
+	 * @return The list of x values
+	 */
+	public Vector<String> getXValues()
+	{
+		Vector<String> values = new Vector<String>();
+		for (Experiment e : m_experiments)
+		{
+			if (e == null)
+				continue;
+			// Check if value is a list
+			JsonElement je = e.read(m_xName);
+			if (je instanceof JsonList)
+			{
+				// Yes: add all values of that list
+				JsonList jl = (JsonList) je;
+				for (JsonElement jel : jl)
+				{
+					String f_val;
+					if (jel instanceof JsonString)
+					{
+						f_val = ((JsonString) jel).stringValue();
+					}
+					else
+					{
+						f_val = jel.toString();
+					}
+					if (!values.contains(f_val))
+					{
+						values.add(f_val);
+					}
+				}
+			}
+			else
+			{
+				// No: add that single value
+				String f_val = e.readString(m_xName);
+				if (f_val == null)
+					continue;
+				if (!values.contains(f_val))
+				{
+					values.add(f_val);
+				}
+			}
+		}
+		Collections.sort(values, new XComparator());
+		return values;
+	}
+
+		
 	protected class XComparator implements Comparator<String>
 	{
 		@Override
@@ -451,24 +387,6 @@ public class Table
 				// We are comparing strings
 				return arg0.compareTo(arg1);
 			}
-		}
-	}
-	
-	/**
-	 * Checks if a given string contains a number
-	 * @param s The string
-	 * @return true if it contains a number, false otherwise
-	 */
-	public static boolean isNumeric(String s)
-	{
-		try
-		{
-			Float.parseFloat(s);
-			return true;
-		}
-		catch (NumberFormatException nfe)
-		{
-			return false;
 		}
 	}
 }

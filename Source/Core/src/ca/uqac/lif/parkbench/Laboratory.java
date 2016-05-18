@@ -31,6 +31,8 @@ import ca.uqac.lif.parkbench.CliParser.Argument;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.Plot;
 import ca.uqac.lif.parkbench.server.ParkbenchServer;
+import ca.uqac.lif.parkbench.table.Table;
+import ca.uqac.lif.parkbench.table.ValueTable;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**
@@ -122,6 +124,11 @@ public abstract class Laboratory
 	 * The serializer used to save/load the assistant's status
 	 */
 	private transient JsonSerializer m_serializer;
+	
+	/**
+	 * The set of tables associated to this lab
+	 */
+	private HashSet<Table> m_tables;
 
 	/**
 	 * Creates a new lab assistant
@@ -131,6 +138,7 @@ public abstract class Laboratory
 		super();
 		m_experiments = new HashSet<Experiment>();
 		m_plots = new HashSet<Plot>();
+		m_tables = new HashSet<Table>();
 		m_groups = new HashSet<Group>();
 		m_assistant = null;
 		m_serializer = new JsonSerializer();
@@ -171,13 +179,13 @@ public abstract class Laboratory
 	 *   associated with
 	 * @return This lab
 	 */
-	public Laboratory add(Experiment e, Group group, Plot ... plots)
+	public Laboratory add(Experiment e, Group group, ValueTable ... tables)
 	{
 		e.setId(s_idCounter++);
 		m_experiments.add(e);
 		addClassToSerialize(e.getClass());
 		e.m_random = m_random;
-		for (Plot p : plots)
+		for (ValueTable p : tables)
 		{
 			p.add(e);
 		}
@@ -191,13 +199,13 @@ public abstract class Laboratory
 	/**
 	 * Adds an experiment to the lab
 	 * @param e The experiment
-	 * @param plots Optional: a number of plots this experiment should be
+	 * @param plots Optional: a number of tables this experiment should be
 	 *   associated with
 	 * @return This lab
 	 */
-	public Laboratory add(Experiment e, Plot ... plots)
+	public Laboratory add(Experiment e, ValueTable ... tables)
 	{
-		return add(e, null, plots);
+		return add(e, null, tables);
 	}
 
 	/**
@@ -223,6 +231,17 @@ public abstract class Laboratory
 		m_plots.add(p);
 		return this;
 	}
+	
+	/**
+	 * Assigns a table to this lab
+	 * @param t The table
+	 * @return This lab
+	 */
+	public Laboratory add(Table t)
+	{
+		m_tables.add(t);
+		return this;
+	}
 
 	/**
 	 * Gets the IDs of all the plots for this lab assistant
@@ -232,6 +251,20 @@ public abstract class Laboratory
 	{
 		Set<Integer> ids = new HashSet<Integer>();
 		for (Plot p : m_plots)
+		{
+			ids.add(p.getId());
+		}
+		return ids;
+	}
+	
+	/**
+	 * Gets the IDs of all the tables for this lab assistant
+	 * @return The set of IDs
+	 */
+	public Set<Integer> getTableIds()
+	{
+		Set<Integer> ids = new HashSet<Integer>();
+		for (Table p : m_tables)
 		{
 			ids.add(p.getId());
 		}
@@ -726,5 +759,22 @@ public abstract class Laboratory
 	public final Class<?> findClass(String name) throws ClassNotFoundException
 	{
 		return m_serializer.findClass(name);
+	}
+
+	/**
+	 * Gets the table with given ID
+	 * @param table_id The table ID
+	 * @return The table, <tt>null</tt> if not found
+	 */
+	public Table getTable(int table_id)
+	{
+		for (Table t : m_tables)
+		{
+			if (t.getId() == table_id)
+			{
+				return t;
+			}
+		}
+		return null;
 	}
 }

@@ -55,6 +55,8 @@ public class ParkbenchServer extends InnerFileServer
 		registerCallback(0, new UploadCallback(this, lab, assistant));
 		registerCallback(0, new HelpPageCallback(lab, assistant));
 		registerCallback(0, new AllPlotsCallback(lab, assistant));
+		registerCallback(0, new TablesPageCallback(lab, assistant));
+		registerCallback(0, new TablePageCallback(lab, assistant));
 	}
 	
 	/**

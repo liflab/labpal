@@ -4,8 +4,8 @@ $(document).ready(function() {
     });
     $("table.exp-table").tablesorter();
     $(".pulldown-contents").hide();
-    $("h2.pulldown").addClass("closed");
-    $("h2.pulldown").click(function() {
+    $(".pulldown").addClass("closed");
+    $(".pulldown").click(function() {
       $(this).toggleClass("closed");
       $(this).closest("div.around-pulldown").find(".pulldown-contents").toggle();
     });

@@ -78,7 +78,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		out = out.replaceAll("\\{%EXP_BY%\\}", htmlEscape(e.getWhoRan()));
 		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters(), "", e).toString());
-		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", e.getDescription());
+		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", "<div class=\"description\">" + e.getDescription() + "</div>");
 		String timeout_string = "No timeout";
 		if (e.getMaxDuration() > 0)
 		{
@@ -96,9 +96,9 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		{
 			group_description += g.getDescription();
 		}
-		if (!group_description.isEmpty())
+		if (!group_description.trim().isEmpty())
 		{
-			out = out.replaceAll("\\{%GROUP_DESC%\\}", "<p class=\"group-description\">" + group_description + "</p>");
+			out = out.replaceAll("\\{%GROUP_DESC%\\}", "<div class=\"around-pulldown\">\n<h3 class=\"pulldown\">Generic description</h3>\n<div class=\"pulldown-contents\">" + group_description + "</div></div>");
 		}
 		return out;
 	}

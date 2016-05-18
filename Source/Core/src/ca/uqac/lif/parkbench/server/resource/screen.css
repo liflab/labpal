@@ -372,11 +372,11 @@ table.exp-table td {
   background-color: white;
 }
 
-h2.pulldown {
+.pulldown {
   padding-left: 24px;
   background: url('images/expanded-24.png') top left no-repeat;
 }
 
-h2.pulldown.closed {
+.pulldown.closed {
   background: url('images/collapsed-24.png') top left no-repeat;
 }

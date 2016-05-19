@@ -19,8 +19,8 @@ package ca.uqac.lif.parkbench.plot;
 
 import java.util.Vector;
 
-import ca.uqac.lif.parkbench.table.Tabular;
-import ca.uqac.lif.parkbench.table.ValueTable;
+import ca.uqac.lif.parkbench.table.ConcreteTable;
+import ca.uqac.lif.parkbench.table.ExperimentTable;
 
 /**
  * Two-dimensional bar diagram, also called a "clustered histogram".
@@ -70,7 +70,7 @@ public class BarPlot extends TwoDeePlot
 	 */
 	protected float m_boxWidth = 0.75f;
 	
-	public BarPlot(ValueTable t)
+	public BarPlot(ExperimentTable t)
 	{
 		super(t);
 	}
@@ -113,7 +113,7 @@ public class BarPlot extends TwoDeePlot
 	@Override
 	public String toGnuplot(Terminal term, String lab_title)
 	{
-		Tabular tab = m_table.getTabular();
+		ConcreteTable tab = m_table.getConcreteTable();
 		Vector<String> series = tab.getSeriesNames();
 		String csv_values = tab.toCsv();
 		// Build GP string from table

@@ -1,8 +1,28 @@
+/*
+  ParkBench, a versatile benchmark environment
+  Copyright (C) 2015-2016 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.parkbench.table;
 
+import java.util.Collections;
 import java.util.Vector;
 
-public class CandlesticksTransform extends TabularTransform 
+import ca.uqac.lif.parkbench.NumberHelper;
+
+public class CandlesticksTransform extends TableTransform 
 {
 	
 	public CandlesticksTransform(Table t)
@@ -11,9 +31,9 @@ public class CandlesticksTransform extends TabularTransform
 	}
 
 	@Override
-	public Tabular getTabular()
+	public ConcreteTable getConcreteTable()
 	{
-		Tabular tab = m_inputTable.getTabular();
+		ConcreteTable tab = m_inputTable.getConcreteTable();
 		Vector<String> series_names = tab.m_columnHeaders;
 		Vector<String> x_values = tab.m_lineHeaders;
 		Vector<String> columns = new Vector<String>();
@@ -23,40 +43,32 @@ public class CandlesticksTransform extends TabularTransform
 		columns.add("q3");
 		columns.add("box-high");
 		columns.add("dummy");
-		Tabular out_tabu = new Tabular(columns, series_names);
+		ConcreteTable out_tabu = new ConcreteTable(columns, series_names);
 		for (int i = 0; i < series_names.size(); i++)
 		{
-			float max = -1000000;
-			float min = 1000000;
-			float sum = 0;
-			float nb_val = 0;
-			boolean seen_value = false;
+			Vector<Float> values = new Vector<Float>();
 			for (int j = 0; j < x_values.size(); j++)
 			{
 				String v_s = tab.m_values[j][i];
-				if (!ValueTable.isNumeric(v_s))
+				if (!NumberHelper.isNumeric(v_s))
 				{
 					continue;
 				}
-				seen_value = true;
 				Float v_f = Float.parseFloat(v_s);
-				nb_val++;
-				sum += v_f;
-				max = Math.max(max, v_f);
-				min = Math.min(min, v_f);
+				values.add(v_f);
 			}
-			float avg = sum / nb_val;
-			if (seen_value)
+			if (!values.isEmpty())
 			{
-				out_tabu.put(series_names.get(i), "box-min", Float.toString(min));
-				out_tabu.put(series_names.get(i), "q1", Float.toString(min));
-				out_tabu.put(series_names.get(i), "q2", Float.toString(avg));
-				out_tabu.put(series_names.get(i), "q3", Float.toString(max));
-				out_tabu.put(series_names.get(i), "box-high", Float.toString(max));
+				Collections.sort(values);
+				float num_vals = values.size();
+				out_tabu.put(series_names.get(i), "box-min", Float.toString(values.firstElement()));
+				out_tabu.put(series_names.get(i), "q1", Float.toString(values.get((int)(num_vals * 0.25))));
+				out_tabu.put(series_names.get(i), "q2", Float.toString(values.get((int)(num_vals * 0.5))));
+				out_tabu.put(series_names.get(i), "q3", Float.toString(values.get((int)(num_vals * 0.75))));
+				out_tabu.put(series_names.get(i), "box-high", Float.toString(values.lastElement()));
 			}
 			out_tabu.put(series_names.get(i), "dummy", Integer.toString(i + 1));
 		}
 		return out_tabu;
 	}
-
 }

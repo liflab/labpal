@@ -19,8 +19,8 @@ package ca.uqac.lif.parkbench.plot;
 
 import java.util.Vector;
 
-import ca.uqac.lif.parkbench.table.Tabular;
-import ca.uqac.lif.parkbench.table.ValueTable;
+import ca.uqac.lif.parkbench.table.ConcreteTable;
+import ca.uqac.lif.parkbench.table.ExperimentTable;
 
 /**
  * A two-dimensional plot showing (x,y) values for multiple data series.
@@ -41,7 +41,7 @@ public class Scatterplot extends TwoDeePlot
 	/**
 	 * Creates an empty scatterplot
 	 */
-	public Scatterplot(ValueTable t)
+	public Scatterplot(ExperimentTable t)
 	{
 		super(t);
 	}
@@ -93,9 +93,9 @@ public class Scatterplot extends TwoDeePlot
 	@Override
 	public String toGnuplot(Terminal term, String lab_title)
 	{
-		Tabular tab = m_table.getTabular();
+		ConcreteTable tab = m_table.getConcreteTable();
 		Vector<String> series = tab.getSeriesNames();
-		String csv_values = m_table.getTabular().toCsv();
+		String csv_values = m_table.getConcreteTable().toCsv();
 		String point_string = " with points";
 		if (m_withLines)
 		{

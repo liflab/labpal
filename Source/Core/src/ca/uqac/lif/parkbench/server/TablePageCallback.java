@@ -22,7 +22,7 @@ import java.util.Map;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
 import ca.uqac.lif.parkbench.table.Table;
-import ca.uqac.lif.parkbench.table.Tabular;
+import ca.uqac.lif.parkbench.table.ConcreteTable;
 
 /**
  * Callback producing an image from one of the lab's plots, in various
@@ -56,8 +56,9 @@ public class TablePageCallback extends TemplatePageCallback
 		{
 			return null;
 		}
-		Tabular tbl = tab.getTabular();
-		s = s.replaceAll("\\{%TABLE%\\}", tbl.toCsv());
+		ConcreteTable tbl = tab.getConcreteTable();
+		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
+		s = s.replaceAll("\\{%TABLE%\\}", tbl.toHtml());
 		return s;
 	}
 }

@@ -29,7 +29,10 @@ import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.parkbench.Experiment;
 import ca.uqac.lif.parkbench.Laboratory;
 
-public class ValueTable extends Table
+/**
+ * Table whose values are taken from the results of one or more experiments.
+ */
+public class ExperimentTable extends Table
 {
 	/**
 	 * The set of experiments this table is supposed to handle
@@ -51,7 +54,7 @@ public class ValueTable extends Table
 	 */
 	protected String m_yName;
 
-	public ValueTable()
+	public ExperimentTable()
 	{
 		super();
 		m_experiments = new HashSet<Experiment>();
@@ -63,7 +66,7 @@ public class ValueTable extends Table
 	 * @param e The experiment
 	 * @return This table
 	 */
-	public ValueTable add(Experiment e)
+	public ExperimentTable add(Experiment e)
 	{
 		m_experiments.add(e);
 		return this;
@@ -76,7 +79,7 @@ public class ValueTable extends Table
 	 * to which data series it belongs
 	 * @return This table
 	 */
-	public ValueTable groupBy(String ... param)
+	public ExperimentTable groupBy(String ... param)
 	{
 		for (String p : param)
 		{
@@ -91,7 +94,7 @@ public class ValueTable extends Table
 	 * @param param The output parameter to use for the "x" value
 	 * @return This table
 	 */
-	public ValueTable useForX(String param)
+	public ExperimentTable useForX(String param)
 	{
 		m_xName = param;
 		return this;
@@ -103,7 +106,7 @@ public class ValueTable extends Table
 	 * @param param The output parameter to use for the "y" value
 	 * @return This table
 	 */
-	public ValueTable useForY(String param)
+	public ExperimentTable useForY(String param)
 	{
 		m_yName = param;
 		return this;
@@ -127,7 +130,7 @@ public class ValueTable extends Table
 	public String toCsv(Vector<String> series, boolean transposed)
 	{
 		Vector<String> x_values = getXValues();
-		Tabular t = getValues(series, x_values);
+		ConcreteTable t = getValues(series, x_values);
 		if (transposed)
 		{
 			t.transpose();
@@ -145,7 +148,7 @@ public class ValueTable extends Table
 		Vector<String> series = new Vector<String>();
 		series.add("");
 		Vector<String> x_values = getXValues();
-		Tabular t = getValues(series, x_values);
+		ConcreteTable t = getValues(series, x_values);
 		if (transposed)
 		{
 			t.transpose();
@@ -153,11 +156,11 @@ public class ValueTable extends Table
 		return t.toCsv();
 	}
 	
-	public Tabular getTabular()
+	public ConcreteTable getConcreteTable()
 	{
 		Vector<String> series = getSeriesNames();
 		Vector<String> x_values = getXValues();
-		Tabular t = getValues(series, x_values);
+		ConcreteTable t = getValues(series, x_values);
 		return t;
 	}
 
@@ -221,10 +224,10 @@ public class ValueTable extends Table
 	 *   occurring in the table
 	 * @return The map
 	 */
-	protected Tabular getValues(Vector<String> series, Vector<String> x_values)
+	protected ConcreteTable getValues(Vector<String> series, Vector<String> x_values)
 	{
 		// Build the table from the values
-		Tabular values = new Tabular(series, x_values);
+		ConcreteTable values = new ConcreteTable(series, x_values);
 		for (Experiment e : m_experiments)
 		{
 			if (e == null || e.getStatus() != Experiment.Status.DONE)
@@ -277,35 +280,13 @@ public class ValueTable extends Table
 		}
 		return je.toString();
 	}
-	
-	/**
-	 * Checks if a given string contains a number
-	 * @param s The string
-	 * @return true if it contains a number, false otherwise
-	 */
-	public static boolean isNumeric(String s)
-	{
-		if (s == null)
-		{
-			return false;
-		}
-		try
-		{
-			Float.parseFloat(s);
-			return true;
-		}
-		catch (NumberFormatException nfe)
-		{
-			return false;
-		}
-	}
-	
+		
 	/**
 	 * Assigns this table to a laboratory
 	 * @param a The assistant
 	 * @return This table
 	 */
-	public ValueTable assignTo(Laboratory a)
+	public ExperimentTable assignTo(Laboratory a)
 	{
 		m_lab = a;
 		a.add(this);

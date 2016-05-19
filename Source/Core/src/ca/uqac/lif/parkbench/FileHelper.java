@@ -269,6 +269,17 @@ public class FileHelper
   }
   
   /**
+   * Checks if an internal file exists
+   * @param c The reference class
+   * @param path The path of the file
+   * @return true if the file exists, false otherwise
+   */
+  public static boolean internalFileExists(Class<?> c, String path)
+  {
+	  return internalFileToStream(c, path) != null;
+  }
+  
+  /**
    * Reads a file and puts its contents in a string
    * @param in The input stream to read
    * @return The file's contents, and empty string if the file

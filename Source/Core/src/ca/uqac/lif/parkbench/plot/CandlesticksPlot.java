@@ -18,39 +18,43 @@
 package ca.uqac.lif.parkbench.plot;
 
 import ca.uqac.lif.parkbench.FileHelper;
+import ca.uqac.lif.parkbench.table.CandlesticksTransform;
 import ca.uqac.lif.parkbench.table.Table;
-import ca.uqac.lif.parkbench.table.Tabular;
+import ca.uqac.lif.parkbench.table.ConcreteTable;
 
 /**
- * Two-dimensional bar diagram, also called a "clustered histogram".
+ * Two-dimensional candlesticks diagram, also called "box-and-whiskers".
  * <p>
  * <strong>Example usage.</strong> 
- * Suppose you have a set of experiments, each with three
- * parameters:
- * <ul>
- * <li><tt>name</tt> is the name of a web browser (Firefox, IE, etc.)</li>
- * <li><tt>market</tt> is the name of a market (video, audio, etc.)</li>
- * <li><tt>share</tt> is the market share (in %) for this browser in this market</li>
- * </ul>
- * We wish to create a bar diagram where each bar represents a market,
- * its height corresponds to the share, with one group of bars for each
- * browser. To is done by writing:
+ * Suppose you have a table like this:
+ * <table>
+ * <tr><th>#</th><th>A</th><th>B</th><th>C</th></tr>
+ * <tr><td>Foo</td><td>1</td><td>4</td><td>9</td></tr>
+ * <tr><td>Bar</td><td>10</td><td>5</td><td>8</td></tr>
+ * <tr><td>Baz</td><td>3</td><td>2</td><td>3</td></tr>
+ * </table>
+ * We wish to create a candlesticks diagram displaying, for each column A, B, C,
+ * a box representing the minimum value, first quartile, median, third quartile
+ * and max value.
  * <pre>
- * BarPlot plot = new BarPlot();
+ * Table t = ...
+ * CandlesticksPlot plot = new CandlesticksPlot(t);
  * ...
  * plot.useForX("browser").useForY("share").groupBy("market");
  * </pre>
  * This will create a histogram that looks like this:
  * <pre>
- * |                     # video
- * |                     $ audio
- * |                     @ text
- * |    $
- * |    $@         @
- * |   #$@        $@
- * |   #$@       #$@
- * +----+---------+-----&gt;
- *   Firefox     IE
+ * |          ---
+ * |    ---    |
+ * |    +-+    |
+ * |    | |   +-+
+ * |    +-+   +-+
+ * |    | |   | |
+ * |     |    ---
+ * |    ---   
+ * |   
+ * +-----+-----+-----+-----&gt;
+ *      A      B     C
  * </pre>
  * @author Sylvain Hallé
  *
@@ -63,9 +67,14 @@ public class CandlesticksPlot extends TwoDeePlot
 	 */
 	protected float m_boxWidth = 0.75f;
 	
+	/**
+	 * Creates a new candlesticks plot
+	 * @param t The table from which the data will be taken
+	 */
 	public CandlesticksPlot(Table t)
 	{
 		super(t);
+		setFillStyle(FillStyle.NONE);
 	}
 	
 	/**
@@ -83,7 +92,8 @@ public class CandlesticksPlot extends TwoDeePlot
 	@Override
 	public String toGnuplot(Terminal term, String lab_title)
 	{
-		Tabular tabu = m_table.getTabular();
+		CandlesticksTransform ct = new CandlesticksTransform(m_table);
+		ConcreteTable tabu = ct.getConcreteTable();
 		String csv_values = tabu.toCsv();
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
@@ -94,10 +104,10 @@ public class CandlesticksPlot extends TwoDeePlot
 		{
 			out.append("set boxwidth ").append(m_boxWidth).append(FileHelper.CRLF);
 		}
-		out.append("plot '-' using 7:4:3:5:4:xticlabels(1) with candlesticks whiskerbars").append(FileHelper.CRLF);
+		out.append("plot '-' using 7:3:2:6:5:xticlabels(1) with candlesticks whiskerbars, '-' using 7:4:4:4:4 with candlesticks notitle").append(FileHelper.CRLF);
 		// In Gnuplot, if we use the special "-" filename, we must repeat
 		// the data as many times as we use it in the plot command; it does not remember it
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 2; i++)
 		{
 			out.append(csv_values).append("end").append(FileHelper.CRLF);
 		}

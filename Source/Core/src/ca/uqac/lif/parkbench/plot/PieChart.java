@@ -17,8 +17,9 @@
  */	
 package ca.uqac.lif.parkbench.plot;
 
-import ca.uqac.lif.parkbench.table.ValueTable;
-import ca.uqac.lif.parkbench.table.Tabular;
+import ca.uqac.lif.parkbench.table.ExperimentTable;
+import ca.uqac.lif.parkbench.table.ConcreteTable;
+import ca.uqac.lif.parkbench.table.NormalizeColumns;
 
 /**
  * Two-dimensional pie chart.
@@ -52,11 +53,11 @@ import ca.uqac.lif.parkbench.table.Tabular;
  */
 public class PieChart extends TwoDeePlot
 {
-	public PieChart(ValueTable t)
+	public PieChart(ExperimentTable t)
 	{
 		super(t);
 	}
-	
+
 	@Override
 	public PieChart setPalette(Palette p)
 	{
@@ -71,8 +72,8 @@ public class PieChart extends TwoDeePlot
 	@Override
 	public String toGnuplot(Terminal term, String lab_title)
 	{
-		Tabular tab = m_table.getTabular();
-		tab.normalizeColumns();
+		NormalizeColumns nc = new NormalizeColumns(m_table);
+		ConcreteTable tab = nc.getConcreteTable();
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
 		out.append(getHeader(term, lab_title));

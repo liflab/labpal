@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
+import ca.uqac.lif.parkbench.table.Table;
 
 /**
  * Callback showing a list of plots
@@ -59,15 +60,16 @@ public class TablesPageCallback extends TemplatePageCallback
 		Vector<Integer> ids = new Vector<Integer>();
 		ids.addAll(m_lab.getTableIds());
 		Collections.sort(ids);
-		out.append("<ul class=\"tables\">\n");
+		out.append("<table border=\"1\" class=\"tables\">\n");
 		for (int id : ids)
 		{
-			out.append("<li>");
-			out.append("<a href=\"table?id=").append(id).append("\" title=\"Click on table to view in new window\">");
+			Table table = m_lab.getTable(id);
+			out.append("<tr>");
+			out.append("<td><a href=\"table?id=").append(id).append("\" title=\"Click on table to view in new window\">");
 			out.append(id);
-			out.append("</a></li>\n");			
+			out.append("</a><td><td>").append(table.getTitle()).append("</td></tr>\n");			
 		}
-		out.append("</ul>\n");
+		out.append("</table>\n");
 		return out.toString();
 	}
 

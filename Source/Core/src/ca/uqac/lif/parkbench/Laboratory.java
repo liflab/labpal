@@ -32,7 +32,7 @@ import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.Plot;
 import ca.uqac.lif.parkbench.server.ParkbenchServer;
 import ca.uqac.lif.parkbench.table.Table;
-import ca.uqac.lif.parkbench.table.ValueTable;
+import ca.uqac.lif.parkbench.table.ExperimentTable;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**
@@ -179,13 +179,13 @@ public abstract class Laboratory
 	 *   associated with
 	 * @return This lab
 	 */
-	public Laboratory add(Experiment e, Group group, ValueTable ... tables)
+	public Laboratory add(Experiment e, Group group, ExperimentTable ... tables)
 	{
 		e.setId(s_idCounter++);
 		m_experiments.add(e);
 		addClassToSerialize(e.getClass());
 		e.m_random = m_random;
-		for (ValueTable p : tables)
+		for (ExperimentTable p : tables)
 		{
 			p.add(e);
 		}
@@ -203,7 +203,7 @@ public abstract class Laboratory
 	 *   associated with
 	 * @return This lab
 	 */
-	public Laboratory add(Experiment e, ValueTable ... tables)
+	public Laboratory add(Experiment e, ExperimentTable ... tables)
 	{
 		return add(e, null, tables);
 	}

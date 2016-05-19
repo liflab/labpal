@@ -102,7 +102,6 @@ public abstract class SortExperiment extends Experiment
 	@Override
 	public Status execute()
 	{
-		System.out.println("I AM RUNNING");
 		int[] array = getArray();
 		if (array == null)
 		{

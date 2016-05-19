@@ -59,6 +59,7 @@ public class TablePageCallback extends TemplatePageCallback
 		ConcreteTable tbl = tab.getConcreteTable();
 		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
 		s = s.replaceAll("\\{%TABLE%\\}", tbl.toHtml());
+		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return s;
 	}
 }

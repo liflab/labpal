@@ -45,8 +45,19 @@ public class TablesPageCallback extends TemplatePageCallback
 	public String fill(String page, Map<String,String> params)
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", "Tables");
-		out = out.replaceAll("\\{%TABLES%\\}", getTables());
+		Vector<Integer> ids = new Vector<Integer>();
+		ids.addAll(m_lab.getTableIds());
+		if (ids.isEmpty())
+		{
+			out = out.replaceAll("\\{%TABLES%\\}", "<p>No table is associated to this lab</p>\n");
+		}
+		else
+		{
+			Collections.sort(ids);
+			out = out.replaceAll("\\{%TABLES%\\}", getTables(ids));			
+		}
 		out = out.replaceAll("\\{%SEL_TABLES%\\}", "selected");
+		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return out;
 	}
 	
@@ -54,17 +65,15 @@ public class TablesPageCallback extends TemplatePageCallback
 	 * Produces the list of plots
 	 * @return A well-formatted HTML string showing of each of the lab's plots
 	 */
-	public String getTables()
+	public String getTables(Vector<Integer> ids)
 	{
 		StringBuilder out = new StringBuilder();
-		Vector<Integer> ids = new Vector<Integer>();
-		ids.addAll(m_lab.getTableIds());
-		Collections.sort(ids);
-		out.append("<table border=\"1\" class=\"tables\">\n");
+		out.append("<table class=\"tables\">\n");
 		for (int id : ids)
 		{
 			Table table = m_lab.getTable(id);
 			out.append("<tr>");
+			out.append("<td class=\"table-icon\"></td>");
 			out.append("<td><a href=\"table?id=").append(id).append("\" title=\"Click on table to view in new window\">");
 			out.append(id);
 			out.append("</a><td><td>").append(table.getTitle()).append("</td></tr>\n");			

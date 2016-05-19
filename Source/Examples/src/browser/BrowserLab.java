@@ -5,6 +5,7 @@ import ca.uqac.lif.parkbench.Group;
 import ca.uqac.lif.parkbench.plot.BarPlot;
 import ca.uqac.lif.parkbench.plot.PieChart;
 import ca.uqac.lif.parkbench.plot.Plot;
+import ca.uqac.lif.parkbench.table.ExperimentTable;
 import ca.uqac.lif.parkbench.Laboratory;
 
 public class BrowserLab extends Laboratory
@@ -18,29 +19,32 @@ public class BrowserLab extends Laboratory
 	public void setupExperiments(ArgumentMap map)
 	{
 		setTitle("Browser market share");
-		BarPlot plot = new BarPlot();
-		plot.useForX("browser", "Browser")
-		.useForY("share", "Share").groupBy("market")
-		.setTitle("My bar plot").assignTo(this);
-		plot.setPalette(Plot.QUALITATIVE_1);
-		BarPlot stacked_plot = new BarPlot();
-		stacked_plot.rowStacked().useForX("browser", "Browser")
-		.useForY("share", "Share").groupBy("market")
-		.setTitle("My bar plot").assignTo(this);
-		PieChart pc_ie = new PieChart();
-		pc_ie.useForX("market").useForY("share").setTitle("Market share for IE").assignTo(this);
+		ExperimentTable et = new ExperimentTable();
+		et.useForX("browser").useForY("share").groupBy("market");
+		ExperimentTable pc_et = new ExperimentTable();
+		pc_et.useForX("market").useForY("share");
 		Group group_ie = new Group("Experiments for IE");
-		add(new BrowserExperiment("IE", "video", 30), group_ie, plot, stacked_plot, pc_ie);
-		add(new BrowserExperiment("IE", "audio", 10), group_ie, plot, stacked_plot, pc_ie);
-		add(new BrowserExperiment("IE", "flash", 25), group_ie, plot, stacked_plot, pc_ie);
-		add(new BrowserExperiment("IE", "html", 20), group_ie, plot, stacked_plot, pc_ie);
-		add(new BrowserExperiment("IE", "js", 15), group_ie, plot, stacked_plot, pc_ie);
-		add(new BrowserExperiment("Firefox", "video", 20), plot, stacked_plot);
-		add(new BrowserExperiment("Firefox", "audio", 5), plot, stacked_plot);
-		add(new BrowserExperiment("Firefox", "flash", 35), plot, stacked_plot);
-		add(new BrowserExperiment("Firefox", "html", 30), plot, stacked_plot);
-		add(new BrowserExperiment("Firefox", "js", 10), plot, stacked_plot);
+		add(new BrowserExperiment("IE", "video", 30), group_ie, et, pc_et);
+		add(new BrowserExperiment("IE", "audio", 10), group_ie, et, pc_et);
+		add(new BrowserExperiment("IE", "flash", 25), group_ie, et, pc_et);
+		add(new BrowserExperiment("IE", "html", 20), group_ie, et, pc_et);
+		add(new BrowserExperiment("IE", "js", 15), group_ie, et, pc_et);
+		add(new BrowserExperiment("Firefox", "video", 20), et, pc_et);
+		add(new BrowserExperiment("Firefox", "audio", 5), et, pc_et);
+		add(new BrowserExperiment("Firefox", "flash", 35), et, pc_et);
+		add(new BrowserExperiment("Firefox", "html", 30), et, pc_et);
+		add(new BrowserExperiment("Firefox", "js", 10), et, pc_et);
 		add(group_ie);
+		BarPlot plot = new BarPlot(et);
+		plot.labelX("Browser").labelY("Share").setTitle("My bar plot");
+		plot.setPalette(Plot.QUALITATIVE_1);
+		plot.assignTo(this);
+		BarPlot stacked_plot = new BarPlot(et);
+		stacked_plot.setTitle("My bar plot").assignTo(this);
+		PieChart pc_ie = new PieChart(pc_et);
+		pc_ie.setTitle("Market share for IE").assignTo(this);
+
+		
 	}
 
 }

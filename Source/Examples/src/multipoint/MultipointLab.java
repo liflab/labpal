@@ -19,6 +19,7 @@ package multipoint;
 
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.Scatterplot;
+import ca.uqac.lif.parkbench.table.ExperimentTable;
 import ca.uqac.lif.parkbench.Laboratory;
 
 public class MultipointLab extends Laboratory 
@@ -31,9 +32,11 @@ public class MultipointLab extends Laboratory
 	@Override
 	public void setupExperiments(ArgumentMap map) 
 	{
-		Scatterplot plot = new Scatterplot();
-		plot.useForX("a").useForY("b").assignTo(this);
-		add(new MultipointExperiment(), plot);
+		ExperimentTable table = new ExperimentTable();
+		table.useForX("a").useForY("b");
+		Scatterplot plot = new Scatterplot(table);
+		plot.assignTo(this);
+		add(new MultipointExperiment(), table);
 	}
 
 }

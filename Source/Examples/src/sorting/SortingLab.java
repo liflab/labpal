@@ -20,6 +20,7 @@ package sorting;
 import ca.uqac.lif.parkbench.Laboratory;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.Scatterplot;
+import ca.uqac.lif.parkbench.table.ExperimentTable;
 
 public class SortingLab extends Laboratory
 {
@@ -33,22 +34,25 @@ public class SortingLab extends Laboratory
 		// Give a name to the lab
 		setTitle("Sorting Algorithms");
 		
-		// Prepare a plot
-		Scatterplot plot = new Scatterplot();
-		plot.withLines()
-			.useForX("size", "List size")
-			.useForY("time", "Time (ms)")
-			.groupBy("name")
-			.setTitle("Comparison of sorting algorithms");
-		plot.assignTo(this);
+		// Prepare a table
+		ExperimentTable table = new ExperimentTable();
+		table.useForX("size").useForY("time").groupBy("name");
 
 		// Initialize experiments
 		for (int length = 5000; length <= 40000; length += 5000)
 		{
-			add(new QuickSort(length), plot);
-			add(new ShellSort(length), plot);
-			add(new BubbleSort(length), plot);
-			add(new GnomeSort(length), plot);
+			add(new QuickSort(length), table);
+			add(new ShellSort(length), table);
+			add(new BubbleSort(length), table);
+			add(new GnomeSort(length), table);
 		}
+		
+		// Prepare a plot from the results of the table
+		Scatterplot plot = new Scatterplot(table);
+		plot.withLines()
+			.labelX("List size")
+			.labelY("Time (ms)")
+			.setTitle("Comparison of sorting algorithms");
+		plot.assignTo(this);
 	}
 }

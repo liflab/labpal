@@ -47,6 +47,8 @@ public class TemplatePageCallback extends ParkBenchCallback
 	protected static final transient String s_path = "resource";
 	
 	protected static final transient Pattern s_patternInclude = Pattern.compile("\\{!(.*?)!\\}");
+	
+	protected static enum IconType {ERLENMEYER, TABLE, STATUS, GRAPH, HOME, HELP, ASSISTANT};
 
 	public TemplatePageCallback(String prefix, Laboratory lab, LabAssistant assistant)
 	{
@@ -114,6 +116,7 @@ public class TemplatePageCallback extends ParkBenchCallback
 		}
 		s = s.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
 		s = s.replaceAll("\\{%LAB_NAME%\\}", m_lab.getTitle());
+		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ERLENMEYER));
 		s = s.replaceAll("\\{%.*?%\\}", "");
 		s = s.replaceAll("\\{J.*?J\\}", "");
 		return s;
@@ -122,6 +125,30 @@ public class TemplatePageCallback extends ParkBenchCallback
 	protected String fill(String s, Map<String,String> params)
 	{
 		return s;
+	}
+	
+	public static String getFavicon(IconType t)
+	{
+		switch (t)
+		{
+		case ERLENMEYER:
+			return "images/erlenmeyer-48.png";
+		case STATUS:
+			return "images/status-48.png";
+		case GRAPH:
+			return "images/graph-48.png";
+		case TABLE:
+			return "images/table-48.png";
+		case HELP:
+			return "images/help-48.png";
+		case HOME:
+			return "images/home-48.png";
+		case ASSISTANT:
+			return "images/assistant-48.png";
+		default:
+			return "images/erlenmeyer-48.png";
+		
+		}
 	}
 
 }

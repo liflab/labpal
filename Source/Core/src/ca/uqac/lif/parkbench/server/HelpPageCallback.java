@@ -41,6 +41,7 @@ public class HelpPageCallback extends TemplatePageCallback
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", "Help");
 		out = out.replaceAll("\\{%SEL_HELP%\\}", "selected");
+		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.HELP));
 		return out;
 	}	
 }

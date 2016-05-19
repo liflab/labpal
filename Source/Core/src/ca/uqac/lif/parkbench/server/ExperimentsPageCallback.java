@@ -65,6 +65,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", "Experiments");
 		out = out.replaceAll("\\{%SEL_EXPERIMENTS%\\}", "selected");
+		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ERLENMEYER));
 		String message = "";
 		if (params.containsKey("queue"))
 		{

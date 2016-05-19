@@ -67,6 +67,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			e.clean();
 		}
 		String out = page.replaceAll("\\{%TITLE%\\}", "Experiment #" + experiment_nb);
+		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ERLENMEYER));
 		out = out.replaceAll("\\{%EXP_NB%\\}", Integer.toString(experiment_nb));
 		out = out.replaceAll("\\{%EXP_START%\\}", formatDate(e.getStartTime()));
 		out = out.replaceAll("\\{%EXP_END%\\}", formatDate(e.getEndTime()));

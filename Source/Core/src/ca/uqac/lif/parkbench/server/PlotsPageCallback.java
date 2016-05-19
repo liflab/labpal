@@ -46,6 +46,7 @@ public class PlotsPageCallback extends TemplatePageCallback
 	public String fill(String page, Map<String,String> params)
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", "Plots");
+		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.GRAPH));
 		if (Plot.isGnuplotPresent())
 		{
 			out = out.replaceAll("\\{%PLOTS%\\}", getPlots());

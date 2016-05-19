@@ -58,6 +58,7 @@ public class HomePageCallback extends TemplatePageCallback
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", htmlEscape(m_lab.getTitle()));
 		out = out.replaceAll("\\{%SEL_HOME%\\}", "selected");
+		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.HOME));
 		// We deliberately DON'T escape the description, as it is already valid HTML 
 		out = out.replaceAll("\\{%LAB_DESCRIPTION%\\}", m_labDescription);
 		out = resolveClassText(out);

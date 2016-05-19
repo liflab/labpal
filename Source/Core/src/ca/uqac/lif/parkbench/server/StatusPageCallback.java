@@ -56,6 +56,7 @@ public class StatusPageCallback extends TemplatePageCallback
 	public String fill(String page, Map<String,String> params)
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", m_lab.getTitle());
+		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.STATUS));
 		out = out.replaceAll("\\{%LAB_DESCRIPTION%\\}", m_labDescription);
 		out = out.replaceAll("\\{%LAB_ASSISTANT%\\}", m_assistant.getName());
 		out = out.replaceAll("\\{%LAB_AUTHOR%\\}", m_lab.getAuthorName());

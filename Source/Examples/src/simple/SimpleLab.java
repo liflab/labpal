@@ -20,6 +20,7 @@ package simple;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.BarPlot;
 import ca.uqac.lif.parkbench.plot.Scatterplot;
+import ca.uqac.lif.parkbench.table.ExperimentTable;
 import ca.uqac.lif.parkbench.Laboratory;
 
 public class SimpleLab extends Laboratory
@@ -28,28 +29,27 @@ public class SimpleLab extends Laboratory
 	{
 		initialize(args, SimpleLab.class);
 	}
-
+	
 	@Override
 	public void setupExperiments(ArgumentMap map)
 	{
 		// Sets the title of this lab
 		setTitle("Two simple experiments");
-
-		// Prepare a scatterplot
-		Scatterplot my_plot = new Scatterplot();
-		my_plot.useForX("a", "Value of a")
-			.useForY("y", "Return value").groupBy("name")
-			.setTitle("My plot").assignTo(this);
-		BarPlot b_plot = new BarPlot();
-		b_plot.useForX("name", "Name")
-			.useForY("y", "Return value").groupBy("a")
-			.setTitle("My bar plot").assignTo(this);
-
+		// Put the results of the experiments in tables
+		ExperimentTable table1 = new ExperimentTable();
+		table1.useForX("a").useForY("y").groupBy("name");
+		ExperimentTable table2 = new ExperimentTable();
+		table2.useForX("name").useForY("y").groupBy("a");
 		// Create the experiments
 		for (int i = 0; i < 5; i++)
 		{
-			add(new ExperimentA(i), my_plot, b_plot);
-			add(new ExperimentB(i), my_plot, b_plot);
+			add(new ExperimentA(i), table1, table2);
+			add(new ExperimentB(i), table1, table2);
 		}
+		// Prepare a scatterplot
+		Scatterplot my_plot = new Scatterplot(table1);
+		my_plot.labelX("Value of a").labelY("Return value").setTitle("My plot").assignTo(this);
+		BarPlot b_plot = new BarPlot(table2);
+		b_plot.labelX("Value of a").labelY("Return value").setTitle("My plot").assignTo(this);
 	}
 }

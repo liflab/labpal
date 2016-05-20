@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ca.uqac.lif.azrael.SerializerException;
+import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.Experiment.Status;
 import ca.uqac.lif.parkbench.plot.Plot;
@@ -85,7 +87,16 @@ public class ParkbenchTui
 			}
 			String contents = FileHelper.readToString(new File(filename));
 			lab.addClassToSerialize(this.getClass());
-			m_lab = lab.loadFromString(contents);
+			try 
+			{
+				m_lab = lab.loadFromString(contents);
+			} 
+			catch (SerializerException e) 
+			{
+			} 
+			catch (JsonParseException e) 
+			{
+			}
 			m_lab.setAssistant(assistant);
 			if (m_lab == null)
 			{

@@ -44,6 +44,11 @@ public abstract class Table
 	protected transient Laboratory m_lab;
 	
 	/**
+	 * A description for this table
+	 */
+	protected String m_description = "";
+	
+	/**
 	 * The table's title
 	 */
 	protected String m_title;
@@ -80,12 +85,61 @@ public abstract class Table
 	}
 	
 	/**
+	 * Sets the table's description
+	 * @param description The description
+	 * @return This table
+	 */
+	public Table setDescription(String description)
+	{
+		if (description != null)
+		{
+			m_description = description;
+		}
+		return this;
+	}
+	
+	/**
+	 * Gets the table's description
+	 * @return The description
+	 */
+	public String getDescription()
+	{
+		return m_description;
+	}
+	
+	/**
 	 * Gets the table's title
 	 * @return The title
 	 */
 	public String getTitle()
 	{
 		return m_title;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == null || ! (o instanceof Table))
+		{
+			return false;
+		}
+		return m_id == ((Table) o).m_id;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return m_id;
+	}
+	
+	/**
+	 * Assigns this table to a laboratory
+	 * @param a The lab
+	 * @return This table
+	 */
+	public Table assignTo(Laboratory a)
+	{
+		return this;
 	}
 	
 	public abstract Vector<String> getXValues();

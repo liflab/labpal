@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.parkbench.table;
 
+import ca.uqac.lif.parkbench.NumberHelper;
+
 /**
  * Replaces the content of each entry by its fraction of the
  * sum of all values for the column
@@ -42,11 +44,22 @@ public class NormalizeColumns extends TableTransform
 			float total = 0;
 			for (int i = 0; i < in_table.m_values.length; i++)
 			{
-				total += Float.parseFloat(in_table.m_values[i][j]);
+				if (NumberHelper.isNumeric(in_table.m_values[i][j]))
+				{
+					total += Float.parseFloat(in_table.m_values[i][j]);
+				}
 			}
 			for (int i = 0; i < in_table.m_values.length; i++)
 			{
-				out_table.m_values[i][j] = Float.toString(Float.parseFloat(in_table.m_values[i][j]) / total);
+				if (NumberHelper.isNumeric(in_table.m_values[i][j]))
+				{
+					out_table.m_values[i][j] = Float.toString(Float.parseFloat(in_table.m_values[i][j]) / total);
+				}
+				else
+				{
+					out_table.m_values[i][j] = "?";
+				}
+				
 			}
 		}
 		return out_table;

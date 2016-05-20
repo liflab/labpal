@@ -59,6 +59,11 @@ public class TablePageCallback extends TemplatePageCallback
 		ConcreteTable tbl = tab.getConcreteTable();
 		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
 		s = s.replaceAll("\\{%TABLE%\\}", tbl.toHtml());
+		String desc = tab.getDescription();
+		if (desc != null && !desc.isEmpty())
+		{
+			s = s.replaceAll("\\{%DESCRIPTION%\\}", desc);
+		}
 		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return s;
 	}

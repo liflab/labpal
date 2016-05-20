@@ -390,3 +390,11 @@ table.exp-table td {
   width: 24px;
   background: url('images/table-24.png') top center no-repeat;
 }
+
+table.results {
+  background: white;
+}
+
+table.results th {
+  background: #ddd;
+}

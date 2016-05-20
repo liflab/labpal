@@ -31,7 +31,9 @@ import java.util.zip.ZipInputStream;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import ca.uqac.lif.azrael.SerializerException;
 import ca.uqac.lif.jerrydog.CallbackResponse;
+import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.parkbench.FileHelper;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
@@ -121,7 +123,27 @@ public class UploadCallback extends ParkBenchCallback
 			doBadRequest(cbr, "No file was uploaded");
 			return cbr;
 		}
-		Laboratory new_lab = m_lab.loadFromString(json);
+		Laboratory new_lab = null;
+		try 
+		{
+			new_lab = m_lab.loadFromString(json);
+		} 
+		catch (SerializerException e) 
+		{
+			// Baaaad request
+			doBadRequest(cbr, "The file's contents could not be loaded into the "
+					+ "current laboratory. This can occur when you try loading the data from a different "
+					+ "lab. " + e.getMessage());
+			return cbr;
+		}
+		catch (JsonParseException e) 
+		{
+			// Baaaad request
+			doBadRequest(cbr, "The file's contents could not be loaded into the "
+					+ "current laboratory. This can occur when you try loading the data from a different "
+					+ "lab. " + e.getMessage());
+			return cbr;
+		}
 		if (new_lab == null)
 		{
 			// Baaaad request

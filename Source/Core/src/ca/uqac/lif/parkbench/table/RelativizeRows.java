@@ -20,12 +20,12 @@ package ca.uqac.lif.parkbench.table;
 import ca.uqac.lif.parkbench.NumberHelper;
 
 /**
- * Replaces the content of each entry by its fraction of the
- * sum of all values for the row
+ * Replaces each value of the input table by the ratio of this value
+ * to the smallest value in the row
  */
-public class NormalizeRows extends TableTransform 
+public class RelativizeRows extends TableTransform 
 {
-	public NormalizeRows(Table t)
+	public RelativizeRows(Table t)
 	{
 		super(t);
 	}
@@ -41,19 +41,19 @@ public class NormalizeRows extends TableTransform
 		}
 		for (int i = 0; i < in_table.m_values.length; i++)
 		{
-			float total = 0;
+			float min = 1000000000;
 			for (int j = 0; j < in_table.m_values[0].length; j++)
 			{
 				if (NumberHelper.isNumeric(in_table.m_values[i][j]))
 				{
-					total += Float.parseFloat(in_table.m_values[i][j]);
+					min = Math.min(min, Float.parseFloat(in_table.m_values[i][j]));
 				}
 			}
 			for (int j = 0; j < in_table.m_values[0].length; j++)
 			{
 				if (NumberHelper.isNumeric(in_table.m_values[i][j]))
 				{
-					out_table.m_values[i][j] = Float.toString(Float.parseFloat(in_table.m_values[i][j]) / total);
+					out_table.m_values[i][j] = Float.toString(Float.parseFloat(in_table.m_values[i][j]) / min);
 				}
 				else
 				{

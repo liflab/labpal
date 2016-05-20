@@ -280,12 +280,8 @@ public class ExperimentTable extends Table
 		}
 		return je.toString();
 	}
-		
-	/**
-	 * Assigns this table to a laboratory
-	 * @param a The assistant
-	 * @return This table
-	 */
+	
+	@Override
 	public ExperimentTable assignTo(Laboratory a)
 	{
 		m_lab = a;

@@ -381,4 +381,21 @@ public abstract class Plot
 		}
 		return "fillcolor rgb \"" + m_palette.getHexColor(color_nb) + "\"";
 	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == null || ! (o instanceof Plot))
+		{
+			return false;
+		}
+		return m_id == ((Plot) o).m_id;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return m_id;
+	}
+
 }

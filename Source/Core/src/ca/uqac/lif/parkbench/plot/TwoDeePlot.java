@@ -18,6 +18,7 @@
 package ca.uqac.lif.parkbench.plot;
 
 import ca.uqac.lif.parkbench.FileHelper;
+import ca.uqac.lif.parkbench.Laboratory;
 import ca.uqac.lif.parkbench.table.Table;
 
 public abstract class TwoDeePlot extends Plot
@@ -54,6 +55,19 @@ public abstract class TwoDeePlot extends Plot
 	{
 		super();
 		m_table = t;
+	}
+	
+	/**
+	 * Assigns this plot to a laboratory
+	 * @param a The assistant
+	 * @return This plot
+	 */
+	@Override
+	public TwoDeePlot assignTo(Laboratory a)
+	{
+		super.assignTo(a);
+		m_lab.add(m_table);
+		return this;
 	}
 	
 	/**

@@ -86,8 +86,11 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%MESSAGE%\\}", message);
 		StringBuilder list_of_lists = new StringBuilder();
 		boolean has_groups = false;
-		for (Group g : m_lab.getGroups())
+		List<Integer> sorted_groups = new Vector<Integer>(m_lab.getGroupIds());
+		Collections.sort(sorted_groups);
+		for (int id : sorted_groups)
 		{
+			Group g = m_lab.getGroupById(id);
 			has_groups = true;
 			list_of_lists.append("<div class=\"around-pulldown\">\n");
 			list_of_lists.append("<h2 class=\"pulldown\" title=\"Click to show/hide the list of experiments for this group\">").append(g.getName()).append("</h2>\n");

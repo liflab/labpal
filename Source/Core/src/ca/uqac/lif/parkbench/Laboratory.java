@@ -60,6 +60,11 @@ public abstract class Laboratory
 	private transient HashSet<Plot> m_plots;
 	
 	/**
+	 * The set of tables associated to this lab
+	 */
+	private transient HashSet<Table> m_tables;
+	
+	/**
 	 * The set of groups associated with this lab
 	 */
 	private transient HashSet<Group> m_groups;
@@ -68,11 +73,11 @@ public abstract class Laboratory
 	 * The title given to this lab
 	 */
 	private String m_title = "Untitled";
-	
+
 	/**
 	 * The lab's author
 	 */
-	private String m_author= "Fred Filntstone";
+	private String m_author = "Fred Filntstone";
 
 	/**
 	 * The version string of this lab
@@ -99,17 +104,17 @@ public abstract class Laboratory
 	 * @see {@link #countParkMips()}
 	 */
 	public transient static float s_parkMips = countParkMips();
-	
+
 	/**
 	 * A (possibly long) textual description for what the lab does
 	 */
 	protected transient String m_description = null;
-	
+
 	/**
 	 * A random number generator associated with this lab
 	 */
 	private transient Random m_random = new Random();
-	
+
 	/**
 	 * The seed used to initialize the random number generator
 	 */
@@ -124,11 +129,6 @@ public abstract class Laboratory
 	 * The serializer used to save/load the assistant's status
 	 */
 	private transient JsonSerializer m_serializer;
-	
-	/**
-	 * The set of tables associated to this lab
-	 */
-	private HashSet<Table> m_tables;
 
 	/**
 	 * Creates a new lab assistant
@@ -150,7 +150,7 @@ public abstract class Laboratory
 		m_assistant = a;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the lab's author
 	 * @param author The author's name
@@ -161,7 +161,7 @@ public abstract class Laboratory
 		m_author = author;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the lab's author
 	 * @return The author's name
@@ -195,7 +195,7 @@ public abstract class Laboratory
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Adds an experiment to the lab
 	 * @param e The experiment
@@ -231,7 +231,7 @@ public abstract class Laboratory
 		m_plots.add(p);
 		return this;
 	}
-	
+
 	/**
 	 * Assigns a table to this lab
 	 * @param t The table
@@ -256,7 +256,7 @@ public abstract class Laboratory
 		}
 		return ids;
 	}
-	
+
 	/**
 	 * Gets the IDs of all the tables for this lab assistant
 	 * @return The set of IDs
@@ -350,47 +350,39 @@ public abstract class Laboratory
 	/**
 	 * Creates a new lab assistant from the contents of a JSON string
 	 * @param s The JSON string with the assistant's state
-	 * @return The lab assistant, or null if some error occurred
+	 * @return The lab, or null if some error occurred
+	 * @throws SerializerException If the deserialization could not be done
+	 * @throws JsonParseException If the JSON parsing could not be done
 	 */
-	public Laboratory loadFromString(String s)
+	public Laboratory loadFromString(String s) throws SerializerException, JsonParseException
 	{
 		JsonParser jp = new JsonParser();
-		JsonElement je;
-		try
-		{
-			je = jp.parse(s);
-			Laboratory lab = loadFromJson(je);
-			return lab;
-		}
-		catch (JsonParseException e)
-		{
-			// Do nothing
-		}
-		return null;
+		JsonElement je = jp.parse(s);
+		Laboratory lab = loadFromJson(je);
+		return lab;
 	}
 
 	/**
 	 * Creates a new lab assistant from the contents of a JSON element
 	 * @param je The JSON element with the assistant's state
-	 * @return The lab assistant, or null if some error occurred
+	 * @return The lab, or null if some error occurred
+	 * @throws SerializerException If the deserialization could not be done
 	 */
-	public Laboratory loadFromJson(JsonElement je)
+	public Laboratory loadFromJson(JsonElement je) throws SerializerException
 	{
-		Laboratory lab = null;
-		try
-		{
-			lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
-		}
-		catch (SerializerException e)
-		{
-			// Do nothing
-		}
+		Laboratory lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
 		// Don't forget to transplant the plots
 		for (Plot p : m_plots)
 		{
 			p.assignTo(lab);
 		}
 		lab.m_plots = m_plots;
+		// Don't forget to transplant the tables
+		for (Table t : m_tables)
+		{
+			t.assignTo(lab);
+		}
+		lab.m_tables = m_tables;		
 		// Don't forget to transplant the RNG
 		for (Experiment e : lab.m_experiments)
 		{
@@ -449,7 +441,7 @@ public abstract class Laboratory
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Adds a group to this lab
 	 * @param g The group
@@ -613,7 +605,7 @@ public abstract class Laboratory
 		System.out.println(getCliHeader());
 		System.out.println("You are running parkbench.jar, which is only a library to create\nyour own test suites. As a result nothing will happen here. Read the \nonline documentation to learn how to use ParkBench.");
 	}
-	
+
 	protected static String getCliHeader()
 	{
 		String out = "";
@@ -621,7 +613,7 @@ public abstract class Laboratory
 		out += "(C) 2015-2016 Laboratoire d'informatique formelle\n";
 		return out;
 	}
-	
+
 	/**
 	 * Sets the seed of the lab's random number generator
 	 * @param seed The seed
@@ -633,7 +625,7 @@ public abstract class Laboratory
 		m_seed = seed;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the seed of the lab's random number generator
 	 * @return The seed
@@ -642,7 +634,7 @@ public abstract class Laboratory
 	{
 		return m_seed;
 	}
-	
+
 	/**
 	 * Gets a reference to the lab's random number generator
 	 * @return The generator
@@ -651,7 +643,7 @@ public abstract class Laboratory
 	{
 		return m_random;
 	}
-	
+
 	/**
 	 * Gives a textual description to the laboratory.
 	 * @param description The description. This string must be
@@ -666,7 +658,7 @@ public abstract class Laboratory
 		m_description = description;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the lab's textual description. This description is either the
 	 * text given in a previous call to {@link #setDescription(String)}, or,
@@ -695,7 +687,7 @@ public abstract class Laboratory
 		}
 		return "";
 	}
-	
+
 	/**
 	 * Gets the set of all groups in this lab
 	 * @return The set of groups
@@ -704,7 +696,7 @@ public abstract class Laboratory
 	{
 		return m_groups;
 	}
-	
+
 	/**
 	 * Gets the set of all experiment IDs that don't belong to any
 	 * group.
@@ -720,7 +712,7 @@ public abstract class Laboratory
 		}
 		return out;
 	}
-	
+
 	/**
 	 * Fetches the groups an experiment belongs to
 	 * @param id The experiment's ID
@@ -739,6 +731,16 @@ public abstract class Laboratory
 		return groups;
 	}
 	
+	public final Set<Integer> getGroupIds()
+	{
+		HashSet<Integer> ids = new HashSet<Integer>();
+		for (Group g : m_groups)
+		{
+			ids.add(g.getId());
+		}
+		return ids;
+	}
+
 	/**
 	 * Fetches the groups an experiment belongs to
 	 * @param e The experiment
@@ -748,7 +750,7 @@ public abstract class Laboratory
 	{
 		return getGroups(e.getId());
 	}
-	
+
 	/**
 	 * Attempts to get a reference to one of the classes defined in this
 	 * lab
@@ -777,4 +779,22 @@ public abstract class Laboratory
 		}
 		return null;
 	}
+
+	/**
+	 * Fetches a group based on its ID
+	 * @param id The group's id
+	 * @return The group, or <tt>null</tt> if not found
+	 */
+	public Group getGroupById(int id)
+	{
+		for (Group g : m_groups)
+		{
+			if (g.getId() == id)
+			{
+				return g;
+			}
+		}
+		return null;
+	}
+
 }

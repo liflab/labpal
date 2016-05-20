@@ -46,6 +46,16 @@ public class Group
 	 * The set of experiment IDs for this group
 	 */
 	protected Set<Integer> m_members;
+	
+	/**
+	 * The group's ID
+	 */
+	protected int m_id;
+
+	/**
+	 * A counter for auto-incrementing group IDs
+	 */
+	protected static int s_idCounter = 1;
 
 	/**
 	 * Creates a new group
@@ -53,6 +63,7 @@ public class Group
 	public Group()
 	{
 		this("No name");
+		m_id = s_idCounter++;
 	}
 
 	/**
@@ -65,6 +76,16 @@ public class Group
 		m_name = name;
 		m_description = "";
 		m_members = new HashSet<Integer>();
+		m_id = s_idCounter++;
+	}
+	
+	/**
+	 * Gets the group's ID
+	 * @return The ID
+	 */
+	public int getId()
+	{
+		return m_id;
 	}
 
 	/**

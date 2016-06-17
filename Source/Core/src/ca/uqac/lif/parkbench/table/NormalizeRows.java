@@ -51,7 +51,7 @@ public class NormalizeRows extends TableTransform
 			}
 			for (int j = 0; j < in_table.m_values[0].length; j++)
 			{
-				if (NumberHelper.isNumeric(in_table.m_values[i][j]))
+				if (NumberHelper.isNumeric(in_table.m_values[i][j]) && total != 0)
 				{
 					out_table.m_values[i][j] = Float.toString(Float.parseFloat(in_table.m_values[i][j]) / total);
 				}

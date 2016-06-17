@@ -70,7 +70,7 @@
       <name>Jerrydog</name>
       <classname>ca.uqac.lif.jerrydog.Server</classname>
       <files>
-        <jar>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.1.4-alpha/jerrydog-0.1.4-alpha.zip</jar>
+        <jar>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.1.5-alpha/jerrydog-0.1.5-alpha.zip</jar>
       </files>
     </dependency>
     <dependency>
@@ -80,7 +80,7 @@
       <name>Azrael</name>
       <classname>ca.uqac.lif.azrael.Serializer</classname>
       <files>
-        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v0.4-alpha/azrael-0.4-alpha.zip</jar>
+        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v0.5-alpha/azrael-0.5-alpha.zip</jar>
       </files>
     </dependency>
   </dependencies>

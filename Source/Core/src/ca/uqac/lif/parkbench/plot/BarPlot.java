@@ -20,7 +20,7 @@ package ca.uqac.lif.parkbench.plot;
 import java.util.Vector;
 
 import ca.uqac.lif.parkbench.table.ConcreteTable;
-import ca.uqac.lif.parkbench.table.ExperimentTable;
+import ca.uqac.lif.parkbench.table.Table;
 
 /**
  * Two-dimensional bar diagram, also called a "clustered histogram".
@@ -70,7 +70,7 @@ public class BarPlot extends TwoDeePlot
 	 */
 	protected float m_boxWidth = 0.75f;
 	
-	public BarPlot(ExperimentTable t)
+	public BarPlot(Table t)
 	{
 		super(t);
 	}

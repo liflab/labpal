@@ -20,7 +20,7 @@ package ca.uqac.lif.parkbench.plot;
 import java.util.Vector;
 
 import ca.uqac.lif.parkbench.table.ConcreteTable;
-import ca.uqac.lif.parkbench.table.ExperimentTable;
+import ca.uqac.lif.parkbench.table.Table;
 
 /**
  * A two-dimensional plot showing (x,y) values for multiple data series.
@@ -41,7 +41,7 @@ public class Scatterplot extends TwoDeePlot
 	/**
 	 * Creates an empty scatterplot
 	 */
-	public Scatterplot(ExperimentTable t)
+	public Scatterplot(Table t)
 	{
 		super(t);
 	}

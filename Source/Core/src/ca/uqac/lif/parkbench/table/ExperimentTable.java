@@ -111,6 +111,18 @@ public class ExperimentTable extends Table
 		m_yName = param;
 		return this;
 	}
+	
+	public ExperimentTable setSeriesNames(String ... names)
+	{
+		Vector<String> series = new Vector<String>();
+		for (String name : names)
+		{
+			series.add(name);
+		}
+		Collections.sort(series);
+		m_seriesNames = series;
+		return this;
+	}
 
 	/**
 	 * Returns the contents of the table as a CSV string.
@@ -171,6 +183,10 @@ public class ExperimentTable extends Table
 	 */
 	public Vector<String> getSeriesNames()
 	{
+		if (m_seriesNames != null && !m_seriesNames.isEmpty())
+		{
+			return m_seriesNames;
+		}
 		Vector<String> series = new Vector<String>();
 		for (Experiment e: m_experiments)
 		{
@@ -226,7 +242,12 @@ public class ExperimentTable extends Table
 	 */
 	protected ConcreteTable getValues(Vector<String> series, Vector<String> x_values)
 	{
-		// Build the table from the values
+		if (m_yName == null)
+		{
+			// Build the table from multiple series in a single experiment
+			return getValuesMultipleSeries(x_values);
+		}
+		// Build the table from the values of multiple experiments
 		ConcreteTable values = new ConcreteTable(series, x_values);
 		for (Experiment e : m_experiments)
 		{
@@ -264,6 +285,35 @@ public class ExperimentTable extends Table
 					continue;
 				values.put(n_x, ser, n_y);
 			}
+		}
+		return values;
+	}
+	
+	protected ConcreteTable getValuesMultipleSeries(Vector<String> x_values)
+	{
+		ConcreteTable values = new ConcreteTable(m_seriesNames, x_values);
+		for (Experiment e : m_experiments)
+		{
+			for (String series_name : m_seriesNames)
+			{
+				JsonList jl_x = (JsonList) e.read(m_xName);
+				JsonElement je_y = e.read(series_name);
+				if (!(je_y instanceof JsonList))
+				{
+					// If the x element is an array, the y element should
+					// be an array too
+					assert false;
+				}
+				JsonList jl_y = (JsonList) je_y;
+				for (int i = 0; i < jl_x.size(); i++)
+				{
+					String n_x = elementToString(jl_x.get(i));
+					String n_y = elementToString(jl_y.get(i));
+					if (n_x == null || n_y == null)
+						continue;
+					values.put(n_x, series_name, n_y);
+				}
+			}			
 		}
 		return values;
 	}

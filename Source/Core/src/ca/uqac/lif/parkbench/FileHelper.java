@@ -1,20 +1,20 @@
 /*
   ParkBench, a versatile benchmark environment
   Copyright (C) 2015-2016 Sylvain Hallé
-  
+
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package ca.uqac.lif.parkbench;
 
 import java.io.BufferedReader;
@@ -39,7 +39,7 @@ public class FileHelper
 	 * The system-dependent carriage return symbol
 	 */
 	public static final transient String CRLF = System.getProperty("line.separator");
-	
+
 	/**
 	 * Reads the contents of a file and puts it into a string.
 	 * @param f The file to read
@@ -78,7 +78,7 @@ public class FileHelper
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Reads an input stream and puts its contents into a string
 	 * @param is The input stream
@@ -93,8 +93,8 @@ public class FileHelper
 		{
 			out = s.next();
 		}
-    s.close();
-    return out;
+		s.close();
+		return out;
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class FileHelper
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Creates a file and its parent directory if they do not exist
 	 * @param f The file to create
@@ -186,7 +186,7 @@ public class FileHelper
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Deletes a file
 	 * @param filename The filename
@@ -197,7 +197,7 @@ public class FileHelper
 		File f = new File(filename);
 		return f.delete();
 	}
-	
+
 	/**
 	 * Checks whether a file exists in the filesystem
 	 * @param filename The filename to look for
@@ -208,7 +208,7 @@ public class FileHelper
 		File f = new File(filename);
 		return f.exists();
 	}
-	
+
 	/**
 	 * Replace the extension of a filename with another. For example,
 	 * one can replace /my/path/foo.bar with /my/path/foo.baz.
@@ -221,7 +221,7 @@ public class FileHelper
 		String without_extension = trimExtension(filename);
 		return without_extension + "." + extension;
 	}
-	
+
 	/**
 	 * Trims the extension of a filename. For example, with /my/path/foo.bar,
 	 * would return /my/path/foo
@@ -235,83 +235,91 @@ public class FileHelper
 			return filename;
 		return filename.substring(0, position);
 	}
-	
-  public static String internalFileToString(Class<?> c, String path)
-  {
-    InputStream in = c.getResourceAsStream(path);
-    String out;
-    try
-    {
-      out = streamToString(in);
-    }
-    catch (IOException e)
-    {
-      return null;
-    }
-    return out;
-  }
-  
-  public static byte[] internalFileToBytes(Class<?> c, String path)
-  {
-    InputStream in = internalFileToStream(c, path);
-    byte[] file_contents = null;
-    if (in != null)
-    {
-      file_contents = InnerFileServer.readBytes(in);
-    }
-    return file_contents;
-  }
-  
-  public static InputStream internalFileToStream(Class<?> c, String path)
-  {
-    InputStream in = c.getResourceAsStream(path);
-    return in;
-  }
-  
-  /**
-   * Checks if an internal file exists
-   * @param c The reference class
-   * @param path The path of the file
-   * @return true if the file exists, false otherwise
-   */
-  public static boolean internalFileExists(Class<?> c, String path)
-  {
-	  return internalFileToStream(c, path) != null;
-  }
-  
-  /**
-   * Reads a file and puts its contents in a string
-   * @param in The input stream to read
-   * @return The file's contents, and empty string if the file
-   * does not exist
-   * @throws IOException If something bad occurs
-   */
-  public static String streamToString(InputStream in) throws IOException
-  {
-    if (in == null)
-    {
-      throw new IOException();
-    }
-    java.util.Scanner scanner = null;
-    StringBuilder out = new StringBuilder();
-    try
-    {
-      scanner = new java.util.Scanner(in, "UTF-8");
-      while (scanner.hasNextLine())
-      {
-        String line = scanner.nextLine();
-        out.append(line).append(CRLF);
-        //out.append(line).append("\n");
-      }
-    }
-    finally
-    {
-      if (scanner != null)
-        scanner.close();
-    }
-    return out.toString();
-  }
-  
+
+	public static String internalFileToString(Class<?> c, String path)
+	{
+		if (path == null || path.trim().isEmpty())
+		{
+			return null;
+		}
+		InputStream in = c.getResourceAsStream(path);
+		String out;
+		try
+		{
+			out = streamToString(in);
+		}
+		catch (IOException e)
+		{
+			return null;
+		}
+		return out;
+	}
+
+	public static byte[] internalFileToBytes(Class<?> c, String path)
+	{
+		InputStream in = internalFileToStream(c, path);
+		byte[] file_contents = null;
+		if (in != null)
+		{
+			file_contents = InnerFileServer.readBytes(in);
+		}
+		return file_contents;
+	}
+
+	public static InputStream internalFileToStream(Class<?> c, String path)
+	{
+		if (path == null || path.trim().isEmpty())
+		{
+			return null;
+		}
+		InputStream in = c.getResourceAsStream(path);
+		return in;
+	}
+
+	/**
+	 * Checks if an internal file exists
+	 * @param c The reference class
+	 * @param path The path of the file
+	 * @return true if the file exists, false otherwise
+	 */
+	public static boolean internalFileExists(Class<?> c, String path)
+	{
+		return internalFileToStream(c, path) != null;
+	}
+
+	/**
+	 * Reads a file and puts its contents in a string
+	 * @param in The input stream to read
+	 * @return The file's contents, and empty string if the file
+	 * does not exist
+	 * @throws IOException If something bad occurs
+	 */
+	public static String streamToString(InputStream in) throws IOException
+	{
+		if (in == null)
+		{
+			throw new IOException();
+		}
+		java.util.Scanner scanner = null;
+		StringBuilder out = new StringBuilder();
+		try
+		{
+			scanner = new java.util.Scanner(in, "UTF-8");
+			while (scanner.hasNextLine())
+			{
+				String line = scanner.nextLine();
+				out.append(line).append(CRLF);
+				//out.append(line).append("\n");
+			}
+		}
+		finally
+		{
+			if (scanner != null)
+				scanner.close();
+		}
+		return out.toString();
+	}
+
 	/**
 	 * Checks if a command exists in the system by attempting to run it
 	 * @param command The command's name

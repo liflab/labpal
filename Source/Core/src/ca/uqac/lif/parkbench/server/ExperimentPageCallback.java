@@ -79,7 +79,8 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		out = out.replaceAll("\\{%EXP_BY%\\}", htmlEscape(e.getWhoRan()));
 		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters(), "", e).toString());
-		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", "<div class=\"description\">" + e.getDescription() + "</div>");
+		String description = e.getDescription();
+		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", "<div class=\"description\">" + description + "</div>");
 		String timeout_string = "No timeout";
 		if (e.getMaxDuration() > 0)
 		{

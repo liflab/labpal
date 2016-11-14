@@ -796,5 +796,18 @@ public abstract class Laboratory
 		}
 		return null;
 	}
+	
+	/**
+	 * Creates a new group and adds it to the current lab
+	 * @see Group#Group(String)
+	 * @param name The group's name
+	 * @return The group
+	 */
+	public Group newGroup(String name)
+	{
+		Group g = new Group(name);
+		add(g);
+		return g;
+	}
 
 }

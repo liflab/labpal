@@ -290,6 +290,38 @@ public abstract class Experiment implements Runnable
 		}
 		return null;
 	}
+
+	/**
+	 * Sets an output parameter for this experiment
+	 * @param key The key for this parameter
+	 * @param value The parameter's value
+	 * @return This experiment
+	 */
+	public final Experiment writePrimitive(String key, String value)
+	{
+		int x;
+		float f;
+		try
+		{
+			// Is it an int
+			x = Integer.parseInt(value);
+		}
+		catch (NumberFormatException e1)
+		{
+			try
+			{
+				// No; is it a float?
+				f = Float.parseFloat(value);
+			}
+			catch (NumberFormatException e2)
+			{
+				// Then it's a string
+				return write(key, value);
+			}
+			return write(key, (float) f);
+		}
+		return write(key, (int) x);
+	}
 	
 	/**
 	 * Sets an output parameter for this experiment
@@ -329,6 +361,18 @@ public abstract class Experiment implements Runnable
 
 	
 	/**
+	 * Sets an input parameter for this experiment by copying those from
+	 * an existing map
+	 * @param params The input parameters
+	 * @return This experiment
+	 */
+	public final Experiment setInput(JsonMap params)
+	{
+		m_inputParameters.putAll(params);
+		return this;
+	}
+	
+	/**
 	 * Sets an input parameter for this experiment
 	 * @param key The key for this parameter
 	 * @param value The parameter's value
@@ -338,6 +382,41 @@ public abstract class Experiment implements Runnable
 	{
 		m_inputParameters.put(key, value);
 		return this;
+	}
+	
+	/**
+	 * Sets an input parameter for this experiment, by trying to cast
+	 * its string value into a primitive number type (int or float)
+	 * if possible
+	 * @param key The key for this parameter
+	 * @param value The parameter's value. If the parameter cannot be cast
+	 * as a number, it will
+	 * @return This experiment
+	 */
+	public final Experiment setInputPrimitive(String key, String value)
+	{
+		int x;
+		float f;
+		try
+		{
+			// Is it an int
+			x = Integer.parseInt(value);
+		}
+		catch (NumberFormatException e1)
+		{
+			try
+			{
+				// No; is it a float?
+				f = Float.parseFloat(value);
+			}
+			catch (NumberFormatException e2)
+			{
+				// Then it's a string
+				return setInput(key, value);
+			}
+			return setInput(key, (float) f);
+		}
+		return setInput(key, (int) x);
 	}
 	
 	/**
@@ -709,4 +788,5 @@ public abstract class Experiment implements Runnable
 		m_endTime = System.currentTimeMillis();
 		return this;
 	}
+	
 }

@@ -18,6 +18,8 @@
 package ca.uqac.lif.parkbench;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +32,7 @@ import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.parkbench.CliParser.Argument;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.Plot;
+import ca.uqac.lif.parkbench.server.ParkBenchCallback;
 import ca.uqac.lif.parkbench.server.ParkbenchServer;
 import ca.uqac.lif.parkbench.table.Table;
 import ca.uqac.lif.parkbench.table.ExperimentMultidimensionalTable;
@@ -88,7 +91,7 @@ public abstract class Laboratory
 	/**
 	 * The version string of this lab
 	 */
-	public static final transient String s_versionString = "v2.1";
+	public static final transient String s_versionString = "v2.2";
 
 	/**
 	 * The default file extension to save experiment results
@@ -531,7 +534,8 @@ public abstract class Laboratory
 			int seed = Integer.parseInt(map.getOptionValue("seed"));
 			new_lab.setRandomSeed(seed);
 		}
-		new_lab.setupExperiments(map);
+		List<ParkBenchCallback> callbacks = new LinkedList<ParkBenchCallback>();
+		new_lab.setupExperiments(map, callbacks);
 		final AnsiPrinter stdout = new AnsiPrinter(System.out);
 		stdout.resetColors();
 		int code = ERR_OK;
@@ -551,6 +555,10 @@ public abstract class Laboratory
 		{
 			// Start ParkBench's web interface
 			ParkbenchServer server = new ParkbenchServer(map, new_lab, assistant);
+			for (ParkBenchCallback cb : callbacks)
+			{
+				server.registerCallback(0, cb);
+			}
 			stdout.print("Server started on " + server.getServerName() + ":" + server.getServerPort() + "\n");
 			server.startServer();
 			while (true)
@@ -609,8 +617,11 @@ public abstract class Laboratory
 	 *   If you specified custom command-line arguments in
 	 *   {@link #setupCli(CliParser)}, this is where you can retrieve them
 	 *   and read their values.
+	 * @param callbacks A list where the method can add new server callbacks.
+	 *   These callbacks will be added to the server if the <code>--web</code>
+	 *   option is used at startup.
 	 */
-	public abstract void setupExperiments(ArgumentMap map);
+	public abstract void setupExperiments(ArgumentMap map, List<ParkBenchCallback> callbacks);
 
 	/**
 	 * Counts the number of "parkmips" of this system. This is a very rough

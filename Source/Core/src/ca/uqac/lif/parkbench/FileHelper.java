@@ -26,6 +26,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import ca.uqac.lif.jerrydog.InnerFileServer;
 
@@ -332,6 +336,37 @@ public class FileHelper
 		CommandRunner runner = new CommandRunner(args);
 		runner.run();
 		return runner.getErrorCode() == 0;
+	}
+	
+	/**
+	 * List all files in a folder whose filename matches a regex pattern
+	 * @param url The source folder
+	 * @param glob The pattern to match
+	 * @return The list of file names
+	 */
+	public static List<String> listAllFiles(URL url, String glob)
+	{
+		List<String> listing = new ArrayList<String>();
+		File f = null;
+		try 
+		{
+			f = new File(url.toURI());
+			if (f != null)
+			{
+				for (String uris : f.list())
+				{
+					if (uris.matches(glob))
+					{
+						listing.add(uris);
+					}
+				}
+			}
+		}
+		catch (URISyntaxException e) 
+		{
+			// Do nothing
+		}
+		return listing;
 	}
 
 }

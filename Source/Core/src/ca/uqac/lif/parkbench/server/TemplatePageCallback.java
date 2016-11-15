@@ -48,11 +48,14 @@ public class TemplatePageCallback extends ParkBenchCallback
 	
 	protected static final transient Pattern s_patternInclude = Pattern.compile("\\{!(.*?)!\\}");
 	
-	protected static enum IconType {ERLENMEYER, TABLE, STATUS, GRAPH, HOME, HELP, ASSISTANT};
+	public static enum IconType {ERLENMEYER, TABLE, STATUS, GRAPH, HOME, HELP, ASSISTANT};
+	
+	protected String m_filename = null;
 
 	public TemplatePageCallback(String prefix, Laboratory lab, LabAssistant assistant)
 	{
 		super(prefix, lab, assistant);
+		m_filename = s_path + m_path + ".html";
 	}
 
 	@Override
@@ -67,9 +70,7 @@ public class TemplatePageCallback extends ParkBenchCallback
 		String accept_Header = headers.get("Accept").get(0);
 		response.setContentType(accept_Header.split(",")[0]);
 		// Read file and put into response
-		String filename = s_path + m_path + ".html";
-		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, filename);
-		
+		String file_contents = readTemplateFile();
 		if (file_contents == null)
 		{
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
@@ -86,6 +87,12 @@ public class TemplatePageCallback extends ParkBenchCallback
 			response.setCode(CallbackResponse.HTTP_OK);
 		}
 		return response;
+	}
+	
+	protected String readTemplateFile()
+	{
+		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, m_filename);
+		return file_contents;
 	}
 	
 	public static final String resolveInclude(String s)

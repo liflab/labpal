@@ -22,9 +22,11 @@ import java.util.Map;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
 import ca.uqac.lif.parkbench.table.ExperimentMultidimensionalTable;
-import ca.uqac.lif.parkbench.table.HtmlTableNodeRenderer;
 import ca.uqac.lif.parkbench.table.MultidimensionalTable;
 import ca.uqac.lif.parkbench.table.TableNode;
+import ca.uqac.lif.parkbench.table.rendering.HtmlTableNodeRenderer;
+import ca.uqac.lif.parkbench.table.rendering.LatexTableRenderer;
+import ca.uqac.lif.parkbench.table.rendering.TableNodeRenderer;
 
 /**
  * Callback producing an image from one of the lab's plots, in various
@@ -58,12 +60,23 @@ public class MultiTablePageCallback extends TemplatePageCallback
 		{
 			return null;
 		}
+		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
 		MultidimensionalTable mtt = tab.getTable();
 		TableNode node = mtt.getTree();
-		HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer();
-		String rendered_table = renderer.render(node, tab.getDimensions());
-		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
-		s = s.replaceAll("\\{%TABLE%\\}", rendered_table);
+		String format = params.get("format");
+		if (format == null || format.compareToIgnoreCase("html") == 0)
+		{
+			TableNodeRenderer renderer = new HtmlTableNodeRenderer();
+			String rendered_table = renderer.render(node, tab.getDimensions());
+			s = s.replaceAll("\\{%TABLE%\\}", rendered_table);
+		}
+		else if (format.compareToIgnoreCase("latex") == 0)
+		{
+			TableNodeRenderer renderer = new LatexTableRenderer();
+			String rendered_table = renderer.render(node, tab.getDimensions());
+			rendered_table = rendered_table.replaceAll("\\\\", "\\\\\\\\");
+			s = s.replaceAll("\\{%TABLE%\\}", "<pre>" + rendered_table + "</pre>");
+		}
 		String desc = tab.getDescription();
 		if (desc != null && !desc.isEmpty())
 		{

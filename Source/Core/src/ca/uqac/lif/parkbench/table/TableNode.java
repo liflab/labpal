@@ -100,4 +100,9 @@ public class TableNode
 		}
 		out.append("</li>\n");
 	}
+
+	public Object getValue()
+	{
+		return m_value;
+	}
 }

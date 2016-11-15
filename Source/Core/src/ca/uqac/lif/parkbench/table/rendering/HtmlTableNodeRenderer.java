@@ -15,7 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.parkbench.table;
+package ca.uqac.lif.parkbench.table.rendering;
 
 import java.util.List;
 
@@ -23,6 +23,11 @@ import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonString;
 
+/**
+ * Renders a result tree as an HTML table
+ * 
+ * @author Sylvain Hallé
+ */
 public class HtmlTableNodeRenderer extends TableNodeRenderer 
 {
 	@Override
@@ -56,13 +61,13 @@ public class HtmlTableNodeRenderer extends TableNodeRenderer
 	}
 	
 	@Override
-	public void startRow(StringBuilder out)
+	public void startRow(StringBuilder out, int max_depth)
 	{
 		out.append("<tr>\n");
 	}
 	
 	@Override
-	public void printCell(StringBuilder out, List<JsonElement> values, int nb_children)
+	public void printCell(StringBuilder out, List<JsonElement> values, int nb_children, int max_depth)
 	{
 		if (nb_children < 2)
 		{
@@ -89,13 +94,13 @@ public class HtmlTableNodeRenderer extends TableNodeRenderer
 	}
 	
 	@Override
-	public void printRepeatedCell(StringBuilder out, List<JsonElement> values, int index)
+	public void printRepeatedCell(StringBuilder out, List<JsonElement> values, int index, int max_depth)
 	{
-		//out.append("<td>-</td>");
+		// Do nothing
 	}
 	
 	@Override
-	public void endRow(StringBuilder out)
+	public void endRow(StringBuilder out, int max_depth)
 	{
 		out.append("</tr>\n");
 	}

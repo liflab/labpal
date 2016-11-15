@@ -32,6 +32,11 @@ import ca.uqac.lif.parkbench.Laboratory;
  */
 public class ParkbenchServer extends InnerFileServer
 {
+	/**
+	 * The default port
+	 */
+	protected static final transient int s_defaultPort = 21212;
+	
 	public ParkbenchServer(ArgumentMap args, Laboratory lab, LabAssistant assistant)
 	{
 		super(ParkbenchServer.class);
@@ -42,7 +47,7 @@ public class ParkbenchServer extends InnerFileServer
 		}
 		else
 		{
-			setServerPort(21212);
+			setServerPort(s_defaultPort);
 		}
 		registerCallback(0, new StatusPageCallback(lab, assistant));
 		registerCallback(0, new HomePageCallback(lab, assistant));
@@ -57,6 +62,7 @@ public class ParkbenchServer extends InnerFileServer
 		registerCallback(0, new AllPlotsCallback(lab, assistant));
 		registerCallback(0, new TablesPageCallback(lab, assistant));
 		registerCallback(0, new TablePageCallback(lab, assistant));
+		registerCallback(0, new MultiTablePageCallback(lab, assistant));
 	}
 	
 	/**

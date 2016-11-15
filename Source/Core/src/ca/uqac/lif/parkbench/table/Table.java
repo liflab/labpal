@@ -55,9 +55,14 @@ public abstract class Table
 	
 	public Table()
 	{
+		this("Untitled");
+	}
+	
+	public Table(String title)
+	{
 		super();
 		m_id = s_idCounter++;
-		m_title = "Untitled";
+		m_title = title;
 	}
 	
 	/**

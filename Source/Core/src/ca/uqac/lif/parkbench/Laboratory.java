@@ -32,6 +32,7 @@ import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.Plot;
 import ca.uqac.lif.parkbench.server.ParkbenchServer;
 import ca.uqac.lif.parkbench.table.Table;
+import ca.uqac.lif.parkbench.table.ExperimentMultidimensionalTable;
 import ca.uqac.lif.parkbench.table.ExperimentTable;
 import ca.uqac.lif.tui.AnsiPrinter;
 
@@ -65,6 +66,11 @@ public abstract class Laboratory
 	private transient HashSet<Table> m_tables;
 	
 	/**
+	 * The set of multidimensional tables associated to this lab
+	 */
+	private transient HashSet<ExperimentMultidimensionalTable> m_multiTables;
+	
+	/**
 	 * The set of groups associated with this lab
 	 */
 	private transient HashSet<Group> m_groups;
@@ -82,7 +88,7 @@ public abstract class Laboratory
 	/**
 	 * The version string of this lab
 	 */
-	public static final transient String s_versionString = "v2.0";
+	public static final transient String s_versionString = "v2.1";
 
 	/**
 	 * The default file extension to save experiment results
@@ -139,6 +145,7 @@ public abstract class Laboratory
 		m_experiments = new HashSet<Experiment>();
 		m_plots = new HashSet<Plot>();
 		m_tables = new HashSet<Table>();
+		m_multiTables = new HashSet<ExperimentMultidimensionalTable>();
 		m_groups = new HashSet<Group>();
 		m_assistant = null;
 		m_serializer = new JsonSerializer();
@@ -242,6 +249,17 @@ public abstract class Laboratory
 		m_tables.add(t);
 		return this;
 	}
+	
+	/**
+	 * Assigns a multidimensional table to this lab
+	 * @param t The table
+	 * @return This lab
+	 */
+	public Laboratory add(ExperimentMultidimensionalTable t)
+	{
+		m_multiTables.add(t);
+		return this;
+	}
 
 	/**
 	 * Gets the IDs of all the plots for this lab assistant
@@ -265,6 +283,20 @@ public abstract class Laboratory
 	{
 		Set<Integer> ids = new HashSet<Integer>();
 		for (Table p : m_tables)
+		{
+			ids.add(p.getId());
+		}
+		return ids;
+	}
+	
+	/**
+	 * Gets the IDs of all the multidimensional tables for this lab assistant
+	 * @return The set of IDs
+	 */
+	public Set<Integer> getMultiTableIds()
+	{
+		Set<Integer> ids = new HashSet<Integer>();
+		for (ExperimentMultidimensionalTable p : m_multiTables)
 		{
 			ids.add(p.getId());
 		}
@@ -771,6 +803,23 @@ public abstract class Laboratory
 	public Table getTable(int table_id)
 	{
 		for (Table t : m_tables)
+		{
+			if (t.getId() == table_id)
+			{
+				return t;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the multidimensional table with given ID
+	 * @param table_id The table ID
+	 * @return The table, <tt>null</tt> if not found
+	 */
+	public ExperimentMultidimensionalTable getMultiTable(int table_id)
+	{
+		for (ExperimentMultidimensionalTable t : m_multiTables)
 		{
 			if (t.getId() == table_id)
 			{

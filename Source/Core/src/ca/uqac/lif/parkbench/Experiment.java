@@ -18,6 +18,7 @@
 package ca.uqac.lif.parkbench;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,6 +51,11 @@ public abstract class Experiment implements Runnable
 	 * The output parameters that this experiment generates
 	 */
 	private JsonMap m_outputParameters;
+	
+	/**
+	 * The set of parameter names to show in the experiments table
+	 */
+	private transient Set<String> m_keysToHide;
 	
 	/**
 	 * The current status of the experiment
@@ -115,6 +121,7 @@ public abstract class Experiment implements Runnable
 		m_inputParameters = new JsonMap();
 		m_outputParameters = new JsonMap();
 		m_parameterDescriptions = new HashMap<String,String>();
+		m_keysToHide = new HashSet<String>();
 		m_runBy = "";
 		m_status = Status.DUNNO;
 		m_errorMessage = "";
@@ -175,6 +182,25 @@ public abstract class Experiment implements Runnable
 	public void cleanPrerequisites()
 	{
 		return;
+	}
+	
+	/**
+	 * Adds the name of a key to hide from the experiment list
+	 * @param key The key
+	 */
+	public void addKeyToHide(String key)
+	{
+		m_keysToHide.add(key);
+	}
+	
+	/**
+	 * Determines if this parameter should be hidden from the experiment list
+	 * @param key The key
+	 * @return true if the parameter should be hidden; false otherwise
+	 */
+	public boolean isHidden(String key)
+	{
+		return m_keysToHide.contains(key);
 	}
 	
 	/**
@@ -665,11 +691,34 @@ public abstract class Experiment implements Runnable
 	
 	/**
 	 * Gets the set of all input parameter <em>names</em>
+	 * @param exclude_hidden Set to true to exclude keys that have been
+	 *   marked as hidden by {@link #addKeyToHide(String)}
+	 * @return The set of names
+	 */
+	public final Set<String> getInputKeys(boolean exclude_hidden)
+	{
+		if (exclude_hidden == false)
+		{
+			return m_inputParameters.keySet();
+		}
+		Set<String> input_keys = new HashSet<String>();
+		for (String key : m_inputParameters.keySet())
+		{
+			if (!m_keysToHide.contains(key))
+			{
+				input_keys.add(key);
+			}
+		}
+		return input_keys;
+	}
+	
+	/**
+	 * Gets the set of all input parameter <em>names</em>
 	 * @return The set of names
 	 */
 	public final Set<String> getInputKeys()
 	{
-		return m_inputParameters.keySet();
+		return getInputKeys(false);
 	}
 	
 	/**

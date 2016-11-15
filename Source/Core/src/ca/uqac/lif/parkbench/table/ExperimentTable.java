@@ -60,6 +60,13 @@ public class ExperimentTable extends Table
 		m_experiments = new HashSet<Experiment>();
 		m_seriesNames = new Vector<String>();
 	}
+	
+	public ExperimentTable(String title)
+	{
+		super(title);
+		m_experiments = new HashSet<Experiment>();
+		m_seriesNames = new Vector<String>();
+	}
 
 	/**
 	 * Adds an experiment to the table

@@ -141,7 +141,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		for (int id : ids)
 		{
 			Experiment e = lab.getExperiment(id);
-			param_set.addAll(e.getInputKeys());
+			param_set.addAll(e.getInputKeys(true));
 		}
 		Vector<String> param_list = new Vector<String>();
 		param_list.addAll(param_set);
@@ -150,6 +150,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><td><input type=\"checkbox\" class=\"top-checkbox\" /></td><th>#</th>");
 		for (String p_name : param_list)
 		{
+			
 			out.append("<th>").append(p_name).append("</th>");
 		}
 		out.append("<th>Status</th></tr></thead>\n<tbody>\n");

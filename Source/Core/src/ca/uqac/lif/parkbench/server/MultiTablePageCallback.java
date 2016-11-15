@@ -22,8 +22,9 @@ import java.util.Map;
 import ca.uqac.lif.parkbench.LabAssistant;
 import ca.uqac.lif.parkbench.Laboratory;
 import ca.uqac.lif.parkbench.table.ExperimentMultidimensionalTable;
+import ca.uqac.lif.parkbench.table.HtmlTableNodeRenderer;
 import ca.uqac.lif.parkbench.table.MultidimensionalTable;
-import ca.uqac.lif.parkbench.table.MultidimensionalTable.TableNode;
+import ca.uqac.lif.parkbench.table.TableNode;
 
 /**
  * Callback producing an image from one of the lab's plots, in various
@@ -59,8 +60,10 @@ public class MultiTablePageCallback extends TemplatePageCallback
 		}
 		MultidimensionalTable mtt = tab.getTable();
 		TableNode node = mtt.getTree();
+		HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer();
+		String rendered_table = renderer.render(node, tab.getDimensions());
 		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
-		s = s.replaceAll("\\{%TABLE%\\}", mtt.toHtml());
+		s = s.replaceAll("\\{%TABLE%\\}", rendered_table);
 		String desc = tab.getDescription();
 		if (desc != null && !desc.isEmpty())
 		{

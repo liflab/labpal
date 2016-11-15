@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.parkbench.Experiment;
 import ca.uqac.lif.parkbench.table.MultidimensionalTable.Entry;
 
@@ -72,6 +73,11 @@ public class ExperimentMultidimensionalTable
 		return m_title;
 	}
 	
+	public String[] getDimensions()
+	{
+		return m_dimensions;
+	}
+	
 	/**
 	 * Adds a new experiment to the table
 	 * @param e The experiment to read from
@@ -117,7 +123,7 @@ public class ExperimentMultidimensionalTable
 				}
 				else
 				{
-					entry.put(key, "");
+					entry.put(key, JsonNull.instance);
 				}
 			}
 			mt.add(entry);

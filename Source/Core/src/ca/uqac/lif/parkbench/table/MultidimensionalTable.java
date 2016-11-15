@@ -20,12 +20,14 @@ package ca.uqac.lif.parkbench.table;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
+
+import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonNull;
+import ca.uqac.lif.json.JsonString;
 
 public class MultidimensionalTable 
 {
@@ -104,10 +106,10 @@ public class MultidimensionalTable
 			return children;
 		}
 		String current_key = sort_order[index];
-		Map<Object,Set<Entry>> partition = partitionEntries(available_entries, current_key);
-		List<Object> keys = new LinkedList<Object>();
+		Map<JsonElement,Set<Entry>> partition = partitionEntries(available_entries, current_key);
+		List<JsonElement> keys = new LinkedList<JsonElement>();
 		keys.addAll(partition.keySet());
-		//Collections.sort(keys); // TODO: sort
+		Collections.sort(keys);
 		for (Object value : keys)
 		{
 			TableNode new_node = new TableNode(current_key, value);
@@ -125,12 +127,12 @@ public class MultidimensionalTable
 	 * @param key The key against which to partition the set
 	 * @return A map from values to sets of entries
 	 */
-	protected static Map<Object,Set<Entry>> partitionEntries(Set<Entry> available_entries, String key)
+	protected static Map<JsonElement,Set<Entry>> partitionEntries(Set<Entry> available_entries, String key)
 	{
-		Map<Object,Set<Entry>> partition = new HashMap<Object,Set<Entry>>();
+		Map<JsonElement,Set<Entry>> partition = new HashMap<JsonElement,Set<Entry>>();
 		for (Entry e : available_entries)
 		{
-			Object o = e.get(key);
+			JsonElement o = (JsonElement) e.get(key);
 			Set<Entry> value_set;
 			if (partition.containsKey(o))
 			{
@@ -198,7 +200,20 @@ public class MultidimensionalTable
 	{
 		if (depth > 0)
 		{
-			out.append("<td>").append(cur_node.m_value).append("</td>");
+			out.append("<td>");
+			if (cur_node.m_value instanceof JsonString)
+			{
+				out.append(((JsonString) cur_node.m_value).stringValue());
+			}
+			else if (cur_node.m_value instanceof JsonNull)
+			{
+				out.append("");
+			}
+			else
+			{
+				out.append(cur_node.m_value);
+			}
+			out.append("</td>");
 		}
 		boolean first_child = true;
 		for (TableNode child : cur_node.m_children)
@@ -256,70 +271,6 @@ public class MultidimensionalTable
 			}
 			// TODO
 			return false;
-		}
-	}
-	
-	public static class TableNode
-	{
-		protected final String m_key;
-		
-		protected final Object m_value;
-		
-		public List<TableNode> m_children;
-		
-		public TableNode(String key, Object value)
-		{
-			super();
-			m_children = new LinkedList<TableNode>();
-			m_key = key;
-			m_value = value;
-		}
-		
-		@Override
-		public String toString()
-		{
-			StringBuilder out = new StringBuilder();
-			toString(out, "");
-			return out.toString();
-		}
-		
-		protected void toString(StringBuilder out, String indent)
-		{
-			out.append(indent);
-			out.append(m_key).append("=").append(m_value);
-			if (!m_children.isEmpty())
-			{
-				out.append("\n");
-			}
-			for (TableNode child : m_children)
-			{
-				child.toString(out, indent + "  ");
-			}
-			out.append("\n");
-		}
-		
-		public String toHtml()
-		{
-			StringBuilder out = new StringBuilder();
-			out.append("<ul>");
-			toHtmlList(out);
-			out.append("</ul>");
-			return out.toString();
-		}
-		
-		protected void toHtmlList(StringBuilder out)
-		{
-			out.append("<li>").append(m_key).append("=").append(m_value);
-			if (!m_children.isEmpty())
-			{
-				out.append("<ul>");
-				for (TableNode child : m_children)
-				{
-					child.toHtmlList(out);
-				}
-				out.append("</ul>\n");
-			}
-			out.append("</li>\n");
 		}
 	}
 }

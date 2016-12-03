@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.uqac.lif.json.JsonMap;
+import ca.uqac.lif.parkbench.EmptyException;
 
 /**
  * Populates the content of an experiment based on results fetched from

@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.parkbench;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,10 +49,12 @@ import ca.uqac.lif.tui.AnsiPrinter;
  */
 public abstract class Laboratory
 {
+	/* Return codes */
 	public static transient int ERR_OK = 0;
 	public static transient int ERR_LAB = 1;
 	public static transient int ERR_REQUIREMENTS = 2;
 	public static transient int ERR_IO = 3;
+	public static transient int ERR_SERVER = 4;
 
 	/**
 	 * The set of experiments this lab has access to
@@ -560,7 +563,16 @@ public abstract class Laboratory
 				server.registerCallback(0, cb);
 			}
 			stdout.print("Server started on " + server.getServerName() + ":" + server.getServerPort() + "\n");
-			server.startServer();
+			try
+			{
+				server.startServer();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace(stdout);
+				stdout.close();
+				System.exit(ERR_SERVER);
+			}
 			while (true)
 			{
 				Experiment.wait(10000);

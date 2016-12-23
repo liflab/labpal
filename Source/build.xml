@@ -23,7 +23,7 @@
   xmlns:jacoco="antlib:org.jacoco.ant">
   
   <!-- The build script's version number. Do not edit! -->
-  <property name="antrun.version" value="1.1.4"/>
+  <property name="antrun.version" value="1.1.6"/>
   
   <!-- Load project properties from XML file -->
   <xmlproperty file="config.xml"/>
@@ -148,12 +148,14 @@
       includeantruntime="false">
       <classpath>
         <pathelement location="${build.bindir}"/>
-        <pathelement path="${build.depdir}"/>
+        <fileset dir="${build.depdir}">
+          <include name="*.jar"/>
+        </fileset>
         <pathelement path="${java.class.path}"/>
       </classpath>
     </javac>
     <copy todir="${build.bindir}" includeemptydirs="false">
-      <fileset dir="${build.srcdir}" excludes="**/*.java,**/*~"/>
+      <fileset dir="${build.srcdir}" excludes="**/*.java"/>
     </copy>
   </target>
   
@@ -170,7 +172,9 @@
       includeantruntime="false">
       <classpath>
         <pathelement location="${build.bindir}"/>
-        <pathelement location="${build.depdir}"/>
+        <fileset dir="${build.depdir}">
+          <include name="*.jar"/>
+        </fileset>
         <pathelement path="${java.class.path}"/>
         <pathelement location="${build.libdir}/${junit.jarname}"/>
         <pathelement location="${build.libdir}/${junit.hamcrest}"/>
@@ -194,10 +198,22 @@
              author="true"
              version="true"
              use="true"
+             Encoding="utf8"
+             docencoding="utf8"
+             charset="utf8"
              windowtitle="${build.name} Documentation">
       <doctitle><![CDATA[<h1>]]>${build.name}<![CDATA[ Documentation</h1>]]></doctitle>
       <bottom><![CDATA[<i>Copyright&nbsp;&#169; ]]>${build.author}<![CDATA[. All Rights Reserved.</i>]]></bottom>
       <link href="http://docs.oracle.com/javase/6/docs/api/"/>
+      <classpath>
+        <pathelement location="${build.bindir}"/>
+        <fileset dir="${build.depdir}">
+          <include name="*.jar"/>
+        </fileset>
+        <pathelement path="${java.class.path}"/>
+        <pathelement location="${build.libdir}/${junit.jarname}"/>
+        <pathelement location="${build.libdir}/${junit.hamcrest}"/>
+      </classpath>
     </javadoc>
   </target>
   
@@ -218,7 +234,7 @@
 	  </manifest>
 	  <fileset dir="${build.bindir}"/>
 	  <zipgroupfileset dir="${build.depdir}">
-	    <include name="*" if="${build.jar.withdeps}"/>
+	    <include name="**/*.jar" if="${build.jar.withdeps}"/>
 	  </zipgroupfileset>
 	  <fileset dir="${build.srcdir}">
 	    <include name="*" if="${build.jar.withsrc}"/>
@@ -490,48 +506,6 @@
               </xmltask>
             </else>
           </if>
-        </actions>
-      </call>
-    </xmltask>
-    </sequential>
-  </target>
-  
-  <!-- Task: download-deps-override
-       Like download-deps, but downloads the dependencies anyway.
-  -->
-  <target name="download-deps-override" depends="init" description="Download unsatisfied JAR dependencies">
-    <sequential>
-    <mkdir dir="${build.depdir}"/>
-    <xmltask source="config.xml">
-      <call path="/build/dependencies/dependency">
-        <param name="depname" path="name/text()"/>
-        <param name="classname" path="classname/text()"/>
-        <actions>
-          <echo message="Checking if @{depname} is installed" level="info"/>
-
-              <echo message="@{depname} not present in classpath. Downloading..." level="info"/>
-              <xmltask source="config.xml">
-                <call path="/build/dependencies/dependency[name='@{depname}']/files/jar">
-                  <param name="url" path="text()"/>
-                  <actions>
-                    <get src="@{url}" dest="${build.depdir}"/>
-                  </actions>
-                </call>
-                <call path="/build/dependencies/dependency[name='@{depname}']/files/zip">
-                  <param name="url" path="text()"/>
-                  <actions>
-                    <get src="@{url}" dest="${build.depdir}"/>
-                    <var name="basename" unset="true"/>
-                    <basename property="basename" file="@{url}"/>
-		    <unzip src="${build.depdir}/${basename}" dest="${build.depdir}">
-		      <patternset>
-			<include name="**/*.jar"/>
-		      </patternset>
-		      <mapper type="flatten"/>
-		    </unzip>
-                  </actions>
-                </call>
-              </xmltask>
         </actions>
       </call>
     </xmltask>

@@ -23,10 +23,10 @@
        script's default values -->
 
   <!-- The project's name -->
-  <name>ParkBench</name>
+  <name>LabPal</name>
   
   <!-- The project's version number -->
-  <version>2.3</version>
+  <version>2.4</version>
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
@@ -81,6 +81,16 @@
       <classname>ca.uqac.lif.azrael.Serializer</classname>
       <files>
         <zip>https://github.com/sylvainhalle/Azrael/releases/download/v0.7-alpha/azrael-0.7-alpha.zip</zip>
+      </files>
+    </dependency>
+    <dependency>
+      <!--
+      GRAL. Stand-alone plotting library
+      -->
+      <name>GRAL</name>
+      <classname>ca.uqac.lif.azrael.Serializer</classname>
+      <files>
+        <jar>http://www.erichseifert.de/dev/gral/0.11/gral-core-0.11.jar</jar>
       </files>
     </dependency>
   </dependencies>

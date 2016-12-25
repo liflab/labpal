@@ -1,10 +1,13 @@
 package browser;
 
+import java.util.List;
+
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.Group;
 import ca.uqac.lif.parkbench.plot.BarPlot;
 import ca.uqac.lif.parkbench.plot.PieChart;
 import ca.uqac.lif.parkbench.plot.Plot;
+import ca.uqac.lif.parkbench.server.ParkBenchCallback;
 import ca.uqac.lif.parkbench.table.ExperimentTable;
 import ca.uqac.lif.parkbench.Laboratory;
 
@@ -16,7 +19,7 @@ public class BrowserLab extends Laboratory
 	}
 
 	@Override
-	public void setupExperiments(ArgumentMap map)
+	public void setupExperiments(ArgumentMap map, List<ParkBenchCallback> callbacks)
 	{
 		setTitle("Browser market share");
 		ExperimentTable et = new ExperimentTable();

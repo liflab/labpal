@@ -17,8 +17,11 @@
  */
 package multipoint;
 
+import java.util.List;
+
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.Scatterplot;
+import ca.uqac.lif.parkbench.server.ParkBenchCallback;
 import ca.uqac.lif.parkbench.table.ExperimentTable;
 import ca.uqac.lif.parkbench.Laboratory;
 
@@ -30,7 +33,7 @@ public class MultipointLab extends Laboratory
 	}
 
 	@Override
-	public void setupExperiments(ArgumentMap map) 
+	public void setupExperiments(ArgumentMap map, List<ParkBenchCallback> callbacks) 
 	{
 		ExperimentTable table = new ExperimentTable();
 		table.useForX("a").useForY("b");

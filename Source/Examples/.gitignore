@@ -1,3 +1,5 @@
 *.gp
 *.json
 *.lab
+*.zip
+data/

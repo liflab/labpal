@@ -17,9 +17,12 @@
  */
 package sorting;
 
+import java.util.List;
+
 import ca.uqac.lif.parkbench.Laboratory;
 import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
 import ca.uqac.lif.parkbench.plot.Scatterplot;
+import ca.uqac.lif.parkbench.server.ParkBenchCallback;
 import ca.uqac.lif.parkbench.table.ExperimentTable;
 
 public class SortingLab extends Laboratory
@@ -29,7 +32,7 @@ public class SortingLab extends Laboratory
 		initialize(args, SortingLab.class);
 	}
 
-	public void setupExperiments(ArgumentMap map)
+	public void setupExperiments(ArgumentMap map, List<ParkBenchCallback> callbacks)
 	{
 		// Give a name to the lab
 		setTitle("Sorting Algorithms");

@@ -55,6 +55,21 @@ public abstract class Laboratory
 	public static transient int ERR_REQUIREMENTS = 2;
 	public static transient int ERR_IO = 3;
 	public static transient int ERR_SERVER = 4;
+	
+	/**
+	 * The major version number
+	 */
+	private static final int s_majorVersionNumber = 2;
+
+	/**
+	 * The minor version number
+	 */
+	private static final int s_minorVersionNumber = 4;
+	
+	/**
+	 * The revision version number
+	 */
+	private static final int s_revisionVersionNumber = 0;
 
 	/**
 	 * The set of experiments this lab has access to
@@ -880,6 +895,33 @@ public abstract class Laboratory
 		Group g = new Group(name);
 		add(g);
 		return g;
+	}
+	
+	/**
+	 * Gets the major version number
+	 * @return The number
+	 */
+	public static final int getMajor()
+	{
+		return s_majorVersionNumber;
+	}
+
+	/**
+	 * Gets the minor version number
+	 * @return The number
+	 */
+	public static final int getMinor()
+	{
+		return s_minorVersionNumber;
+	}
+	
+	/**
+	 * Gets the revision version number
+	 * @return The number
+	 */
+	public static final int getRevision()
+	{
+		return s_revisionVersionNumber;
 	}
 
 }

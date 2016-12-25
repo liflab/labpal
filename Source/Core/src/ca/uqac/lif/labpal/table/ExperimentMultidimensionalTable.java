@@ -17,15 +17,29 @@
  */
 package ca.uqac.lif.labpal.table;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.table.MultidimensionalTable.Entry;
+import de.erichseifert.gral.data.Column;
+import de.erichseifert.gral.data.DataListener;
+import de.erichseifert.gral.data.DataSource;
+import de.erichseifert.gral.data.Row;
+import de.erichseifert.gral.data.statistics.Statistics;
 
-public class ExperimentMultidimensionalTable 
+/**
+ * A table whose data is fetched from the results of a group of experiments
+ * @author Sylvain Hallé
+ */
+public class ExperimentMultidimensionalTable implements DataSource
 {
 	/**
 	 * The table's ID
@@ -38,6 +52,16 @@ public class ExperimentMultidimensionalTable
 	protected static int s_idCounter = 1;
 	
 	/**
+	 * A lock for accessing the counter
+	 */
+	protected static Lock s_counterLock = new ReentrantLock();
+	
+	/**
+	 * The data listeners associated to this table
+	 */
+	protected Set<DataListener> m_dataListeners;
+	
+	/**
 	 * The table's title
 	 */
 	protected String m_title;
@@ -47,15 +71,47 @@ public class ExperimentMultidimensionalTable
 	 */
 	public String[] m_dimensions;
 	
-	public Set<Experiment> m_experiments;
+	/**
+	 * The types of values that a data cell can have
+	 */
+	public static enum ColumnType {TEXT, NUMERIC};
 	
-	public ExperimentMultidimensionalTable(String[] dimensions)
+	/**
+	 * The type of each column in the table
+	 */
+	public Class<? extends Comparable<?>>[] m_columnTypes;
+	
+	/**
+	 * The list of experiments in this table. Note that we use a list,
+	 * and not a set, as we need the experiments to be enumerated in the
+	 * same order every time. Otherwise, the <i>n</i>-th "row" of the
+	 * table would not always refer to the same data point.
+	 */
+	public List<Experiment> m_experiments;
+	
+	@SuppressWarnings("unchecked")
+	public ExperimentMultidimensionalTable(String[] dimensions, ColumnType[] types)
 	{
 		super();
+		s_counterLock.lock();
 		m_id = s_idCounter++;
-		m_experiments = new HashSet<Experiment>();
+		s_counterLock.unlock();
+		m_experiments = new ArrayList<Experiment>();
 		m_dimensions = dimensions;
 		m_title = "Untitled";
+		m_dataListeners = new HashSet<DataListener>();
+		m_columnTypes = new Class[dimensions.length];
+		for (int i = 0; i < dimensions.length; i++)
+		{
+			if (types[i] == ColumnType.NUMERIC)
+			{
+				m_columnTypes[i] = Float.class;
+			}
+			else
+			{
+				m_columnTypes[i] = String.class;
+			}
+		}
 	}
 	
 	public String getDescription()
@@ -87,6 +143,10 @@ public class ExperimentMultidimensionalTable
 		m_experiments.add(e);
 	}
 	
+	/**
+	 * Gets the table's unique ID
+	 * @return The ID
+	 */
 	public int getId()
 	{
 		return m_id;
@@ -130,4 +190,94 @@ public class ExperimentMultidimensionalTable
 		}
 		return mt;
 	}
+
+	@Override
+	public Iterator<Comparable<?>> iterator()
+	{
+		return new RowIterator(this);
+	}
+
+	@Override
+	public void addDataListener(DataListener dataListener)
+	{
+		m_dataListeners.add(dataListener);
+	}
+
+	@Override
+	public Comparable<?> get(int col, int row)
+	{
+		int exp_count = 0;
+		for (Experiment e : m_experiments)
+		{
+			if (exp_count == row)
+			{
+				String key = m_dimensions[col];
+				Object o = e.read(key);
+				return (Comparable<?>) o;
+			}
+			else
+			{
+				exp_count++;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Column getColumn(int col)
+	{
+		return new Column(this, col);
+	}
+
+	@Override
+	public int getColumnCount()
+	{
+		return m_dimensions.length;
+	}
+
+	@Override
+	public Class<? extends Comparable<?>>[] getColumnTypes()
+	{
+		return m_columnTypes;
+	}
+
+	@Override
+	public String getName()
+	{
+		return m_title;
+	}
+
+	@Override
+	public Row getRow(int row)
+	{
+		return new Row(this, row);
+	}
+
+	@Override
+	public int getRowCount()
+	{
+		return m_experiments.size();
+	}
+
+	@Override
+	public Statistics getStatistics()
+	{
+		return new Statistics(this);
+	}
+
+	@Override
+	public boolean isColumnNumeric(int columnIndex)
+	{
+		if (columnIndex < 0 || columnIndex >= m_columnTypes.length)
+		{
+			return false;
+		}
+		return m_columnTypes[columnIndex].isAssignableFrom(Float.class);
+	}
+
+	@Override
+	public void removeDataListener(DataListener dataListener)
+	{
+		m_dataListeners.remove(dataListener);
+	}	
 }

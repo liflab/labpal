@@ -2,14 +2,14 @@ package browser;
 
 import java.util.List;
 
-import ca.uqac.lif.parkbench.CliParser.ArgumentMap;
-import ca.uqac.lif.parkbench.Group;
-import ca.uqac.lif.parkbench.plot.BarPlot;
-import ca.uqac.lif.parkbench.plot.PieChart;
-import ca.uqac.lif.parkbench.plot.Plot;
-import ca.uqac.lif.parkbench.server.ParkBenchCallback;
-import ca.uqac.lif.parkbench.table.ExperimentTable;
-import ca.uqac.lif.parkbench.Laboratory;
+import ca.uqac.lif.labpal.Group;
+import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.CliParser.ArgumentMap;
+import ca.uqac.lif.labpal.plot.BarPlot;
+import ca.uqac.lif.labpal.plot.PieChart;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.server.ParkBenchCallback;
+import ca.uqac.lif.labpal.table.ExperimentTable;
 
 public class BrowserLab extends Laboratory
 {

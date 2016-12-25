@@ -1,6 +1,6 @@
 package simple;
 
-import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.labpal.Experiment;
 
 public class ExperimentB extends Experiment
 {

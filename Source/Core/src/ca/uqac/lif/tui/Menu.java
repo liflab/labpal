@@ -2,7 +2,7 @@ package ca.uqac.lif.tui;
 
 import java.util.ArrayList;
 
-import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.labpal.Experiment;
 
 public class Menu extends TuiElement
 {

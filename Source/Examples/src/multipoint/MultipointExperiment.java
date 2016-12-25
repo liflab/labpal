@@ -18,7 +18,7 @@
 package multipoint;
 
 import ca.uqac.lif.json.JsonList;
-import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.labpal.Experiment;
 
 public class MultipointExperiment extends Experiment 
 {

@@ -1,6 +1,6 @@
 package browser;
 
-import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.labpal.Experiment;
 
 public class BrowserExperiment extends Experiment
 {

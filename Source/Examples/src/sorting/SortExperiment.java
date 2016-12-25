@@ -20,8 +20,8 @@ package sorting;
 import java.io.File;
 import java.util.Random;
 
-import ca.uqac.lif.parkbench.FileHelper;
-import ca.uqac.lif.parkbench.Experiment;
+import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.FileHelper;
 
 public abstract class SortExperiment extends Experiment
 {

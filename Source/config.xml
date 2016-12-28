@@ -37,7 +37,7 @@
   
   <!-- Output jar -->
   <jar>
-    <filename>../parkbench.jar</filename>
+    <filename>../labpal.jar</filename>
     <withdeps>true</withdeps>
     <withdoc>false</withdoc>
   </jar>

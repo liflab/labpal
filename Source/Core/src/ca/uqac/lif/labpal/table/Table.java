@@ -1,32 +1,24 @@
-/*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
-
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package ca.uqac.lif.labpal.table;
 
-import java.util.Vector;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
+import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Laboratory;
+import de.erichseifert.gral.data.Column;
+import de.erichseifert.gral.data.DataListener;
+import de.erichseifert.gral.data.DataSource;
+import de.erichseifert.gral.data.Row;
+import de.erichseifert.gral.data.statistics.Statistics;
 
 /**
- * A two-dimensional array of values. Tables can be passed to
- * {@link Plot} objects to generate graphics, or be passed through
- * {@link TableTransform} objects to perform transformations on them.
+ * A multi-dimensional array of values. Tables can be passed to
+ * {@link Plot} objects to generate graphics.
  */
-public abstract class Table 
+public abstract class Table implements DataSource
 {
 	/**
 	 * The table's ID
@@ -36,105 +28,43 @@ public abstract class Table
 	/**
 	 * A counter for auto-incrementing table IDs
 	 */
-	protected static int s_idCounter = 1;
+	private static int s_idCounter = 1;
 	
 	/**
-	 * The laboratory this table is assigned to
+	 * A lock for accessing the counter
 	 */
-	protected transient Laboratory m_lab;
+	private static Lock s_counterLock = new ReentrantLock();
 	
 	/**
-	 * A description for this table
+	 * The data listeners associated to this table
 	 */
-	protected String m_description = "";
+	protected Set<DataListener> m_dataListeners;
 	
 	/**
 	 * The table's title
 	 */
 	protected String m_title;
+
+	
+	/**
+	 * The types of values that a data cell can have
+	 */
+	public static enum Type {TEXT, NUMERIC};
 	
 	public Table()
 	{
-		this("Untitled");
-	}
-	
-	public Table(String title)
-	{
 		super();
+		s_counterLock.lock();
 		m_id = s_idCounter++;
-		m_title = title;
-	}
-	
-	/**
-	 * Gets the table's ID
-	 * @return The ID
-	 */
-	public Integer getId()
-	{
-		return m_id;
-	}
-	
-	/**
-	 * Sets the table's title
-	 * @param title The title
-	 * @return This table
-	 */
-	public Table setTitle(String title)
-	{
-		if (title != null)
-		{
-			m_title = title;
-		}
-		return this;
-		
-	}
-	
-	/**
-	 * Sets the table's description
-	 * @param description The description
-	 * @return This table
-	 */
-	public Table setDescription(String description)
-	{
-		if (description != null)
-		{
-			m_description = description;
-		}
-		return this;
-	}
-	
-	/**
-	 * Gets the table's description
-	 * @return The description
-	 */
-	public String getDescription()
-	{
-		return m_description;
-	}
-	
-	/**
-	 * Gets the table's title
-	 * @return The title
-	 */
-	public String getTitle()
-	{
-		return m_title;
+		s_counterLock.unlock();
+		m_title = "Untitled";
+		m_dataListeners = new HashSet<DataListener>();
 	}
 	
 	@Override
-	public boolean equals(Object o)
+	public void removeDataListener(DataListener dataListener)
 	{
-		if (o == null || ! (o instanceof Table))
-		{
-			return false;
-		}
-		return m_id == ((Table) o).m_id;
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return m_id;
+		m_dataListeners.remove(dataListener);
 	}
 	
 	/**
@@ -147,7 +77,142 @@ public abstract class Table
 		return this;
 	}
 	
-	public abstract Vector<String> getXValues();
+	@Override
+	public String getName()
+	{
+		return m_title;
+	}
 	
-	public abstract ConcreteTable getConcreteTable();
+	@Override
+	public Row getRow(int row)
+	{
+		return new Row(this, row);
+	}
+	
+	@Override
+	public final Iterator<Comparable<?>> iterator()
+	{
+		return new RowIterator(this);
+	}
+
+	@Override
+	public final void addDataListener(DataListener dataListener)
+	{
+		m_dataListeners.add(dataListener);
+	}
+
+	@Override
+	public Statistics getStatistics()
+	{
+		return new Statistics(this);
+	}
+	
+	public final String getDescription()
+	{
+		return "";
+	}
+	
+	public final void setTitle(String title)
+	{
+		m_title = title;
+	}
+	
+	public final String getTitle()
+	{
+		return m_title;
+	}
+	
+	/**
+	 * Gets the table's unique ID
+	 * @return The ID
+	 */
+	public final int getId()
+	{
+		return m_id;
+	}
+	
+	@Override
+	public final boolean isColumnNumeric(int columnIndex)
+	{
+		Class<?> c = getColumnTypeFor(columnIndex);
+		return c.isAssignableFrom(Float.class);
+	}
+	
+	/**
+	 * Gets the type of the column of given name
+	 * @param col_name The name of the column
+	 * @return The type, or {@code null} if the column does not exist
+	 */
+	public final Class<? extends Comparable<?>> getColumnTypeFor(int position)
+	{
+		String name = getColumnName(position);
+		return getColumnTypeFor(name);
+	}
+	
+	@Override
+	public final Column getColumn(int col)
+	{
+		return new Column(this, col);
+	}
+	
+	/**
+	 * Gets the type of the column of given name
+	 * @param col_name The name of the column
+	 * @return The type, or {@code null} if the column does not exist
+	 */
+	public abstract Class<? extends Comparable<?>> getColumnTypeFor(String col_name);
+	
+	/**
+	 * Gets an instance of {@link DataTable} from the table's
+	 * data, using the columns specified in the argument
+	 * @param ordering The columns to use
+	 * @return The table
+	 */
+	public abstract DataTable getConcreteTable(String[] ordering);
+	
+	/**
+	 * Gets the name of the column at a given position in the table
+	 * @param col The position
+	 * @return The column's name, or null if the index is out of bounds
+	 */
+	public abstract String getColumnName(int col);
+	
+	/**
+	 * Gets the position of the column of a given name in the table
+	 * @param col The name
+	 * @return The column's position, or -1 if the name was not found
+	 */
+	public abstract int getColumnPosition(String name);
+	
+	/**
+	 * Gets the names of all the columns in the table
+	 * @return An array of names
+	 */
+	public abstract String[] getColumnNames();
+	
+	/**
+	 * Finds an entry with the same key-value pairs as the entry given
+	 * as an argument
+	 * @param e The entry
+	 * @return The entry found, or {@code null} if none found
+	 */
+	public abstract TableEntry findEntry(TableEntry e);
+	
+	/**
+	 * Casts a value as a number or an instance of {@code Comparable}
+	 * @param o The value
+	 * @return The cast value
+	 */
+	public static final Comparable<?> castValue(Object o)
+	{
+		if (o == null)
+		{
+			return null;
+		}
+		if (o instanceof JsonNumber)
+		{
+			return ((JsonNumber) o).numberValue().floatValue();
+		}
+		return (Comparable<?>) o;
+	}
 }

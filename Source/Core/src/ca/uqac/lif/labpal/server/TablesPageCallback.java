@@ -24,11 +24,10 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.table.ExperimentMultidimensionalTable;
 import ca.uqac.lif.labpal.table.Table;
 
 /**
- * Callback showing a list of plots
+ * Callback showing a list of tables
  * 
  * @author Sylvain Hallé
  *
@@ -59,26 +58,13 @@ public class TablesPageCallback extends TemplatePageCallback
 				out = out.replaceAll("\\{%TABLES%\\}", getTables(ids));			
 			}
 		}
-		{
-			Vector<Integer> ids = new Vector<Integer>();
-			ids.addAll(m_lab.getMultiTableIds());
-			if (ids.isEmpty())
-			{
-				out = out.replaceAll("\\{%MULI_TABLES%\\}", "<p>No table is associated to this lab</p>\n");
-			}
-			else
-			{
-				Collections.sort(ids);
-				out = out.replaceAll("\\{%MULTI_TABLES%\\}", getMultiTables(ids));			
-			}
-		}
 		out = out.replaceAll("\\{%SEL_TABLES%\\}", "selected");
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return out;
 	}
 	
 	/**
-	 * Produces the list of plots
+	 * Produces the list of tables
 	 * @return A well-formatted HTML string showing of each of the lab's plots
 	 */
 	public String getTables(Vector<Integer> ids)
@@ -91,27 +77,6 @@ public class TablesPageCallback extends TemplatePageCallback
 			out.append("<tr>");
 			out.append("<td class=\"table-icon\"></td>");
 			out.append("<td><a href=\"table?id=").append(id).append("\" title=\"Click on table to view in new window\">");
-			out.append(id);
-			out.append("</a><td><td>").append(table.getTitle()).append("</td></tr>\n");			
-		}
-		out.append("</table>\n");
-		return out.toString();
-	}
-	
-	/**
-	 * Produces the list of plots
-	 * @return A well-formatted HTML string showing of each of the lab's plots
-	 */
-	public String getMultiTables(Vector<Integer> ids)
-	{
-		StringBuilder out = new StringBuilder();
-		out.append("<table class=\"tables\">\n");
-		for (int id : ids)
-		{
-			ExperimentMultidimensionalTable table = m_lab.getMultiTable(id);
-			out.append("<tr>");
-			out.append("<td class=\"table-icon\"></td>");
-			out.append("<td><a href=\"multitable?id=").append(id).append("\" title=\"Click on table to view in new window\">");
 			out.append(id);
 			out.append("</a><td><td>").append(table.getTitle()).append("</td></tr>\n");			
 		}

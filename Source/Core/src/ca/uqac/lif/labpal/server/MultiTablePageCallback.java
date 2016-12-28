@@ -21,7 +21,7 @@ import java.util.Map;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.table.ExperimentMultidimensionalTable;
+import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.MultidimensionalTable;
 import ca.uqac.lif.labpal.table.TableNode;
 import ca.uqac.lif.labpal.table.rendering.HtmlTableNodeRenderer;
@@ -55,7 +55,7 @@ public class MultiTablePageCallback extends TemplatePageCallback
 	public String fill(String s, Map<String,String> params)
 	{
 		int tab_id = Integer.parseInt(params.get("id"));
-		ExperimentMultidimensionalTable tab = m_lab.getMultiTable(tab_id);
+		ExperimentTable tab = m_lab.getMultiTable(tab_id);
 		if (tab == null)
 		{
 			return null;

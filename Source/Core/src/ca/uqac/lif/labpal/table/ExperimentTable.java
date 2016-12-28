@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,410 +17,255 @@
  */
 package ca.uqac.lif.labpal.table;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 import ca.uqac.lif.json.JsonElement;
-import ca.uqac.lif.json.JsonList;
-import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.json.JsonNull;
+import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Experiment;
-import ca.uqac.lif.labpal.Laboratory;
 
 /**
- * Table whose values are taken from the results of one or more experiments.
+ * Table whose rows and columns are made from the parameters of a set
+ * of experiments
+ * @author Sylvain Hallé
  */
 public class ExperimentTable extends Table
 {
 	/**
-	 * The set of experiments this table is supposed to handle
+	 * The list of experiments in this table. Note that we use a list,
+	 * and not a set, as we need the experiments to be enumerated in the
+	 * same order every time. Otherwise, the <i>n</i>-th "row" of the
+	 * table would not always refer to the same data point.
 	 */
-	protected Set<Experiment> m_experiments;
-
+	public List<Experiment> m_experiments;
+	
 	/**
-	 * The set of experiments this table is supposed to handle
+	 * The dimensions of this table
 	 */
-	protected Vector<String> m_seriesNames;
-
+	public String[] m_dimensions;
+	
 	/**
-	 * The input parameter in an experiment to use as the x-value of the plot
+	 * The type of each column in the table
 	 */
-	protected String m_xName;
-
-	/**
-	 * The input parameter in an experiment to use as the y-value of the plot
-	 */
-	protected String m_yName;
-
-	public ExperimentTable()
+	public Class<? extends Comparable<?>>[] m_columnTypes;
+	
+	@SuppressWarnings("unchecked")
+	public ExperimentTable(String[] dimensions, Type[] types)
 	{
 		super();
-		m_experiments = new HashSet<Experiment>();
-		m_seriesNames = new Vector<String>();
-	}
-	
-	public ExperimentTable(String title)
-	{
-		super(title);
-		m_experiments = new HashSet<Experiment>();
-		m_seriesNames = new Vector<String>();
-	}
-
-	/**
-	 * Adds an experiment to the table
-	 * @param e The experiment
-	 * @return This table
-	 */
-	public ExperimentTable add(Experiment e)
-	{
-		m_experiments.add(e);
-		return this;
-	}
-
-	/**
-	 * Tells the plot to group experiment results into data series, according
-	 * to a parameter present in the experiments
-	 * @param param The input parameters in an experiment used to determine
-	 * to which data series it belongs
-	 * @return This table
-	 */
-	public ExperimentTable groupBy(String ... param)
-	{
-		for (String p : param)
+		m_experiments = new ArrayList<Experiment>();
+		m_dimensions = dimensions;
+		m_columnTypes = new Class[dimensions.length];
+		for (int i = 0; i < dimensions.length; i++)
 		{
-			m_seriesNames.add(p);
-		}
-		return this;
-	}
-
-	/**
-	 * Tells the plot what input parameter of the experiments to use as the
-	 * "x" value 
-	 * @param param The output parameter to use for the "x" value
-	 * @return This table
-	 */
-	public ExperimentTable useForX(String param)
-	{
-		m_xName = param;
-		return this;
-	}
-
-	/**
-	 * Tells the plot what input parameter of the experiments to use as the
-	 * "y" value 
-	 * @param param The output parameter to use for the "y" value
-	 * @return This table
-	 */
-	public ExperimentTable useForY(String param)
-	{
-		m_yName = param;
-		return this;
-	}
-	
-	public ExperimentTable setSeriesNames(String ... names)
-	{
-		Vector<String> series = new Vector<String>();
-		for (String name : names)
-		{
-			series.add(name);
-		}
-		Collections.sort(series);
-		m_seriesNames = series;
-		return this;
-	}
-
-	/**
-	 * Returns the contents of the table as a CSV string.
-	 * @return A CSV string
-	 */
-	public String toCsv()
-	{
-		Vector<String> series = getSeriesNames();
-		return toCsv(series, false);
-	}
-
-	/**
-	 * Returns the contents of the table as a CSV string.
-	 * @param series The list of the column headers
-	 * @return A CSV string
-	 */
-	public String toCsv(Vector<String> series, boolean transposed)
-	{
-		Vector<String> x_values = getXValues();
-		ConcreteTable t = getValues(series, x_values);
-		if (transposed)
-		{
-			t.transpose();
-		}
-		return t.toCsv();
-	}
-	
-	/**
-	 * Returns the contents of the table as a CSV string.
-	 * @param series The list of the column headers
-	 * @return A CSV string
-	 */
-	public String toCsv(boolean transposed)
-	{
-		Vector<String> series = new Vector<String>();
-		series.add("");
-		Vector<String> x_values = getXValues();
-		ConcreteTable t = getValues(series, x_values);
-		if (transposed)
-		{
-			t.transpose();
-		}
-		return t.toCsv();
-	}
-	
-	public ConcreteTable getConcreteTable()
-	{
-		Vector<String> series = getSeriesNames();
-		Vector<String> x_values = getXValues();
-		ConcreteTable t = getValues(series, x_values);
-		return t;
-	}
-
-	/**
-	 * Gets the sorted list of all distinct series names found in the set of
-	 * experiments associated to this plot
-	 * @return The list of all series names
-	 */
-	public Vector<String> getSeriesNames()
-	{
-		if (m_seriesNames != null && !m_seriesNames.isEmpty())
-		{
-			return m_seriesNames;
-		}
-		Vector<String> series = new Vector<String>();
-		for (Experiment e: m_experiments)
-		{
-			if (e == null)
-				continue;
-			String s_name = createSeriesName(e);
-			if (s_name != null && !series.contains(s_name))
+			if (types[i] == Type.NUMERIC)
 			{
-				series.add(s_name);
-			}
-		}
-		Collections.sort(series);
-		return series;
-	}
-
-	/**
-	 * Creates the name of the series an experiment belongs to, based on
-	 * the filtering criteria
-	 * @param e The experiment
-	 * @return The name of the series
-	 */
-	protected String createSeriesName(Experiment e)
-	{
-		String s_name = "";
-		if (m_seriesNames.size() == 1)
-		{
-			// If only one parameter, don't put its name
-			return e.readString(m_seriesNames.get(0));
-		}
-		for (String series_param : m_seriesNames)
-		{
-			if (!s_name.isEmpty())
-			{
-				s_name += ",";
-			}
-			String ser_name = e.readString(series_param);
-			if (ser_name == null)
-			{
-				continue;
-			}
-			s_name += series_param + "=" + ser_name;
-		}
-		return s_name;
-	}
-
-
-	/**
-	 * Creates a map
-	 * @param series The data series in the table
-	 * @param x_values A <em>sorted</em> list of all the x-values
-	 *   occurring in the table
-	 * @return The map
-	 */
-	protected ConcreteTable getValues(Vector<String> series, Vector<String> x_values)
-	{
-		if (m_yName == null)
-		{
-			// Build the table from multiple series in a single experiment
-			return getValuesMultipleSeries(x_values);
-		}
-		// Build the table from the values of multiple experiments
-		ConcreteTable values = new ConcreteTable(series, x_values);
-		for (Experiment e : m_experiments)
-		{
-			if (e == null || e.getStatus() != Experiment.Status.DONE)
-				continue;
-			String ser = createSeriesName(e);
-			JsonElement je_x = e.read(m_xName);
-			if (je_x instanceof JsonList)
-			{
-				JsonList jl_x = (JsonList) je_x;
-				JsonElement je_y = e.read(m_yName);
-				if (!(je_y instanceof JsonList))
-				{
-					// If the x element is an array, the y element should
-					// be an array too
-					assert false;
-				}
-				JsonList jl_y = (JsonList) je_y;
-				for (int i = 0; i < jl_x.size(); i++)
-				{
-					String n_x = elementToString(jl_x.get(i));
-					String n_y = elementToString(jl_y.get(i));
-					if (n_x == null || n_y == null)
-						continue;
-					values.put(n_x, ser, n_y);
-				}
+				m_columnTypes[i] = Float.class;
 			}
 			else
 			{
-				String n_x = e.readString(m_xName);
-				if (n_x == null)
-					continue;
-				String n_y = e.readString(m_yName);
-				if (n_y == null)
-					continue;
-				values.put(n_x, ser, n_y);
+				m_columnTypes[i] = String.class;
 			}
 		}
-		return values;
 	}
 	
-	protected ConcreteTable getValuesMultipleSeries(Vector<String> x_values)
+	public ExperimentTable(String[] dimensions, Class<? extends Comparable<?>>[] types)
 	{
-		ConcreteTable values = new ConcreteTable(m_seriesNames, x_values);
+		super();
+		m_experiments = new ArrayList<Experiment>();
+		m_dimensions = dimensions;
+		m_columnTypes = types;
+	}
+	
+	/**
+	 * Adds a new experiment to the table
+	 * @param e The experiment to read from
+	 */
+	public void add(Experiment e)
+	{
+		m_experiments.add(e);
+	}
+	
+	/**
+	 * Gets a concrete multidimensional table from the experiments'
+	 * data
+	 * @return The table
+	 */
+	public DataTable getConcreteTable()
+	{
+		return getConcreteTable(m_dimensions);
+	}
+	
+	/**
+	 * Gets a concrete multidimensional table from the experiments'
+	 * data
+	 * @param ordering The ordering of the dimensions
+	 * @return The table
+	 */
+	@SuppressWarnings("unchecked")
+	public DataTable getConcreteTable(String[] ordering)
+	{
+		Class<? extends Comparable<?>> new_types[] = new Class[m_dimensions.length];
+		for (int i = 0; i < ordering.length; i++)
+		{
+			int pos = getColumnPosition(ordering[i]);
+			if (pos < 0)
+			{
+				new_types[i] = null;
+			}
+			else
+			{
+				new_types[i] = getColumnTypeFor(pos);
+			}
+		}
+		DataTable mt = new DataTable(ordering, new_types);
 		for (Experiment e : m_experiments)
 		{
-			for (String series_name : m_seriesNames)
+			TableEntry entry = new TableEntry();
+			for (String key : m_dimensions)
 			{
-				JsonList jl_x = (JsonList) e.read(m_xName);
-				JsonElement je_y = e.read(series_name);
-				if (!(je_y instanceof JsonList))
+				JsonElement elem = e.read(key);
+				if (elem != null)
 				{
-					// If the x element is an array, the y element should
-					// be an array too
-					assert false;
+					entry.put(key, elem);
 				}
-				JsonList jl_y = (JsonList) je_y;
-				for (int i = 0; i < jl_x.size(); i++)
+				else
 				{
-					String n_x = elementToString(jl_x.get(i));
-					String n_y = elementToString(jl_y.get(i));
-					if (n_x == null || n_y == null)
-						continue;
-					values.put(n_x, series_name, n_y);
+					entry.put(key, JsonNull.instance);
 				}
-			}			
+			}
+			mt.add(entry);
 		}
-		return values;
+		return mt;
 	}
-	
-	protected static String elementToString(JsonElement je)
+
+	@Override
+	public Comparable<?> get(int col, int row)
 	{
-		if (je == null)
+		int exp_count = 0;
+		for (Experiment e : m_experiments)
 		{
-			return null;
+			if (exp_count == row)
+			{
+				String key = m_dimensions[col];
+				Object o = e.read(key);
+				if (o == null)
+				{
+					return null;
+				}
+				if (o instanceof JsonNumber)
+				{
+					// Cast JsonNumbers as numbers
+					return ((JsonNumber) o).numberValue().floatValue();
+				}
+				return (Comparable<?>) o;
+			}
+			else
+			{
+				exp_count++;
+			}
 		}
-		if (je instanceof JsonString)
+		return null;
+	}
+
+	@Override
+	public int getColumnCount()
+	{
+		return m_dimensions.length;
+	}
+
+	@Override
+	public Class<? extends Comparable<?>>[] getColumnTypes()
+	{
+		return m_columnTypes;
+	}
+
+	@Override
+	public int getRowCount()
+	{
+		return m_experiments.size();
+	}
+
+	@Override
+	public Class<? extends Comparable<?>> getColumnTypeFor(String col_name)
+	{
+		for (int i = 0; i < m_dimensions.length; i++)
 		{
-			return ((JsonString) je).stringValue();
+			if (m_dimensions[i].compareTo(col_name) == 0)
+			{
+				return m_columnTypes[i];
+			}
 		}
-		return je.toString();
+		return null;
 	}
 	
 	@Override
-	public ExperimentTable assignTo(Laboratory a)
+	public String getColumnName(int col)
 	{
-		m_lab = a;
-		a.add(this);
-		HashSet<Experiment> exps = new HashSet<Experiment>();
-		for (Experiment e : m_experiments)
+		if (col < 0 || col >= m_dimensions.length)
 		{
-			int exp_id = e.getId();
-			Experiment new_e = a.getExperiment(exp_id);
-			exps.add(new_e);
+			return null;
 		}
-		m_experiments = exps;
-		return this;
-	}
-	
-	/**
-	 * Gets the sorted list of all x values occurring in at least one experiment
-	 * @return The list of x values
-	 */
-	public Vector<String> getXValues()
-	{
-		Vector<String> values = new Vector<String>();
-		for (Experiment e : m_experiments)
-		{
-			if (e == null)
-				continue;
-			// Check if value is a list
-			JsonElement je = e.read(m_xName);
-			if (je instanceof JsonList)
-			{
-				// Yes: add all values of that list
-				JsonList jl = (JsonList) je;
-				for (JsonElement jel : jl)
-				{
-					String f_val;
-					if (jel instanceof JsonString)
-					{
-						f_val = ((JsonString) jel).stringValue();
-					}
-					else
-					{
-						f_val = jel.toString();
-					}
-					if (!values.contains(f_val))
-					{
-						values.add(f_val);
-					}
-				}
-			}
-			else
-			{
-				// No: add that single value
-				String f_val = e.readString(m_xName);
-				if (f_val == null)
-					continue;
-				if (!values.contains(f_val))
-				{
-					values.add(f_val);
-				}
-			}
-		}
-		Collections.sort(values, new XComparator());
-		return values;
+		return m_dimensions[col];
 	}
 
-		
-	protected class XComparator implements Comparator<String>
+	@Override
+	public int getColumnPosition(String name)
 	{
-		@Override
-		public int compare(String arg0, String arg1)
+		if (name == null)
 		{
-			try
+			return -1;
+		}
+		for (int i = 0; i < m_dimensions.length; i++)
+		{
+			if (m_dimensions[i].compareTo(name) == 0)
 			{
-				Float.parseFloat(arg0);
-				// We are comparing numbers
-				return Float.valueOf(arg0).compareTo(Float.valueOf(arg1));
-			}
-			catch (NumberFormatException nfe)
-			{
-				// We are comparing strings
-				return arg0.compareTo(arg1);
+				return i;
 			}
 		}
+		return -1;
+	}
+
+	@Override
+	public String[] getColumnNames()
+	{
+		return m_dimensions;
+	}
+
+	@Override
+	public TableEntry findEntry(TableEntry e)
+	{
+		for (Experiment exp : m_experiments)
+		{
+			boolean found = true;
+			for (Entry<String,Object> entry : e.entrySet())
+			{
+				Object o = exp.read(entry.getKey());
+				if ((o == null && entry.getValue() == null) ||
+						o != null && o.equals(entry.getValue()))
+				{
+					// OK
+				}
+				else
+				{
+					found = false;
+					break;
+				}
+			}
+			if (found)
+			{
+				// This experiment has the same key-value pairs as the
+				// entry passed as an argument: create an entry from it
+				TableEntry te = new TableEntry();
+				for (String key : m_dimensions)
+				{
+					te.put(key, exp.read(key));
+				}
+				return te;
+			}
+		}
+		return null;
 	}
 }

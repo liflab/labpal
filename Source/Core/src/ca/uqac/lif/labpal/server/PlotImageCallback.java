@@ -23,9 +23,9 @@ import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.LabAssistant;
+import ca.uqac.lif.labpal.plot.ExperimentPlot;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.plot.Plot.Terminal;
+import ca.uqac.lif.labpal.plot.ExperimentPlot.ImageType;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -58,7 +58,7 @@ public class PlotImageCallback extends ParkBenchCallback
 		CallbackResponse response = new CallbackResponse(t);
 		Map<String,String> params = getParameters(t);
 		int plot_id = Integer.parseInt(params.get("id"));
-		Plot p = m_lab.getPlot(plot_id);
+		ExperimentPlot p = m_lab.getPlot(plot_id);
 		if (p == null)
 		{
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
@@ -66,27 +66,27 @@ public class PlotImageCallback extends ParkBenchCallback
 		}
 		if (params.get("format").compareToIgnoreCase("gp") == 0)
 		{
-			response.setContents(p.toGnuplot(Terminal.PDF, m_lab.getTitle()));
+			response.setContents(p.toGnuplot(ImageType.PDF, m_lab.getTitle()));
 			response.setCode(CallbackResponse.HTTP_OK);
-			response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
+			response.setAttachment(Server.urlEncode(p.getCaption() + ".gp"));
 			return response;
 		}
-		if (!Plot.isGnuplotPresent())
+		if (!ExperimentPlot.isGnuplotPresent())
 		{
 			// Asking for an image, but Gnuplot not available: stop right here
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
-		Terminal term = Terminal.PNG;
+		ImageType term = ImageType.PNG;
 		response.setContentType(ContentType.PNG);
 		if (params.get("format").compareToIgnoreCase("pdf") == 0)
 		{
-			term = Terminal.PDF;
+			term = ImageType.PDF;
 			response.setContentType(ContentType.PDF);
 		}
 		if (params.get("format").compareToIgnoreCase("dumb") == 0)
 		{
-			term = Terminal.DUMB;
+			term = ImageType.DUMB;
 			response.setContentType(ContentType.TEXT);
 		}
 		byte[] image = p.getImage(term);
@@ -99,7 +99,7 @@ public class PlotImageCallback extends ParkBenchCallback
 		response.setCode(CallbackResponse.HTTP_OK);
 		if (params.containsKey("dl"))
 		{
-			response.setAttachment(Server.urlEncode(p.getTitle() + "." + Plot.getTerminalName(term)));
+			response.setAttachment(Server.urlEncode(p.getCaption() + "." + ExperimentPlot.getTypeName(term)));
 		}
 		return response;
 	}

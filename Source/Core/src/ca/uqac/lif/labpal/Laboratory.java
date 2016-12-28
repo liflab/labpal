@@ -32,18 +32,17 @@ import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
-import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.server.ParkBenchCallback;
 import ca.uqac.lif.labpal.server.ParkbenchServer;
-import ca.uqac.lif.labpal.table.ExperimentMultidimensionalTable;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.plot.ExperimentPlot;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**
- * A set of experiments and plots. The lab is controlled by a
- * lab assistant, which is responsible for running the experiments
- * and drawing the plots.
+ * A set of experiments, tables and plots. The lab is controlled by a
+ * lab assistant, which is responsible for running the experiments,
+ * populating the tables and drawing the plots.
  * 
  * @author Sylvain Hallé
  */
@@ -79,17 +78,12 @@ public abstract class Laboratory
 	/**
 	 * The set of plots associated with this lab
 	 */
-	private transient HashSet<Plot> m_plots;
+	private transient HashSet<ExperimentPlot> m_plots;
 	
 	/**
 	 * The set of tables associated to this lab
 	 */
 	private transient HashSet<Table> m_tables;
-	
-	/**
-	 * The set of multidimensional tables associated to this lab
-	 */
-	private transient HashSet<ExperimentMultidimensionalTable> m_multiTables;
 	
 	/**
 	 * The set of groups associated with this lab
@@ -109,7 +103,7 @@ public abstract class Laboratory
 	/**
 	 * The version string of this lab
 	 */
-	public static final transient String s_versionString = "v2.2";
+	public static final transient String s_versionString = formatVersion();
 
 	/**
 	 * The default file extension to save experiment results
@@ -164,9 +158,8 @@ public abstract class Laboratory
 	{
 		super();
 		m_experiments = new HashSet<Experiment>();
-		m_plots = new HashSet<Plot>();
+		m_plots = new HashSet<ExperimentPlot>();
 		m_tables = new HashSet<Table>();
-		m_multiTables = new HashSet<ExperimentMultidimensionalTable>();
 		m_groups = new HashSet<Group>();
 		m_assistant = null;
 		m_serializer = new JsonSerializer();
@@ -254,31 +247,23 @@ public abstract class Laboratory
 	 * @param p The plot
 	 * @return This lab
 	 */
-	public Laboratory add(Plot p)
+	public Laboratory add(ExperimentPlot p)
 	{
 		m_plots.add(p);
 		return this;
 	}
 
 	/**
-	 * Assigns a table to this lab
-	 * @param t The table
+	 * Assigns one or more tables to this lab
+	 * @param tables The tables
 	 * @return This lab
 	 */
-	public Laboratory add(Table t)
+	public Laboratory add(Table ... tables)
 	{
-		m_tables.add(t);
-		return this;
-	}
-	
-	/**
-	 * Assigns a multidimensional table to this lab
-	 * @param t The table
-	 * @return This lab
-	 */
-	public Laboratory add(ExperimentMultidimensionalTable t)
-	{
-		m_multiTables.add(t);
+		for (Table t : tables)
+		{
+			m_tables.add(t);
+		}
 		return this;
 	}
 
@@ -289,7 +274,7 @@ public abstract class Laboratory
 	public Set<Integer> getPlotIds()
 	{
 		Set<Integer> ids = new HashSet<Integer>();
-		for (Plot p : m_plots)
+		for (ExperimentPlot p : m_plots)
 		{
 			ids.add(p.getId());
 		}
@@ -309,29 +294,15 @@ public abstract class Laboratory
 		}
 		return ids;
 	}
-	
-	/**
-	 * Gets the IDs of all the multidimensional tables for this lab assistant
-	 * @return The set of IDs
-	 */
-	public Set<Integer> getMultiTableIds()
-	{
-		Set<Integer> ids = new HashSet<Integer>();
-		for (ExperimentMultidimensionalTable p : m_multiTables)
-		{
-			ids.add(p.getId());
-		}
-		return ids;
-	}
 
 	/**
 	 * Gets the plot with given ID
 	 * @param id The ID
 	 * @return The plot, null if not found
 	 */
-	public Plot getPlot(int id)
+	public ExperimentPlot getPlot(int id)
 	{
-		for (Plot p : m_plots)
+		for (ExperimentPlot p : m_plots)
 		{
 			if (p.getId() == id)
 			{
@@ -425,7 +396,7 @@ public abstract class Laboratory
 	{
 		Laboratory lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
 		// Don't forget to transplant the plots
-		for (Plot p : m_plots)
+		for (ExperimentPlot p : m_plots)
 		{
 			p.assignTo(lab);
 		}
@@ -577,7 +548,7 @@ public abstract class Laboratory
 			{
 				server.registerCallback(0, cb);
 			}
-			stdout.print("Server started on " + server.getServerName() + ":" + server.getServerPort() + "\n");
+			stdout.print("Visit " + server.getServerName() + ":" + server.getServerPort() + "/index in your browser\n");
 			try
 			{
 				server.startServer();
@@ -673,13 +644,13 @@ public abstract class Laboratory
 	public static void main(String[] args)
 	{
 		System.out.println(getCliHeader());
-		System.out.println("You are running parkbench.jar, which is only a library to create\nyour own test suites. As a result nothing will happen here. Read the \nonline documentation to learn how to use ParkBench.");
+		System.out.println("You are running labpal.jar, which is only a library to create\nyour own test suites. As a result nothing will happen here. Read the \nonline documentation to learn how to use ParkBench.");
 	}
 
 	protected static String getCliHeader()
 	{
 		String out = "";
-		out += "ParkBench " + s_versionString + " - A versatile environment for running experiments\n";
+		out += "LabPal " + formatVersion() + " - A versatile environment for running experiments\n";
 		out += "(C) 2015-2016 Laboratoire d'informatique formelle\n";
 		return out;
 	}
@@ -851,23 +822,6 @@ public abstract class Laboratory
 	}
 	
 	/**
-	 * Gets the multidimensional table with given ID
-	 * @param table_id The table ID
-	 * @return The table, <tt>null</tt> if not found
-	 */
-	public ExperimentMultidimensionalTable getMultiTable(int table_id)
-	{
-		for (ExperimentMultidimensionalTable t : m_multiTables)
-		{
-			if (t.getId() == table_id)
-			{
-				return t;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Fetches a group based on its ID
 	 * @param id The group's id
 	 * @return The group, or <tt>null</tt> if not found
@@ -922,6 +876,15 @@ public abstract class Laboratory
 	public static final int getRevision()
 	{
 		return s_revisionVersionNumber;
+	}
+	
+	protected static String formatVersion()
+	{
+		if (getRevision() == 0)
+		{
+			return s_majorVersionNumber + "." + s_minorVersionNumber;
+		}
+		return s_majorVersionNumber + "." + s_minorVersionNumber + "." + s_revisionVersionNumber;
 	}
 
 }

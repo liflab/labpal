@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 public class RowIterator implements Iterator<Comparable<?>>
 {
-	protected ExperimentMultidimensionalTable m_table;
+	protected Table m_table;
 
 	/**
 	 * Index of current column
@@ -17,7 +17,7 @@ public class RowIterator implements Iterator<Comparable<?>>
 	 */
 	protected int row = 0;
 
-	RowIterator(ExperimentMultidimensionalTable table)
+	RowIterator(Table table)
 	{
 		super();
 		m_table = table;

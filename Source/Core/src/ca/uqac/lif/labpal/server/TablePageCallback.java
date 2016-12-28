@@ -21,7 +21,7 @@ import java.util.Map;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.table.ConcreteTable;
+import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
 
 /**
@@ -56,7 +56,7 @@ public class TablePageCallback extends TemplatePageCallback
 		{
 			return null;
 		}
-		ConcreteTable tbl = tab.getConcreteTable();
+		DataTable tbl = tab.getConcreteTable(tab.getColumnNames());
 		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
 		s = s.replaceAll("\\{%TABLE%\\}", tbl.toHtml());
 		String desc = tab.getDescription();

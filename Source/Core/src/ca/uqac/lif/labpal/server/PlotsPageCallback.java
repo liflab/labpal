@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.plot.ExperimentPlot;
 
 /**
  * Callback showing a list of plots
@@ -47,7 +47,7 @@ public class PlotsPageCallback extends TemplatePageCallback
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", "Plots");
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.GRAPH));
-		if (Plot.isGnuplotPresent())
+		if (ExperimentPlot.isGnuplotPresent())
 		{
 			out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
 			if (AllPlotsCallback.s_pdftkPresent)

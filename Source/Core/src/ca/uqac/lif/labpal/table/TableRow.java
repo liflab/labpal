@@ -5,8 +5,6 @@ import de.erichseifert.gral.data.Row;
 
 public class TableRow extends Row
 {
-	Object[] m_data;
-
 	/**
 	 * Dummy UID
 	 */

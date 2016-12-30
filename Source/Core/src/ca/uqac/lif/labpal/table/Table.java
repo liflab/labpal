@@ -184,7 +184,7 @@ public abstract class Table implements DataSource
 	 * @param ordering The columns to use
 	 * @return The table
 	 */
-	public abstract DataTable getConcreteTable(String[] ordering);
+	public abstract DataTable getConcreteTable(String ... ordering);
 
 	/**
 	 * Gets an instance of {@link DataTable} from the table's

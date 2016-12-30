@@ -53,11 +53,6 @@ public class DataTable extends Table
 	protected String[] m_preferredOrdering;
 	
 	/**
-	 * The type of each column in the table
-	 */
-	public Class<? extends Comparable<?>>[] m_columnTypes;
-	
-	/**
 	 * The symbol used to separate data values in a CSV rendition
 	 */
 	public static final transient String s_datafileSeparator = ",";
@@ -77,29 +72,17 @@ public class DataTable extends Table
 	 * @param ordering
 	 * @param types
 	 */
-	public DataTable(String[] ordering, Class<? extends Comparable<?>>[] types)
+	public DataTable(String ... ordering)
 	{
-		this(ordering, types, null);	
-	}
-
-	/**
-	 * Creates a new data table
-	 * @param ordering
-	 * @param types
-	 */
-	public DataTable(String[] ordering, Type[] types)
-	{
-		this(ordering, types, null);	
+		this(null, ordering);	
 	}
 	
 	/**
 	 * Creates a new data table and fills it with existing data
-	 * @param ordering
-	 * @param types
 	 * @param entries
+	 * @param ordering
 	 */
-	@SuppressWarnings("unchecked")
-	DataTable(String[] ordering, Type[] types, Collection<TableEntry> entries)
+	DataTable(Collection<TableEntry> entries, String ... ordering)
 	{
 		super();
 		m_entries = new ArrayList<TableEntry>();
@@ -108,37 +91,6 @@ public class DataTable extends Table
 			m_entries.addAll(entries);
 		}
 		m_preferredOrdering = ordering;
-		m_columnTypes = new Class[ordering.length];
-		for (int i = 0; i < ordering.length; i++)
-		{
-			if (types[i] == Type.NUMERIC)
-			{
-				m_columnTypes[i] = Float.class;
-			}
-			else
-			{
-				m_columnTypes[i] = String.class;
-			}
-		}
-
-	}
-	
-	/**
-	 * Creates a new data table and fills it with existing data
-	 * @param ordering
-	 * @param types
-	 * @param entries
-	 */
-	DataTable(String[] ordering, Class<? extends Comparable<?>>[] types, Collection<TableEntry> entries)
-	{
-		super();
-		m_entries = new ArrayList<TableEntry>();
-		if (entries != null)
-		{
-			m_entries.addAll(entries);
-		}
-		m_preferredOrdering = ordering;
-		m_columnTypes = types;
 	}
 
 	/**
@@ -371,7 +323,15 @@ public class DataTable extends Table
 	@Override
 	public Class<? extends Comparable<?>>[] getColumnTypes()
 	{
-		return m_columnTypes;
+		@SuppressWarnings("unchecked")
+		Class<? extends Comparable<?>>[] types = new Class[m_preferredOrdering.length];
+		for (int i = 0; i < m_preferredOrdering.length; i++)
+		{
+			String key = m_preferredOrdering[i];
+			types[i] = getColumnTypeFor(key);
+		}
+		return types;
+		//return m_columnTypes;
 	}
 
 	@Override
@@ -383,18 +343,30 @@ public class DataTable extends Table
 	@Override
 	public Class<? extends Comparable<?>> getColumnTypeFor(String col_name)
 	{
-		int pos = getColumnPosition(col_name);
-		if (pos < 0)
+		for (TableEntry e : m_entries)
 		{
-			return null;
+			if (!e.containsKey(col_name))
+			{
+				continue;
+			}
+			Object elem = e.get(col_name);
+			if (elem == null)
+			{
+				continue;
+			}
+			if (elem instanceof JsonNumber || elem instanceof Number)
+			{
+				return Float.class;
+			}
 		}
-		return m_columnTypes[pos];
+		return String.class;
+		//return m_columnTypes[pos];
 	}
 
 	@Override
-	public DataTable getConcreteTable(String[] ordering)
+	public DataTable getConcreteTable(String ... ordering)
 	{
-		return new DataTable(ordering, m_columnTypes, m_entries);
+		return new DataTable(m_entries, ordering);
 	}
 
 	@Override
@@ -510,5 +482,22 @@ public class DataTable extends Table
 	public DataTable getConcreteTable()
 	{
 		return getConcreteTable(m_preferredOrdering);
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder out = new StringBuilder();
+		for (int i = 0; i < m_preferredOrdering.length; i++)
+		{
+			if (i > 0)
+			{
+				out.append(s_datafileSeparator);
+			}
+			out.append(m_preferredOrdering[i]);
+		}
+		out.append("\n");
+		out.append(toCsv());
+		return out.toString();
 	}
 }

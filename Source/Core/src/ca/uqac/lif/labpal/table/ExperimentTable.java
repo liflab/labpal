@@ -83,29 +83,15 @@ public class ExperimentTable extends Table
 	 * @param ordering The ordering of the dimensions
 	 * @return The table
 	 */
-	@SuppressWarnings("unchecked")
-	public DataTable getConcreteTable(String[] ordering)
+	public DataTable getConcreteTable(String ... ordering)
 	{
-		Class<? extends Comparable<?>> new_types[] = new Class[m_dimensions.length];
-		for (int i = 0; i < ordering.length; i++)
-		{
-			int pos = getColumnPosition(ordering[i]);
-			if (pos < 0)
-			{
-				new_types[i] = null;
-			}
-			else
-			{
-				new_types[i] = getColumnTypeFor(pos);
-			}
-		}
-		DataTable mt = new DataTable(ordering, new_types);
+		DataTable mt = new DataTable(ordering);
 		for (Experiment e : m_experiments)
 		{
 			TableEntry entry = new TableEntry();
 			for (String key : m_dimensions)
 			{
-				JsonElement elem = e.read(key);
+				JsonElement elem = readExperiment(e, key);
 				if (elem != null)
 				{
 					entry.put(key, elem);
@@ -129,7 +115,7 @@ public class ExperimentTable extends Table
 			if (exp_count == row)
 			{
 				String key = m_dimensions[col];
-				Object o = e.read(key);
+				Object o = readExperiment(e, key);
 				if (o == null)
 				{
 					return null;
@@ -179,7 +165,7 @@ public class ExperimentTable extends Table
 		// Guess column type
 		for (Experiment e : m_experiments)
 		{
-			Object o = e.read(col_name);
+			Object o = readExperiment(e, col_name);
 			if (o != null)
 			{
 					if (o instanceof JsonNumber || o instanceof Number)
@@ -192,15 +178,6 @@ public class ExperimentTable extends Table
 					}
 			}
 		}
-		/*
-		for (int i = 0; i < m_dimensions.length; i++)
-		{
-			if (m_dimensions[i].compareTo(col_name) == 0)
-			{
-				return m_columnTypes[i];
-			}
-		}
-		*/
 		return null;
 	}
 	
@@ -245,7 +222,7 @@ public class ExperimentTable extends Table
 			boolean found = true;
 			for (Entry<String,Object> entry : e.entrySet())
 			{
-				Object o = exp.read(entry.getKey());
+				Object o = readExperiment(exp, entry.getKey());
 				if ((o == null && entry.getValue() == null) ||
 						o != null && o.equals(entry.getValue()))
 				{
@@ -264,11 +241,23 @@ public class ExperimentTable extends Table
 				TableEntry te = new TableEntry();
 				for (String key : m_dimensions)
 				{
-					te.put(key, exp.read(key));
+					te.put(key, readExperiment(exp, key));
 				}
 				return te;
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Reads data from an experiment. Override this method to transform the
+	 * data from an experiment before putting it in the table.
+	 * @param e The experiment
+	 * @param key The key to read from the experiment
+	 * @return The value
+	 */
+	public JsonElement readExperiment(Experiment e, String key)
+	{
+		return e.read(key);
 	}
 }

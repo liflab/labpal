@@ -22,6 +22,7 @@ import java.util.Vector;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot;
 import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableTransformation;
 
 /**
  * Scatterplot with default settings. Given a table, this class will draw
@@ -60,6 +61,16 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 	public Scatterplot(Table table)
 	{
 		super(table);
+	}
+	
+	/**
+	 * Creates a scatterplot
+	 * @param table
+	 * @param transformation
+	 */
+	public Scatterplot(Table table, TableTransformation transformation)
+	{
+		super(table, transformation);
 	}
 	
 	@Override
@@ -106,8 +117,8 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 	@Override
 	public String toGnuplot(ImageType term, String lab_title)
 	{
-		String[] columns = m_table.getColumnNames();
-		DataTable tab = m_table.getConcreteTable(columns);
+		DataTable tab = processTable(m_table.getConcreteTable());
+		String[] columns = tab.getColumnNames();
 		Vector<String> series = new Vector<String>();
 		for (int i = 1; i < columns.length; i++)
 		{
@@ -129,6 +140,8 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
 		out.append(getHeader(term, lab_title));
+		out.append("set xlabel \"").append(m_captionX).append("\"\n");
+		out.append("set ylabel \"").append(m_captionY).append("\"\n");
 		out.append("plot");
 		for (int i = 0; i < series.size(); i++)
 		{

@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -470,13 +470,16 @@ public abstract class Laboratory
 	}
 
 	/**
-	 * Adds a group to this lab
-	 * @param g The group
+	 * Adds groups to this lab
+	 * @param groups The groups
 	 * @return This lab
 	 */
-	public Laboratory add(Group g)
+	public Laboratory add(Group ... groups)
 	{
-		m_groups.add(g);
+		for (Group g : groups)
+		{
+			m_groups.add(g);
+		}
 		return this;
 	}
 

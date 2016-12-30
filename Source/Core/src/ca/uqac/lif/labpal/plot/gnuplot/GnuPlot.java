@@ -24,6 +24,7 @@ import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableTransformation;
 
 /**
  * Top-level class for plots drawn using the GnuPlot software.
@@ -72,6 +73,11 @@ public abstract class GnuPlot extends Plot
 		super(table);
 	}
 	
+	public GnuPlot(Table table, TableTransformation transformation)
+	{
+		super(table, transformation);
+	}
+	
 	/**
 	 * Generates a stand-alone Gnuplot file for this plot
 	 * @param term The terminal used to display the plot
@@ -91,6 +97,7 @@ public abstract class GnuPlot extends Plot
 	 */
 	public abstract String toGnuplot(ImageType term, String lab_title);
 	
+	@Override
 	public final byte[] getImage(ImageType term)
 	{
 		String instructions = toGnuplot(term);
@@ -111,11 +118,11 @@ public abstract class GnuPlot extends Plot
 				// This happens if the user cancels the command manually
 				runner.stopCommand();
 				runner.interrupt();
-				return null;
+				return s_blankImage;
 			}
 		}
 		image = runner.getBytes();
-		if (image == null || image.length == 0)
+		if (runner.getErrorCode() != 0 || image == null || image.length == 0)
 		{
 			// Gnuplot could not produce a picture; return the blank image
 			image = s_blankImage;

@@ -81,7 +81,7 @@ public class Join extends Table
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public DataTable getConcreteTable(String[] ordering)
+	public DataTable getConcreteTable(String ... ordering)
 	{
 		Class<? extends Comparable<?>>[] new_types = new Class[getColumnCount()];
 		for (int i = 0; i < ordering.length; i++)
@@ -89,7 +89,7 @@ public class Join extends Table
 			Class<? extends Comparable<?>> col_type = getColumnTypeFor(ordering[i]);
 			new_types[i] = col_type;
 		}
-		DataTable mt = new DataTable(ordering, new_types);
+		DataTable mt = new DataTable(ordering);
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		List<TableEntry> keys = getRowKeys();
 		for (TableEntry key : keys)

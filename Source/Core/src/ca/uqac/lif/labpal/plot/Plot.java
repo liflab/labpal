@@ -22,7 +22,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableTransformation;
 
 /**
  * A representation of data into a picture
@@ -136,6 +138,11 @@ public abstract class Plot
 	protected Palette m_palette;
 	
 	/**
+	 * A table transformation to apply before plotting
+	 */
+	protected TableTransformation m_transformation = null;
+	
+	/**
 	 * The bytes of a blank image, used as a placeholder when no plot can
 	 * be drawn
 	 */
@@ -144,8 +151,10 @@ public abstract class Plot
 	/**
 	 * Creates a new plot from a table
 	 * @param table The table
+	 * @param transformation A transformation to apply to the table before
+	 *   plotting
 	 */
-	public Plot(Table table)
+	public Plot(Table table, TableTransformation transformation)
 	{
 		super();
 		m_table = table;
@@ -153,7 +162,17 @@ public abstract class Plot
 		s_counterLock.lock();
 		m_id = s_idCounter++;
 		s_counterLock.unlock();
+		m_transformation = transformation;
 		setPalette(EGA);
+	}
+
+	/**
+	 * Creates a new plot from a table
+	 * @param table The table
+	 */
+	public Plot(Table table)
+	{
+		this(table, null);
 	}
 	
 	/**
@@ -243,6 +262,21 @@ public abstract class Plot
 	 *   the image cannot be produced
 	 */
 	public abstract byte[] getImage(ImageType type);
+	
+	/**
+	 * Transforms a data table before being plotted. A plot can override this
+	 * method to perform pre-processing of the table.
+	 * @param table The original table
+	 * @return The transformed table
+	 */
+	public DataTable processTable(DataTable table)
+	{
+		if (m_transformation == null)
+		{
+			return table;
+		}
+		return m_transformation.transform(table);
+	}
 
 	/**
 	 * Generates a suitable file extension for a given image type

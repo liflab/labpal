@@ -838,4 +838,14 @@ public abstract class Experiment implements Runnable
 		return this;
 	}
 	
+	/**
+	 * Checks if an experiment has a parameter of a given name
+	 * @param name The name
+	 * @return {@code true} if the parameter exists, {@code false} otherwise
+	 */
+	public boolean hasParameter(String name)
+	{
+		return m_inputParameters.containsKey(name) || m_outputParameters.containsKey(name);
+	}
+	
 }

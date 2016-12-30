@@ -24,6 +24,7 @@ import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.labpal.plot.gral.Scatterplot;
 import ca.uqac.lif.labpal.server.WebCallback;
+import ca.uqac.lif.labpal.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
 public class SortingLab extends Laboratory
@@ -35,7 +36,7 @@ public class SortingLab extends Laboratory
 		setDescription("This lab compares the performance of a few common sorting algorithms.");
 		
 		// Prepare a table
-		ExperimentTable table = new ExperimentTable("name", "size", "time");
+		ExperimentTable table = new ExperimentTable("size", "time", "name");
 		table.setTitle("Comparison of sorting algorithms");
 
 		// Initialize experiments
@@ -48,7 +49,7 @@ public class SortingLab extends Laboratory
 		}
 		
 		// Prepare a plot from the results of the table
-		Scatterplot plot = new Scatterplot(table);
+		Scatterplot plot = new Scatterplot(table, new ExpandAsColumns("name", "time"));
 		plot.setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)");
 		add(plot);
 	}

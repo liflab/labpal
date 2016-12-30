@@ -15,30 +15,40 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package multipoint;
 
-import java.util.List;
+package ca.uqac.lif.labpal.table;
 
-import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.CliParser.ArgumentMap;
-import ca.uqac.lif.labpal.plot.gral.Scatterplot;
-import ca.uqac.lif.labpal.server.WebCallback;
-import ca.uqac.lif.labpal.table.ExperimentTable;
-
-public class MultipointLab extends Laboratory 
+/**
+ * A table transformation made by chaining multiple transformations
+ * one after the other.
+ * @author Sylvain Hallé
+ */
+public class Composition implements TableTransformation
 {
-	public static void main(String[] args)
+	/**
+	 * The list of transformations to perform
+	 */
+	protected final TableTransformation[] m_transformations;
+	
+	/**
+	 * Creates a new composition
+	 * @param transformations The list of table transformations to apply
+	 */
+	public Composition(TableTransformation ... transformations)
 	{
-		initialize(args, MultipointLab.class);
+		super();
+		m_transformations = transformations;
 	}
 
 	@Override
-	public void setupExperiments(ArgumentMap map, List<WebCallback> callbacks) 
+	public DataTable transform(DataTable table)
 	{
-		ExperimentTable table = new ExperimentTable("a", "b");
-		Scatterplot plot = new Scatterplot(table);
-		add(plot);
-		add(new MultipointExperiment(), table);
+		DataTable t = table;
+		for (TableTransformation trans : m_transformations)
+		{
+			t = trans.transform(t);
+		}
+		return t;
 	}
 
 }

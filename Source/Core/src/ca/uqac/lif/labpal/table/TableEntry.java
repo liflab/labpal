@@ -29,6 +29,17 @@ public class TableEntry extends HashMap<String,Object>
 	 */
 	private static final transient long serialVersionUID = 1L;
 	
+	public TableEntry()
+	{
+		super();
+	}
+	
+	public TableEntry(TableEntry e)
+	{
+		super();
+		putAll(e);
+	}
+	
 	@Override
 	public int hashCode()
 	{

@@ -20,10 +20,10 @@ package ca.uqac.lif.labpal.plot.gral;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableTransformation;
 import de.erichseifert.gral.io.plots.DrawableWriter;
 import de.erichseifert.gral.io.plots.DrawableWriterFactory;
 
@@ -43,15 +43,14 @@ public class GralPlot extends Plot
 	}
 	
 	/**
-	 * Creates a new plot
-	 * @param title
-	 * @param a
+	 * Creates a new wrapped plot from a plot
+	 * @param p The plot
+	 * @param transformation A table transformation
 	 */
-	GralPlot(ExperimentTable t, String title, Laboratory a)
+	public GralPlot(Table t, TableTransformation transformation)
 	{
-		super(t, title, a);
+		super(t, transformation);
 	}
-	
 
 	/**
 	 * Gets the MIME type string associated to an image format
@@ -80,7 +79,7 @@ public class GralPlot extends Plot
 	 */
 	public final byte[] getImage(ImageType term)
 	{
-		de.erichseifert.gral.plots.Plot plot = getPlot(m_table);
+		de.erichseifert.gral.plots.Plot plot = getPlot();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     String type_string = getTypeName(term);
     DrawableWriter wr = DrawableWriterFactory.getInstance().get(type_string);
@@ -106,14 +105,15 @@ public class GralPlot extends Plot
 	 */
 	public final de.erichseifert.gral.plots.Plot getPlot()
 	{
-		return getPlot(m_table);
+		DataTable dt = m_table.getConcreteTable();
+		return getPlot(processTable(dt));
 	}
 
 	/**
 	 * Gets a Plot object from a data source
 	 * @return The plot
 	 */
-	public de.erichseifert.gral.plots.Plot getPlot(Table source)
+	public de.erichseifert.gral.plots.Plot getPlot(DataTable source)
 	{
 		return null;
 	}

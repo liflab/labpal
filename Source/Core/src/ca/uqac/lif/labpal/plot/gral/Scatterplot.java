@@ -20,6 +20,7 @@ package ca.uqac.lif.labpal.plot.gral;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot;
 import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableTransformation;
 import de.erichseifert.gral.data.DataSeries;
 import de.erichseifert.gral.graphics.Insets2D;
 import de.erichseifert.gral.plots.XYPlot;
@@ -67,6 +68,16 @@ public class Scatterplot extends GralPlot implements ca.uqac.lif.labpal.plot.Sca
 		super(t);
 	}
 	
+	/**
+	 * Creates a new scatterplot with default settings
+	 * @param t The table
+	 * @param transformation A table transformation
+	 */
+	public Scatterplot(Table t, TableTransformation transformation)
+	{
+		super(t, transformation);
+	}
+	
 	@Override
 	public Scatterplot withLines(boolean b)
 	{
@@ -111,15 +122,14 @@ public class Scatterplot extends GralPlot implements ca.uqac.lif.labpal.plot.Sca
 	}
 	
 	@Override
-	public de.erichseifert.gral.plots.Plot getPlot(Table source)
+	public de.erichseifert.gral.plots.Plot getPlot(DataTable source)
 	{
-		DataTable concrete = source.getConcreteTable();
-		int num_cols = concrete.getColumnCount();
+		int num_cols = source.getColumnCount();
 		DataSeries[] series = new DataSeries[num_cols - 1];
 		for (int col = 1; col < num_cols; col++)
 		{
 			System.out.println(source.getColumnName(col));
-			series[col - 1] = new DataSeries(source.getColumnName(col), concrete, 0, col);
+			series[col - 1] = new DataSeries(source.getColumnName(col), source, 0, col);
 		}
 		XYPlot plot = new XYPlot(series);
 		for (int col = 1; col < num_cols; col++)

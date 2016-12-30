@@ -74,7 +74,7 @@ public class RenameColumns extends Table
 	}
 
 	@Override
-	public DataTable getConcreteTable(String[] ordering)
+	public DataTable getConcreteTable(String ... ordering)
 	{
 		String[] new_ordering = new String[ordering.length];
 		for (int i = 0; i < ordering.length; i++)

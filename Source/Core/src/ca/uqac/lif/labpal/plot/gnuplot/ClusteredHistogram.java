@@ -22,6 +22,7 @@ import java.util.Vector;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot;
 import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableTransformation;
 
 /**
  * Two-dimensional bar diagram, also called a "clustered histogram".
@@ -62,12 +63,12 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 	/**
 	 * The caption of the X axis
 	 */
-	protected String m_captionX = null;
+	protected String m_captionX = "";
 	
 	/**
 	 * The caption of the Y axis
 	 */
-	protected String m_captionY = null;
+	protected String m_captionY = "";
 
 	/**
 	 * Whether the histogram is of type "row stacked".
@@ -88,7 +89,17 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 	public ClusteredHistogram(Table t)
 	{
 		super(t);
-	}	
+	}
+	
+	/**
+	 * Creates a new bar plot from a table
+	 * @param table
+	 * @param transformation
+	 */
+	public ClusteredHistogram(Table table, TableTransformation transformation)
+	{
+		super(table, transformation);
+	}
 	
 	/**
 	 * Sets whether the histogram is of type "row stacked".
@@ -128,8 +139,8 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 	@Override
 	public String toGnuplot(ImageType term, String lab_title)
 	{
-		String[] columns = m_table.getColumnNames();
-		DataTable tab = m_table.getConcreteTable(columns);
+		DataTable tab = processTable(m_table.getConcreteTable());
+		String[] columns = tab.getColumnNames();
 		Vector<String> series = new Vector<String>();
 		for (int i = 1; i < columns.length; i++)
 		{
@@ -141,6 +152,8 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 		out.append(getHeader(term, lab_title));
 		out.append("set xtics rotate out\n");
 		out.append("set style data histogram\n");
+		out.append("set xlabel \"").append(m_captionX).append("\"\n");
+		out.append("set ylabel \"").append(m_captionY).append("\"\n");
 		if (m_rowStacked)
 		{
 			out.append("set style histogram rowstacked\n");

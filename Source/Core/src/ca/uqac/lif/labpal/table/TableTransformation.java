@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,25 +17,12 @@
  */
 package ca.uqac.lif.labpal.table;
 
-import java.util.Vector;
-
-/**
- * Takes an input table and applies a transformation to produce a new table.
- */
-public abstract class TableTransform extends Table
+public interface TableTransformation
 {
-	protected Table m_inputTable;
-	
-	public TableTransform(Table t)
-	{
-		super();
-		m_inputTable = t;
-	}
-	
-	@Override
-	public Vector<String> getXValues()
-	{
-		return getConcreteTable().getXValues();
-	}
+	/**
+	 * Transforms a data table
+	 * @param table The original table
+	 * @return The new table
+	 */
+	public DataTable transform(DataTable table);
 }
-

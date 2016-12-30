@@ -347,4 +347,10 @@ public class Join extends Table
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public DataTable getConcreteTable()
+	{
+		return getConcreteTable(getColumnNames());
+	}
+
 }

@@ -56,6 +56,21 @@ public class DataTable extends Table
 	 * The type of each column in the table
 	 */
 	public Class<? extends Comparable<?>>[] m_columnTypes;
+	
+	/**
+	 * The symbol used to separate data values in a CSV rendition
+	 */
+	public static final transient String s_datafileSeparator = ",";
+	
+	/**
+	 * The symbol used to represent missing values in a CSV rendition
+	 */
+	public static final transient String s_datafileMissing = "?";
+	
+	/**
+	 * The OS-dependent line separator 
+	 */
+	protected static final String CRLF = System.getProperty("line.separator");
 
 	/**
 	 * Creates a new data table
@@ -427,9 +442,73 @@ public class DataTable extends Table
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Gets the list of entries if this table
+	 * @return The entries
+	 */
 	public List<TableEntry> getEntries()
 	{
 		return m_entries;
+	}
+	
+	/**
+	 * Returns the contents of the table as a CSV string
+	 * @return The CSV contents
+	 */
+	public String toCsv()
+	{
+		return toCsv(m_preferredOrdering, s_datafileSeparator, s_datafileMissing);
+	}
+
+	/**
+	 * Returns the contents of the table as a CSV string
+	 * @param separator The symbol used as the separator for values
+	 * @param missing The symbol used for missing data
+	 * @return The CSV contents
+	 */
+
+	public String toCsv(String separator, String missing)
+	{
+		return toCsv(m_preferredOrdering, separator, missing);
+	}
+	
+	/**
+	 * Returns the contents of the table as a CSV string
+	 * @param ordering The ordering of the columns
+	 * @param separator The symbol used as the separator for values
+	 * @param missing The symbol used for missing data
+	 * @return The CSV contents
+	 */
+	public String toCsv(String[] ordering, String separator, String missing)
+	{
+		StringBuilder out = new StringBuilder();
+		for (TableEntry tab_e : m_entries)
+		{
+			for (int i = 0; i < ordering.length; i++)
+			{
+				if (i > 0)
+				{
+					out.append(separator);
+				}
+				if (tab_e.containsKey(ordering[i]) && tab_e.get(ordering[i]) != null)
+				{
+					Object o = tab_e.get(ordering[i]);
+					out.append(o.toString());
+				}
+				else
+				{
+					out.append(missing);
+				}
+			}
+			out.append(CRLF);
+		}
+		return out.toString();
+	}
+
+	@Override
+	public DataTable getConcreteTable()
+	{
+		return getConcreteTable(m_preferredOrdering);
 	}
 }

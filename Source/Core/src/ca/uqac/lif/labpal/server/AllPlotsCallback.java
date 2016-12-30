@@ -31,7 +31,8 @@ import ca.uqac.lif.labpal.CommandRunner;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.ExperimentPlot;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -43,7 +44,7 @@ import com.sun.net.httpserver.HttpExchange;
  * @author Sylvain Hallé
  *
  */
-public class AllPlotsCallback extends ParkBenchCallback
+public class AllPlotsCallback extends WebCallback
 {
 	/**
 	 * The path to launch pdftk
@@ -64,7 +65,7 @@ public class AllPlotsCallback extends ParkBenchCallback
 	public CallbackResponse process(HttpExchange t)
 	{
 		CallbackResponse response = new CallbackResponse(t);
-		if (!ExperimentPlot.isGnuplotPresent() || !s_pdftkPresent)
+		if (!GnuPlot.isGnuplotPresent() || !s_pdftkPresent)
 		{
 			// Can't do this without gnuplot and pdftk
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
@@ -73,9 +74,9 @@ public class AllPlotsCallback extends ParkBenchCallback
 		List<String> filenames = new LinkedList<String>();
 		for (int id : m_lab.getPlotIds())
 		{
-			ExperimentPlot plot = m_lab.getPlot(id);
+			Plot plot = m_lab.getPlot(id);
 			// Get plot's image and write to temporary file
-			byte[] image = plot.getImage(ExperimentPlot.ImageType.PDF);
+			byte[] image = plot.getImage(Plot.ImageType.PDF);
 			try
 			{
 				if (image.length > 0)

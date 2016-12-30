@@ -47,7 +47,7 @@ import ca.uqac.lif.labpal.Laboratory;
  * @author Sylvain Hallé
  *
  */
-public class UploadCallback extends ParkBenchCallback
+public class UploadCallback extends WebCallback
 {	
 	protected ParkbenchServer m_server;
 

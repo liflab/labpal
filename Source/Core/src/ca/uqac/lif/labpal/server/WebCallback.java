@@ -27,7 +27,7 @@ import ca.uqac.lif.labpal.Laboratory;
  * @author Sylvain Hallé
  *
  */
-public abstract class ParkBenchCallback extends RestCallback
+public abstract class WebCallback extends RestCallback
 {
 	/**
 	 * The current laboratory
@@ -45,7 +45,7 @@ public abstract class ParkBenchCallback extends RestCallback
 	 * @param lab The laboratory
 	 * @param assistant The assistant
 	 */
-	public ParkBenchCallback(String path, Laboratory lab, LabAssistant assistant)
+	public WebCallback(String path, Laboratory lab, LabAssistant assistant)
 	{
 		super(Method.GET, path);
 		m_lab = lab;

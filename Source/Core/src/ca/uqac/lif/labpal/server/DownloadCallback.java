@@ -35,7 +35,7 @@ import com.sun.net.httpserver.HttpExchange;
  * @author Sylvain Hallé
  *
  */
-public class DownloadCallback extends ParkBenchCallback
+public class DownloadCallback extends WebCallback
 {
 	public DownloadCallback(Laboratory lab, LabAssistant assistant)
 	{

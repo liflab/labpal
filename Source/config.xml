@@ -88,7 +88,7 @@
       GRAL. Stand-alone plotting library
       -->
       <name>GRAL</name>
-      <classname>ca.uqac.lif.azrael.Serializer</classname>
+      <classname>de.erichseifert.gral.data.DataSource</classname>
       <files>
         <jar>http://www.erichseifert.de/dev/gral/0.11/gral-core-0.11.jar</jar>
       </files>

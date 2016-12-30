@@ -73,9 +73,9 @@ public class ParkbenchServer extends InnerFileServer
 	{
 		for (RequestCallback cb : m_callbacks)
 		{
-			if (cb instanceof ParkBenchCallback)
+			if (cb instanceof WebCallback)
 			{
-				((ParkBenchCallback) cb).changeLab(lab);
+				((WebCallback) cb).changeLab(lab);
 			}
 		}
 	}

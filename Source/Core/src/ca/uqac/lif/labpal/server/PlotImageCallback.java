@@ -23,9 +23,10 @@ import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.LabAssistant;
-import ca.uqac.lif.labpal.plot.ExperimentPlot;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.ExperimentPlot.ImageType;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.plot.Plot.ImageType;
+import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -45,7 +46,7 @@ import com.sun.net.httpserver.HttpExchange;
  * @author Sylvain Hallé
  *
  */
-public class PlotImageCallback extends ParkBenchCallback
+public class PlotImageCallback extends WebCallback
 {
 	public PlotImageCallback(Laboratory lab, LabAssistant assistant)
 	{
@@ -58,20 +59,20 @@ public class PlotImageCallback extends ParkBenchCallback
 		CallbackResponse response = new CallbackResponse(t);
 		Map<String,String> params = getParameters(t);
 		int plot_id = Integer.parseInt(params.get("id"));
-		ExperimentPlot p = m_lab.getPlot(plot_id);
+		Plot p = m_lab.getPlot(plot_id);
 		if (p == null)
 		{
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
-		if (params.get("format").compareToIgnoreCase("gp") == 0)
+		if (params.get("format").compareToIgnoreCase("gp") == 0 && p instanceof GnuPlot)
 		{
-			response.setContents(p.toGnuplot(ImageType.PDF, m_lab.getTitle()));
+			response.setContents(((GnuPlot)p).toGnuplot(ImageType.PDF, m_lab.getTitle()));
 			response.setCode(CallbackResponse.HTTP_OK);
-			response.setAttachment(Server.urlEncode(p.getCaption() + ".gp"));
+			response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
 			return response;
 		}
-		if (!ExperimentPlot.isGnuplotPresent())
+		if (!GnuPlot.isGnuplotPresent())
 		{
 			// Asking for an image, but Gnuplot not available: stop right here
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
@@ -99,7 +100,7 @@ public class PlotImageCallback extends ParkBenchCallback
 		response.setCode(CallbackResponse.HTTP_OK);
 		if (params.containsKey("dl"))
 		{
-			response.setAttachment(Server.urlEncode(p.getCaption() + "." + ExperimentPlot.getTypeName(term)));
+			response.setAttachment(Server.urlEncode(p.getTitle() + "." + Plot.getTypeExtension(term)));
 		}
 		return response;
 	}

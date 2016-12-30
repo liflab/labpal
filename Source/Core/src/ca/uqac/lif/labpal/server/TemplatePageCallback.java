@@ -42,7 +42,7 @@ import ca.uqac.lif.labpal.Laboratory;
  * @author Sylvain Hallé
  *
  */
-public class TemplatePageCallback extends ParkBenchCallback
+public class TemplatePageCallback extends WebCallback
 {
 	protected static final transient String s_path = "resource";
 	

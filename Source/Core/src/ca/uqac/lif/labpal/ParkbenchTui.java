@@ -26,8 +26,9 @@ import ca.uqac.lif.azrael.SerializerException;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Experiment.Status;
-import ca.uqac.lif.labpal.plot.ExperimentPlot;
-import ca.uqac.lif.labpal.plot.ExperimentPlot.ImageType;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.plot.Plot.ImageType;
+import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
 import ca.uqac.lif.tui.AnsiPrinter;
 import ca.uqac.lif.tui.AnsiPrinter.Color;
 import ca.uqac.lif.tui.Checkbox;
@@ -157,7 +158,7 @@ public class ParkbenchTui
 		{
 			PlotMenu plot_menu = new PlotMenu();
 			//plot_menu.addItem(new SelectPlotMenuItem());
-			if (ExperimentPlot.isGnuplotPresent())
+			if (GnuPlot.isGnuplotPresent())
 				plot_menu.addItem(new ViewPlotMenuItem());
 			plot_menu.addItem(new SavePlotMenuItem());
 			plot_menu.addItem(new BackMenuItem());
@@ -182,7 +183,7 @@ public class ParkbenchTui
 		m_printer.setForegroundColor(AnsiPrinter.Color.LIGHT_PURPLE);
 		m_printer.print(m_lab.getRandomSeed());
 		m_printer.resetColors();
-		if (!ExperimentPlot.isGnuplotPresent())
+		if (!GnuPlot.isGnuplotPresent())
 		{
 			m_printer.print("\nWarning: Gnuplot was not found on your system");
 		}
@@ -317,12 +318,12 @@ public class ParkbenchTui
 			for (int id : m_selectedPlots.keySet())
 			{
 				//Checkbox cb = m_selectedPlots.get(id);
-				ExperimentPlot ex = m_lab.getPlot(id);
+				Plot ex = m_lab.getPlot(id);
 				printer.setForegroundColor(Color.LIGHT_GRAY);
 				printer.print(AnsiPrinter.padToLength(Integer.toString(ex.getId()), 3));
 				printer.resetColors();
 				//cb.render(printer);
-				printer.print(" " + ex.getCaption());
+				printer.print(" " + ex.getTitle());
 				printer.print("\n");
 			}
 			printer.print("\n");
@@ -369,7 +370,7 @@ public class ParkbenchTui
 			printer.print("Plot number: ");
 			String s_id = printer.readLine();
 			int id = Integer.parseInt(s_id);
-			ExperimentPlot p = m_lab.getPlot(id);
+			Plot p = m_lab.getPlot(id);
 			if (p == null)
 			{
 				printer.print("This ID does not exist\n");
@@ -378,7 +379,7 @@ public class ParkbenchTui
 			doWithPlot(printer, p);
 		}
 		
-		protected abstract void doWithPlot(AnsiPrinter printer, ExperimentPlot p);
+		protected abstract void doWithPlot(AnsiPrinter printer, Plot p);
 	}
 	
 	protected class ViewPlotMenuItem extends PlotMenuItem
@@ -389,7 +390,7 @@ public class ParkbenchTui
 		}
 
 		@Override
-		protected void doWithPlot(AnsiPrinter printer, ExperimentPlot p)
+		protected void doWithPlot(AnsiPrinter printer, Plot p)
 		{
 			byte[] image = null;
 			image = p.getImage(ImageType.DUMB);
@@ -411,10 +412,16 @@ public class ParkbenchTui
 		}
 
 		@Override
-		protected void doWithPlot(AnsiPrinter printer, ExperimentPlot p)
+		protected void doWithPlot(AnsiPrinter printer, Plot plot)
 		{
+			if (!(plot instanceof GnuPlot))
+			{
+				printer.print("This plot is not a GnuPlot graph");
+				return;
+			}
+			GnuPlot p = (GnuPlot) plot;
 			String gnuplot = p.toGnuplot(ImageType.PDF, m_lab.getTitle());
-			String filename = p.getCaption() + ".gp";
+			String filename = p.getTitle() + ".gp";
 			printer.print("Save to [" + filename + "] ");
 			String line = printer.readLine();
 			if (line == null)

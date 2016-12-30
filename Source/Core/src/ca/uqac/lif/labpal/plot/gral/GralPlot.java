@@ -1,0 +1,131 @@
+/*
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package ca.uqac.lif.labpal.plot.gral;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.labpal.table.Table;
+import de.erichseifert.gral.io.plots.DrawableWriter;
+import de.erichseifert.gral.io.plots.DrawableWriterFactory;
+
+/**
+ * Top-level class for plots drawn using the GRAL library.
+ * @author Sylvain Hallé
+ */
+public class GralPlot extends Plot
+{	
+	/**
+	 * Creates a new wrapped plot from a plot
+	 * @param p The plot
+	 */
+	public GralPlot(Table t)
+	{
+		super(t);
+	}
+	
+	/**
+	 * Creates a new plot
+	 * @param title
+	 * @param a
+	 */
+	GralPlot(ExperimentTable t, String title, Laboratory a)
+	{
+		super(t, title, a);
+	}
+	
+
+	/**
+	 * Gets the MIME type string associated to an image format
+	 * @param t The format
+	 * @return The MIME string
+	 */
+	public static String getTypeName(ImageType t)
+	{
+		switch (t)
+		{
+		case PNG:
+			return "image/png";
+		case PDF:
+			return "application/pdf";
+		case DUMB:
+		case CACA:
+			return "text/plain";
+		}
+		return "image/png";
+	}
+	
+	/**
+	 * Runs GnuPlot on a file and returns the resulting graph
+	 * @param term The terminal (i.e. PNG, etc.) to use for the image
+	 * @return The (binary) contents of the image produced by Gnuplot
+	 */
+	public final byte[] getImage(ImageType term)
+	{
+		de.erichseifert.gral.plots.Plot plot = getPlot(m_table);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    String type_string = getTypeName(term);
+    DrawableWriter wr = DrawableWriterFactory.getInstance().get(type_string);
+    try
+		{
+			wr.write(plot, baos, 640, 480);
+	    baos.flush();
+	    byte[] bytes = baos.toByteArray();
+	    baos.close();
+	    return bytes;
+		}
+    catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    return null;
+	}
+		
+	/**
+	 * Gets a Plot object from this LabPlot
+	 * @return The plot
+	 */
+	public final de.erichseifert.gral.plots.Plot getPlot()
+	{
+		return getPlot(m_table);
+	}
+
+	/**
+	 * Gets a Plot object from a data source
+	 * @return The plot
+	 */
+	public de.erichseifert.gral.plots.Plot getPlot(Table source)
+	{
+		return null;
+	}
+
+	/**
+	 * Customize an existing plot. Override this method to tweak the settings
+	 * of a stock plot.
+	 * @param plot The plot
+	 */
+	public void customize(de.erichseifert.gral.plots.Plot plot)
+	{
+		// Do nothing
+	}
+
+}

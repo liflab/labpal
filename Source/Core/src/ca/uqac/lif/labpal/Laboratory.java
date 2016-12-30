@@ -32,11 +32,11 @@ import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
-import ca.uqac.lif.labpal.server.ParkBenchCallback;
+import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.server.ParkbenchServer;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.plot.ExperimentPlot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**
@@ -78,7 +78,7 @@ public abstract class Laboratory
 	/**
 	 * The set of plots associated with this lab
 	 */
-	private transient HashSet<ExperimentPlot> m_plots;
+	private transient HashSet<Plot> m_plots;
 	
 	/**
 	 * The set of tables associated to this lab
@@ -158,7 +158,7 @@ public abstract class Laboratory
 	{
 		super();
 		m_experiments = new HashSet<Experiment>();
-		m_plots = new HashSet<ExperimentPlot>();
+		m_plots = new HashSet<Plot>();
 		m_tables = new HashSet<Table>();
 		m_groups = new HashSet<Group>();
 		m_assistant = null;
@@ -243,13 +243,16 @@ public abstract class Laboratory
 	}
 
 	/**
-	 * Assigns a plot to this lab
-	 * @param p The plot
+	 * Assigns plots to this lab
+	 * @param p The plots
 	 * @return This lab
 	 */
-	public Laboratory add(ExperimentPlot p)
+	public Laboratory add(Plot ... plots)
 	{
-		m_plots.add(p);
+		for (Plot p : plots)
+		{
+			m_plots.add(p);
+		}
 		return this;
 	}
 
@@ -274,7 +277,7 @@ public abstract class Laboratory
 	public Set<Integer> getPlotIds()
 	{
 		Set<Integer> ids = new HashSet<Integer>();
-		for (ExperimentPlot p : m_plots)
+		for (Plot p : m_plots)
 		{
 			ids.add(p.getId());
 		}
@@ -300,9 +303,9 @@ public abstract class Laboratory
 	 * @param id The ID
 	 * @return The plot, null if not found
 	 */
-	public ExperimentPlot getPlot(int id)
+	public Plot getPlot(int id)
 	{
-		for (ExperimentPlot p : m_plots)
+		for (Plot p : m_plots)
 		{
 			if (p.getId() == id)
 			{
@@ -396,7 +399,7 @@ public abstract class Laboratory
 	{
 		Laboratory lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
 		// Don't forget to transplant the plots
-		for (ExperimentPlot p : m_plots)
+		for (Plot p : m_plots)
 		{
 			p.assignTo(lab);
 		}
@@ -523,7 +526,7 @@ public abstract class Laboratory
 			int seed = Integer.parseInt(map.getOptionValue("seed"));
 			new_lab.setRandomSeed(seed);
 		}
-		List<ParkBenchCallback> callbacks = new LinkedList<ParkBenchCallback>();
+		List<WebCallback> callbacks = new LinkedList<WebCallback>();
 		new_lab.setupExperiments(map, callbacks);
 		final AnsiPrinter stdout = new AnsiPrinter(System.out);
 		stdout.resetColors();
@@ -544,11 +547,11 @@ public abstract class Laboratory
 		{
 			// Start ParkBench's web interface
 			ParkbenchServer server = new ParkbenchServer(map, new_lab, assistant);
-			for (ParkBenchCallback cb : callbacks)
+			for (WebCallback cb : callbacks)
 			{
 				server.registerCallback(0, cb);
 			}
-			stdout.print("Visit " + server.getServerName() + ":" + server.getServerPort() + "/index in your browser\n");
+			stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort() + "/index in your browser\n");
 			try
 			{
 				server.startServer();
@@ -619,7 +622,7 @@ public abstract class Laboratory
 	 *   These callbacks will be added to the server if the <code>--web</code>
 	 *   option is used at startup.
 	 */
-	public abstract void setupExperiments(ArgumentMap map, List<ParkBenchCallback> callbacks);
+	public abstract void setupExperiments(ArgumentMap map, List<WebCallback> callbacks);
 
 	/**
 	 * Counts the number of "parkmips" of this system. This is a very rough

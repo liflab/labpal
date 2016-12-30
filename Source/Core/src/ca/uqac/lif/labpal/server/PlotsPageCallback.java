@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.ExperimentPlot;
+import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
 
 /**
  * Callback showing a list of plots
@@ -47,7 +47,7 @@ public class PlotsPageCallback extends TemplatePageCallback
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", "Plots");
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.GRAPH));
-		if (ExperimentPlot.isGnuplotPresent())
+		if (GnuPlot.isGnuplotPresent())
 		{
 			out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
 			if (AllPlotsCallback.s_pdftkPresent)

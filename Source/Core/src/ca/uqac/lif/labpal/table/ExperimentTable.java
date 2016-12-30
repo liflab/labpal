@@ -49,35 +49,14 @@ public class ExperimentTable extends Table
 	/**
 	 * The type of each column in the table
 	 */
-	public Class<? extends Comparable<?>>[] m_columnTypes;
-	
-	@SuppressWarnings("unchecked")
-	public ExperimentTable(String[] dimensions, Type[] types)
+	//public Class<? extends Comparable<?>>[] m_columnTypes;
+		
+	public ExperimentTable(String ... dimensions)
 	{
 		super();
 		m_experiments = new ArrayList<Experiment>();
 		m_dimensions = dimensions;
-		m_columnTypes = new Class[dimensions.length];
-		for (int i = 0; i < dimensions.length; i++)
-		{
-			if (types[i] == Type.NUMERIC)
-			{
-				m_columnTypes[i] = Float.class;
-			}
-			else
-			{
-				m_columnTypes[i] = String.class;
-			}
-		}
-	}
-	
-	public ExperimentTable(String[] dimensions, Class<? extends Comparable<?>>[] types)
-	{
-		super();
-		m_experiments = new ArrayList<Experiment>();
-		m_dimensions = dimensions;
-		m_columnTypes = types;
-	}
+	}	
 	
 	/**
 	 * Adds a new experiment to the table
@@ -179,7 +158,13 @@ public class ExperimentTable extends Table
 	@Override
 	public Class<? extends Comparable<?>>[] getColumnTypes()
 	{
-		return m_columnTypes;
+		@SuppressWarnings("unchecked")
+		Class<? extends Comparable<?>> types[] = new Class[getColumnCount()];
+		for (int i = 0; i < m_dimensions.length; i++)
+		{
+			types[i] = getColumnTypeFor(m_dimensions[i]);
+		}
+		return types;
 	}
 
 	@Override
@@ -191,6 +176,23 @@ public class ExperimentTable extends Table
 	@Override
 	public Class<? extends Comparable<?>> getColumnTypeFor(String col_name)
 	{
+		// Guess column type
+		for (Experiment e : m_experiments)
+		{
+			Object o = e.read(col_name);
+			if (o != null)
+			{
+					if (o instanceof JsonNumber || o instanceof Number)
+					{
+						return Float.class;
+					}
+					else
+					{
+						return String.class;
+					}
+			}
+		}
+		/*
 		for (int i = 0; i < m_dimensions.length; i++)
 		{
 			if (m_dimensions[i].compareTo(col_name) == 0)
@@ -198,6 +200,7 @@ public class ExperimentTable extends Table
 				return m_columnTypes[i];
 			}
 		}
+		*/
 		return null;
 	}
 	

@@ -311,6 +311,10 @@ public class DataTable extends Table
 			// Cast JsonNumbers as numbers
 			return ((JsonNumber) o).numberValue().floatValue();
 		}
+		if (o instanceof JsonNull)
+		{
+			return null;
+		}
 		return (Comparable<?>) o;
 	}
 

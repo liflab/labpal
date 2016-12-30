@@ -117,7 +117,7 @@ public abstract class SortExperiment extends Experiment
 		int size = readInt("size");
 		int[] array = new int[size];
 		String filename = getDataFilename();
-		String contents = FileHelper.internalFileToString(SortExperiment.class, filename);
+		String contents = FileHelper.readToString(new File(filename));
 		String[] str = contents.split(",");
 		for (int i = 0; i < size; i++)
 		{

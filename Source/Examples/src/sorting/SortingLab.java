@@ -38,9 +38,10 @@ public class SortingLab extends Laboratory
 		// Prepare a table
 		ExperimentTable table = new ExperimentTable("size", "time", "name");
 		table.setTitle("Comparison of sorting algorithms");
+		add(table);
 
 		// Initialize experiments
-		for (int length = 5000; length <= 40000; length += 5000)
+		for (int length = 5000; length <= 30000; length += 5000)
 		{
 			add(new QuickSort(length), table);
 			add(new ShellSort(length), table);
@@ -51,6 +52,7 @@ public class SortingLab extends Laboratory
 		// Prepare a plot from the results of the table
 		Scatterplot plot = new Scatterplot(table, new ExpandAsColumns("name", "time"));
 		plot.setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)");
+		plot.withLines();
 		add(plot);
 	}
 	

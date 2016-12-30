@@ -128,7 +128,6 @@ public class Scatterplot extends GralPlot implements ca.uqac.lif.labpal.plot.Sca
 		DataSeries[] series = new DataSeries[num_cols - 1];
 		for (int col = 1; col < num_cols; col++)
 		{
-			System.out.println(source.getColumnName(col));
 			series[col - 1] = new DataSeries(source.getColumnName(col), source, 0, col);
 		}
 		XYPlot plot = new XYPlot(series);

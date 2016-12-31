@@ -91,7 +91,7 @@ public class TemplatePageCallback extends WebCallback
 	
 	protected String readTemplateFile()
 	{
-		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, m_filename);
+		String file_contents = FileHelper.internalFileToString(LabPalServer.class, m_filename);
 		return file_contents;
 	}
 	
@@ -105,7 +105,7 @@ public class TemplatePageCallback extends WebCallback
 		}
 		for (String filename : includes)
 		{
-			String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, s_path + "/" + filename);
+			String file_contents = FileHelper.internalFileToString(LabPalServer.class, s_path + "/" + filename);
 			if (file_contents == null)
 				continue;
 			s = s.replace("{!" + filename + "!}", file_contents);

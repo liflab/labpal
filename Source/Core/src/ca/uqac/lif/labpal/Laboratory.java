@@ -33,7 +33,7 @@ import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.server.WebCallback;
-import ca.uqac.lif.labpal.server.ParkbenchServer;
+import ca.uqac.lif.labpal.server.LabPalServer;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.plot.Plot;
@@ -569,7 +569,7 @@ public abstract class Laboratory
 		if (map.hasOption("web"))
 		{
 			// Start ParkBench's web interface
-			ParkbenchServer server = new ParkbenchServer(map, new_lab, assistant);
+			LabPalServer server = new LabPalServer(map, new_lab, assistant);
 			for (WebCallback cb : callbacks)
 			{
 				server.registerCallback(0, cb);
@@ -581,7 +581,7 @@ public abstract class Laboratory
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace(stdout);
+				System.err.println("Cannot start server on port " + server.getServerPort() +". Is another lab already running?");
 				stdout.close();
 				System.exit(ERR_SERVER);
 			}

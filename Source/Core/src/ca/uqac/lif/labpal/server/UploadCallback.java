@@ -49,9 +49,9 @@ import ca.uqac.lif.labpal.Laboratory;
  */
 public class UploadCallback extends WebCallback
 {	
-	protected ParkbenchServer m_server;
+	protected LabPalServer m_server;
 
-	public UploadCallback(ParkbenchServer server, Laboratory lab, LabAssistant assistant)
+	public UploadCallback(LabPalServer server, Laboratory lab, LabAssistant assistant)
 	{
 		super("/upload", lab, assistant);
 		setMethod(Method.POST);
@@ -154,7 +154,7 @@ public class UploadCallback extends WebCallback
 		}
 		new_lab.setAssistant(m_assistant);
 		m_server.changeLab(new_lab);
-		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-ok.html");
+		String file_contents = FileHelper.internalFileToString(LabPalServer.class, TemplatePageCallback.s_path + "/upload-ok.html");
 		file_contents = TemplatePageCallback.resolveInclude(file_contents);
 		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "File uploaded");
 		cbr.setCode(CallbackResponse.HTTP_OK);
@@ -165,7 +165,7 @@ public class UploadCallback extends WebCallback
 	protected void doBadRequest(CallbackResponse cbr, String message)
 	{
 		cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-		String file_contents = FileHelper.internalFileToString(ParkbenchServer.class, TemplatePageCallback.s_path + "/upload-nok.html");
+		String file_contents = FileHelper.internalFileToString(LabPalServer.class, TemplatePageCallback.s_path + "/upload-nok.html");
 		file_contents = TemplatePageCallback.resolveInclude(file_contents);
 		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Error uploading file");
 		file_contents = file_contents.replaceAll("\\{%MESSAGE%\\}", message);

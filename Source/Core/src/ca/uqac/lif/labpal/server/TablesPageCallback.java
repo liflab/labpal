@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ public class TablesPageCallback extends TemplatePageCallback
 				out = out.replaceAll("\\{%TABLES%\\}", getTables(ids));			
 			}
 		}
+		out = out.replaceAll("\\{%ALL_TABLES%\\}", "<p><a class=\"btn btn-all-tables\" title=\"Download all tables as a single LaTeX file\" href=\"all-tables\">Download all tables</a></p>");
 		out = out.replaceAll("\\{%SEL_TABLES%\\}", "selected");
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return out;
@@ -77,8 +78,11 @@ public class TablesPageCallback extends TemplatePageCallback
 			out.append("<tr>");
 			out.append("<td class=\"table-icon\"></td>");
 			out.append("<td><a href=\"table?id=").append(id).append("\" title=\"Click on table to view in new window\">");
-			out.append(id);
-			out.append("</a><td><td>").append(table.getTitle()).append("</td></tr>\n");			
+			out.append(id).append("</a></td>");
+			out.append("<td><a class=\"btn-csv\" href=\"table-export?id=").append(id).append("&amp;format=csv&amp;dl=1\" title=\"Download as CSV\"><span class=\"text-only\">CSV</span></a></td>");
+			out.append("<td><a class=\"btn-tex\" href=\"table-export?id=").append(id).append("&amp;format=tex&amp;dl=1\" title=\"Download as LaTeX\"><span class=\"text-only\">TeX</span></a></td>");
+			out.append("<td><a class=\"btn-html\" href=\"table-export?id=").append(id).append("&amp;format=html&amp;dl=1\" title=\"Download as HTML\"><span class=\"text-only\">HTML</span></a></td>");
+			out.append("<td>").append(table.getTitle()).append("</td></tr>\n");			
 		}
 		out.append("</table>\n");
 		return out.toString();

@@ -237,14 +237,14 @@ public class DataTable extends Table
 	{
 		TableNode node = getTree(sort_order);
 		StringBuilder out = new StringBuilder();
-		out.append("<table border=\"1\">\n<thead>\n");
+		out.append("<table border=\"1\">").append(CRLF).append("<thead>").append(CRLF);
 		for (String key : sort_order)
 		{
 			out.append("<th>").append(key).append("</th>");
 		}
-		out.append("</thead>\n<tbody>\n<tr>\n");
+		out.append("</thead>").append(CRLF).append("<tbody>").append(CRLF).append("<tr>").append(CRLF);
 		toHtml(node, out, 0, sort_order.length);
-		out.append("</tr>\n</tbody>\n</table>");
+		out.append("</tr>").append(CRLF).append("</tbody>").append(CRLF).append("</table>");
 		return out.toString();
 	}
 	
@@ -280,7 +280,7 @@ public class DataTable extends Table
 			}
 			else
 			{
-				out.append("</tr>\n<tr>");
+				out.append("</tr>").append(CRLF).append("<tr>");
 				for (int i = 0; i < depth; i++)
 				{
 					out.append("<td>-</td>");
@@ -500,7 +500,7 @@ public class DataTable extends Table
 			}
 			out.append(m_preferredOrdering[i]);
 		}
-		out.append("\n");
+		out.append(CRLF);
 		out.append(toCsv());
 		return out.toString();
 	}

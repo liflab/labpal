@@ -54,6 +54,7 @@ public class TransformLab extends Laboratory
 		// Add experiments
 		Group group_ie = new Group("Experiments for IE");
 		Group group_ff = new Group("Experiments for Firefox");
+		add(group_ie, group_ff);
 		add(new BrowserExperiment("IE", "video", 30), group_ie, et, pc_et);
 		add(new BrowserExperiment("IE", "audio", 10), group_ie, et, pc_et);
 		add(new BrowserExperiment("IE", "flash", 25), group_ie, et, pc_et);
@@ -64,7 +65,6 @@ public class TransformLab extends Laboratory
 		add(new BrowserExperiment("Firefox", "flash", 35), group_ff, et);
 		add(new BrowserExperiment("Firefox", "html", 30), group_ff, et);
 		add(new BrowserExperiment("Firefox", "js", 10), group_ff, et);
-		add(group_ie, group_ff);
 		
 		// Create a histogram
 		ClusteredHistogram plot = new ClusteredHistogram(et, new ExpandAsColumns("market", "share"));

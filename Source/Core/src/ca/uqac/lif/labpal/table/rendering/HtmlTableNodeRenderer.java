@@ -30,16 +30,21 @@ import ca.uqac.lif.json.JsonString;
  */
 public class HtmlTableNodeRenderer extends TableNodeRenderer 
 {
+	/**
+	 * OS-dependent carriage return
+	 */
+	protected static final String CRLF = System.getProperty("line.separator");
+	
 	@Override
 	public void startStructure(StringBuilder out)
 	{
-		out.append("<table border=\"1\">\n");
+		out.append("<table border=\"1\">").append(CRLF);
 	}
 	
 	@Override
 	public void startKeys(StringBuilder out)
 	{
-		out.append("<thead>\n");
+		out.append("<thead>").append(CRLF);
 	}
 	
 	@Override
@@ -51,19 +56,19 @@ public class HtmlTableNodeRenderer extends TableNodeRenderer
 	@Override
 	public void endKeys(StringBuilder out)
 	{
-		out.append("</thead>\n");
+		out.append("</thead>").append(CRLF);
 	}
 	
 	@Override
 	public void startBody(StringBuilder out)
 	{
-		out.append("<tbody>\n");
+		out.append("<tbody>").append(CRLF);
 	}
 	
 	@Override
 	public void startRow(StringBuilder out, int max_depth)
 	{
-		out.append("<tr>\n");
+		out.append("<tr>").append(CRLF);
 	}
 	
 	@Override
@@ -90,7 +95,7 @@ public class HtmlTableNodeRenderer extends TableNodeRenderer
 		{
 			out.append(last);
 		}
-		out.append(" </td>\n");
+		out.append(" </td>").append(CRLF);
 	}
 	
 	@Override
@@ -102,19 +107,19 @@ public class HtmlTableNodeRenderer extends TableNodeRenderer
 	@Override
 	public void endRow(StringBuilder out, int max_depth)
 	{
-		out.append("</tr>\n");
+		out.append("</tr>").append(CRLF);
 	}
 	
 	@Override
 	public void endBody(StringBuilder out)
 	{
-		out.append("</tbody>\n");
+		out.append("</tbody>").append(CRLF);
 	}
 	
 	@Override
 	public void endStructure(StringBuilder out)
 	{
-		out.append("</tr>\n</tbody>\n</table>");
+		out.append("</tr>").append(CRLF).append("</tbody>").append(CRLF).append("</table>");
 	}
 
 }

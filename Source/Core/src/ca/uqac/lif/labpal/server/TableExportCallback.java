@@ -24,33 +24,33 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.plot.Plot.ImageType;
-import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
+import ca.uqac.lif.labpal.table.DataTable;
+import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.rendering.LatexTableRenderer;
 
 import com.sun.net.httpserver.HttpExchange;
 
 /**
- * Callback producing an image from one of the lab's plots, in various
+ * Callback producing an table from the lab, in various
  * formats.
  * <p>
  * The HTTP request accepts the following parameters:
  * <ul>
- * <li><tt>dl=1</tt>: to download the image instead of displaying it. This
+ * <li><tt>dl=1</tt>: to download the table instead of displaying it. This
  *   will prompt the user to save the file in its browser</li>
- * <li><tt>id=x</tt>: mandatory; the ID of the plot to display</li>
- * <li><tt>format=x</tt>: the requested image format. Currenly supports
- *   pdf, dumb (text), png and gp (raw data file for Gnuplot).
+ * <li><tt>id=x</tt>: mandatory; the ID of the table to display</li>
+ * <li><tt>format=x</tt>: the requested table format. Currenly supports
+ *   tex, csv and html.
  * </ul>
  * 
  * @author Sylvain Hallé
  *
  */
-public class PlotImageCallback extends WebCallback
+public class TableExportCallback extends WebCallback
 {
-	public PlotImageCallback(Laboratory lab, LabAssistant assistant)
+	public TableExportCallback(Laboratory lab, LabAssistant assistant)
 	{
-		super("/plot", lab, assistant);
+		super("/table-export", lab, assistant);
 	}
 
 	@Override
@@ -59,48 +59,43 @@ public class PlotImageCallback extends WebCallback
 		CallbackResponse response = new CallbackResponse(t);
 		Map<String,String> params = getParameters(t);
 		int plot_id = Integer.parseInt(params.get("id"));
-		Plot p = m_lab.getPlot(plot_id);
-		if (p == null)
+		Table tab = m_lab.getTable(plot_id);
+		if (tab == null)
 		{
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
-		if (params.get("format").compareToIgnoreCase("gp") == 0 && p instanceof GnuPlot)
+		DataTable d_tab = tab.getConcreteTable();
+		if (params.get("format").compareToIgnoreCase("tex") == 0)
 		{
-			response.setContents(((GnuPlot)p).toGnuplot(ImageType.PDF, m_lab.getTitle()));
+			LatexTableRenderer renderer = new LatexTableRenderer();
+			String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
+			response.setContents(contents);
 			response.setCode(CallbackResponse.HTTP_OK);
-			response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
+			response.setContentType("application/x-latex");
+			if (params.containsKey("dl"))
+			{
+				response.setAttachment(Server.urlEncode(tab.getTitle() + ".tex"));
+			}
 			return response;
 		}
-		if (!GnuPlot.isGnuplotPresent())
+		if (params.get("format").compareToIgnoreCase("html") == 0)
 		{
-			// Asking for an image, but Gnuplot not available: stop right here
-			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+			response.setContents(d_tab.toHtml());
+			response.setCode(CallbackResponse.HTTP_OK);
+			response.setContentType(ContentType.HTML);
+			if (params.containsKey("dl"))
+			{
+				response.setAttachment(Server.urlEncode(tab.getTitle() + ".html"));
+			}
 			return response;
 		}
-		ImageType term = ImageType.PNG;
-		response.setContentType(ContentType.PNG);
-		if (params.get("format").compareToIgnoreCase("pdf") == 0)
-		{
-			term = ImageType.PDF;
-			response.setContentType(ContentType.PDF);
-		}
-		if (params.get("format").compareToIgnoreCase("dumb") == 0)
-		{
-			term = ImageType.DUMB;
-			response.setContentType(ContentType.TEXT);
-		}
-		byte[] image = p.getImage(term);
-		if (image == null)
-		{
-			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
-			return response;			
-		}
-		response.setContents(image);
+		response.setContents(d_tab.toCsv());
 		response.setCode(CallbackResponse.HTTP_OK);
+		response.setContentType(ContentType.TEXT);
 		if (params.containsKey("dl"))
 		{
-			response.setAttachment(Server.urlEncode(p.getTitle() + "." + Plot.getTypeExtension(term)));
+			response.setAttachment(Server.urlEncode(tab.getTitle() + ".csv"));
 		}
 		return response;
 	}

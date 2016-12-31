@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,22 +25,22 @@ import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 
 /**
- * Server supporting ParkBench's web GUI
+ * Server supporting LabPal's web GUI
  *  
  * @author Sylvain Hallé
  *
  */
-public class ParkbenchServer extends InnerFileServer
+public class LabPalServer extends InnerFileServer
 {
 	/**
 	 * The default port
 	 */
 	protected static final transient int s_defaultPort = 21212;
 	
-	public ParkbenchServer(ArgumentMap args, Laboratory lab, LabAssistant assistant)
+	public LabPalServer(ArgumentMap args, Laboratory lab, LabAssistant assistant)
 	{
-		super(ParkbenchServer.class);
-		setUserAgent("ParkBench " + Laboratory.s_versionString);
+		super(LabPalServer.class);
+		setUserAgent("LabPal " + Laboratory.s_versionString);
 		if (args.hasOption("port"))
 		{
 			setServerPort(Integer.parseInt(args.getOptionValue("port")));
@@ -62,6 +62,8 @@ public class ParkbenchServer extends InnerFileServer
 		registerCallback(0, new AllPlotsCallback(lab, assistant));
 		registerCallback(0, new TablesPageCallback(lab, assistant));
 		registerCallback(0, new TablePageCallback(lab, assistant));
+		registerCallback(0, new TableExportCallback(lab, assistant));
+		registerCallback(0, new AllTablesCallback(lab, assistant));
 	}
 	
 	/**

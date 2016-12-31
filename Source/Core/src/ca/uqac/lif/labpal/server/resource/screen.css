@@ -296,9 +296,35 @@ table.exp-table td {
   padding-left: 32px;
 }
 
+.btn-csv {
+  width: 24px;
+  height: 24px;
+  background: url('images/csv-24.png') top center no-repeat;
+  display: inline-block;
+}
+
+.btn-tex {
+  width: 24px;
+  height: 24px;
+  background: url('images/tex-24.png') top center no-repeat;
+  display: inline-block;
+}
+
+.btn-html {
+  width: 24px;
+  height: 24px;
+  background: url('images/html-24.png') top center no-repeat;
+  display: inline-block;
+}
+
 .btn-all-plots {
   background: #e0e0e0 url('images/pages-24.png') 4px 4px no-repeat;
-  padding-left: 32px;
+  padding-left: 28px;
+}
+
+.btn-all-tables{
+  background: #e0e0e0 url('images/pages-24.png') 4px 4px no-repeat;
+  padding-left: 28px;
 }
 
 .with-desc {

@@ -32,6 +32,11 @@ import ca.uqac.lif.json.JsonString;
 public class LatexTableRenderer extends TableNodeRenderer 
 {
 	/**
+	 * OS-dependent carriage return
+	 */
+	protected static final String CRLF = System.getProperty("line.separator");
+	
+	/**
 	 * A counter for the columns in the table
 	 */
 	protected transient int m_numColumns = 0;
@@ -137,11 +142,11 @@ public class LatexTableRenderer extends TableNodeRenderer
 		{
 			out.append("c|");
 		}
-		out.append("}\n");
-		out.append(m_keyBuffer).append("\\\\\n");
+		out.append("}").append(CRLF);
+		out.append(m_keyBuffer).append("\\\\").append(CRLF);
 		if (m_environmentName == EnvironmentName.LONGTABLE)
 		{
-			out.append("\\endfirsthead\n");
+			out.append("\\endfirsthead").append(CRLF);
 		}
 		else
 		{
@@ -209,14 +214,14 @@ public class LatexTableRenderer extends TableNodeRenderer
 	{
 		if (m_repeatedCells > 0)
 		{
-			out.append("\\cline{").append(m_repeatedCells + 1).append("-").append(max_depth).append("}\n");
+			out.append("\\cline{").append(m_repeatedCells + 1).append("-").append(max_depth).append("}").append(CRLF);
 		}
 		else
 		{
 			out.append("\\hline\n");
 		}
 		out.append(m_keyBuffer);
-		out.append("\\\\\n");		
+		out.append("\\\\").append(CRLF);		
 	}
 
 	@Override

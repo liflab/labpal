@@ -690,6 +690,21 @@ public abstract class Experiment implements Runnable
 	}
 	
 	/**
+	 * Outputs a description of this experiment as a short character string.
+	 * This is intended to be displayed in small text windows, such as in
+	 * LabPal's text interface. By default, this method does the same thing
+	 * as {@link #toString()}, but it can be overridden to produce a better
+	 * display.
+	 * @param width The suggested width of this string. You can use this
+	 *   value to adjust the verbosity of the display to the available space
+	 * @return The string
+	 */
+	public String toShortString(int width)
+	{
+		return toString();
+	}
+	
+	/**
 	 * Gets the set of all input parameter <em>names</em>
 	 * @param exclude_hidden Set to true to exclude keys that have been
 	 *   marked as hidden by {@link #addKeyToHide(String)}

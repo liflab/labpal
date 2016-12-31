@@ -154,6 +154,11 @@ public class Scatterplot extends GralPlot implements ca.uqac.lif.labpal.plot.Sca
 		}
 		plot.setInsets(new Insets2D.Double(20d, 60d, 60d, 40d));
 		plot.getTitle().setText(getTitle());
+		if (series.length > 1)
+		{
+			// Put legend only if more than one data series
+			plot.setLegendVisible(true);
+		}
 		plot.getAxisRenderer(XYPlot.AXIS_X).getLabel().setText(m_captionX);
 		plot.getAxisRenderer(XYPlot.AXIS_Y).getLabel().setText(m_captionY);
 		customize(plot);

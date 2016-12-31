@@ -30,7 +30,7 @@ import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.ParkbenchTui;
+import ca.uqac.lif.labpal.LabPalTui;
 
 /**
  * Callback to display the details of one specific experiment.
@@ -72,10 +72,10 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%EXP_START%\\}", formatDate(e.getStartTime()));
 		out = out.replaceAll("\\{%EXP_END%\\}", formatDate(e.getEndTime()));
 		out = out.replaceAll("\\{%EXP_STATUS%\\}", ExperimentsPageCallback.getStatusLabel(e, m_assistant));
-		out = out.replaceAll("\\{%EXP_ESTIMATE%\\}", ParkbenchTui.formatEta(e.getDurationEstimate(Laboratory.s_parkMips)));
+		out = out.replaceAll("\\{%EXP_ESTIMATE%\\}", LabPalTui.formatEta(e.getDurationEstimate(Laboratory.s_parkMips)));
 		if (e.getEndTime() > 0)
 		{
-			out = out.replaceAll("\\{%EXP_DURATION%\\}", ParkbenchTui.formatEta((e.getEndTime() - e.getStartTime()) / 1000f));
+			out = out.replaceAll("\\{%EXP_DURATION%\\}", LabPalTui.formatEta((e.getEndTime() - e.getStartTime()) / 1000f));
 		}
 		out = out.replaceAll("\\{%EXP_BY%\\}", htmlEscape(e.getWhoRan()));
 		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters(), "", e).toString());

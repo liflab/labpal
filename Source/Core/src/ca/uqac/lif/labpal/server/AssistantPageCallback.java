@@ -22,7 +22,7 @@ import java.util.Map;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.ParkbenchTui;
+import ca.uqac.lif.labpal.LabPalTui;
 
 /**
  * Callback to display, start and stop the lab assistant.
@@ -85,7 +85,7 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 		}
 		out = out.replaceAll("\\{%ASSISTANT_NAME%\\}", htmlEscape(m_assistant.getName()));
 		out = out.replaceAll("\\{%SEL_ASSISTANT%\\}", "selected");
-		out = out.replaceAll("\\{%TIME_ESTIMATE%\\}", ParkbenchTui.formatEta(m_assistant.getTimeEstimate()));
+		out = out.replaceAll("\\{%TIME_ESTIMATE%\\}", LabPalTui.formatEta(m_assistant.getTimeEstimate()));
 		if (m_assistant.isRunning())
 		{
 			out = out.replaceAll("\\{%BTN_STOP%\\}", "<input type=\"submit\" class=\"btn\" id=\"btn-stop\" name=\"stop\" value=\"Stop the assistant\"/>");

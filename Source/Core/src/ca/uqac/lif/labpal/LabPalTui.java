@@ -29,6 +29,7 @@ import ca.uqac.lif.labpal.Experiment.Status;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.plot.Plot.ImageType;
 import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
+import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.tui.AnsiPrinter;
 import ca.uqac.lif.tui.AnsiPrinter.Color;
 import ca.uqac.lif.tui.Checkbox;
@@ -44,7 +45,7 @@ import ca.uqac.lif.tui.TuiList;
  * @author Sylvain Hallé
  *
  */
-public class ParkbenchTui
+public class LabPalTui
 {
 	protected Laboratory m_lab;
 	
@@ -58,9 +59,14 @@ public class ParkbenchTui
 	protected Map<Integer,ExperimentElement> m_selectedExperiments;
 
 	/**
-	 * A map to remember which plotsexperiments are currently checked in the TUI
+	 * A map to remember which plots are currently checked in the TUI
 	 */
 	protected Map<Integer,Checkbox> m_selectedPlots;
+	
+	/**
+	 * A map to remember which tables are currently checked in the TUI
+	 */
+	protected Map<Integer,Checkbox> m_selectedTables;
 	
 	/**
 	 * Initializes the TUI for a lab
@@ -68,7 +74,7 @@ public class ParkbenchTui
 	 * @param assistant The assistant
 	 * @param printer The printer used to display the TUI
 	 */
-	public ParkbenchTui(Laboratory lab, LabAssistant assistant, AnsiPrinter printer, ArgumentMap args)
+	public LabPalTui(Laboratory lab, LabAssistant assistant, AnsiPrinter printer, ArgumentMap args)
 	{
 		super();
 		List<String> others = args.getOthers();
@@ -124,6 +130,11 @@ public class ParkbenchTui
 		{
 			m_selectedPlots.put(id, new Checkbox());
 		}
+		m_selectedTables = new HashMap<Integer,Checkbox>();
+		for (int id : m_lab.getTableIds())
+		{
+			m_selectedTables.put(id, new Checkbox());
+		}
 	}
 	
 	/**
@@ -165,6 +176,16 @@ public class ParkbenchTui
 			NestedMenu plot_item = new NestedMenu("P", "Plots", plot_menu);
 			main_menu.addItem(plot_item);
 		}
+		{
+			TableMenu table_menu = new TableMenu();
+			//plot_menu.addItem(new SelectPlotMenuItem());
+			table_menu.addItem(new ViewTableMenuItem());
+			table_menu.addItem(new SaveTableMenuItem());
+			table_menu.addItem(new BackMenuItem());
+			NestedMenu table_item = new NestedMenu("L", "Tables", table_menu);
+			main_menu.addItem(table_item);
+		}
+
 		main_menu.addItem(new RunMenuItem());
 		main_menu.addItem(new StopMenuItem());
 		main_menu.addItem(new StatusMenuItem());
@@ -307,6 +328,97 @@ public class ParkbenchTui
 		@Override
 		public void doSomething(AnsiPrinter printer)
 		{
+		}
+	}
+	
+	protected class TableMenu extends Menu
+	{
+		public void renderBefore(AnsiPrinter printer)
+		{
+			printer.print("\n");
+			for (int id : m_selectedTables.keySet())
+			{
+				//Checkbox cb = m_selectedPlots.get(id);
+				Table t = m_lab.getTable(id);
+				printer.setForegroundColor(Color.LIGHT_GRAY);
+				printer.print(AnsiPrinter.padToLength(Integer.toString(t.getId()), 3));
+				printer.resetColors();
+				//cb.render(printer);
+				printer.print(" " + t.getTitle());
+				printer.print("\n");
+			}
+			printer.print("\n");
+		}
+	}
+	
+	protected abstract class TableMenuItem extends MenuItem
+	{
+		public TableMenuItem(String shortcut, String label)
+		{
+			super(shortcut, label, false);
+		}
+
+		@Override
+		public final void doSomething(AnsiPrinter printer)
+		{
+			printer.print("Table number: ");
+			String s_id = printer.readLine();
+			int id = Integer.parseInt(s_id);
+			Table t = m_lab.getTable(id);
+			if (t == null)
+			{
+				printer.print("This ID does not exist\n");
+				return;
+			}
+			doWithTable(printer, t);
+		}
+		
+		protected abstract void doWithTable(AnsiPrinter printer, Table t);
+	}
+	
+	protected class ViewTableMenuItem extends TableMenuItem
+	{
+		public ViewTableMenuItem()
+		{
+			super("V", "View");
+		}
+
+		@Override
+		protected void doWithTable(AnsiPrinter printer, Table t)
+		{
+			String contents = t.toString();
+			if (contents == null || contents.isEmpty())
+			{
+				printer.print("Cannot display table\n");
+				return;
+			}
+			printer.print(contents + "\n");			
+		}
+	}
+	
+	protected class SaveTableMenuItem extends TableMenuItem
+	{
+		public SaveTableMenuItem()
+		{
+			super("S", "Save");
+		}
+
+		@Override
+		protected void doWithTable(AnsiPrinter printer, Table t)
+		{
+			String contents = t.toString();
+			String filename = t.getTitle() + ".csv";
+			printer.print("Save to [" + filename + "] ");
+			String line = printer.readLine();
+			if (line == null)
+				return;
+			line = line.trim();
+			if (!line.isEmpty())
+			{
+				filename = line;
+			}
+			FileHelper.writeFromString(new File(filename), contents);
+			printer.print("Wrote " + contents.length() + " bytes\n");
 		}
 	}
 	
@@ -678,7 +790,7 @@ public class ParkbenchTui
 			m_checkbox.render(printer);
 			printer.print(AnsiPrinter.padToLength(Integer.toString(m_experiment.getId()), 3));
 			printStatus(printer, m_experiment);
-			printer.print(AnsiPrinter.padToLength(m_experiment.toString(), 20));
+			printer.print(AnsiPrinter.padToLength(m_experiment.toShortString(20), 20));
 		}
 		
 		protected void printStatus(AnsiPrinter printer, Experiment e)

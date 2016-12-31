@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
 
 /**
@@ -39,9 +40,9 @@ public class PlotsPageCallback extends TemplatePageCallback
 	public PlotsPageCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/plots", lab, assistant);
-		
+
 	}
-	
+
 	@Override
 	public String fill(String page, Map<String,String> params)
 	{
@@ -62,7 +63,7 @@ public class PlotsPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%SEL_PLOTS%\\}", "selected");
 		return out;
 	}
-	
+
 	/**
 	 * Produces the list of plots
 	 * @return A well-formatted HTML string showing of each of the lab's plots
@@ -75,11 +76,16 @@ public class PlotsPageCallback extends TemplatePageCallback
 		Collections.sort(ids);
 		for (int id : ids)
 		{
+			Plot plot = m_lab.getPlot(id);
 			out.append("<div class=\"plot\">\n");
 			out.append("<a href=\"plot?id=").append(id).append("&amp;format=png\" target=\"_blank\" title=\"Click on plot to view in new window\">");
 			out.append("<img src=\"plot?id=").append(id).append("&amp;format=png\" alt=\"Plot\" /></a>\n");
-			out.append("<div><ul><li><a class=\"btn-24 btn-gp\" href=\"plot?id=").append(id).append("&amp;format=gp&amp;dl=1\" title=\"Download as GnuPlot source file\">GP</a></li>");
-			out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot?id=").append(id).append("&amp;format=dumb\" title=\"View as ASCII art\" target=\"_blank\">ASCII</a></li>");
+			out.append("<div><ul>");
+			if (plot instanceof GnuPlot)
+			{
+				out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot?id=").append(id).append("&amp;format=gp&amp;dl=1\" title=\"Download as GnuPlot source file\">GP</a></li>");
+				out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot?id=").append(id).append("&amp;format=dumb\" title=\"View as ASCII art\" target=\"_blank\">ASCII</a></li>");
+			}
 			out.append("<li><a class=\"btn-24 btn-pdf\" href=\"plot?id=").append(id).append("&amp;format=pdf&amp;dl=1\" title=\"Download as PDF\">PDF</a></li></ul></div>");
 			out.append("</div>\n");			
 		}

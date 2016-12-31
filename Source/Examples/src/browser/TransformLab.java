@@ -24,6 +24,7 @@ import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.labpal.plot.gnuplot.ClusteredHistogram;
+import ca.uqac.lif.labpal.plot.gral.PieChart;
 import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
@@ -45,7 +46,9 @@ public class TransformLab extends Laboratory
 		setTitle("Browser market share");
 		setAuthorName("Emmett Brown");
 		ExperimentTable et = new ExperimentTable("browser", "market", "share");
-		ExperimentTable pc_et = new ExperimentTable();
+		et.setTitle("Browser market share");
+		ExperimentTable pc_et = new ExperimentTable("share");
+		pc_et.setTitle("Market share for IE");
 		add(et, pc_et); // Add tables to lab
 		
 		// Add experiments
@@ -56,11 +59,11 @@ public class TransformLab extends Laboratory
 		add(new BrowserExperiment("IE", "flash", 25), group_ie, et, pc_et);
 		add(new BrowserExperiment("IE", "html", 20), group_ie, et, pc_et);
 		add(new BrowserExperiment("IE", "js", 15), group_ie, et, pc_et);
-		add(new BrowserExperiment("Firefox", "video", 20), group_ff, et, pc_et);
-		add(new BrowserExperiment("Firefox", "audio", 5), group_ff, et, pc_et);
-		add(new BrowserExperiment("Firefox", "flash", 35), group_ff, et, pc_et);
-		add(new BrowserExperiment("Firefox", "html", 30), group_ff, et, pc_et);
-		add(new BrowserExperiment("Firefox", "js", 10), group_ff, et, pc_et);
+		add(new BrowserExperiment("Firefox", "video", 20), group_ff, et);
+		add(new BrowserExperiment("Firefox", "audio", 5), group_ff, et);
+		add(new BrowserExperiment("Firefox", "flash", 35), group_ff, et);
+		add(new BrowserExperiment("Firefox", "html", 30), group_ff, et);
+		add(new BrowserExperiment("Firefox", "js", 10), group_ff, et);
 		add(group_ie, group_ff);
 		
 		// Create a histogram
@@ -76,9 +79,8 @@ public class TransformLab extends Laboratory
 		add(stacked_plot);
 		
 		// Create a pie chart
-		/*PieChart pc_ie = new PieChart(pc_et);
-		pc_ie.setTitle("Market share for IE").assignTo(this);*/
-
+		PieChart pie = new PieChart(pc_et);
+		add(pie);
 		
 	}
 

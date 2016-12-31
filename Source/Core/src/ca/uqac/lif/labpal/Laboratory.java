@@ -125,6 +125,11 @@ public abstract class Laboratory
 	 * @see {@link #countParkMips()}
 	 */
 	public transient static float s_parkMips = countParkMips();
+	
+	/**
+	 * The number of loops that equal to 1 parkmip
+	 */
+	protected static final transient float s_parkMipsDivider = 5061974f;
 
 	/**
 	 * A (possibly long) textual description for what the lab does
@@ -166,6 +171,11 @@ public abstract class Laboratory
 		m_serializer.addClassLoader(ca.uqac.lif.labpal.Laboratory.class.getClassLoader());
 	}
 
+	/**
+	 * Sets the assistant for this lab
+	 * @param a The assistant
+	 * @return This lab
+	 */
 	public Laboratory setAssistant(LabAssistant a)
 	{
 		m_assistant = a;
@@ -496,11 +506,14 @@ public abstract class Laboratory
 		.withDescription("Enables color and Unicode in text interface"));
 		parser.addArgument(new Argument()
 		.withLongName("web")
-		.withDescription("Start ParkBench as a web server"));
+		.withDescription("Start LabPal as a web server"));
 		parser.addArgument(new Argument()
 		.withLongName("seed")
 		.withArgument("x")
 		.withDescription("Sets the seed for the random number generator to x"));
+		parser.addArgument(new Argument()
+		.withLongName("help")
+		.withDescription("Prints command line usage"));
 		Laboratory new_lab = null;
 		try
 		{
@@ -520,20 +533,9 @@ public abstract class Laboratory
 		{
 			System.exit(ERR_LAB);
 		}
+		final AnsiPrinter stdout = new AnsiPrinter(System.out);		
 		new_lab.setAssistant(assistant);
 		new_lab.setupCli(parser);
-		final ArgumentMap map = parser.parse(args);
-		if (map.hasOption("seed"))
-		{
-			// Sets random seed
-			int seed = Integer.parseInt(map.getOptionValue("seed"));
-			new_lab.setRandomSeed(seed);
-		}
-		List<WebCallback> callbacks = new LinkedList<WebCallback>();
-		new_lab.setupExperiments(map, callbacks);
-		final AnsiPrinter stdout = new AnsiPrinter(System.out);
-		stdout.resetColors();
-		int code = ERR_OK;
 		// Properly close print streams when closing the program
 		// https://www.securecoding.cert.org/confluence/display/java/FIO14-J.+Perform+proper+cleanup+at+program+termination
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
@@ -545,6 +547,24 @@ public abstract class Laboratory
 				stdout.close();
 			}
 		}));
+
+		final ArgumentMap map = parser.parse(args);
+		if (map.hasOption("help"))
+		{
+			parser.printHelp(getCliHeader(), System.out);
+			stdout.close();
+			System.exit(ERR_OK);
+		}
+		if (map.hasOption("seed"))
+		{
+			// Sets random seed
+			int seed = Integer.parseInt(map.getOptionValue("seed"));
+			new_lab.setRandomSeed(seed);
+		}
+		List<WebCallback> callbacks = new LinkedList<WebCallback>();
+		new_lab.setupExperiments(map, callbacks);
+		stdout.resetColors();
+		int code = ERR_OK;
 		stdout.print(getCliHeader());
 		if (map.hasOption("web"))
 		{
@@ -554,7 +574,7 @@ public abstract class Laboratory
 			{
 				server.registerCallback(0, cb);
 			}
-			stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort() + "/index in your browser\n");
+			stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort() + " in your browser\n");
 			try
 			{
 				server.startServer();
@@ -572,8 +592,8 @@ public abstract class Laboratory
 		}
 		else
 		{
-			// Start ParkBench's text interface
-			ParkbenchTui tui = new ParkbenchTui(new_lab, assistant, stdout, map);
+			// Start LabPal's text interface
+			LabPalTui tui = new LabPalTui(new_lab, assistant, stdout, map);
 			code = tui.run();
 		}
 		stdout.close();
@@ -644,20 +664,20 @@ public abstract class Laboratory
 		{
 			i++;
 		}
-		return (float) i / 5061974f;
+		return (float) i / s_parkMipsDivider;
 	}
 
 	public static void main(String[] args)
 	{
 		System.out.println(getCliHeader());
-		System.out.println("You are running labpal.jar, which is only a library to create\nyour own test suites. As a result nothing will happen here. Read the \nonline documentation to learn how to use ParkBench.");
+		System.out.println("You are running labpal.jar, which is only a library to create\nyour own test suites. As a result nothing will happen here. Read the \nonline documentation to learn how to use LabPal.");
 	}
 
 	protected static String getCliHeader()
 	{
 		String out = "";
 		out += "LabPal " + formatVersion() + " - A versatile environment for running experiments\n";
-		out += "(C) 2015-2016 Laboratoire d'informatique formelle\n";
+		out += "(C) 2015-2017 Laboratoire d'informatique formelle\nUniversité du Québec à Chicoutimi, Canada\n";
 		return out;
 	}
 

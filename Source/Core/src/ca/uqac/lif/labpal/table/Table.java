@@ -238,4 +238,10 @@ public abstract class Table implements DataSource
 		}
 		return (Comparable<?>) o;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return getConcreteTable().toString();
+	}
 }

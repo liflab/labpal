@@ -42,6 +42,7 @@ public class SimpleLab extends Laboratory
 		// Setup a table to collate experiment results
 		ExperimentTable table = new ExperimentTable("a", "y");
 		table.setTitle("Value of y for Experiment A");
+		add(table);
 		
 		// Create the experiments
 		for (int i = 0; i < 5; i++)

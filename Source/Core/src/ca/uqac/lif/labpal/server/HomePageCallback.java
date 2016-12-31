@@ -44,7 +44,8 @@ public class HomePageCallback extends TemplatePageCallback
 	
 	public HomePageCallback(Laboratory lab, LabAssistant assistant)
 	{
-		super("/index", lab, assistant);
+		super("/", lab, assistant);
+		m_filename = s_path + "index.html";
 		String description = lab.getDescription();
 		if (description == null || description.isEmpty())
 		{

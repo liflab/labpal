@@ -149,7 +149,7 @@ public class ExperimentTable extends Table
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		List<String> scalar_columns = new ArrayList<String>();
 		Map<String,JsonList> list_columns = new HashMap<String,JsonList>();
-		int max_len = 0;
+		int max_len = 1;
 		// First, go through all columns and look for those
 		// that contain lists vs. scalar values
 		for (String col_name : dimensions)

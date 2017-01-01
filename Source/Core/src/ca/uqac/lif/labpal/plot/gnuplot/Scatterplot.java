@@ -37,17 +37,27 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 	/**
 	 * The caption of the X axis
 	 */
-	protected String m_captionX = null;
+	protected String m_captionX = "";
 	
 	/**
 	 * The caption of the Y axis
 	 */
-	protected String m_captionY = null;
+	protected String m_captionY = "";
+	
+	/**
+	 * Whether to use a logarithmic scale for the X axis
+	 */
+	protected boolean m_logScaleX = false;
+	
+	/**
+	 * Whether to use a logarithmic scale for the Y axis
+	 */
+	protected boolean m_logScaleY = false;
 	
 	/**
 	 * Whether to draw each data series with lines between each data point
 	 */
-	protected boolean m_withLines = false;
+	protected boolean m_withLines = true;
 	
 	/**
 	 * Whether to draw each data series with marks for each data point
@@ -119,6 +129,11 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 	{
 		DataTable tab = processTable(m_table.getConcreteTable());
 		String[] columns = tab.getColumnNames();
+		String caption_x = m_captionX;
+		if (caption_x.isEmpty())
+		{
+			caption_x = columns[0];
+		}
 		Vector<String> series = new Vector<String>();
 		for (int i = 1; i < columns.length; i++)
 		{
@@ -140,7 +155,15 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
 		out.append(getHeader(term, lab_title));
-		out.append("set xlabel \"").append(m_captionX).append("\"\n");
+		if (m_logScaleX)
+		{
+			out.append("set logscale x").append("\n");
+		}
+		if (m_logScaleY)
+		{
+			out.append("set logscale y").append("\n");
+		}
+		out.append("set xlabel \"").append(caption_x).append("\"\n");
 		out.append("set ylabel \"").append(m_captionY).append("\"\n");
 		out.append("plot");
 		for (int i = 0; i < series.size(); i++)
@@ -160,6 +183,20 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 			out.append(csv_values).append("end\n");
 		}
 		return out.toString();
+	}
+
+	@Override
+	public Scatterplot setLogscale(Axis axis)
+	{
+		if (axis == Axis.X)
+		{
+			m_logScaleX = true;
+		}
+		else
+		{
+			m_logScaleY = true;
+		}
+		return this;
 	}
 
 }

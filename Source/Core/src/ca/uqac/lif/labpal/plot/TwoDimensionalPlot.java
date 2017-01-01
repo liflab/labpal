@@ -1,5 +1,9 @@
 package ca.uqac.lif.labpal.plot;
 
+/**
+ * Manages basic properties of 2D plots.
+ * @author Sylvain Hallé
+ */
 public interface TwoDimensionalPlot
 {
 	/**
@@ -14,4 +18,11 @@ public interface TwoDimensionalPlot
 	 * @return This plot
 	 */
 	public TwoDimensionalPlot setCaption(Axis axis, String caption);
+	
+	/**
+	 * Sets whether to use a log scale for one of the axes 
+	 * @param axis The axis
+	 * @return This plot
+	 */
+	public TwoDimensionalPlot setLogscale(Axis axis);
 }

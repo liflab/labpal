@@ -203,4 +203,11 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 		return this;
 	}
 
+	@Override
+	public ClusteredHistogram setLogscale(Axis axis)
+	{
+		// Does not make much sense for a histogram: do nothing
+		return this;
+	}
+
 }

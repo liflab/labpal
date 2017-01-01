@@ -24,6 +24,8 @@ import ca.uqac.lif.labpal.table.TableTransformation;
 import de.erichseifert.gral.data.DataSeries;
 import de.erichseifert.gral.graphics.Insets2D;
 import de.erichseifert.gral.plots.XYPlot;
+import de.erichseifert.gral.plots.axes.AxisRenderer;
+import de.erichseifert.gral.plots.axes.LogarithmicRenderer2D;
 import de.erichseifert.gral.plots.lines.DefaultLineRenderer2D;
 import de.erichseifert.gral.plots.lines.LineRenderer;
 import de.erichseifert.gral.plots.points.DefaultPointRenderer2D;
@@ -50,9 +52,19 @@ public class Scatterplot extends GralPlot implements ca.uqac.lif.labpal.plot.Sca
 	protected String m_captionY = "";
 	
 	/**
+	 * Whether to use a logarithmic scale for the X axis
+	 */
+	protected boolean m_logScaleX = false;
+	
+	/**
+	 * Whether to use a logarithmic scale for the Y axis
+	 */
+	protected boolean m_logScaleY = false;
+	
+	/**
 	 * Whether to draw each data series with lines between each data point
 	 */
-	protected boolean m_withLines = false;
+	protected boolean m_withLines = true;
 	
 	/**
 	 * Whether to draw each data series with marks for each data point
@@ -159,10 +171,40 @@ public class Scatterplot extends GralPlot implements ca.uqac.lif.labpal.plot.Sca
 			// Put legend only if more than one data series
 			plot.setLegendVisible(true);
 		}
-		plot.getAxisRenderer(XYPlot.AXIS_X).getLabel().setText(m_captionX);
+		if (m_logScaleX)
+		{
+			AxisRenderer rendererX = new LogarithmicRenderer2D();
+			plot.setAxisRenderer(XYPlot.AXIS_X, rendererX);
+		}
+		if (m_logScaleY)
+		{
+			AxisRenderer rendererY = new LogarithmicRenderer2D();
+			plot.setAxisRenderer(XYPlot.AXIS_Y, rendererY);
+		}
+		if (!m_captionX.isEmpty())
+		{
+			plot.getAxisRenderer(XYPlot.AXIS_X).getLabel().setText(m_captionX);
+		}
+		else
+		{
+			plot.getAxisRenderer(XYPlot.AXIS_X).getLabel().setText(source.getColumnName(0));
+		}
 		plot.getAxisRenderer(XYPlot.AXIS_Y).getLabel().setText(m_captionY);
 		customize(plot);
 		return plot;
 	}
-
+	
+	@Override
+	public Scatterplot setLogscale(Axis axis)
+	{
+		if (axis == Axis.X)
+		{
+			m_logScaleX = true;
+		}
+		else
+		{
+			m_logScaleY = true;
+		}
+		return this;
+	}
 }

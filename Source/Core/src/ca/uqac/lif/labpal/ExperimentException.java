@@ -1,24 +1,26 @@
 package ca.uqac.lif.labpal;
 
-public class EmptyException extends Exception
+public class ExperimentException extends Exception
 {
 	/**
 	 * Dummy UID
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public EmptyException()
+	public ExperimentException()
 	{
 		super();
 	}
 	
-	public EmptyException(String message)
+	public ExperimentException(String message)
 	{
 		super(message);
 	}
 	
-	public EmptyException(Throwable t)
+	public ExperimentException(Throwable t)
 	{
 		super(t);
 	}
+
+
 }

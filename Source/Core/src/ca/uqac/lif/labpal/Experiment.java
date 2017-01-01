@@ -17,6 +17,8 @@
 */
 package ca.uqac.lif.labpal;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -236,7 +238,7 @@ public abstract class Experiment implements Runnable
 	 * @return The status of the experiment once it has finished. This should
 	 *   normally be either <tt>DONE</tt> or <tt>FAILED</tt>.
 	 */
-	public abstract Status execute();
+	public abstract Status execute() throws ExperimentException;
 	
 	/**
 	 * Reads an output parameter for this experiment
@@ -249,6 +251,21 @@ public abstract class Experiment implements Runnable
 		if (e != null && e instanceof JsonNumber)
 		{
 			return ((JsonNumber) e).numberValue().intValue();
+		}
+		return 0;
+	}
+	
+	/**
+	 * Reads an output parameter for this experiment
+	 * @param key The path leading to the parameter
+	 * @return The parameter
+	 */
+	public final long readLong(String key)
+	{
+		JsonElement e = read(key);
+		if (e != null && e instanceof JsonNumber)
+		{
+			return ((JsonNumber) e).numberValue().longValue();
 		}
 		return 0;
 	}
@@ -586,7 +603,19 @@ public abstract class Experiment implements Runnable
 			}
 		}
 		m_status = Status.RUNNING;
-		m_status = execute();
+		try
+		{
+			m_status = execute();
+		}
+		catch (Exception e)
+		{
+			// If the experiment throws anything, we consider it a failure
+			m_status = Status.FAILED;
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			setErrorMessage(sw.toString());
+		}
 		m_endTime = System.currentTimeMillis();
 
 	}

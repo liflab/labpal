@@ -23,6 +23,7 @@ import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.rendering.HtmlTableNodeRenderer;
 
 /**
  * Callback producing an image from one of the lab's plots, in various
@@ -42,6 +43,11 @@ import ca.uqac.lif.labpal.table.Table;
  */
 public class TablePageCallback extends TemplatePageCallback
 {
+	/**
+	 * A renderer for tables into beautified HTML
+	 */
+	protected static final HtmlTableNodeRenderer s_renderer = new HtmlTableNodeRenderer();
+	
 	public TablePageCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/table", lab, assistant);
@@ -58,7 +64,7 @@ public class TablePageCallback extends TemplatePageCallback
 		}
 		DataTable tbl = tab.getConcreteTable(tab.getColumnNames());
 		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
-		s = s.replaceAll("\\{%TABLE%\\}", tbl.toHtml());
+		s = s.replaceAll("\\{%TABLE%\\}", s_renderer.render(tbl.getTree(), tbl.getColumnNames()));
 		String desc = tab.getDescription();
 		if (desc != null && !desc.isEmpty())
 		{

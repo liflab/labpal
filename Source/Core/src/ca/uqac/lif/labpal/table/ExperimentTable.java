@@ -18,16 +18,18 @@
 package ca.uqac.lif.labpal.table;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNull;
-import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Experiment;
 
 /**
- * Table whose rows and columns are made from the parameters of a set
+ * Table whose rows and columns are populated from the parameters of a set
  * of experiments
  * @author Sylvain Hallé
  */
@@ -40,24 +42,24 @@ public class ExperimentTable extends Table
 	 * table would not always refer to the same data point.
 	 */
 	public List<Experiment> m_experiments;
-	
+
 	/**
 	 * The dimensions of this table
 	 */
 	public String[] m_dimensions;
-	
+
 	/**
 	 * The type of each column in the table
 	 */
 	//public Class<? extends Comparable<?>>[] m_columnTypes;
-		
+
 	public ExperimentTable(String ... dimensions)
 	{
 		super();
 		m_experiments = new ArrayList<Experiment>();
 		m_dimensions = dimensions;
 	}	
-	
+
 	/**
 	 * Adds a new experiment to the table
 	 * @param e The experiment to read from
@@ -66,42 +68,21 @@ public class ExperimentTable extends Table
 	{
 		m_experiments.add(e);
 	}
-	
-	/**
-	 * Gets a concrete multidimensional table from the experiments'
-	 * data
-	 * @return The table
-	 */
+
+	@Override
 	public DataTable getConcreteTable()
 	{
 		return getConcreteTable(m_dimensions);
 	}
-	
-	/**
-	 * Gets a concrete multidimensional table from the experiments'
-	 * data
-	 * @param ordering The ordering of the dimensions
-	 * @return The table
-	 */
+
+	@Override
 	public DataTable getConcreteTable(String ... ordering)
 	{
 		DataTable mt = new DataTable(ordering);
 		for (Experiment e : m_experiments)
 		{
-			TableEntry entry = new TableEntry();
-			for (String key : m_dimensions)
-			{
-				JsonElement elem = readExperiment(e, key);
-				if (elem != null)
-				{
-					entry.put(key, elem);
-				}
-				else
-				{
-					entry.put(key, JsonNull.instance);
-				}
-			}
-			mt.add(entry);
+			List<TableEntry> entries = getEntries(e, ordering);
+			mt.addAll(entries);
 		}
 		return mt;
 	}
@@ -112,27 +93,121 @@ public class ExperimentTable extends Table
 		int exp_count = 0;
 		for (Experiment e : m_experiments)
 		{
-			if (exp_count == row)
+			int num_entries = getEntryCount(e, m_dimensions);
+			if (row > exp_count + num_entries)
 			{
-				String key = m_dimensions[col];
-				Object o = readExperiment(e, key);
-				if (o == null)
-				{
-					return null;
-				}
-				if (o instanceof JsonNumber)
-				{
-					// Cast JsonNumbers as numbers
-					return ((JsonNumber) o).numberValue().floatValue();
-				}
-				return (Comparable<?>) o;
+				// We must look further; skip this experiment
+				exp_count += num_entries;
+				continue;
+			}
+			// The entry we want is contained in this experiment
+			List<TableEntry> entries = getEntries(e, m_dimensions);
+			int index = row - exp_count;
+			TableEntry te = entries.get(index);
+			String key = m_dimensions[col];
+			Object o = te.get(key);
+			return (Comparable<?>) o;
+		}
+		return null;
+	}
+
+	/**
+	 * Counts the distinct table entries contained in this experiment.
+	 * @param e The experiment
+	 * @param dimensions The columns to consider when expanding
+	 * @return The number of table entries
+	 */
+	public int getEntryCount(Experiment e, String ... dimensions)
+	{
+		// We start at 1, since an experiment with no lists still counts for
+		// one data point
+		int max_len = 1;
+		for (String col_name : dimensions)
+		{
+			Object o = readExperiment(e, col_name);
+			if (o instanceof JsonList)
+			{
+				max_len = Math.max(max_len, ((JsonList) o).size());
+
+			}
+		}
+		return max_len;
+	}
+
+	/**
+	 * Expands an experiment into multiple table entries, if the
+	 * experiment has parameters whose value is a list instead of a
+	 * scalar value. This allows a single experiment to define multiple
+	 * data points.
+	 * @param e The experiment
+	 * @param dimensions The columns to consider when expanding
+	 * @return A list of table entries corresponding to the data
+	 *   points in the experiment
+	 */
+	public List<TableEntry> getEntries(Experiment e, String ... dimensions)
+	{
+		List<TableEntry> entries = new ArrayList<TableEntry>();
+		List<String> scalar_columns = new ArrayList<String>();
+		Map<String,JsonList> list_columns = new HashMap<String,JsonList>();
+		int max_len = 0;
+		// First, go through all columns and look for those
+		// that contain lists vs. scalar values
+		for (String col_name : dimensions)
+		{
+			Object o = readExperiment(e, col_name);
+			if (o instanceof JsonList)
+			{
+				list_columns.put(col_name, (JsonList) o);
+				max_len = Math.max(max_len, ((JsonList) o).size());
 			}
 			else
 			{
-				exp_count++;
+				scalar_columns.add(col_name);
 			}
 		}
-		return null;
+		// Now create as many entries as max_len
+		for (int i = 0; i < max_len; i++)
+		{
+			TableEntry te = new TableEntry();
+			// Fill each with values of the scalar columns...
+			for (String col_name : scalar_columns)
+			{
+				JsonElement elem = readExperiment(e, col_name);
+				if (elem != null)
+				{
+					te.put(col_name, elem);
+				}
+				else
+				{
+					te.put(col_name, JsonNull.instance);
+				}
+			}
+			// ...and the i-th value of each list column
+			for (Map.Entry<String,JsonList> map_entry : list_columns.entrySet())
+			{
+				JsonList list = map_entry.getValue();
+				if (i < list.size())
+				{
+					JsonElement elem = list.get(i);
+					if (elem != null)
+					{
+						te.put(map_entry.getKey(), elem);
+					}
+					else
+					{
+						te.put(map_entry.getKey(), JsonNull.instance);
+					}
+					te.put(map_entry.getKey(), elem);
+				}
+				else
+				{
+					// Substitute with null if one of the lists is shorter
+					te.put(map_entry.getKey(), JsonNull.instance);
+				}
+			}
+			entries.add(te);
+		}
+		return entries;
 	}
 
 	@Override
@@ -143,7 +218,7 @@ public class ExperimentTable extends Table
 
 	@Override
 	public Class<? extends Comparable<?>>[] getColumnTypes()
-	{
+			{
 		@SuppressWarnings("unchecked")
 		Class<? extends Comparable<?>> types[] = new Class[getColumnCount()];
 		for (int i = 0; i < m_dimensions.length; i++)
@@ -151,12 +226,17 @@ public class ExperimentTable extends Table
 			types[i] = getColumnTypeFor(m_dimensions[i]);
 		}
 		return types;
-	}
+			}
 
 	@Override
 	public int getRowCount()
 	{
-		return m_experiments.size();
+		int size = 0;
+		for (Experiment e : m_experiments)
+		{
+			size += getEntryCount(e);
+		}
+		return size;
 	}
 
 	@Override
@@ -166,21 +246,25 @@ public class ExperimentTable extends Table
 		for (Experiment e : m_experiments)
 		{
 			Object o = readExperiment(e, col_name);
-			if (o != null)
+			Class<? extends Comparable<?>> clazz = getTypeOf(o);
+			if (clazz == null || !clazz.equals(JsonList.class))
 			{
-					if (o instanceof JsonNumber || o instanceof Number)
-					{
-						return Float.class;
-					}
-					else
-					{
-						return String.class;
-					}
+				return clazz;
+			}
+			// This parameter is a list: read the list to guess its type
+			for (JsonElement elem : (JsonList) o)
+			{
+				clazz = getTypeOf(elem);
+				if (clazz != null)
+				{
+					return clazz;
+				}
 			}
 		}
 		return null;
 	}
-	
+
+
 	@Override
 	public String getColumnName(int col)
 	{
@@ -248,7 +332,7 @@ public class ExperimentTable extends Table
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Reads data from an experiment. Override this method to transform the
 	 * data from an experiment before putting it in the table.

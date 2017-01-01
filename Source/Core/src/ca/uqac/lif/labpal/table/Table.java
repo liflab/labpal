@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Laboratory;
 import de.erichseifert.gral.data.Column;
@@ -244,4 +245,34 @@ public abstract class Table implements DataSource
 	{
 		return getConcreteTable().toString();
 	}
+
+	/**
+	 * Guess the type of a column in a table, by looking at the type of one
+	 * of its values. The type is defined as follows:
+	 * <ul>
+	 * <li>Any JsonNumber and any Number will return {@code Float}</li>
+	 * <li>A JsonList will return its own type</li>
+	 * <li>A null object returns null</li>
+	 * <li>Anything else returns {@code String}</li>
+	 * </ul>
+	 * @param o The value to look at
+	 * @return The type
+	 */
+	public static Class<? extends Comparable<?>> getTypeOf(Object o)
+	{
+		if (o == null)
+		{
+			return null;
+		}
+		if (o instanceof JsonNumber || o instanceof Number)
+		{
+			return Float.class;
+		}
+		else if (o instanceof JsonList)
+		{
+			return JsonList.class;
+		}
+		return String.class;
+	}
+
 }

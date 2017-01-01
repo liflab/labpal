@@ -19,12 +19,37 @@ package multipoint;
 
 import java.util.List;
 
+import ca.uqac.lif.json.JsonList;
+import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.plot.gral.Scatterplot;
 import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
+/**
+ * Create an experiment that generates multiple values for some of
+ * its parameters.
+ * <p>
+ * In this example, the {@link MultipointExperiment}, when run, fills
+ * its parameters {@code a} and {@code b} with two <em>lists</em> of
+ * numbers. When given such an experiment, a table expands these two
+ * lists into as many entries as there are pairs of values. Hence, an
+ * experiment whose parametrs are as follows:
+ * <pre>
+ * a : [0, 1, 2, 3]
+ * b : [4, 5, 6, 7]
+ * c : 8
+ * </pre>
+ * will result in the following table:
+ * <table border="1">
+ * <tr><th>a</th><th>b</th><th>c</th></tr>
+ * <tr><td>0</td><td>4</td><td>8</td></tr>
+ * <tr><td>1</td><td>5</td><td>8</td></tr>
+ * <tr><td>2</td><td>6</td><td>8</td></tr>
+ * <tr><td>3</td><td>7</td><td>8</td></tr>
+ * </table>
+ */
 public class MultipointLab extends Laboratory 
 {
 	public static void main(String[] args)
@@ -36,9 +61,33 @@ public class MultipointLab extends Laboratory
 	public void setupExperiments(ArgumentMap map, List<WebCallback> callbacks) 
 	{
 		ExperimentTable table = new ExperimentTable("a", "b");
+		add(table);
 		Scatterplot plot = new Scatterplot(table);
 		add(plot);
 		add(new MultipointExperiment(), table);
 	}
 
+	public static class MultipointExperiment extends Experiment 
+	{
+		public MultipointExperiment()
+		{
+			super();
+		}
+
+		@Override
+		public Status execute()
+		{
+			JsonList list_x = new JsonList();
+			JsonList list_y = new JsonList();
+			for (int i = 0; i < 10; i++)
+			{
+				list_x.add(i);
+				list_y.add(2*i);
+			}
+			write("a", list_x);
+			write("b", list_y);
+			write("c", 8); // Dummy value
+			return Status.DONE;
+		}
+	}
 }

@@ -74,7 +74,7 @@ public abstract class Table implements DataSource
 		s_counterLock.lock();
 		m_id = s_idCounter++;
 		s_counterLock.unlock();
-		m_title = "Untitled";
+		m_title = "Table " + m_id;
 		m_dataListeners = new HashSet<DataListener>();
 	}
 	

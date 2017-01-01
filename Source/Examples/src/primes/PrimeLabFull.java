@@ -15,7 +15,7 @@ import ca.uqac.lif.labpal.table.ExperimentTable;
 /**
  * Compares various methods for checking if a number is prime.
  */
-public class PrimeLab extends Laboratory
+public class PrimeLabFull extends Laboratory
 {
 	@Override
 	public void setupExperiments(ArgumentMap map, List<WebCallback> callbacks)
@@ -44,7 +44,7 @@ public class PrimeLab extends Laboratory
 	public static void main(String[] args)
 	{
 		// Nothing more to do here
-		initialize(args, PrimeLab.class);
+		initialize(args, PrimeLabFull.class);
 	}
 	
 	public static abstract class PrimeExperiment extends Experiment

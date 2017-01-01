@@ -159,6 +159,11 @@ public abstract class Plot
 		super();
 		m_table = table;
 		m_title = table.getTitle();
+		if (m_title.matches("Table \\d+"))
+		{
+			// Replace "Table n" by "Plot n" as the default name
+			m_title = m_title.replace("Table", "Plot");
+		}
 		s_counterLock.lock();
 		m_id = s_idCounter++;
 		s_counterLock.unlock();

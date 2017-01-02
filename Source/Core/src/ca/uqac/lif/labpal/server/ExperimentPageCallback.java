@@ -90,7 +90,9 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		String error_msg = e.getErrorMessage();
 		if (!error_msg.isEmpty())
 		{
-			out = out.replaceAll("\\{%FAIL_MSG%\\}", "<h2>Error message</h2><pre>" + error_msg + "</pre>");
+			String escaped_msg = error_msg.replace("\\", "\\\\");
+			escaped_msg = escaped_msg.replace("$", "\\$");
+			out = out.replaceAll("\\{%FAIL_MSG%\\}", "<h2>Error message</h2><pre>" + escaped_msg + "</pre>");
 		}
 		Set<Group> groups = m_lab.getGroups(experiment_nb);
 		String group_description = "";

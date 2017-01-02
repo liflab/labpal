@@ -32,14 +32,13 @@ import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
 
 import com.sun.net.httpserver.HttpExchange;
 
 /**
  * Callback to download all plots as a single, multi-page PDF file.
- * This callback makes use of both Gnuplot and pdftk in the background.
- * It will return a 404 response if these programs cannot be found.
+ * This callback makes use of pdftk in the background.
+ * It will return a 404 response if this program cannot be found.
  * 
  * @author Sylvain Hallé
  *
@@ -65,9 +64,9 @@ public class AllPlotsCallback extends WebCallback
 	public CallbackResponse process(HttpExchange t)
 	{
 		CallbackResponse response = new CallbackResponse(t);
-		if (!GnuPlot.isGnuplotPresent() || !s_pdftkPresent)
+		if (!s_pdftkPresent)
 		{
-			// Can't do this without gnuplot and pdftk
+			// Can't do this without pdftk
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}

@@ -32,6 +32,7 @@ import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
+import ca.uqac.lif.labpal.server.HomePageCallback;
 import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.server.LabPalServer;
 import ca.uqac.lif.labpal.table.ExperimentTable;
@@ -562,10 +563,10 @@ public abstract class Laboratory
 			new_lab.setRandomSeed(seed);
 		}
 		List<WebCallback> callbacks = new LinkedList<WebCallback>();
-		new_lab.setupExperiments(map, callbacks);
 		stdout.resetColors();
-		int code = ERR_OK;
 		stdout.print(getCliHeader());
+		int code = ERR_OK;
+		new_lab.setupExperiments(map, callbacks);
 		if (map.hasOption("web"))
 		{
 			// Start ParkBench's web interface
@@ -574,7 +575,7 @@ public abstract class Laboratory
 			{
 				server.registerCallback(0, cb);
 			}
-			stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort() + " in your browser\n");
+			stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort() + HomePageCallback.URL + " in your browser\n");
 			try
 			{
 				server.startServer();

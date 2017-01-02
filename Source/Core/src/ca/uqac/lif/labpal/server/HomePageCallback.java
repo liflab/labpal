@@ -38,14 +38,18 @@ public class HomePageCallback extends TemplatePageCallback
 	protected static final transient Pattern s_patternExecute = Pattern.compile("\\{J(.*?)J\\}");
 	
 	/**
+	 * The relative URL of the home page
+	 */
+	public static final String URL = "/index";
+	
+	/**
 	 * The description associated to the lab
 	 */
 	protected final transient String m_labDescription;
 	
 	public HomePageCallback(Laboratory lab, LabAssistant assistant)
 	{
-		super("/", lab, assistant);
-		m_filename = s_path + "index.html";
+		super(URL, lab, assistant);
 		String description = lab.getDescription();
 		if (description == null || description.isEmpty())
 		{

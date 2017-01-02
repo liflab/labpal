@@ -2,6 +2,11 @@ package primes;
 
 import java.util.List;
 
+import ca.uqac.lif.json.JsonList;
+import ca.uqac.lif.json.JsonNull;
+import ca.uqac.lif.json.JsonNumber;
+import ca.uqac.lif.labpal.CliParser;
+import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.ExperimentException;
@@ -18,26 +23,56 @@ import ca.uqac.lif.labpal.table.ExperimentTable;
 public class PrimeLabFull extends Laboratory
 {
 	@Override
+	public void setupCli(CliParser parser)
+	{
+		// Adds two command-line arguments to define the interval of numbers
+		parser.addArgument(new Argument().withLongName("start").withArgument("n")
+				.withDescription("Start at number n"));
+		parser.addArgument(new Argument().withLongName("stop").withArgument("n")
+				.withDescription("Stop at number n"));
+		parser.addArgument(new Argument().withLongName("step").withArgument("n")
+				.withDescription("Increment by n (default: 2000)"));
+	}
+	
+	@Override
 	public void setupExperiments(ArgumentMap map, List<WebCallback> callbacks)
 	{
+		// Set default bounds, read command-line arguments to override defaults
+		long start_number = 1000, stop_number = 10000, step = 2000;
+		if (map.hasOption("start"))
+			start_number = Long.parseLong(map.getOptionValue("start"));
+		if (map.hasOption("stop"))
+			stop_number = Long.parseLong(map.getOptionValue("stop"));
+		if (map.hasOption("step"))
+			step = Long.parseLong(map.getOptionValue("step"));
+		// Print status
+		System.out.println("Ranging from " + start_number + " to " + stop_number 
+				+ " by steps of " + step);
+		
+		// Lab metadata
 		setTitle("Comparison of primality tests");
+		setAuthorName("Emmett Brown");
+		setDescription("This lab compares various methods for checking if a number is prime.");
+		
+		// Create a table
 		ExperimentTable table = new ExperimentTable("Method", "Number", "Duration");
 		table.setTitle("Comparison of primality tests");
 		add(table);
-		for (long i : new long[]{13l, 89l, 233l, 1597l, 28657l, 514229l, 2147483647l})
-		{
-			TrialDivision exp_td = new TrialDivision(i);
-			add(exp_td);
-			table.add(exp_td);
-			/*WilsonTheorem exp_wt = new WilsonTheorem(i);
-			add(exp_wt);
-			table.add(exp_wt);*/
-			EratosthenesSieve exp_es = new EratosthenesSieve(i);
-			add(exp_es);
-			table.add(exp_es);
-		}
+		
+		// Create and add experiments
+		TrialDivision exp_td = new TrialDivision(start_number, stop_number, step);
+		add(exp_td);
+		table.add(exp_td);
+		WilsonTheorem exp_wt = new WilsonTheorem(start_number, stop_number, step);
+		add(exp_wt);
+		table.add(exp_wt);
+		EratosthenesSieve exp_es = new EratosthenesSieve(start_number, stop_number, step);
+		add(exp_es);
+		table.add(exp_es);
+		
+		// Create a plot, performing a transformation of the table before
 		Scatterplot plot = new Scatterplot(table, new ExpandAsColumns("Method", "Duration"));
-		plot.setLogscale(Axis.X);
+		plot.setLogscale(Axis.X).setCaption(Axis.Y, "Duration (us)");
 		add(plot);
 	}
 	
@@ -49,19 +84,53 @@ public class PrimeLabFull extends Laboratory
 	
 	public static abstract class PrimeExperiment extends Experiment
 	{
-		public PrimeExperiment(long number)
+		// The bounds of the interval
+		protected long m_startNumber;
+		protected long m_stopNumber;
+		protected long m_step;
+		
+		// Define constants instead of hard-coding parameter names
+		public static final String METHOD = "Method";
+		public static final String NUMBER = "Number";
+		public static final String DURATION = "Duration";
+		
+		public PrimeExperiment(long start_number, long stop_number, long step)
 		{
 			super();
-			setInput("Number", number);
+			m_startNumber = start_number;
+			m_stopNumber = stop_number;
+			m_step = step;
+			// Create two lists: one to hold each number, the other to hold
+			// the time taken for each number
+			JsonList list_numbers = new JsonList();
+			JsonList list_times = new JsonList();
+			for (long n = m_startNumber; n <= m_stopNumber; n += m_step)
+			{
+				list_numbers.add(n);
+				list_times.add(JsonNull.instance);
+			}
+			write(NUMBER, list_numbers);
+			write(DURATION, list_times);
+			// Give a textual description of each parameter
+			describe(NUMBER, "The number to check for primality");
+			describe(DURATION, "The duration of the operation, in nanoseconds");
+			describe(METHOD, "The algorithm used to check if the number is prime");
 		}
 
 		@Override
 		public Status execute() throws ExperimentException
 		{
-			long time_start = System.nanoTime();
-			checkForPrime(readLong("Number"));
-			long time_end = System.nanoTime();
-			write("Duration", time_end - time_start);
+			int index = 0;
+			for (long n = m_startNumber; n <= m_stopNumber; n += m_step)
+			{
+				setProgression((n - m_startNumber) / (m_stopNumber - m_startNumber));
+				long time_start = System.nanoTime();
+				checkForPrime(n);
+				long time_end = System.nanoTime();
+				JsonList durations = readList(DURATION);
+				durations.set(index, new JsonNumber(time_end - time_start));
+				index++;
+			}
 			return Status.DONE;
 		}
 		
@@ -73,10 +142,10 @@ public class PrimeLabFull extends Laboratory
 	 */
 	public static class TrialDivision extends PrimeExperiment
 	{
-		public TrialDivision(long number)
+		public TrialDivision(long start_number, long stop_number, long step)
 		{
-			super(number);
-			setInput("Method", "Trial Division");
+			super(start_number, stop_number, step);
+			setInput(METHOD, "Trial Division");
 			setDescription("Checks if a number is prime using trial division.");
 		}
 
@@ -101,10 +170,10 @@ public class PrimeLabFull extends Laboratory
 	 */
 	public static class WilsonTheorem extends PrimeExperiment
 	{
-		public WilsonTheorem(long number)
+		public WilsonTheorem(long start_number, long stop_number, long step)
 		{
-			super(number);
-			setInput("Method", "Wilson's theorem");
+			super(start_number, stop_number, step);
+			setInput(METHOD, "Wilson's theorem");
 			setDescription("Checks if a number is prime using Wilson's theorem. "
 					+ " The theorem states that <i>p</i> is prime if and only if "
 					+ "(<i>p</i>-1)! % <i>p</i> = <i>p</i>-1.");
@@ -134,10 +203,10 @@ public class PrimeLabFull extends Laboratory
 	 */
 	public static class EratosthenesSieve extends PrimeExperiment
 	{
-		public EratosthenesSieve(long number)
+		public EratosthenesSieve(long start_number, long stop_number, long step)
 		{
-			super(number);
-			setInput("Method", "Eratosthenes' sieve");
+			super(start_number, stop_number, step);
+			setInput(METHOD, "Sieve of Eratosthenes");
 			setDescription("Checks if a number is prime using the Sieve of Erastothenes.");
 		}
 

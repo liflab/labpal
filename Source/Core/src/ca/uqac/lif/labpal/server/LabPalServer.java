@@ -49,8 +49,8 @@ public class LabPalServer extends InnerFileServer
 		{
 			setServerPort(s_defaultPort);
 		}
-		registerCallback(0, new StatusPageCallback(lab, assistant));
 		registerCallback(0, new HomePageCallback(lab, assistant));
+		registerCallback(0, new StatusPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentsPageCallback(lab, assistant));
 		registerCallback(0, new AssistantPageCallback(lab, assistant));

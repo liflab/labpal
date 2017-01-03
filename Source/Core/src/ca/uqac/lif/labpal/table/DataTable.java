@@ -32,6 +32,7 @@ import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.labpal.FileHelper;
 
 /**
  * A table made of concrete values
@@ -61,16 +62,11 @@ public class DataTable extends Table
 	 * The symbol used to represent missing values in a CSV rendition
 	 */
 	public static final transient String s_datafileMissing = "?";
-	
-	/**
-	 * The OS-dependent line separator 
-	 */
-	protected static final String CRLF = System.getProperty("line.separator");
 
 	/**
 	 * Creates a new data table
-	 * @param ordering
-	 * @param types
+	 * @param ordering The ordering of the columns in this table. This array
+	 * should contain column names
 	 */
 	public DataTable(String ... ordering)
 	{
@@ -237,20 +233,19 @@ public class DataTable extends Table
 	{
 		TableNode node = getTree(sort_order);
 		StringBuilder out = new StringBuilder();
-		out.append("<table border=\"1\">").append(CRLF).append("<thead>").append(CRLF);
+		out.append("<table border=\"1\">").append(FileHelper.CRLF).append("<thead>").append(FileHelper.CRLF);
 		for (String key : sort_order)
 		{
 			out.append("<th>").append(key).append("</th>");
 		}
-		out.append("</thead>").append(CRLF).append("<tbody>").append(CRLF).append("<tr>").append(CRLF);
+		out.append("</thead>").append(FileHelper.CRLF).append("<tbody>").append(FileHelper.CRLF).append("<tr>").append(FileHelper.CRLF);
 		toHtml(node, out, 0, sort_order.length);
-		out.append("</tr>").append(CRLF).append("</tbody>").append(CRLF).append("</table>");
+		out.append("</tr>").append(FileHelper.CRLF).append("</tbody>").append(FileHelper.CRLF).append("</table>");
 		return out.toString();
 	}
 	
 	/**
 	 * Produces a flat HTML rendition of the table
-	 * @return
 	 */
 	protected void toHtml(TableNode cur_node, StringBuilder out, int depth, int total_depth)
 	{
@@ -280,7 +275,7 @@ public class DataTable extends Table
 			}
 			else
 			{
-				out.append("</tr>").append(CRLF).append("<tr>");
+				out.append("</tr>").append(FileHelper.CRLF).append("<tr>");
 				for (int i = 0; i < depth; i++)
 				{
 					out.append("<td>-</td>");
@@ -477,7 +472,7 @@ public class DataTable extends Table
 					out.append(missing);
 				}
 			}
-			out.append(CRLF);
+			out.append(FileHelper.CRLF);
 		}
 		return out.toString();
 	}
@@ -500,7 +495,7 @@ public class DataTable extends Table
 			}
 			out.append(m_preferredOrdering[i]);
 		}
-		out.append(CRLF);
+		out.append(FileHelper.CRLF);
 		out.append(toCsv());
 		return out.toString();
 	}

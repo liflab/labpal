@@ -122,8 +122,7 @@ public abstract class Laboratory
 	private transient Thread m_thread;
 
 	/**
-	 * The number of parkmips
-	 * @see {@link #countParkMips()}
+	 * The number of parkmips (see {@link #countParkMips()})
 	 */
 	public transient static float s_parkMips = countParkMips();
 	
@@ -207,7 +206,7 @@ public abstract class Laboratory
 	 * Adds an experiment to the lab
 	 * @param e The experiment
 	 * @param group The group to add this experiment to
-	 * @param plots Optional: a number of plots this experiment should be
+	 * @param tables Optional: a number of tables this experiment should be
 	 *   associated with
 	 * @return This lab
 	 */
@@ -231,7 +230,7 @@ public abstract class Laboratory
 	/**
 	 * Adds an experiment to the lab
 	 * @param e The experiment
-	 * @param plots Optional: a number of tables this experiment should be
+	 * @param tables Optional: a number of tables this experiment should be
 	 *   associated with
 	 * @return This lab
 	 */
@@ -255,7 +254,7 @@ public abstract class Laboratory
 
 	/**
 	 * Assigns plots to this lab
-	 * @param p The plots
+	 * @param plots The plots
 	 * @return This lab
 	 */
 	public Laboratory add(Plot ... plots)

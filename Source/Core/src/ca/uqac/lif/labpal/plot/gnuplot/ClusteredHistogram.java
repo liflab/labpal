@@ -72,7 +72,7 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 
 	/**
 	 * Whether the histogram is of type "row stacked".
-	 * @see {@link #rowStacked()}
+	 * (see {@link #rowStacked()})
 	 */
 	protected boolean m_rowStacked = false;
 	

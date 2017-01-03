@@ -34,7 +34,7 @@ import de.erichseifert.gral.data.statistics.Statistics;
 
 /**
  * A multi-dimensional array of values. Tables can be passed to
- * {@link Plot} objects to generate graphics.
+ * {@link ca.uqac.lif.labpal.plot.Plot Plot} objects to generate graphics.
  */
 public abstract class Table implements DataSource
 {
@@ -157,7 +157,8 @@ public abstract class Table implements DataSource
 	
 	/**
 	 * Gets the type of the column of given name
-	 * @param col_name The name of the column
+	 * @param position The position of the column, starting at 0 for the
+	 *   first column
 	 * @return The type, or {@code null} if the column does not exist
 	 */
 	public final Class<? extends Comparable<?>> getColumnTypeFor(int position)
@@ -203,7 +204,7 @@ public abstract class Table implements DataSource
 	
 	/**
 	 * Gets the position of the column of a given name in the table
-	 * @param col The name
+	 * @param name The name
 	 * @return The column's position, or -1 if the name was not found
 	 */
 	public abstract int getColumnPosition(String name);

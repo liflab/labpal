@@ -152,7 +152,7 @@ public abstract class Experiment implements Runnable
 	 * fulfilled. Override this method if your experiment must do some form of
 	 * setup before starting (e.g. generating files, etc.). Do <em>not</em>
 	 * satisfy the prerequisites here: rather use
-	 * {@link #fulfillPrerequisites(JsonMap)}.
+	 * {@link #fulfillPrerequisites()}.
 	 * 
 	 * @return true if the prerequisites are fulfilled, false otherwise
 	 */
@@ -166,7 +166,7 @@ public abstract class Experiment implements Runnable
 	 * Override this method if your experiment must do some form of
 	 * setup before starting (e.g. generating files, etc.). Obviously, there
 	 * should be some form of coherence between this method and 
-	 * {@link #prerequisitesFulfilled(JsonMap)}.
+	 * {@link #prerequisitesFulfilled()}.
 	 * 
 	 * @return true if the prerequisites have been successfully generated,
 	 *   false otherwise
@@ -179,7 +179,6 @@ public abstract class Experiment implements Runnable
 	/**
 	 * Cleans any prerequisites this experiment may have generated.
 	 * For example: deleting files that were generated, etc.
-	 * @see {@link #fulfillPrerequisites(JsonMap)}
 	 */
 	public void cleanPrerequisites()
 	{

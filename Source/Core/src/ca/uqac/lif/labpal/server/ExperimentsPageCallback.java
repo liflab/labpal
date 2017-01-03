@@ -283,8 +283,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	
 	/**
 	 * Performs the "queue" action on every experiment selected in the
-	 * input form
-	 * @see {@link LabAssistant#queue(Experiment)}
+	 * input form 
+	 * @see LabAssistant#queue(Experiment)
 	 * @param params The input parameters of the HTML form
 	 * @return A message indicating the success of the operation
 	 */
@@ -311,7 +311,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	/**
 	 * Performs the "reset" action on every experiment selected in the
 	 * input form
-	 * @see {@link Experiment#reset()}
+	 * @see Experiment#reset()
 	 * @param params The input parameters of the HTML form
 	 * @return A message indicating the success of the operation
 	 */
@@ -338,7 +338,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	/**
 	 * Performs the "unqueue" action on every experiment selected in the
 	 * input form
-	 * @see {@link LabAssistant#unqueue(Experiment)}
+	 * @see LabAssistant#unqueue(Experiment)
 	 * @param params The input parameters of the HTML form
 	 * @return A message indicating the success of the operation
 	 */
@@ -365,7 +365,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	/**
 	 * Performs the "clean" action on every experiment selected in the
 	 * input form
-	 * @see {@link Experiment#clean()}
+	 * @see Experiment#clean()
 	 * @param params The input parameters of the HTML form
 	 * @return A message indicating the success of the operation
 	 */

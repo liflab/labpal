@@ -18,6 +18,7 @@
 package ca.uqac.lif.labpal.table;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An entry in a data table
@@ -70,7 +71,7 @@ public class TableEntry extends HashMap<String,Object>
 		{
 			return false;
 		}
-		for (Entry<String,Object> entry : entrySet())
+		for (Map.Entry<String,Object> entry : entrySet())
 		{
 			if (!te.get(entry.getKey()).equals(entry.getValue()))
 			{

@@ -203,7 +203,7 @@ public abstract class Plot
 	
 	/**
 	 * Gets the plot's title
-	 * @return
+	 * @return The title
 	 */
 	public final String getTitle()
 	{

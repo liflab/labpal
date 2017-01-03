@@ -34,8 +34,8 @@ import de.erichseifert.gral.io.plots.DrawableWriterFactory;
 public class GralPlot extends Plot
 {	
 	/**
-	 * Creates a new wrapped plot from a plot
-	 * @param p The plot
+	 * Creates a new plot from a table
+	 * @param t The table
 	 */
 	public GralPlot(Table t)
 	{
@@ -43,9 +43,11 @@ public class GralPlot extends Plot
 	}
 	
 	/**
-	 * Creates a new wrapped plot from a plot
-	 * @param p The plot
-	 * @param transformation A table transformation
+	 * Creates a new plot from a table, applying a transformation
+	 *  to this table
+	 * @param t The table
+	 * @param transformation A table transformation. This transformation
+	 *  will be applied to the table before plotting.
 	 */
 	public GralPlot(Table t, TableTransformation transformation)
 	{

@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,49 +17,55 @@
  */
 package ca.uqac.lif.labpal.table;
 
-import ca.uqac.lif.labpal.NumberHelper;
+import ca.uqac.lif.json.JsonNumber;
 
 /**
  * Replaces the content of each entry by its fraction of the
  * sum of all values for the column
  */
-public class NormalizeColumns extends TableTransform 
+public class NormalizeColumns implements TableTransformation
 {
-	public NormalizeColumns(Table t)
+	public NormalizeColumns()
 	{
-		super(t);
+		super();
 	}
 
 	@Override
-	public ConcreteTable getConcreteTable()
+	public DataTable transform(DataTable in_table)
 	{
-		ConcreteTable in_table = m_inputTable.getConcreteTable();
-		ConcreteTable out_table = new ConcreteTable(in_table.m_columnHeaders, in_table.m_lineHeaders);
-		if (in_table.m_values.length == 0)
+		DataTable out_table = new DataTable();
+		if (in_table.getRowCount() == 0)
 		{
 			return out_table;
 		}
-		for (int j = 0; j < in_table.m_values[0].length; j++)
+		for (String col_name : in_table.getColumnNames())
 		{
 			float total = 0;
-			for (int i = 0; i < in_table.m_values.length; i++)
+			for (TableEntry te : in_table.getEntries())
 			{
-				if (NumberHelper.isNumeric(in_table.m_values[i][j]))
+				Object o = te.get(col_name);
+				if (o instanceof Number)
 				{
-					total += Float.parseFloat(in_table.m_values[i][j]);
+					total += ((Number) o).floatValue();
+				}
+				if (o instanceof JsonNumber)
+				{
+					total += ((JsonNumber) o).numberValue().floatValue();
 				}
 			}
-			for (int i = 0; i < in_table.m_values.length; i++)
+			for (TableEntry te : in_table.getEntries())
 			{
-				if (NumberHelper.isNumeric(in_table.m_values[i][j]) && total != 0)
+				TableEntry new_te = new TableEntry(te);
+				Object o = te.get(col_name);
+				if (o instanceof Number)
 				{
-					out_table.m_values[i][j] = Float.toString(Float.parseFloat(in_table.m_values[i][j]) / total);
+					new_te.put(col_name, ((Number) o).floatValue() / total);
 				}
-				else
+				else if (o instanceof JsonNumber)
 				{
-					out_table.m_values[i][j] = "?";
+					new_te.put(col_name, ((JsonNumber) o).numberValue().floatValue() / total);
 				}
-				
+				out_table.add(new_te);
 			}
 		}
 		return out_table;

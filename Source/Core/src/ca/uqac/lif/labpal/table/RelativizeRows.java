@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,49 +17,62 @@
  */
 package ca.uqac.lif.labpal.table;
 
-import ca.uqac.lif.labpal.NumberHelper;
+import java.util.Map.Entry;
+
+import ca.uqac.lif.json.JsonNumber;
 
 /**
  * Replaces each value of the input table by the ratio of this value
  * to the smallest value in the row
  */
-public class RelativizeRows extends TableTransform 
+public class RelativizeRows implements TableTransformation 
 {
-	public RelativizeRows(Table t)
+	public RelativizeRows()
 	{
-		super(t);
+		super();
 	}
 
 	@Override
-	public ConcreteTable getConcreteTable()
+	public DataTable transform(DataTable in_table)
 	{
-		ConcreteTable in_table = m_inputTable.getConcreteTable();
-		ConcreteTable out_table = new ConcreteTable(in_table.m_columnHeaders, in_table.m_lineHeaders);
-		if (in_table.m_values.length == 0)
+		DataTable out_table = new DataTable();
+		if (in_table.getRowCount() == 0)
 		{
 			return out_table;
 		}
-		for (int i = 0; i < in_table.m_values.length; i++)
+		for (TableEntry te : in_table.getEntries())
 		{
 			float min = 1000000000;
-			for (int j = 0; j < in_table.m_values[0].length; j++)
+			for (Object o : te.values())
 			{
-				if (NumberHelper.isNumeric(in_table.m_values[i][j]))
+				if (o instanceof Number)
 				{
-					min = Math.min(min, Float.parseFloat(in_table.m_values[i][j]));
+					min = Math.min(min, ((Number) o).floatValue());
+				}
+				if (o instanceof JsonNumber)
+				{
+					min = Math.min(min, ((JsonNumber) o).numberValue().floatValue());
 				}
 			}
-			for (int j = 0; j < in_table.m_values[0].length; j++)
+			TableEntry new_entry = new TableEntry();
+			for (Entry<String,Object> map_entry : te.entrySet())
 			{
-				if (NumberHelper.isNumeric(in_table.m_values[i][j]))
+				String key = map_entry.getKey();
+				Object o = map_entry.getValue();
+				if (o instanceof Number)
 				{
-					out_table.m_values[i][j] = Float.toString(Float.parseFloat(in_table.m_values[i][j]) / min);
+					new_entry.put(key, ((Number) o).floatValue() / min);
+				}
+				else if (o instanceof JsonNumber)
+				{
+					new_entry.put(key, ((JsonNumber) o).numberValue().floatValue() / min);
 				}
 				else
 				{
-					out_table.m_values[i][j] = "?";
+					new_entry.put(key, o);
 				}
 			}
+			out_table.add(new_entry);
 		}
 		return out_table;
 	}

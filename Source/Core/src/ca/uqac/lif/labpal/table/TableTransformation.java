@@ -17,6 +17,10 @@
  */
 package ca.uqac.lif.labpal.table;
 
+/**
+ * Transforms a data table into another data table
+ * @author Sylvain Hallé
+ */
 public interface TableTransformation
 {
 	/**

@@ -91,6 +91,7 @@
       <classname>de.erichseifert.gral.data.DataSource</classname>
       <files>
         <jar>http://www.erichseifert.de/dev/gral/0.11/gral-core-0.11.jar</jar>
+	<jar>http://www.erichseifert.de/dev/vectorgraphics2d/0.11/VectorGraphics2D-0.11.jar</jar>
       </files>
     </dependency>
   </dependencies>

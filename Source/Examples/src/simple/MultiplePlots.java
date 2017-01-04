@@ -1,13 +1,9 @@
 package simple;
 
-import java.util.List;
-
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.labpal.plot.gnuplot.ClusteredHistogram;
 import ca.uqac.lif.labpal.plot.gral.Scatterplot;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.CliParser.ArgumentMap;
-import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.Join;
 import ca.uqac.lif.labpal.table.RenameColumns;
@@ -20,11 +16,10 @@ import ca.uqac.lif.labpal.table.Table;
 public class MultiplePlots extends Laboratory
 {	
 	@Override
-	public void setupExperiments(ArgumentMap map, List<WebCallback> callbacks)
+	public void setup()
 	{
 		// Sets the title of this lab
-		setTitle("Two simple experiments");
-		setAuthorName("Emmett Brown");
+		setTitle("Two simple experiments").setAuthorName("Emmett Brown");
 		
 		// Put the results of the experiments in tables
 		ExperimentTable table_exp_a = new ExperimentTable("a", "y");

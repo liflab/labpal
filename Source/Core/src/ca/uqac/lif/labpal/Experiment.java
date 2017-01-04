@@ -234,10 +234,11 @@ public abstract class Experiment implements Runnable
 	
 	/**
 	 * Executes the experiment.
-	 * @return The status of the experiment once it has finished. This should
-	 *   normally be either <tt>DONE</tt> or <tt>FAILED</tt>.
+	 * @throws ExperimentException Used to signal the abnormal termination
+	 *   of the experiment. If this method ends without throwing an exception,
+	 *   it is assumed it has completed successfully.
 	 */
-	public abstract Status execute() throws ExperimentException;
+	public abstract void execute() throws ExperimentException;
 	
 	/**
 	 * Reads an output parameter for this experiment
@@ -604,7 +605,7 @@ public abstract class Experiment implements Runnable
 		m_status = Status.RUNNING;
 		try
 		{
-			m_status = execute();
+			execute();
 		}
 		catch (Exception e)
 		{
@@ -615,6 +616,7 @@ public abstract class Experiment implements Runnable
 			e.printStackTrace(pw);
 			setErrorMessage(sw.toString());
 		}
+		m_status = Status.DONE;
 		m_endTime = System.currentTimeMillis();
 
 	}

@@ -1,7 +1,5 @@
 package primes;
 
-import java.util.List;
-
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
@@ -13,7 +11,6 @@ import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.labpal.plot.gral.Scatterplot;
-import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
@@ -35,9 +32,10 @@ public class PrimeLabFull extends Laboratory
 	}
 	
 	@Override
-	public void setupExperiments(ArgumentMap map, List<WebCallback> callbacks)
+	public void setup()
 	{
 		// Set default bounds, read command-line arguments to override defaults
+		ArgumentMap map = getCliArguments();
 		long start_number = 1000, stop_number = 10000, step = 2000;
 		if (map.hasOption("start"))
 			start_number = Long.parseLong(map.getOptionValue("start"));
@@ -118,7 +116,7 @@ public class PrimeLabFull extends Laboratory
 		}
 
 		@Override
-		public Status execute() throws ExperimentException
+		public void execute() throws ExperimentException
 		{
 			int index = 0;
 			for (long n = m_startNumber; n <= m_stopNumber; n += m_step)
@@ -131,7 +129,6 @@ public class PrimeLabFull extends Laboratory
 				durations.set(index, new JsonNumber(time_end - time_start));
 				index++;
 			}
-			return Status.DONE;
 		}
 		
 		public abstract boolean checkForPrime(long number) throws ExperimentException;		

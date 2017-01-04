@@ -18,9 +18,8 @@
 package ca.uqac.lif.labpal;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,7 +63,7 @@ public abstract class Laboratory
 	/**
 	 * The minor version number
 	 */
-	private static final int s_minorVersionNumber = 4;
+	private static final int s_minorVersionNumber = 5;
 	
 	/**
 	 * The revision version number
@@ -155,6 +154,11 @@ public abstract class Laboratory
 	 * The serializer used to save/load the assistant's status
 	 */
 	private transient JsonSerializer m_serializer;
+	
+	/**
+	 * The arguments parsed from the command line
+	 */
+	private transient ArgumentMap m_cliArguments = null;
 
 	/**
 	 * Creates a new lab assistant
@@ -548,31 +552,35 @@ public abstract class Laboratory
 			}
 		}));
 
-		final ArgumentMap map = parser.parse(args);
-		if (map.hasOption("help"))
+		new_lab.m_cliArguments = parser.parse(args);
+		if (new_lab.m_cliArguments.hasOption("help"))
 		{
 			parser.printHelp(getCliHeader(), System.out);
 			stdout.close();
 			System.exit(ERR_OK);
 		}
-		if (map.hasOption("seed"))
+		if (new_lab.m_cliArguments.hasOption("seed"))
 		{
 			// Sets random seed
-			int seed = Integer.parseInt(map.getOptionValue("seed"));
+			int seed = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("seed"));
 			new_lab.setRandomSeed(seed);
 		}
-		List<WebCallback> callbacks = new LinkedList<WebCallback>();
+		Collection<WebCallback> callbacks = new_lab.setupCallbacks();
 		stdout.resetColors();
 		stdout.print(getCliHeader());
 		int code = ERR_OK;
-		new_lab.setupExperiments(map, callbacks);
-		if (map.hasOption("web"))
+		new_lab.setup();
+		if (new_lab.m_cliArguments.hasOption("web"))
 		{
 			// Start ParkBench's web interface
-			LabPalServer server = new LabPalServer(map, new_lab, assistant);
-			for (WebCallback cb : callbacks)
+			LabPalServer server = new LabPalServer(new_lab.m_cliArguments, new_lab, assistant);
+			if (callbacks != null)
 			{
-				server.registerCallback(0, cb);
+				// Register custom callbacks, if any
+				for (WebCallback cb : callbacks)
+				{
+					server.registerCallback(0, cb);
+				}				
 			}
 			stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort() + HomePageCallback.URL + " in your browser\n");
 			try
@@ -593,7 +601,7 @@ public abstract class Laboratory
 		else
 		{
 			// Start LabPal's text interface
-			LabPalTui tui = new LabPalTui(new_lab, assistant, stdout, map);
+			LabPalTui tui = new LabPalTui(new_lab, assistant, stdout, new_lab.m_cliArguments);
 			code = tui.run();
 		}
 		stdout.close();
@@ -636,16 +644,32 @@ public abstract class Laboratory
 	 * Sets up the experiments and plots that this lab will contain. You
 	 * <em>must</em> implement this method and add at least one experiment
 	 * (otherwise there won't be anything to do with your lab).
-	 * 
-	 * @param map A map of arguments and values parsed from the command line.
+	 */
+	public abstract void setup();
+	
+	/**
+	 * Sets p the custom callbacks to the web server. 
+	 * This allows a lab to include custom pages in its web interface.
+	 * @return callbacks A collection of new server callbacks.
+	 *   These callbacks will be added to the server if the {@code --web}
+	 *   option is used at startup.
+	 */
+	public Collection<WebCallback> setupCallbacks()
+	{
+		return null;
+	}
+	
+	/**
+	 * Gets the command-line arguments parsed when launching this lab.
+	 * @return A map of arguments and values parsed from the command line.
 	 *   If you specified custom command-line arguments in
 	 *   {@link #setupCli(CliParser)}, this is where you can retrieve them
 	 *   and read their values.
-	 * @param callbacks A list where the method can add new server callbacks.
-	 *   These callbacks will be added to the server if the <code>--web</code>
-	 *   option is used at startup.
 	 */
-	public abstract void setupExperiments(ArgumentMap map, List<WebCallback> callbacks);
+	public final ArgumentMap getCliArguments()
+	{
+		return m_cliArguments;
+	}
 
 	/**
 	 * Counts the number of "parkmips" of this system. This is a very rough

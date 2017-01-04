@@ -17,15 +17,11 @@
  */
 package browser;
 
-import java.util.List;
-
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.labpal.plot.gnuplot.ClusteredHistogram;
 import ca.uqac.lif.labpal.plot.gral.PieChart;
-import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
@@ -41,7 +37,7 @@ public class TransformLab extends Laboratory
 	}
 
 	@Override
-	public void setupExperiments(ArgumentMap map, List<WebCallback> callbacks)
+	public void setup()
 	{
 		setTitle("Browser market share");
 		setAuthorName("Emmett Brown");

@@ -1,13 +1,9 @@
 package primes;
 
-import java.util.List;
-
-import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.labpal.plot.gral.Scatterplot;
-import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
 /**
@@ -16,7 +12,7 @@ import ca.uqac.lif.labpal.table.ExperimentTable;
 public class PrimeLabSimple extends Laboratory
 {
 	@Override
-	public void setupExperiments(ArgumentMap map, List<WebCallback> callbacks)
+	public void setup()
 	{
 		ExperimentTable table = new ExperimentTable("Number", "Duration");
 		add(table);
@@ -48,13 +44,12 @@ public class PrimeLabSimple extends Laboratory
 		}
 		
 		@Override
-		public Status execute()
+		public void execute()
 		{
 			long time_start = System.nanoTime();
 			checkForPrime(readLong("Number"));
 			long time_end = System.nanoTime();
 			write("Duration", time_end - time_start);
-			return Status.DONE;
 		}
 
 		public boolean checkForPrime(long n)

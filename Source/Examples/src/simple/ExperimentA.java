@@ -1,6 +1,7 @@
 package simple;
 
 import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.ExperimentException;
 
 public class ExperimentA extends Experiment
 {
@@ -18,17 +19,15 @@ public class ExperimentA extends Experiment
 	}
 
 	@Override
-	public Status execute()
+	public void execute() throws ExperimentException
 	{
 		int a = readInt("a");
 		if (a == 2)
 		{
 			// Just to test the "fail" case
-			setErrorMessage("The experiment failed");
-			return Status.FAILED;
+			throw new ExperimentException("The experiment failed");
 		}
 		write("y", a * 2);
-		return Status.DONE;
 	}
 	
 	@Override

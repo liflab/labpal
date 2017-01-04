@@ -21,11 +21,10 @@ public class BrowserExperiment extends Experiment
 	}
 
 	@Override
-	public Status execute()
+	public void execute()
 	{
 		write("market", name);
 		write("share", value);
-		return Status.DONE;
 	}
 
 }

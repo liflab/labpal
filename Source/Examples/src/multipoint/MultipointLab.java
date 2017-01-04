@@ -17,14 +17,10 @@
  */
 package multipoint;
 
-import java.util.List;
-
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.plot.gral.Scatterplot;
-import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
 /**
@@ -52,13 +48,8 @@ import ca.uqac.lif.labpal.table.ExperimentTable;
  */
 public class MultipointLab extends Laboratory 
 {
-	public static void main(String[] args)
-	{
-		initialize(args, MultipointLab.class);
-	}
-
 	@Override
-	public void setupExperiments(ArgumentMap map, List<WebCallback> callbacks) 
+	public void setup() 
 	{
 		ExperimentTable table = new ExperimentTable("a", "b");
 		add(table);
@@ -75,7 +66,7 @@ public class MultipointLab extends Laboratory
 		}
 
 		@Override
-		public Status execute()
+		public void execute()
 		{
 			JsonList list_x = new JsonList();
 			JsonList list_y = new JsonList();
@@ -87,7 +78,11 @@ public class MultipointLab extends Laboratory
 			write("a", list_x);
 			write("b", list_y);
 			write("c", 8); // Dummy value
-			return Status.DONE;
 		}
+	}
+	
+	public static void main(String[] args)
+	{
+		initialize(args, MultipointLab.class);
 	}
 }

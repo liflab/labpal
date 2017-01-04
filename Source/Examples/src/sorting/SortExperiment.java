@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.Random;
 
 import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.labpal.FileHelper;
 
 public abstract class SortExperiment extends Experiment
@@ -98,18 +99,17 @@ public abstract class SortExperiment extends Experiment
 	}
 
 	@Override
-	public Status execute()
+	public void execute() throws ExperimentException
 	{
 		int[] array = getArray();
 		if (array == null)
 		{
-			return Status.FAILED;
+			throw new ExperimentException("A null array was passed to this experiment");
 		}
 		long start_time = System.nanoTime();
 		sort(array);
 		long end_time = System.nanoTime();
 		write("time", (end_time - start_time) / 1000000f);
-		return Status.DONE;
 	}
 
 	protected final int[] getArray()

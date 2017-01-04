@@ -18,7 +18,7 @@ public class ExperimentB extends Experiment
 	}
 
 	@Override
-	public Status execute()
+	public void execute()
 	{
 		int a = readInt("a");
 		for (int i = 0; i < 10; i++)
@@ -27,7 +27,6 @@ public class ExperimentB extends Experiment
 			setProgression(((float) i) / 10f);
 		}
 		write("y", a * 3 + 1);
-		return Status.DONE;
 	}
 	
 	@Override

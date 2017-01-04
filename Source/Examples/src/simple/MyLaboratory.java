@@ -25,8 +25,7 @@ public class MyLaboratory extends Laboratory {
       BigInteger n = new BigInteger(Long.toString(readLong("Number")));
       long start = System.nanoTime();
       boolean b = n.isProbablePrime(1);
-      long end = System.nanoTime();
-      write("Time", end - start);
+      write("Time", System.nanoTime() - start);
     }
   }
   

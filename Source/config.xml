@@ -45,7 +45,7 @@
   <!-- Redefine directories -->
   <srcdir>Core/src</srcdir>
   <bindir>Core/bin</bindir>
-  <docdir>Core/doc</docdir>
+  <docdir>../docs/doc</docdir>
   <libdir>Core/lib</libdir>
   <depdir>Core/dep</depdir>
   

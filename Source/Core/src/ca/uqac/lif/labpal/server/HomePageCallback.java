@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 
@@ -53,7 +54,10 @@ public class HomePageCallback extends TemplatePageCallback
 		String description = lab.getDescription();
 		if (description == null || description.isEmpty())
 		{
-			description = "<h1>" + lab.getTitle() + "</h1>\n<p>No description was entered for this lab.</p>";
+			// Use the help page if no description was given 
+			description = FileHelper.internalFileToString(LabPalServer.class, "resource/help.html");
+			description = description.replace("{!header.inc.html!}", "");
+			description = description.replace("{!footer.inc.html!}", "");
 		}
 		m_labDescription = description;
 	}

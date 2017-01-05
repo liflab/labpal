@@ -88,6 +88,7 @@ ca.uqac.lif.labpal.plot.Scatterplot plot = new Scatterplot(t) {
 
 For heavier customization, or to create a plot that GRAL supports but for which there exists no corresponding LabPal object, one can simply create a class that extends [GralPlot](/doc/ca/uqac/lif/labpal/plot/gral/GralPlot.html), and implement the `getPlot` method. This allows the user to create and setup any plot provided by GRAL and associate it with a DataSource corresponding to the table being passed to the plot. For example, the following code creates a GRAL RasterPlot object and changes the font used for displaying it.
 
+{% highlight java %}
 GralPlot plot = new GralPlot(t) {
   public void getPlot(DataSource source) {
     DataSource rasterdata = RasterPlot.createRasterData(source);

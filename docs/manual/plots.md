@@ -43,9 +43,9 @@ For example, when given to a scatterplot, the following table:
 
 <table border="1">
 <tr><th>n</th><th>A</th><th>B</th></tr>
-<tr><td>0</td><td>1</th><td>0</td></tr>
-<tr><td>1</td><td>2</th><td>3</td></tr>
-<tr><td>2</td><td>3</th><td>4</td></tr>
+<tr><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>2</td><td>3</td></tr>
+<tr><td>2</td><td>3</td><td>4</td></tr>
 </table>
 
 will generate a plot with the points (0,1), (1,2), (2,3) painted in one color (corresponding to data series "A"), and the points (0,0), (1,3), (2,4) painted in another color (corresponding to data series "B").
@@ -90,7 +90,7 @@ For heavier customization, or to create a plot that GRAL supports but for which 
 
 {% highlight java %}
 GralPlot plot = new GralPlot(t) {
-  public void getPlot(DataSource source) {
+  public de.erichseifert.gral.plots.Plot getPlot(DataSource source) {
     DataSource rasterdata = RasterPlot.createRasterData(source);
     RasterPlot p = new RasterPlot(rasterdata);
     p.setFont(new Font("Jokerman", Font.PLAIN, 35));

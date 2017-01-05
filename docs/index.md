@@ -106,7 +106,7 @@ If you want to know more about LabPal's features:
 
 - Read the short [tutorial](quick-tutorial.html)
 - Look at our [lab examples](https://github.com/liflab/labpal/tree/master/Source/Examples/src) to learn how to use various features
-- Look at our slightly longer [instructions](instructions/)
+- Look at our slightly longer [instructions](manual/)
 - Consult the online [API documentation](doc/)
 
 ## About LabPal

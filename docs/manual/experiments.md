@@ -109,7 +109,7 @@ However, with such a table, our scatterplot will not make much sense: it will us
 
 The *x* column is the value of "Size", followed by as many columns as there are values for the "Algorithm" parameter in the experiments. Each cell should contain the value of the "Duration" parameter for the experiment with the corresponding value of "Size" and "Algorithm".
 
-We could redesign our experiments to produce such a table. An easier way is to apply a *transformation* to the existing table before plotting it. LabPal defines objects called [TableTransformation](doc/ca/uqac/lif/labpal/table/TableTransformation.html)s, which produce an output table from an input table. There are various transformations available; the one we are looking for here is called [ExpandAsColumns](doc/ca/uqac/lif/labpal/table/ExpandAsColumns.html). When creating a plot, we can pass a table transformation in addition to a table; so our plot declaration becomes:
+We could redesign our experiments to produce such a table. An easier way is to apply a *transformation* to the existing table before plotting it. LabPal defines objects called [TableTransformation](/doc/ca/uqac/lif/labpal/table/TableTransformation.html)s, which produce an output table from an input table. There are various transformations available; the one we are looking for here is called [ExpandAsColumns](/doc/ca/uqac/lif/labpal/table/ExpandAsColumns.html). When creating a plot, we can pass a table transformation in addition to a table; so our plot declaration becomes:
 
 {% highlight java %}
 Scatterplot plot = new Scatterplot(t, new ExpandAsColumns("Algorithm", "Duration"));

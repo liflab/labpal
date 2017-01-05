@@ -183,10 +183,10 @@ All this for about 30 lines of code. Not bad, considering the alternative: writi
 
 In this quick tutorial, we've barely scratched the surface of what you can do with LabPal. If you are interested in knowing more, here are a few pointers.
 
-- Learn how to [create and customize plots](plots.html)
-- Create, process and manage [tables](tables.html)
-- Document your lab for an external user by [adding metadata](metadata.html) to your experiments and their parameters
-- Create [more complex experiments](experiments.html) that can generate auxiliary files, update a progress indicator, produce error messages, etc.
+- Learn how to [create and customize plots](/manual/plots.html)
+- Create, process and manage [tables](/manual/tables.html)
+- Document your lab for an external user by [adding metadata](/manual/metadata.html) to your experiments and their parameters
+- Create [more complex experiments](/manual/experiments.html) that can generate auxiliary files, update a progress indicator, produce error messages, etc.
 
 
 <!-- :wrap=soft:mode=markdown: -->

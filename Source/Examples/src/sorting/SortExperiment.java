@@ -65,7 +65,7 @@ public abstract class SortExperiment extends Experiment
 	}
 
 	@Override
-	public final boolean fulfillPrerequisites()
+	public final void fulfillPrerequisites()
 	{
 		// Generates a random list of integers of given size, and saves it
 		// to a file
@@ -84,7 +84,6 @@ public abstract class SortExperiment extends Experiment
 			out.append(number);
 		}
 		FileHelper.writeFromString(new File(filename), out.toString());
-		return true;
 	}
 
 	/**

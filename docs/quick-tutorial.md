@@ -161,7 +161,7 @@ public void setup() {
   ExperimentTable t = new ExperimentTable("Size", "Duration");
   add(t);
   // Create experiments
-  for (int size = 100; size &lt;= 1000; size += 100) {
+  for (int size = 100; size <= 1000; size += 100) {
     add(new GnomeSort(size), t);
   }
   // Create plot

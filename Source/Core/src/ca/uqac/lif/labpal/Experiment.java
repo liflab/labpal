@@ -168,12 +168,12 @@ public abstract class Experiment implements Runnable
 	 * should be some form of coherence between this method and 
 	 * {@link #prerequisitesFulfilled()}.
 	 * 
-	 * @return true if the prerequisites have been successfully generated,
-	 *   false otherwise
+	 * @throws ExperimentException If the prerequisites have not been
+	 *   successfully generated
 	 */
-	public boolean fulfillPrerequisites()
+	public void fulfillPrerequisites() throws ExperimentException
 	{
-		return true;
+		return;
 	}
 	
 	/**
@@ -592,13 +592,18 @@ public abstract class Experiment implements Runnable
 		if (!prerequisitesFulfilled())
 		{
 			m_status = Status.PREREQ_F;
-			if (!fulfillPrerequisites())
+			try
 			{
+				fulfillPrerequisites();
+			}
+			catch (Exception e)
+			{
+				// If the call throws anything, we consider it a failure
 				m_status = Status.FAILED;
-				if (m_errorMessage.isEmpty())
-				{
-					m_errorMessage = "Failed while generating prerequisites";
-				}
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				setErrorMessage(sw.toString());
 				return;
 			}
 		}

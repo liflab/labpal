@@ -76,14 +76,19 @@
 <p>In this section, you will learn to use advanced features of experiments:</p>
 
 <ul>
-<li>Use multiple types of experiments in the same lab</li>
-<li>Use table transformations</li>
-<li>Make experiments that depend on external resources</li>
-<li>Throw error messages during the execution of an experiment</li>
-<li>Update a progress indicator for long experiments</li>
-<li>Guess the execution time of an experiment</li>
-<li>Generate multiple data points in a single experiment</li>
+<li><a href="#multiple">Use multiple types of experiments in the same lab</a></li>
+<li><a href="#transformations">Use table transformations</a></li>
+<li><a href="#prerequisites">Make experiments that depend on external resources</a></li>
+<li><a href="#errors">Throw error messages during the execution of an experiment</a></li>
+<li><a href="#progress">Update a progress indicator for long experiments</a></li>
+<li><a href="#time">Guess the execution time of an experiment</a></li>
+<li><a href="#multipoint">Generate multiple data points in a single experiment</a></li>
 </ul>
+
+<p>
+  <a name="multiple">
+</a></p>
+<a name="multiple">
 
 <h3>Using multiple experiment classes</h3>
 
@@ -138,7 +143,7 @@ public class GnomeSort extends SortExperiment {
 
 <p>Note that our experiment now has an additional input parameter, which contains the name of the algorithm used for sorting.</p>
 
-<p>Structured in this way, it is easy to create new classes that would use other sorting algorithms (we won't show them here; look at the <a href="https://github.com/liflab/labpal/tree/master/Source/Examples/src/sorting">code examples</a>). Our lab can then include experiments of various kinds:</p>
+</a><p><a name="multiple">Structured in this way, it is easy to create new classes that would use other sorting algorithms (we won't show them here; look at the </a><a href="https://github.com/liflab/labpal/tree/master/Source/Examples/src/sorting">code examples</a>). Our lab can then include experiments of various kinds:</p>
 
 <pre>  <code>
 ...
@@ -203,6 +208,11 @@ ExperimentTable t = new ExperimentTable("Algorithm", "Size", "Duration");
 
 <p>The table automatically groups all cells with the same value of "Algorithm". (The way cells are grouped depends on the order in which the names are enumerated when creating it. See <a href="tables.html">Tables</a>.)</p>
 
+<p>
+  <a name="transformations">
+</a></p>
+<a name="transformations">
+
 <h3>Transforming the table</h3>
 
 <p>However, with such a table, our scatterplot will not make much sense: it will use the value of "Algorithm" for its <em>x</em> value, and use "Size" and "Duration" as two data series for the <em>y</em> value. We rather need a table like this:</p>
@@ -238,7 +248,7 @@ ExperimentTable t = new ExperimentTable("Algorithm", "Size", "Duration");
 
 <p>The <em>x</em> column is the value of "Size", followed by as many columns as there are values for the "Algorithm" parameter in the experiments. Each cell should contain the value of the "Duration" parameter for the experiment with the corresponding value of "Size" and "Algorithm".</p>
 
-<p>We could redesign our experiments to produce such a table. An easier way is to apply a <em>transformation</em> to the existing table before plotting it. LabPal defines objects called <a href="../doc/ca/uqac/lif/labpal/table/TableTransformation.html">TableTransformation</a>s, which produce an output table from an input table. There are various transformations available; the one we are looking for here is called <a href="../doc/ca/uqac/lif/labpal/table/ExpandAsColumns.html">ExpandAsColumns</a>. When creating a plot, we can pass a table transformation in addition to a table; so our plot declaration becomes:</p>
+</a><p><a name="transformations">We could redesign our experiments to produce such a table. An easier way is to apply a <em>transformation</em> to the existing table before plotting it. LabPal defines objects called </a><a href="../doc/ca/uqac/lif/labpal/table/TableTransformation.html">TableTransformation</a>s, which produce an output table from an input table. There are various transformations available; the one we are looking for here is called <a href="../doc/ca/uqac/lif/labpal/table/ExpandAsColumns.html">ExpandAsColumns</a>. When creating a plot, we can pass a table transformation in addition to a table; so our plot declaration becomes:</p>
 
 <pre>  <code>
 Scatterplot plot = new Scatterplot(t, new ExpandAsColumns("Algorithm", "Duration"));
@@ -246,6 +256,11 @@ Scatterplot plot = new Scatterplot(t, new ExpandAsColumns("Algorithm", "Duration
 </pre>
 
 <p>See <a href="tables.html">tables</a> for more information about tables and transformations.</p>
+
+<p>
+  <a name="prerequisites">
+</a></p>
+<a name="prerequisites">
 
 <h3>Prerequisites</h3>
 
@@ -336,11 +351,16 @@ public void cleanPrerequisites() {
 
 <p>This method can be called from the web console, by selecting an experiment and clicking on the <em>Clean</em> button.</p>
 
+</a><p><a name="prerequisites">
+  </a><a name="errors">
+</a></p>
+<a name="errors">
+
 <h3>Dealing with errors</h3>
 
 <p>An experiment may encouter an error during its execution, either due to a problem in the environment (missing resource or program), number or memory overflows, or some other reason. It is possible to signal the abnormal termination of an experiment to the user; this will be displayed in the web console by showing a red "X" icon next to the faulty experiment.</p>
 
-<p>Doing so is simple: method <code>execute</code> can be made to throw an exception of type <a href="doc/ca/uqac/lif/labpal/ExperimentException.html">ExperimentException</a>.</p>
+</a><p><a name="errors">Doing so is simple: method <code>execute</code> can be made to throw an exception of type </a><a href="doc/ca/uqac/lif/labpal/ExperimentException.html">ExperimentException</a>.</p>
 
 <p>If method <code>execute</code> terminates without throwing anything, LabPal assumes that the experiment finished successfully, and will display a green "checkmark" icon.</p>
 
@@ -367,6 +387,11 @@ public void execute() throws ExperimentException {
 </pre>
 
 <p>In the unlikely event that the experiment is executed without first creating the required file, an exception would be thrown with a descriptive error message. In the web console, clicking on this experiment would show this message.</p>
+
+<p>
+  <a name="progress">
+</a></p>
+<a name="progress">
 
 <h3>Setting a progress indicator</h3>
 
@@ -395,6 +420,11 @@ public void sort(int[] array) {
 
 <p>Obviously, it is up to the experiment's designer to come up with a meaningful way of measuring progress. Doing so is optional, especially for experiments that are very short. If no call to <code>setProgression</code> is made during the execution of an experiment, the indicator will stay at 0 until the experiment is finished.</p>
 
+</a><p><a name="progress">
+  </a><a name="time">
+</a></p>
+<a name="time">
+
 <h3>Estimating execution time</h3>
 
 <p>In the same way, an experiment can be queried for its estimated running time. This is done by implementing the optional method <code>getDurationEstimate</code>. By default, the method returns 0, but this can be overridden to return a value in seconds. Here is how the SortExperiment class could implement this method:</p>
@@ -410,6 +440,11 @@ public float getDurationEstimate(float factor) {
 <p>Note that the method is given a parameter, called <code>factor</code>, which is given by the lab when called. Since the same set of experiments running in different environments (e.g. different computers) may take a different time, this factor can be used to scale the estimate. A higher value means a slower environment. In our example here, it was guessed that the running time of a sorting algorithm is proportional to the size of the array times a numerical factor. Obviously, a finer value could be obtained by defining a different estimate depending on the sorting algorithm.</p>
 
 <p>LabPal uses the estimate provided by each experiment to guess the approximative running time of a set of experiments. As with the progress indicator, it is up to the experiment designer to decide whether or not to provide an estimate, and how to compute it based on what the experiment actually does.</p>
+
+</a><p><a name="time">
+  </a><a name="multipoint">
+</a></p>
+<a name="multipoint">
 
 <h3>Generate multiple data points</h3>
 
@@ -513,8 +548,12 @@ public MyExperiment extends Experiment {
 </table>
 
 <!-- :wrap=soft:mode=markdown: -->
-      </div>
-    </div>
+      </a>
+</div>
+<a name="multipoint">
+    </a>
+</div>
+<a name="multipoint">
 
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
 
@@ -537,5 +576,6 @@ public MyExperiment extends Experiment {
 <!-- End Piwik Code -->
   
 
+</a>
 </body>
 </html>

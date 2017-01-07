@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="../css/syntax.css">
   <link rel="stylesheet" href="../css/lanyon.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="../css/custom.css">
 
   <!-- Icons -->
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../apple-touch-icon-precomposed.png">
@@ -37,7 +38,8 @@
 <!-- Toggleable sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-item">
-    <p>LabPal is a library for running experiments on a computer and process their results.</p>
+  <img src="../images/labpal-175.png" alt="LabPal">
+  <p>LabPal is a library for running experiments on a computer and process their results.</p>
   </div>
 
   <nav class="sidebar-nav">
@@ -69,7 +71,11 @@
       </div>
 
       <div class="container content">
-        <h3>Experiments</h3>        
+        <h2>Experiments</h2>        <p>
+  <a href="index.html">User Manual</a>
+</p>
+
+
 
 <p>In the <a href="quick-tutorial.html">5-minute tutorial</a>, we have seen how to create a simple experiment that sorts an array and calculates the time it takes. We will modify this example in various ways to show the functionalities you can add to an experiment.</p>
 
@@ -83,21 +89,18 @@
 <li><a href="#progress">Update a progress indicator for long experiments</a></li>
 <li><a href="#time">Guess the execution time of an experiment</a></li>
 <li><a href="#multipoint">Generate multiple data points in a single experiment</a></li>
+<li><a href="#groups">Group experiments</a></li>
 </ul>
 
-<p>
-  <a name="multiple">
-</a></p>
-<a name="multiple">
-
-<h3>Using multiple experiment classes</h3>
+<h3>
+  <a name="multiple">Using multiple experiment classes</a>
+</h3>
 
 <p>Suppose first that we would like to compare multiple sorting algorithms. We already created the <code>GnomeSort</code> experiment, so we could simply create other classes that use a different sorting algorithm, such as Bubble sort or Quick sort.</p>
 
 <p>However, there are lots of things in common with these experiments: apart from the actual sorting, everything else is similar. It is therefore wise, in the object-oriented tradition, to factor out these functionalities into a common ancestor. Let us call it the <code>SortExperiment</code>:</p>
 
-<pre>  <code>
-public abstract class SortExperiment extends Experiment {
+<pre><code>public abstract class SortExperiment extends Experiment {
   public SortExperiment(int n) {
     setInput("Size", n);
   }
@@ -123,8 +126,7 @@ public abstract class SortExperiment extends Experiment {
 
 <p>Each specific experiment now only needs to implement the <code>sort</code> method, which performs the actual sorting. Hence our GnomeSort experiment becomes:</p>
 
-<pre>  <code>
-public class GnomeSort extends SortExperiment {
+<pre><code>public class GnomeSort extends SortExperiment {
   public GnomeSort(int n) {
     super(n);
     setInput("Algorithm", "Gnome Sort");
@@ -143,7 +145,7 @@ public class GnomeSort extends SortExperiment {
 
 <p>Note that our experiment now has an additional input parameter, which contains the name of the algorithm used for sorting.</p>
 
-</a><p><a name="multiple">Structured in this way, it is easy to create new classes that would use other sorting algorithms (we won't show them here; look at the </a><a href="https://github.com/liflab/labpal/tree/master/Source/Examples/src/sorting">code examples</a>). Our lab can then include experiments of various kinds:</p>
+<p>Structured in this way, it is easy to create new classes that would use other sorting algorithms (we won't show them here; look at the <a href="https://github.com/liflab/labpal/tree/master/Source/Examples/src/sorting">code examples</a>). Our lab can then include experiments of various kinds:</p>
 
 <pre>  <code>
 ...
@@ -156,8 +158,7 @@ add(new BubbleSort(size), t);
 
 <p>We also need to change the table, since now, there are multiple experiments for the same value of parameter <em>Size</em>. Let us add column "Algorithm" to the table:</p>
 
-<pre>  <code>
-ExperimentTable t = new ExperimentTable("Algorithm", "Size", "Duration");
+<pre><code>ExperimentTable t = new ExperimentTable("Algorithm", "Size", "Duration");
 </code>
 </pre>
 
@@ -208,12 +209,9 @@ ExperimentTable t = new ExperimentTable("Algorithm", "Size", "Duration");
 
 <p>The table automatically groups all cells with the same value of "Algorithm". (The way cells are grouped depends on the order in which the names are enumerated when creating it. See <a href="tables.html">Tables</a>.)</p>
 
-<p>
-  <a name="transformations">
-</a></p>
-<a name="transformations">
-
-<h3>Transforming the table</h3>
+<h3>
+  <a name="transformations">Transforming the table</a>
+</h3>
 
 <p>However, with such a table, our scatterplot will not make much sense: it will use the value of "Algorithm" for its <em>x</em> value, and use "Size" and "Duration" as two data series for the <em>y</em> value. We rather need a table like this:</p>
 
@@ -248,28 +246,23 @@ ExperimentTable t = new ExperimentTable("Algorithm", "Size", "Duration");
 
 <p>The <em>x</em> column is the value of "Size", followed by as many columns as there are values for the "Algorithm" parameter in the experiments. Each cell should contain the value of the "Duration" parameter for the experiment with the corresponding value of "Size" and "Algorithm".</p>
 
-</a><p><a name="transformations">We could redesign our experiments to produce such a table. An easier way is to apply a <em>transformation</em> to the existing table before plotting it. LabPal defines objects called </a><a href="../doc/ca/uqac/lif/labpal/table/TableTransformation.html">TableTransformation</a>s, which produce an output table from an input table. There are various transformations available; the one we are looking for here is called <a href="../doc/ca/uqac/lif/labpal/table/ExpandAsColumns.html">ExpandAsColumns</a>. When creating a plot, we can pass a table transformation in addition to a table; so our plot declaration becomes:</p>
+<p>We could redesign our experiments to produce such a table. An easier way is to apply a <em>transformation</em> to the existing table before plotting it. LabPal defines objects called <a href="../doc/ca/uqac/lif/labpal/table/TableTransformation.html">TableTransformation</a>s, which produce an output table from an input table. There are various transformations available; the one we are looking for here is called <a href="../doc/ca/uqac/lif/labpal/table/ExpandAsColumns.html">ExpandAsColumns</a>. When creating a plot, we can pass a table transformation in addition to a table; so our plot declaration becomes:</p>
 
-<pre>  <code>
-Scatterplot plot = new Scatterplot(t, new ExpandAsColumns("Algorithm", "Duration"));
+<pre><code>Scatterplot plot = new Scatterplot(t, new ExpandAsColumns("Algorithm", "Duration"));
 </code>
 </pre>
 
 <p>See <a href="tables.html">tables</a> for more information about tables and transformations.</p>
 
-<p>
-  <a name="prerequisites">
-</a></p>
-<a name="prerequisites">
-
-<h3>Prerequisites</h3>
+<h3>
+  <a name="prerequisites">Prerequisites</a>
+</h3>
 
 <p>Our new lab has one slight problem: the array is randomly generated by each experiment. This means that for a given size, the experiments do not sort the same array! We could fix this by making the random number generator deterministic (by giving the same seed every time), but a better way would be to generate the arrays of each size in advance, save them to files called <code>array-100.txt</code>, <code>array-200.txt</code>, etc., and simply have the experiments read these files when asked.</p>
 
 <p>Suppose we already have these files. We could change <code>SortExperiment</code> so that it reads the array from the corresponding file:</p>
 
-<pre>  <code>
-public abstract class SortExperiment extends Experiment {
+<pre><code>public abstract class SortExperiment extends Experiment {
   public SortExperiment(int n) {
     setInput("Size", n);
   }
@@ -313,8 +306,7 @@ public boolean prerequisitesFulfilled() {
 
 <p>Better still is to make each experiment responsible of creating its input file if it does not exist. This is done by implementing another method called <code>fulfillPrerequisites</code>. The process is as follows: when running an experiment, LabPal first calls <code>prerequisitesFulfilled</code>; if the experiment returns <code>true</code>, it calls <code>execute</code> right away. Otherwise, LabPal calls this experiment's <code>fulfillPrerequisites</code> method, and <em>then</em> executes it.</p>
 
-<pre>  <code>
-public void fulfillPrerequisites() {
+<pre><code>public void fulfillPrerequisites() {
   Random rand = new Random(0);
   int n = readInt("Size");
   String filename = "array-" + n + ".txt";
@@ -339,8 +331,7 @@ public void fulfillPrerequisites() {
 
 <p>It is also possible to clean the environment of temporary files that belong to an experiment, by implementing the <code>cleanPrerequisites</code> method. In our example, this cleanup would involve deleting the corresponding input file if it exists:</p>
 
-<pre>  <code>
-public void cleanPrerequisites() {
+<pre><code>public void cleanPrerequisites() {
   int n = readInt("Size");
   String filename = "array-" + n + ".txt";
   if (FileHelper.fileExists(filename))
@@ -351,23 +342,19 @@ public void cleanPrerequisites() {
 
 <p>This method can be called from the web console, by selecting an experiment and clicking on the <em>Clean</em> button.</p>
 
-</a><p><a name="prerequisites">
-  </a><a name="errors">
-</a></p>
-<a name="errors">
-
-<h3>Dealing with errors</h3>
+<h3>
+  <a name="errors">Dealing with errors</a>
+</h3>
 
 <p>An experiment may encouter an error during its execution, either due to a problem in the environment (missing resource or program), number or memory overflows, or some other reason. It is possible to signal the abnormal termination of an experiment to the user; this will be displayed in the web console by showing a red "X" icon next to the faulty experiment.</p>
 
-</a><p><a name="errors">Doing so is simple: method <code>execute</code> can be made to throw an exception of type </a><a href="doc/ca/uqac/lif/labpal/ExperimentException.html">ExperimentException</a>.</p>
+<p>Doing so is simple: method <code>execute</code> can be made to throw an exception of type <a href="doc/ca/uqac/lif/labpal/ExperimentException.html">ExperimentException</a>.</p>
 
 <p>If method <code>execute</code> terminates without throwing anything, LabPal assumes that the experiment finished successfully, and will display a green "checkmark" icon.</p>
 
 <p>For example, method <code>execute</code> of SortExperiment could be modified to add an extra check for the presence of the required file, and throw an exception if it is not there:</p>
 
-<pre>  <code>
-public void execute() throws ExperimentException {
+<pre>  <code>public void execute() throws ExperimentException {
   // Read array from file
   int n = readInt("Size");
   String filename = "array-" + n + ".txt";
@@ -388,19 +375,15 @@ public void execute() throws ExperimentException {
 
 <p>In the unlikely event that the experiment is executed without first creating the required file, an exception would be thrown with a descriptive error message. In the web console, clicking on this experiment would show this message.</p>
 
-<p>
-  <a name="progress">
-</a></p>
-<a name="progress">
-
-<h3>Setting a progress indicator</h3>
+<h3>
+  <a name="progress">Setting a progress indicator</a>
+</h3>
 
 <p>Some experiments can be very long to execute; in such cases, it may be desirable to have an idea of the progression of the experiment. To this end, each experiment has its own "progress bar" that it can update as it pleases. One can do so by simply calling method <code>setProgression</code>. This method takes a single value between 0 and 1, indicating the level of progression of the experiment (0 meaning not started, and 1 indicating completion).</p>
 
 <p>For example, here is the use of a progress bar in the body of method <code>sort</code> for the ShellSort experiment class:</p>
 
-<pre>  <code>
-public void sort(int[] array) {
+<pre>  <code>public void sort(int[] array) {
   float num_iterations = 0, max_iterations = (Math.log(2, array.length) - 1);
   for (int gap = array.length / 2; gap &gt; 0; gap /= 2 ) {
     setProgression(++num_iterations / max_iterations);
@@ -420,12 +403,9 @@ public void sort(int[] array) {
 
 <p>Obviously, it is up to the experiment's designer to come up with a meaningful way of measuring progress. Doing so is optional, especially for experiments that are very short. If no call to <code>setProgression</code> is made during the execution of an experiment, the indicator will stay at 0 until the experiment is finished.</p>
 
-</a><p><a name="progress">
-  </a><a name="time">
-</a></p>
-<a name="time">
-
-<h3>Estimating execution time</h3>
+<h3>
+  <a name="time">Estimating execution time</a>
+</h3>
 
 <p>In the same way, an experiment can be queried for its estimated running time. This is done by implementing the optional method <code>getDurationEstimate</code>. By default, the method returns 0, but this can be overridden to return a value in seconds. Here is how the SortExperiment class could implement this method:</p>
 
@@ -441,17 +421,13 @@ public float getDurationEstimate(float factor) {
 
 <p>LabPal uses the estimate provided by each experiment to guess the approximative running time of a set of experiments. As with the progress indicator, it is up to the experiment designer to decide whether or not to provide an estimate, and how to compute it based on what the experiment actually does.</p>
 
-</a><p><a name="time">
-  </a><a name="multipoint">
-</a></p>
-<a name="multipoint">
-
-<h3>Generate multiple data points</h3>
+<h3>
+  <a name="multipoint">Generate multiple data points</a>
+</h3>
 
 <p>It may be cumbersome to have one experiment for each data point you want to generate. For example, suppose you have a function <em>f</em> that processes numbers from 0 to 1,000, and you'd like to measure the elapsed time after each 100 values processed. One possible way would be to create an experiment like this:</p>
 
-<pre>  <code>
-public MyExperiment extends Experiment {
+<pre>  <code>public MyExperiment extends Experiment {
   public MyExperiment(int n) {
     setInput("n", n);
   }
@@ -480,8 +456,7 @@ for (int i = 0; i &lt; 1000; i+= 100)
 
 <p>Fortunately, this can be done. Instead of writing a single value, an experiment can write a <em>list</em> of values. A more efficient way of implementing the experiment would hence be:</p>
 
-<pre>  <code>
-public MyExperiment extends Experiment {
+<pre><code>public MyExperiment extends Experiment {
   public MyExperiment() {
     JsonList list_x = new JsonList(), list_y = new JsonList();
     for (int i = 0; i &lt; 1000; i += 100) {
@@ -547,13 +522,31 @@ public MyExperiment extends Experiment {
 </tbody>
 </table>
 
+<h3>
+  <a name="groups">Group experiments</a>
+</h3>
+
+<p>Rather than have a long list of experiments, it may be desirable to organize experiments in <strong>groups</strong>. This is simple, one simply has to create a <code>Group</code> object, and to put experiments inside:</p>
+
+<pre>  <code>
+Group g = new Group("Gnome Sort");
+add(g);
+GnomeSort exp = new GnomeSort(10);
+g.add(exp);
+<code>
+</code></code>
+</pre>
+<code>
+  <code>
+
+<p>As usual, don't forget to <code>add</code> the group to the lab.</p>
+
+<p>The experiment list will now show a collapsible section heading named "Gnome Sort"; clicking on the triangle to the left will show/hide the set of experiments associated to this group.</p>
+
 <!-- :wrap=soft:mode=markdown: -->
-      </a>
-</div>
-<a name="multipoint">
-    </a>
-</div>
-<a name="multipoint">
+</code>
+</code>      </div>
+    </div>
 
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
 
@@ -576,6 +569,5 @@ public MyExperiment extends Experiment {
 <!-- End Piwik Code -->
   
 
-</a>
 </body>
 </html>

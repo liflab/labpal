@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="../css/syntax.css">
   <link rel="stylesheet" href="../css/lanyon.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="../css/custom.css">
 
   <!-- Icons -->
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../apple-touch-icon-precomposed.png">
@@ -37,7 +38,8 @@
 <!-- Toggleable sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-item">
-    <p>LabPal is a library for running experiments on a computer and process their results.</p>
+  <img src="../images/labpal-175.png" alt="LabPal">
+  <p>LabPal is a library for running experiments on a computer and process their results.</p>
   </div>
 
   <nav class="sidebar-nav">
@@ -69,7 +71,11 @@
       </div>
 
       <div class="container content">
-        <h3>Creating plots</h3>        
+        <h2>Creating plots</h2>        <p>
+  <a href="index.html">User Manual</a>
+</p>
+
+
 
 <p>LabPal provides various ways of displaying the results of experiments graphically, using plots. In this section, you will learn about:</p>
 
@@ -89,48 +95,34 @@
 
 <p>The creation and transformation of tables is covered in its <a href="tables.html">own section</a>. Here we focus on the creation and customization of plots from existing tables.</p>
 
-<p>
-  <a name="types">
-</a></p>
-<a name="types">
-
-<h3>Plot types</h3>
+<h3>
+  <a name="types">Plot types</a>
+</h3>
 
 <p>Currently, LabPal supports the following types of plots:</p>
 
-</a><ul>
-<a name="types">
-</a><li>
-<a name="types"></a><a href="#scatterplot">Scatterplots</a>
-</li>
+<ul>
+<li><a href="#scatterplot">Scatterplots</a></li>
 <li><a href="#piechart">Pie charts</a></li>
 <li><a href="#clusteredhistogram">Clustered bar plots</a></li>
 </ul>
 
-<p>
-  <a name="libraries">
-</a></p>
-<a name="libraries">
-
-<h3>Plot libraries</h3>
+<h3>
+  <a name="libraries">Plot libraries</a>
+</h3>
 
 <p>LabPal uses two programs to generate plots.</p>
 
-</a><ul>
-<a name="libraries">
-</a><li>
-<a name="libraries">The first is the </a><a href="http://trac.erichseifert.de/gral/">GRAL</a> graphing library, which comes bundled with it. When using GRAL-based plots, LabPal is stand-alone and does not require any external programs to display the generated pictures.</li>
+<ul>
+<li>The first is the <a href="http://trac.erichseifert.de/gral/">GRAL</a> graphing library, which comes bundled with it. When using GRAL-based plots, LabPal is stand-alone and does not require any external programs to display the generated pictures.</li>
 <li>The second is <a href="http://gnuplot.info">Gnuplot</a>, a powerful plotting program. Contrarily to GRAL, Gnuplot is an external software that does not come with LabPal. In order to display Gnuplot-based plots, the host system must have Gnuplot installed and executable from the command line. When run on a machine that does not have Gnuplot, the corresponding plots can be created, but cannot be shown.</li>
 </ul>
 
 <p>Some types of plots (such as scatterplots) are available in both "flavours"; others can only be created by one of the tools. For example, Gnuplot cannot create pie charts, while GRAL cannot create clustered bar plots.</p>
 
-<p>
-  <a name="2d">
-</a></p>
-<a name="2d">
-
-<h3>Two-dimensional plots</h3>
+<h3>
+  <a name="2d">Two-dimensional plots</a>
+</h3>
 
 <p>Every two-dimensional plot has a few common methods that can be used to customize it:</p>
 
@@ -183,8 +175,7 @@
 
 <p>A scatterplot is created like this:</p>
 
-<pre>  <code>
-Table t = ...
+<pre><code>Table t = ...
 ca.uqac.lif.labpal.plot.Scatterplot plot = new Scatterplot(t);
 </code>
 </pre>
@@ -199,12 +190,9 @@ ca.uqac.lif.labpal.plot.Scatterplot plot = new Scatterplot(t);
 
 <p>TODO</p>
 
-</a><p><a name="2d">
-  </a><a name="gral-custom">
-</a></p>
-<a name="gral-custom">
-
-<h3>Customizing GRAL plots</h3>
+<h3>
+  <a name="gral-custom">Customizing GRAL plots</a>
+</h3>
 
 <p>If these basic plot customization functions are not sufficient, it is possible to access to the complete GRAL library by directly manipulating the underlying Plot object. There are two ways of doing this.</p>
 
@@ -212,8 +200,7 @@ ca.uqac.lif.labpal.plot.Scatterplot plot = new Scatterplot(t);
 
 <p>If the basic plot is correct, but one wishes simply to perform some "touching up", a simple way is to override the <code>customize</code> method. For example, the Scatterplot class does not provide a way of changing the border width of the plot; however, this can be done by overriding <code>customize</code> and setting it using GRAL primitives:</p>
 
-<pre>  <code>
-Table t = ...
+<pre><code>Table t = ...
 ca.uqac.lif.labpal.plot.Scatterplot plot = new Scatterplot(t) {
   public void customize(de.erichseifert.gral.plots.Plot plot) {
     plot.setInsets(new Insets2D.Double(20d, 60d, 60d, 40d));
@@ -224,10 +211,9 @@ ca.uqac.lif.labpal.plot.Scatterplot plot = new Scatterplot(t) {
 
 <h4>Heavier customization</h4>
 
-</a><p><a name="gral-custom">For heavier customization, or to create a plot that GRAL supports but for which there exists no corresponding LabPal object, one can simply create a class that extends </a><a href="../doc/ca/uqac/lif/labpal/plot/gral/GralPlot.html">GralPlot</a>, and implement the <code>getPlot</code> method. This allows the user to create and setup any plot provided by GRAL and associate it with a DataSource corresponding to the table being passed to the plot. For example, the following code creates a GRAL RasterPlot object and changes the font used for displaying it.</p>
+<p>For heavier customization, or to create a plot that GRAL supports but for which there exists no corresponding LabPal object, one can simply create a class that extends <a href="../doc/ca/uqac/lif/labpal/plot/gral/GralPlot.html">GralPlot</a>, and implement the <code>getPlot</code> method. This allows the user to create and setup any plot provided by GRAL and associate it with a DataSource corresponding to the table being passed to the plot. For example, the following code creates a GRAL RasterPlot object and changes the font used for displaying it.</p>
 
-<pre>  <code>
-GralPlot plot = new GralPlot(t) {
+<pre><code>GralPlot plot = new GralPlot(t) {
   public de.erichseifert.gral.plots.Plot getPlot(DataSource source) {
     DataSource rasterdata = RasterPlot.createRasterData(source);
     RasterPlot p = new RasterPlot(rasterdata);
@@ -241,14 +227,11 @@ add(plot);
 
 <p>Once created, this plot can be managed by LabPal like any other plot.</p>
 
-<p>
-  <a name="palettes">
-</a></p>
-<a name="palettes">
+<h3>
+  <a name="palettes">Palettes</a>
+</h3>
 
-<h3>Palettes</h3>
-
-</a><p><a name="palettes">The colours associated to each data series in a plot can be customized using a </a><a href="../doc/ca/uqac/lif/labpal/plot/Palette.html">Palette</a>. A palette is simply a map between numbers and colours; when drawing data series, a plot will use the first colour of the palette for the first series, the second colour for the second series, and so on. (If there are more series than colours in the palette, the palette index restarts from the beginning.)</p>
+<p>The colours associated to each data series in a plot can be customized using a <a href="../doc/ca/uqac/lif/labpal/plot/Palette.html">Palette</a>. A palette is simply a map between numbers and colours; when drawing data series, a plot will use the first colour of the palette for the first series, the second colour for the second series, and so on. (If there are more series than colours in the palette, the palette index restarts from the beginning.)</p>
 
 <p>The <a href="../doc/ca/uqac/lif/labpal/plot/Plot.html">Plot</a> object contains a few predefined palettes, which you can refer statically (for example, <code>Palette.QUANTITATIVE_1</code> or <code>Palette.EGA</code>). To instruct a plot to use a specific palette, it can be passed by a call to method <code>setPalette</code>.</p>
 

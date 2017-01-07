@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="../css/syntax.css">
   <link rel="stylesheet" href="../css/lanyon.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="../css/custom.css">
 
   <!-- Icons -->
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../apple-touch-icon-precomposed.png">
@@ -37,7 +38,8 @@
 <!-- Toggleable sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-item">
-    <p>LabPal is a library for running experiments on a computer and process their results.</p>
+  <img src="../images/labpal-175.png" alt="LabPal">
+  <p>LabPal is a library for running experiments on a computer and process their results.</p>
   </div>
 
   <nav class="sidebar-nav">
@@ -69,7 +71,7 @@
       </div>
 
       <div class="container content">
-        <h3>LabPal User Manual</h3>        
+        <h2>LabPal User Manual</h2>        
 
 <p>This manual is under construction. Please come back often.</p>
 
@@ -87,7 +89,17 @@
 <li><a href="quick-tutorial.html#done">Wrapping up</a></li>
 </ul>
 </li>
-<li><a href="web-ui.html">Using the web console</a></li>
+<li>
+<a href="web-ui.html">Using the web console</a>
+
+<ul>
+<li><a href="web-ui.html#usage">Typical usage of the web console</a></li>
+<li><a href="web-ui.html#elements">The elements of the web console</a></li>
+<li><a href="web-ui.html#save">Saving and loading a lab</a></li>
+<li><a href="web-ui.html#remote">Running a lab on a remote machine</a></li>
+<li><a href="web-ui.html#port">Changing the server port</a></li>
+</ul>
+</li>
 <li><a href="text-ui.html">Using the text console</a></li>
 <li>
 <a href="experiments.html">Experiments: advanced features</a>
@@ -100,6 +112,7 @@
 <li><a href="experiments.html#progress">Update a progress indicator for long experiments</a></li>
 <li><a href="experiments.html#time">Guess the execution time of an experiment</a></li>
 <li><a href="experiments.html#multipoint">Generate multiple data points in a single experiment</a></li>
+<li><a href="experiments.html#groups">Group experiments</a></li>
 </ul>
 </li>
 <li><a href="tables.html">Creating and transforming tables</a></li>
@@ -111,6 +124,25 @@
 <li><a href="plots.html#libraries">Plot libraries</a></li>
 <li><a href="plots.html#gral-custom">Customizing GRAL plots</a></li>
 <li><a href="plots.html#palettes">Palettes</a></li>
+</ul>
+</li>
+<li>
+<a href="metadata.html">Adding metadata</a>
+
+<ul>
+<li><a href="#lab">To the lab</a></li>
+<li><a href="#group">To each experiment group</a></li>
+<li><a href="#experiment">To each experiment</a></li>
+<li><a href="#parameters">To each parameter</a></li>
+</ul>
+</li>
+<li><a href="commands.html">Calling external commands</a></li>
+<li>
+<a href="write-in.html">Including external results</a>
+
+<ul>
+<li><a href="write-in.html#manual">By hand</a></li>
+<li><a href="write-in.html#class">Using WriteInExperiment</a></li>
 </ul>
 </li>
 </ul>

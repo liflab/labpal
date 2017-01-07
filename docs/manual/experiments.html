@@ -528,24 +528,20 @@ for (int i = 0; i &lt; 1000; i+= 100)
 
 <p>Rather than have a long list of experiments, it may be desirable to organize experiments in <strong>groups</strong>. This is simple, one simply has to create a <code>Group</code> object, and to put experiments inside:</p>
 
-<pre>  <code>
+<pre><code>
 Group g = new Group("Gnome Sort");
 add(g);
 GnomeSort exp = new GnomeSort(10);
 g.add(exp);
-<code>
-</code></code>
+</code>
 </pre>
-<code>
-  <code>
 
 <p>As usual, don't forget to <code>add</code> the group to the lab.</p>
 
 <p>The experiment list will now show a collapsible section heading named "Gnome Sort"; clicking on the triangle to the left will show/hide the set of experiments associated to this group.</p>
 
 <!-- :wrap=soft:mode=markdown: -->
-</code>
-</code>      </div>
+      </div>
     </div>
 
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>

@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="author" content="Sylvain Hallé">
+  <title>Other features - LabPal</title>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/poole.css">
+  <link rel="stylesheet" href="../css/syntax.css">
+  <link rel="stylesheet" href="../css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="../css/custom.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="../favicon.ico">
+  
+  <!-- Syntax highlighting -->
+  <link rel="stylesheet" href="../assets/js/styles/default.css">
+  <script src="../assets/js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <!-- RSS -->
+  <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> -->
+</head>
+  <body class="layout-reverse theme-base-0e">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+  <img src="../images/labpal-175.png" alt="LabPal">
+  <p>LabPal is a library for running experiments on a computer and process their results.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="../">Home</a>
+    <a class="sidebar-nav-item" href="../manual/quick-tutorial.html">Quick tutorial</a>
+    <a class="sidebar-nav-item" href="../manual/index.html">User manual</a>
+    <a class="sidebar-nav-item" href="https://github.com/liflab/labpal/releases/latest">Download</a>
+    <a class="sidebar-nav-item" href="https://github.com/liflab/labpal">GitHub project</a>
+    <span class="sidebar-nav-item">Currently v2.5</span>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      © 2014-2017 Sylvain Hallé. All rights reserved.
+    </p>
+  </div>
+</div>
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="../" title="Home">LabPal</a>
+            <small>Run experiments on a computer</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <h2>Other features</h2>        <p>
+  <a href="index.html">User Manual</a>
+</p>
+
+
+
+<ul>
+<li><a href="#cli">Passing command-line parameters</a></li>
+<li><a href="#custom-ui">Customizing the web console</a></li>
+<li><a href="#environment">Checking the environment</a></li>
+</ul>
+
+<h3>
+  <a name="cli">Passing command-line parameters</a>
+</h3>
+
+<p>It may be desirable to make the lab depend on settings that are decided by the user when it is launched. For example, in our running example comparing sorting algorithms, one could wish to have control on the increment step for the size of the array. Our <a href="quick-tutorial.html">quick tutorial</a> had a hard-coded increment step of 100 elements.</p>
+
+<p>It is possible for a lab to declare command-line arguments, that the lab can then retrieve in its <code>setup</code> method. To this end, one must implement a method called <code>setupCli</code>. When called, this method is given an instance of a <a href="../doc/ca/uqac/lif/labpal/CliParser.html">CliParser</a> object, which will be used to parse the command-line arguments. Method <code>setupCli</code> can add new arguments to this parser. For example, let us add an argument called <code>step</code>, which will define the increment step to use when creating the experiments:</p>
+
+<pre><code>public void setupCli(CliParser parser) {
+  parser.add(new Argument().withLongName("step").withArgument("n")
+    .withDescription("Increment array sizes by n"));
+}
+</code>
+</pre>
+
+<p>To retrieve the value of <code>step</code> when the lab is setup, one can call <code>getCliArguments</code>:</p>
+
+<pre><code>public void setup() {
+  int step = 100;
+  ArgumentMap map = getCliArguments();
+  if (map.hasOption("step")) {
+    step = Integer.parseInt(map.getOptionValue("step"));
+  }
+  ... (Rest of setup code)
+}
+</code>
+</pre>
+
+<p>In the above snippet, the value of <code>step</code> is set to 100; if a command line argument has been given, then <code>step</code> is replaced by the value passed at the command line. This can be done when starting the lab:</p>
+
+<pre>  <code>$ java -jar my-lab.jar --step 200
+</code>
+</pre>
+
+<p>Please refer to the API documentation of <a href="../doc/ca/uqac/lif/labpal/CliParser.html">CliParser</a> for precisions on its usage.</p>
+
+<h3>
+  <a name="custom-ui">Customizing the web console</a>
+</h3>
+
+<p>LabPal's web console can be customized to some extent. One needs to add method <code>setupCallbacks</code> to the lab. This method must return a collection (typically a list or a set) of objects of type <a href="../doc/ca/uqac/lif/labpal/server/WebCallback.html">WebCallback</a>. A web callback is an object that is called when a given URL is requested to the server. It has a method called <code>process</code>, which creates an HTTP response from the request. As an example, here is a simple callback that prints a dummy HTML page:</p>
+
+<pre><code>public class HelloCallback extends WebCallback {
+  public HelloCallback(Laboratory lab, LabAssistant assistant) {
+    super("/hello", lab, assistant);
+  }
+  public CallbackResponse process(HttpExchange t) {
+    CallbackResponse r = new CallbackResponse(t);
+    response.setContentType(ContentType.HTML);
+    response.setCode(CallbackResponse.HTTP_OK);
+    response.setContents("&lt;html&gt;&lt;body&gt;Hello world!&lt;/body&gt;&lt;/html&gt;");
+    return response;
+  }
+}
+</code>
+</pre>
+
+<p>Once this callback is defined, the lab can register it in <code>setupCallbacks</code>:</p>
+
+<pre><code>public Collection<webcallback> setupCallbacks(Laboratory lab, LabAssistant assistant) {
+  List<webcallback> list = new ArrayList<webcallback>();
+  list.add(new HelloCallback(lab, assistant));
+  return list;
+}
+</webcallback></webcallback></webcallback></code>
+</pre>
+
+<p>When started, the web console now has a new page, <code>http://localhost:21212/hello</code> which, when called, returns the "Hello world" page defined in the corresponding callback.</p>
+
+<h3>
+  <a name="environment">Checking the environment</a>
+</h3>
+
+<p>LabPal and its <a href="https://github.com/liflab/labpal-project">template project</a> encourage the production of a single, stand-alone, runnable environment that includes all its necessary libraries and input files. This way, a lab can easily be copied around and run without any setup.</p>
+
+<p>There exist situations, however, where this is not possible, and the lab has requirements with respect to the environment in which it is meant to be executed. For example, your experiments may require the use of an external database, some minimum amount of memory or disk space, or some other program that needs to be installed and called from inside the experiments. If these requirements are not met, the lab cannot run or produce meaningful results.</p>
+
+<p>It is possible to verify these conditions at startup by adding to the lab a method called <code>isEnvironmentOk</code>. Insert there any code that can check that the conditions for running the lab are met. For example, the following method checks if a program called "foo" is installed by attempting to run it from the command line:</p>
+
+<pre><code>public String isEnvironmentOk() {
+  CommandRunner runner = new CommandRunner(new String[]{"foo"});
+  runner.run();
+  if (runner.getExitCode() != 0)
+    return "Command foo cannot be called at the command line";
+  return null;
+}
+</code>
+</pre>
+
+<p>An error is detected by checking that the exit code is different from 0. (See <a href="../doc/ca/uqac/lif/labpal/CommandRunner.html">CommandRunner</a>.)</p>
+
+<p>You must return null if everything is OK. As a rule, returning a non-null value (typically an error message) means that something <em>external</em> to the lab must be fixed before running the experiments; hence LabPal will simply quit. If your experiments have <a href="experiments.html#prerequisites">prerequisites</a> they can generate by themselves, don't use this method.</p>
+
+<!-- :wrap=soft:mode=markdown: -->
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  // tracker methods like "setCustomDimension" should be called before "trackPageView"
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//leduotang.ca/piwik/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '3']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+  
+
+</body>
+</html>

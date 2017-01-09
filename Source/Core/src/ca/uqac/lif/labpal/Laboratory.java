@@ -18,8 +18,9 @@
 package ca.uqac.lif.labpal;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -565,7 +566,8 @@ public abstract class Laboratory
 			int seed = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("seed"));
 			new_lab.setRandomSeed(seed);
 		}
-		Collection<WebCallback> callbacks = new_lab.setupCallbacks();
+		List<WebCallback> callbacks = new ArrayList<WebCallback>();
+		new_lab.setupCallbacks(callbacks);
 		stdout.resetColors();
 		stdout.print(getCliHeader());
 		int code = ERR_OK;
@@ -648,15 +650,16 @@ public abstract class Laboratory
 	public abstract void setup();
 	
 	/**
-	 * Sets p the custom callbacks to the web server. 
+	 * Sets the custom callbacks to the web server. 
 	 * This allows a lab to include custom pages in its web interface.
-	 * @return callbacks A collection of new server callbacks.
+	 * @param callbacks An empty list. The method should add new
+	 *   callbacks to this list.
 	 *   These callbacks will be added to the server if the {@code --web}
 	 *   option is used at startup.
 	 */
-	public Collection<WebCallback> setupCallbacks()
+	public void setupCallbacks(List<WebCallback> callbacks)
 	{
-		return null;
+		// Do nothing
 	}
 	
 	/**

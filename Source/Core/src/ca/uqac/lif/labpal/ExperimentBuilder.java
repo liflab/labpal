@@ -34,7 +34,7 @@ import ca.uqac.lif.labpal.EmptyException;
  * 
  * @author Sylvain Hallé
  */
-public class WriteInExperimentBuilder<T extends Experiment>
+public class ExperimentBuilder<T extends Experiment>
 {
 	protected static final Pattern s_paramPattern = Pattern.compile("(.*?):(.*)");
 
@@ -52,10 +52,22 @@ public class WriteInExperimentBuilder<T extends Experiment>
 	 * The regular expression used to split columns in the input file
 	 */
 	public static final String s_separatorRegex = "\\t+";
+	
+	/**
+	 * The experiment instance that will be used to create
+	 * experiment clones
+	 */
+	protected final CloneableExperiment<T> m_referenceClone;
 
-	public WriteInExperimentBuilder()
+	/**
+	 * Creates a new experiment builder
+	 * @param experiment An experiment instance that will be used to create
+	 * experiment clones
+	 */
+	public ExperimentBuilder(CloneableExperiment<T> experiment)
 	{
 		super();
+		m_referenceClone = experiment;
 	}
 
 	/**
@@ -67,7 +79,7 @@ public class WriteInExperimentBuilder<T extends Experiment>
 	 * @throws ParseException If the format of the input does not follow
 	 *   the rules mentioned above
 	 */
-	public Set<T> buildExperiment(CloneableExperiment<T> exp, Scanner scanner) throws ParseException
+	public Set<T> buildExperiments(Scanner scanner) throws ParseException
 	{
 		Matcher mat;
 		String[] headers = null;
@@ -120,7 +132,7 @@ public class WriteInExperimentBuilder<T extends Experiment>
 				}
 				continue;
 			}
-			T new_experiment = exp.newExperiment();
+			T new_experiment = m_referenceClone.newExperiment();
 			new_experiment.setInput(input_parameters);
 			String[] parts = line.split(s_separatorRegex);
 			if (parts.length > headers.length)
@@ -156,6 +168,11 @@ public class WriteInExperimentBuilder<T extends Experiment>
 		public ParseException(String message) 
 		{
 			super(message);
+		}
+		
+		public ParseException(Throwable t) 
+		{
+			super(t);
 		}
 
 	}

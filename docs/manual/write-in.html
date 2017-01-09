@@ -28,22 +28,6 @@
 
   <!-- RSS -->
   <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> -->
-  
-  <!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  // tracker methods like "setCustomDimension" should be called before "trackPageView"
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//leduotang.ca/piwik/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '3']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->
 </head>
   <body class="layout-reverse theme-base-0e">
 
@@ -101,7 +85,7 @@
   <a name="manual">By hand</a>
 </h3>
 
-<p>This could be done by hand. For example, suppose you found this table that advertises sorting times for a (fictional) new algorithm called the "Blabla Sort":</p>
+<p>This can be done by hand. For example, suppose you found this table that advertises sorting times for a (fictional) new algorithm called the "Blabla Sort":</p>
 
 <table border="1">
 <tbody>
@@ -124,12 +108,13 @@
 
 <pre><code>public class BlablaSort extends Experiment {
   public BlablaSort(int size, int time) {
+    setInput("Algorithm", "Blabla Sort");
     setInput("Size", size);
     write("Time", time);
     setStatus(Status.DONE);
   }
   
-  public void run() {
+  public void execute() {
   }
 }
 </code>
@@ -140,10 +125,70 @@
 <p>From this point on, instances of BlablaSort can be added to SortingLab, included into tables and plots, like any other experiment.</p>
 
 <h3>
-  <a name="class">Using WriteInExperiment</a>
+  <a name="file">Automatically from a file</a>
 </h3>
 
-<p>TODO</p>
+<p>A more systematic way of creating "pre-executed" experiments is to use the <a href="../doc/ca/uqac/lif/labpal/ExperimentBuilder.html">ExperimentBuilder</a>. First, instead of hard-coding the data in the lab's setup method, let us move it into a text file called <code>blabla.txt</code>:</p>
+
+<pre># Sorting times for BlaBla Sort
+# Fetched from the following paper: ...
+
+Size*   Time
+---------------------
+1000    14
+2000    24
+</pre>
+
+<p>Let us now change the class BlablaSort so that it implements the interface <code>CloneableExperiment</code>. A cloneable experiment must implement a method called <code>newExperiment</code>, which is expected to return a new, empty instance of this class.</p>
+
+<pre><code>public class BlablaSort extends Experiment implements CloneableExperiment&lt;BlablaSort&gt; {
+  public class BlablaSort() {
+    setInput("Algorithm", "Blabla Sort");
+    setStatus(Status.DONE);
+  }
+  public void execute() {
+  }
+  public BlablaSort newExperiment() {
+    return new BlablaSort();
+  }
+}
+</code>
+</pre>
+
+<p>We are now ready to use the <code>ExperimentBuilder</code> to automatically create instances of <code>BlablaSort</code> by filling their data from the contents of the text file. In our lab:</p>
+
+<pre><code>
+public void setup() {
+  ExperimentBuilder&lt;BlablaSort&gt; builder = new ExperimentBuilder&lt;BlablaSort&gt;();
+  Scanner scanner = new Scanner(FileHelper.internalFileToStream(this.getClass(), "blabla.txt"));
+  try {
+    Set&lt;BlablaSort&gt; experiments = builder.buildExperiment(new BlablaSort(), scanner);
+  } catch (ParseException e) {
+  }
+  ...
+}
+</code>
+</pre>
+
+<p>Let us examine what this code does:</p>
+
+<ul>
+<li>The first line creates a new ExperimentBuilder, which will create instances of experiments of class BlablaSort</li>
+<li>The second line opens a scanner to the text file we created</li>
+<li>The third line passes this scanner and an empty instance of BlablaSort to the builder. In response, the builder returns a set of <strong>two</strong> BlablaSort experiments. These experiments can then be manipulated like all the others: added to the lab, to a table, etc. (An exception is thrown if the file is incorrectly formatted.)</li>
+</ul>
+
+<p>Where do these two experiments come from? They have been instantiated from the contents of <code>blabla.txt</code>.</p>
+
+<ul>
+<li>Blank lines, lines that start with "#" and "----" are ignored</li>
+<li>The first non-ignored line is expected to contain a tab-separated list of parameter names</li>
+<li>All remaining non-ignored lines are interpreted as parameter values for one new experiment instance. For example, line "1000  14" will produce a new BlablaSort experiment with parameter "Size" set to 1000, and parameter "Time" set to 14.</li>
+</ul>
+
+<p>Since BlablaSort "simulates" sorting by an algorithm, "Size" should be interpreted as an <em>input</em> parameter, while "Time" is rather an output parameter. This distinction can be made in the text file by putting a star at the end of input parameter names.</p>
+
+<p>As we have seen, a possible use of the ExperimentBuilder is to include experiments made from existing results fetched from some external source (research paper, database). In such a case, the <code>execute</code> method of the experiment is empty. However, the ExperimentBuilder can be used to instantiate any experiment, including experiments that need to be run. For example, one can use a text file to define the set of input parameters to be given to experiments, instead of creating them manually in the lab's <code>setup</code> method.</p>
 
 <!-- :wrap=soft:mode=markdown: -->
       </div>
@@ -151,6 +196,23 @@
 
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
 
+
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  // tracker methods like "setCustomDimension" should be called before "trackPageView"
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//leduotang.ca/piwik/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '3']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
   
 
 </body>

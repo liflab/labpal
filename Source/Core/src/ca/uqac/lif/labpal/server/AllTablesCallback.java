@@ -59,27 +59,43 @@ public class AllTablesCallback extends WebCallback
 		LatexTableRenderer renderer = new LatexTableRenderer();
 		for (int id : m_lab.getTableIds())
 		{
+			renderer.reset();
 			Table tab = m_lab.getTable(id);
 			String box_name = tab.getTitle();
 			if (box_name.compareTo("Untitled") == 0)
 			{
 				box_name += id;
 			}
-			box_name = box_name.replaceAll(" ", "_");
+			box_name = formatName(box_name);
 			DataTable d_tab = tab.getConcreteTable();
 			String tab_contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
 			out.append("% ----------------------").append(FileHelper.CRLF).append("% Table: ").append(box_name).append(FileHelper.CRLF);
 			out.append("% ----------------------").append(FileHelper.CRLF);
 			out.append("\\newsavebox{\\").append(box_name).append("}").append(FileHelper.CRLF);
-			out.append("\\savebox{\\").append(box_name).append("}{%").append(FileHelper.CRLF);
+			out.append("\\begin{lrbox}{\\").append(box_name).append("}").append(FileHelper.CRLF);
 			out.append(tab_contents);
-			out.append("%").append(FileHelper.CRLF).append("}").append(FileHelper.CRLF);
+			out.append(FileHelper.CRLF).append("\\end{lrbox}").append(FileHelper.CRLF);
 		}
 		response.setContentType("application/x-latex");
 		String filename = Server.urlEncode(m_lab.getTitle()) + ".tex";
 		response.setAttachment(filename);
 		response.setContents(out.toString());
 		return response;
+	}
+	
+	/**
+	 * Formats a table name to be a valid name in LaTeX
+	 * @param name The name
+	 * @return The formatted name
+	 */
+	protected static String formatName(String name)
+	{
+		String out_name = name;
+		out_name = out_name.replaceAll(" ", "");
+		out_name = out_name.replaceAll("\\(", "");
+		out_name = out_name.replaceAll("\\)", "");
+		out_name = out_name.replaceAll(",", "");
+		return out_name;
 	}
 
 }

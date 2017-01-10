@@ -117,7 +117,7 @@ public abstract class Experiment implements Runnable
 	 */
 	transient ca.uqac.lif.labpal.Random m_random;
 	
-	public Experiment()
+	public Experiment(Status status)
 	{
 		super();
 		m_inputParameters = new JsonMap();
@@ -125,9 +125,14 @@ public abstract class Experiment implements Runnable
 		m_parameterDescriptions = new HashMap<String,String>();
 		m_keysToHide = new HashSet<String>();
 		m_runBy = "";
-		m_status = Status.DUNNO;
+		m_status = status;
 		m_errorMessage = "";
 		m_random = null;
+	}
+	
+	public Experiment()
+	{
+		this(Status.DUNNO);
 	}
 	
 	public Experiment(JsonMap params)

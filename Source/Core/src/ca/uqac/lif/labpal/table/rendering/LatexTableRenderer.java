@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -69,6 +69,14 @@ public class LatexTableRenderer extends TableNodeRenderer
 	 * The name of the LaTeX environment that displays the table
 	 */
 	protected EnvironmentName m_environmentName = EnvironmentName.TABULAR;
+	
+	@Override
+	public void reset()
+	{
+		m_numColumns = 0;
+		m_keyBuffer.setLength(0);
+		m_repeatedCells = 0;
+	}
 	
 	/**
 	 * Sets the name of the LaTeX environment that displays the table
@@ -143,7 +151,7 @@ public class LatexTableRenderer extends TableNodeRenderer
 			out.append("c|");
 		}
 		out.append("}").append(CRLF);
-		out.append(m_keyBuffer).append("\\\\").append(CRLF);
+		out.append("\\hline").append(CRLF).append(m_keyBuffer).append("\\\\").append(CRLF);
 		if (m_environmentName == EnvironmentName.LONGTABLE)
 		{
 			out.append("\\endfirsthead").append(CRLF);
@@ -181,7 +189,7 @@ public class LatexTableRenderer extends TableNodeRenderer
 		JsonElement last = values.get(values.size() - 1);
 		if (last instanceof JsonString)
 		{
-			m_keyBuffer.append(((JsonString) last).stringValue());
+			m_keyBuffer.append(escape(((JsonString) last).stringValue()));
 		}
 		else if (last instanceof JsonNull)
 		{
@@ -233,7 +241,22 @@ public class LatexTableRenderer extends TableNodeRenderer
 	@Override
 	public void endStructure(StringBuilder out)
 	{
+		out.append(CRLF).append("\\hline").append(CRLF);
 		out.append("\\end{").append(getLatexEnvironmentName(m_environmentName)).append("}");
+	}
+	
+	/**
+	 * Escapes a string for LaTeX
+	 * @param input The input string
+	 * @return The output string
+	 */
+	public static String escape(String input)
+	{
+		String output = input;
+		output = output.replaceAll("&", "\\\\&");
+		output = output.replaceAll("\\{", "\\\\\\{");
+		output = output.replaceAll("\\}", "\\\\\\}");
+		return output;
 	}
 
 }

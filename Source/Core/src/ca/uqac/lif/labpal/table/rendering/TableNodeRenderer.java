@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -56,6 +56,14 @@ public abstract class TableNodeRenderer
 		endBody(out);
 		endStructure(out);
 		return out.toString();
+	}
+	
+	/**
+	 * Resets the renderer to its initial state
+	 */
+	public void reset()
+	{
+		// Do nothing
 	}
 	
 	protected void renderRecursive(TableNode cur_node, List<JsonElement> values, StringBuilder out, int max_depth)

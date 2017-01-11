@@ -107,7 +107,7 @@ public class GralPlot extends Plot
 	 */
 	public final de.erichseifert.gral.plots.Plot getPlot()
 	{
-		DataTable dt = m_table.getConcreteTable();
+		DataTable dt = m_table.getDataTable();
 		return getPlot(processTable(dt));
 	}
 

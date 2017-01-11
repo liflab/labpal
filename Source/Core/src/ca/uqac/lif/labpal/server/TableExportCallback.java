@@ -65,7 +65,7 @@ public class TableExportCallback extends WebCallback
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
-		DataTable d_tab = tab.getConcreteTable();
+		DataTable d_tab = tab.getDataTable();
 		if (params.get("format").compareToIgnoreCase("tex") == 0)
 		{
 			LatexTableRenderer renderer = new LatexTableRenderer();

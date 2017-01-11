@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
@@ -70,13 +69,13 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public DataTable getConcreteTable()
+	public DataTable getDataTable()
 	{
-		return getConcreteTable(m_dimensions);
+		return getDataTable(m_dimensions);
 	}
 
 	@Override
-	public DataTable getConcreteTable(String ... ordering)
+	public DataTable getDataTable(String ... ordering)
 	{
 		DataTable mt = new DataTable(ordering);
 		for (Experiment e : m_experiments)
@@ -85,30 +84,6 @@ public class ExperimentTable extends Table
 			mt.addAll(entries);
 		}
 		return mt;
-	}
-
-	@Override
-	public Comparable<?> get(int col, int row)
-	{
-		int exp_count = 0;
-		for (Experiment e : m_experiments)
-		{
-			int num_entries = getEntryCount(e, m_dimensions);
-			if (row > exp_count + num_entries)
-			{
-				// We must look further; skip this experiment
-				exp_count += num_entries;
-				continue;
-			}
-			// The entry we want is contained in this experiment
-			List<TableEntry> entries = getEntries(e, m_dimensions);
-			int index = row - exp_count;
-			TableEntry te = entries.get(index);
-			String key = m_dimensions[col];
-			Object o = te.get(key);
-			return (Comparable<?>) o;
-		}
-		return null;
 	}
 
 	/**
@@ -208,129 +183,6 @@ public class ExperimentTable extends Table
 			entries.add(te);
 		}
 		return entries;
-	}
-
-	@Override
-	public int getColumnCount()
-	{
-		return m_dimensions.length;
-	}
-
-	@Override
-	public Class<? extends Comparable<?>>[] getColumnTypes()
-			{
-		@SuppressWarnings("unchecked")
-		Class<? extends Comparable<?>> types[] = new Class[getColumnCount()];
-		for (int i = 0; i < m_dimensions.length; i++)
-		{
-			types[i] = getColumnTypeFor(m_dimensions[i]);
-		}
-		return types;
-			}
-
-	@Override
-	public int getRowCount()
-	{
-		int size = 0;
-		for (Experiment e : m_experiments)
-		{
-			size += getEntryCount(e);
-		}
-		return size;
-	}
-
-	@Override
-	public Class<? extends Comparable<?>> getColumnTypeFor(String col_name)
-	{
-		// Guess column type
-		for (Experiment e : m_experiments)
-		{
-			Object o = readExperiment(e, col_name);
-			Class<? extends Comparable<?>> clazz = getTypeOf(o);
-			if (clazz == null || !clazz.equals(JsonList.class))
-			{
-				return clazz;
-			}
-			// This parameter is a list: read the list to guess its type
-			for (JsonElement elem : (JsonList) o)
-			{
-				clazz = getTypeOf(elem);
-				if (clazz != null)
-				{
-					return clazz;
-				}
-			}
-		}
-		return null;
-	}
-
-
-	@Override
-	public String getColumnName(int col)
-	{
-		if (col < 0 || col >= m_dimensions.length)
-		{
-			return null;
-		}
-		return m_dimensions[col];
-	}
-
-	@Override
-	public int getColumnPosition(String name)
-	{
-		if (name == null)
-		{
-			return -1;
-		}
-		for (int i = 0; i < m_dimensions.length; i++)
-		{
-			if (m_dimensions[i].compareTo(name) == 0)
-			{
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	@Override
-	public String[] getColumnNames()
-	{
-		return m_dimensions;
-	}
-
-	@Override
-	public TableEntry findEntry(TableEntry e)
-	{
-		for (Experiment exp : m_experiments)
-		{
-			boolean found = true;
-			for (Entry<String,Object> entry : e.entrySet())
-			{
-				Object o = readExperiment(exp, entry.getKey());
-				if ((o == null && entry.getValue() == null) ||
-						o != null && o.equals(entry.getValue()))
-				{
-					// OK
-				}
-				else
-				{
-					found = false;
-					break;
-				}
-			}
-			if (found)
-			{
-				// This experiment has the same key-value pairs as the
-				// entry passed as an argument: create an entry from it
-				TableEntry te = new TableEntry();
-				for (String key : m_dimensions)
-				{
-					te.put(key, readExperiment(exp, key));
-				}
-				return te;
-			}
-		}
-		return null;
 	}
 
 	/**

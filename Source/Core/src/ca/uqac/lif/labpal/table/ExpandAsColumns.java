@@ -69,8 +69,9 @@ public class ExpandAsColumns implements TableTransformation
 	}
 	
 	@Override
-	public DataTable transform(DataTable table)
+	public DataTable transform(DataTable ... tables)
 	{
+		DataTable table = tables[0];
 		Set<String> new_keys = new HashSet<String>();
 		for (TableEntry te : table.getEntries())
 		{

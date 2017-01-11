@@ -62,7 +62,7 @@ public class TablePageCallback extends TemplatePageCallback
 		{
 			return null;
 		}
-		DataTable tbl = tab.getConcreteTable(tab.getColumnNames());
+		DataTable tbl = tab.getDataTable();
 		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
 		s = s.replaceAll("\\{%TABLE%\\}", s_renderer.render(tbl.getTree(), tbl.getColumnNames()));
 		String desc = tab.getDescription();

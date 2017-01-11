@@ -26,13 +26,8 @@ import java.util.List;
  * algebra.
  * @author Sylvain Hallé
  */
-public class Join extends Table
+public class Join implements TableTransformation
 {
-	/**
-	 * The tables to join
-	 */
-	protected Table[] m_tables;
-	
 	/**
 	 * The columns of the tables on which to perform a join
 	 */
@@ -41,14 +36,11 @@ public class Join extends Table
 	/**
 	 * Creates a new join table
 	 * @param common_dimensions
-	 * @param tables
 	 */
-	public Join(String[] common_dimensions, Table ... tables)
+	public Join(String[] common_dimensions)
 	{
 		super();
-		m_tables = tables;
 		m_commonDimensions = common_dimensions;
-		//m_otherDimensions = other_dimensions;
 	}
 	
 	/**
@@ -79,111 +71,14 @@ public class Join extends Table
 		return e;
 	}
 	
-	@Override
-	@SuppressWarnings("unchecked")
-	public DataTable getConcreteTable(String ... ordering)
-	{
-		Class<? extends Comparable<?>>[] new_types = new Class[getColumnCount()];
-		for (int i = 0; i < ordering.length; i++)
-		{
-			Class<? extends Comparable<?>> col_type = getColumnTypeFor(ordering[i]);
-			new_types[i] = col_type;
-		}
-		DataTable mt = new DataTable(ordering);
-		List<TableEntry> entries = new ArrayList<TableEntry>();
-		List<TableEntry> keys = getRowKeys();
-		for (TableEntry key : keys)
-		{
-			for (int table_pos = 0; table_pos < m_tables.length; table_pos++)
-			{
-				Table t = m_tables[table_pos];
-				TableEntry t_entry = t.findEntry(key);
-				TableEntry existing_e = findExistingEntry(t_entry, entries);
-				existing_e.putAll(t_entry);
-			}
-		}
-		mt.addAll(entries);
-		return mt;
-	}
-
-	@Override
-	public Comparable<?> get(int col, int row)
-	{
-		int num_join_cols = m_commonDimensions.length;
-		List<TableEntry> row_keys = getRowKeys();
-		if (row < 0 || row >= row_keys.size() || col < 0 || col >= getColumnCount())
-		{
-			// Out of bounds
-			return null;
-		}
-		TableEntry e = row_keys.get(row);
-		String name = getColumnName(col);
-		if (col < num_join_cols)
-		{
-			Object o = e.get(name);
-			return Table.castValue(o);
-		}
-		int pos = num_join_cols;
-		for (Table t : m_tables)
-		{
-			if (col - pos < t.getColumnCount() - num_join_cols)
-			{
-				// We found the right table; now find the row with matching key
-				String col_name = t.getColumnName(col - pos);
-				TableEntry found_entry = t.findEntry(e);
-				if (!found_entry.containsKey(col_name))
-				{
-					return null;
-				}
-				return castValue(found_entry.get(col_name));
-			}
-			pos += (t.getColumnCount() - num_join_cols);
-		}
-		return null;
-	}
-
-	@Override
-	public int getColumnCount()
+	protected int getColumnCount(DataTable ... tables)
 	{
 		int col_cnt = m_commonDimensions.length;
-		for (Table t : m_tables)
+		for (DataTable t : tables)
 		{
 			col_cnt += (t.getColumnCount() - m_commonDimensions.length);
 		}
 		return col_cnt;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public Class<? extends Comparable<?>>[] getColumnTypes()
-	{
-		List<Class<? extends Comparable<?>>> names = new ArrayList<Class<? extends Comparable<?>>>();
-		for (String name : m_commonDimensions)
-		{
-			names.add(getColumnTypeFor(name));
-		}
-		for (int table_index = 0; table_index < m_tables.length; table_index++)
-		{
-			String[] col_names = getOtherColumns(table_index);
-			for (String col_name : col_names)
-			{
-				names.add(getColumnTypeFor(col_name));				
-			}
-		} 
-		Class<? extends Comparable<?>>[] a_names = new Class[names.size()];
-		int i = 0;
-		for (Class<? extends Comparable<?>> name : names)
-		{
-			a_names[i] = name;
-			i++;
-		}
-		return a_names;
-	}
-
-	@Override
-	public int getRowCount()
-	{
-		return getRowKeys().size();
 	}
 	
 	/**
@@ -192,9 +87,9 @@ public class Join extends Table
 	 * @param table_pos The index of the table
 	 * @return An array of column names
 	 */
-	protected String[] getOtherColumns(int table_pos)
+	protected String[] getOtherColumns(int table_pos, DataTable ... tables)
 	{
-		Table t = m_tables[table_pos];
+		DataTable t = tables[table_pos];
 		String[] t_names = t.getColumnNames();
 		String[] other_names = new String[t_names.length - m_commonDimensions.length];
 		int pos = 0;
@@ -222,90 +117,37 @@ public class Join extends Table
 		return false;
 	}
 
-	@Override
-	public Class<? extends Comparable<?>> getColumnTypeFor(String name)
+	protected Class<? extends Comparable<?>> getColumnTypeFor(String name, DataTable ... tables)
 	{
 		if (isJoinColumn(name))
 		{
 			// All the tables contain that column
-			return m_tables[0].getColumnTypeFor(name);
+			return tables[0].getColumnTypeFor(name);
 		}
-		for (int table_index = 0; table_index < m_tables.length; table_index++)
+		for (int table_index = 0; table_index < tables.length; table_index++)
 		{
-			String[] col_names = getOtherColumns(table_index);
+			String[] col_names = getOtherColumns(table_index, tables);
 			for (String col_name : col_names)
 			{
 				if (col_name.compareTo(name) == 0)
 				{
-					return m_tables[table_index].getColumnTypeFor(name);
+					return tables[table_index].getColumnTypeFor(name);
 				}
 			}
 		} 
 		return null;
 	}
 
-	@Override
-	public String getColumnName(int col)
-	{
-		int num_join_cols = m_commonDimensions.length;
-		if (col < 0 || col >= getColumnCount())
-		{
-			return null;
-		}
-		if (col < num_join_cols)
-		{
-			return m_commonDimensions[col];
-		}
-		int pos = num_join_cols;
-		for (Table t : m_tables)
-		{
-			if (col - pos < t.getColumnCount() - num_join_cols)
-			{
-				return t.getColumnName(col - pos);
-			}
-			pos += (t.getColumnCount() - num_join_cols);
-		}
-		return null;
-	}
-
-	@Override
-	public int getColumnPosition(String name)
-	{
-		int pos = 0;
-		for (String col_name : m_commonDimensions)
-		{
-			if (col_name.compareTo(name) == 0)
-			{
-				return pos;
-			}
-			pos++;
-		}
-		for (int table_index = 0; table_index < m_tables.length; table_index++)
-		{
-			String[] col_names = getOtherColumns(table_index);
-			for (String col_name : col_names)
-			{
-				if (col_name.compareTo(name) == 0)
-				{
-					return pos;
-				}
-				pos++;				
-			}
-		} 
-		return -1;
-	}
-
-	@Override
-	public String[] getColumnNames()
+	protected String[] getColumnNames(DataTable ... tables)
 	{
 		List<String> names = new ArrayList<String>();
 		for (String name : m_commonDimensions)
 		{
 			names.add(name);
 		}
-		for (int table_index = 0; table_index < m_tables.length; table_index++)
+		for (int table_index = 0; table_index < tables.length; table_index++)
 		{
-			String[] col_names = getOtherColumns(table_index);
+			String[] col_names = getOtherColumns(table_index, tables);
 			for (String col_name : col_names)
 			{
 				names.add(col_name);				
@@ -321,12 +163,12 @@ public class Join extends Table
 		return a_names;
 	}
 	
-	protected List<TableEntry> getRowKeys()
+	protected List<TableEntry> getRowKeys(DataTable ... tables)
 	{
 		List<TableEntry> keys = new ArrayList<TableEntry>();
-		for (Table t : m_tables)
+		for (DataTable t : tables)
 		{
-			DataTable dt = t.getConcreteTable(t.getColumnNames());
+			DataTable dt = t.getDataTable(t.getColumnNames());
 			for (TableEntry e : dt.getEntries())
 			{
 				TableEntry new_e = new TableEntry();
@@ -340,17 +182,32 @@ public class Join extends Table
 		return keys;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public TableEntry findEntry(TableEntry e)
+	public DataTable transform(DataTable ... tables)
 	{
-		// TODO Implement this
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public DataTable getConcreteTable()
-	{
-		return getConcreteTable(getColumnNames());
+		String[] ordering = getColumnNames(tables);
+		Class<? extends Comparable<?>>[] new_types = new Class[getColumnCount(tables)];
+		for (int i = 0; i < ordering.length; i++)
+		{
+			Class<? extends Comparable<?>> col_type = getColumnTypeFor(ordering[i], tables);
+			new_types[i] = col_type;
+		}
+		DataTable mt = new DataTable(ordering);
+		List<TableEntry> entries = new ArrayList<TableEntry>();
+		List<TableEntry> keys = getRowKeys();
+		for (TableEntry key : keys)
+		{
+			for (int table_pos = 0; table_pos < tables.length; table_pos++)
+			{
+				DataTable t = tables[table_pos];
+				TableEntry t_entry = t.findEntry(key);
+				TableEntry existing_e = findExistingEntry(t_entry, entries);
+				existing_e.putAll(t_entry);
+			}
+		}
+		mt.addAll(entries);
+		return mt;
 	}
 
 }

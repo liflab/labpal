@@ -67,7 +67,7 @@ public class AllTablesCallback extends WebCallback
 				box_name += id;
 			}
 			box_name = formatName(box_name);
-			DataTable d_tab = tab.getConcreteTable();
+			DataTable d_tab = tab.getDataTable();
 			String tab_contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
 			out.append("% ----------------------").append(FileHelper.CRLF).append("% Table: ").append(box_name).append(FileHelper.CRLF);
 			out.append("% ----------------------").append(FileHelper.CRLF);

@@ -139,7 +139,7 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 	@Override
 	public String toGnuplot(ImageType term, String lab_title)
 	{
-		DataTable tab = processTable(m_table.getConcreteTable());
+		DataTable tab = processTable(m_table.getDataTable());
 		String[] columns = tab.getColumnNames();
 		Vector<String> series = new Vector<String>();
 		for (int i = 1; i < columns.length; i++)

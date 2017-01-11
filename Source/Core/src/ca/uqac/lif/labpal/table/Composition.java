@@ -41,9 +41,9 @@ public class Composition implements TableTransformation
 	}
 
 	@Override
-	public DataTable transform(DataTable table)
+	public DataTable transform(DataTable ... tables)
 	{
-		DataTable t = table;
+		DataTable t = tables[0];
 		for (TableTransformation trans : m_transformations)
 		{
 			t = trans.transform(t);

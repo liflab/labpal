@@ -17,26 +17,17 @@
  */
 package ca.uqac.lif.labpal.table;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Laboratory;
-import de.erichseifert.gral.data.Column;
-import de.erichseifert.gral.data.DataListener;
-import de.erichseifert.gral.data.DataSource;
-import de.erichseifert.gral.data.Row;
-import de.erichseifert.gral.data.statistics.Statistics;
-
 /**
  * A multi-dimensional array of values. Tables can be passed to
  * {@link ca.uqac.lif.labpal.plot.Plot Plot} objects to generate graphics.
  */
-public abstract class Table implements DataSource
+public abstract class Table
 {
 	/**
 	 * The table's ID
@@ -52,11 +43,6 @@ public abstract class Table implements DataSource
 	 * A lock for accessing the counter
 	 */
 	private static Lock s_counterLock = new ReentrantLock();
-	
-	/**
-	 * The data listeners associated to this table
-	 */
-	protected Set<DataListener> m_dataListeners;
 	
 	/**
 	 * The table's title
@@ -75,15 +61,8 @@ public abstract class Table implements DataSource
 		m_id = s_idCounter++;
 		s_counterLock.unlock();
 		m_title = "Table " + m_id;
-		m_dataListeners = new HashSet<DataListener>();
 	}
-	
-	@Override
-	public void removeDataListener(DataListener dataListener)
-	{
-		m_dataListeners.remove(dataListener);
-	}
-	
+		
 	/**
 	 * Assigns this table to a laboratory
 	 * @param a The lab
@@ -92,37 +71,7 @@ public abstract class Table implements DataSource
 	public Table assignTo(Laboratory a)
 	{
 		return this;
-	}
-	
-	@Override
-	public String getName()
-	{
-		return m_title;
-	}
-	
-	@Override
-	public Row getRow(int row)
-	{
-		return new Row(this, row);
-	}
-	
-	@Override
-	public final Iterator<Comparable<?>> iterator()
-	{
-		return new RowIterator(this);
-	}
-
-	@Override
-	public final void addDataListener(DataListener dataListener)
-	{
-		m_dataListeners.add(dataListener);
-	}
-
-	@Override
-	public Statistics getStatistics()
-	{
-		return new Statistics(this);
-	}
+	}	
 	
 	public final String getDescription()
 	{
@@ -148,81 +97,21 @@ public abstract class Table implements DataSource
 		return m_id;
 	}
 	
-	@Override
-	public final boolean isColumnNumeric(int columnIndex)
-	{
-		Class<?> c = getColumnTypeFor(columnIndex);
-		return c.isAssignableFrom(Float.class);
-	}
-	
-	/**
-	 * Gets the type of the column of given name
-	 * @param position The position of the column, starting at 0 for the
-	 *   first column
-	 * @return The type, or {@code null} if the column does not exist
-	 */
-	public final Class<? extends Comparable<?>> getColumnTypeFor(int position)
-	{
-		String name = getColumnName(position);
-		return getColumnTypeFor(name);
-	}
-	
-	@Override
-	public final Column getColumn(int col)
-	{
-		return new Column(this, col);
-	}
-	
-	/**
-	 * Gets the type of the column of given name
-	 * @param col_name The name of the column
-	 * @return The type, or {@code null} if the column does not exist
-	 */
-	public abstract Class<? extends Comparable<?>> getColumnTypeFor(String col_name);
-	
 	/**
 	 * Gets an instance of {@link DataTable} from the table's
 	 * data, using the columns specified in the argument
 	 * @param ordering The columns to use
 	 * @return The table
 	 */
-	public abstract DataTable getConcreteTable(String ... ordering);
+	public abstract DataTable getDataTable(String ... ordering);
 
 	/**
 	 * Gets an instance of {@link DataTable} from the table's
 	 * data, using the default column ordering
 	 * @return The table
 	 */
-	public abstract DataTable getConcreteTable();
-	
-	/**
-	 * Gets the name of the column at a given position in the table
-	 * @param col The position
-	 * @return The column's name, or null if the index is out of bounds
-	 */
-	public abstract String getColumnName(int col);
-	
-	/**
-	 * Gets the position of the column of a given name in the table
-	 * @param name The name
-	 * @return The column's position, or -1 if the name was not found
-	 */
-	public abstract int getColumnPosition(String name);
-	
-	/**
-	 * Gets the names of all the columns in the table
-	 * @return An array of names
-	 */
-	public abstract String[] getColumnNames();
-	
-	/**
-	 * Finds an entry with the same key-value pairs as the entry given
-	 * as an argument
-	 * @param e The entry
-	 * @return The entry found, or {@code null} if none found
-	 */
-	public abstract TableEntry findEntry(TableEntry e);
-	
+	public abstract DataTable getDataTable();
+		
 	/**
 	 * Casts a value as a number or an instance of {@code Comparable}
 	 * @param o The value
@@ -244,7 +133,7 @@ public abstract class Table implements DataSource
 	@Override
 	public String toString()
 	{
-		return getConcreteTable().toString();
+		return getDataTable().toString();
 	}
 
 	/**

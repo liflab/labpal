@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +34,17 @@ import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
+import de.erichseifert.gral.data.Column;
+import de.erichseifert.gral.data.DataListener;
+import de.erichseifert.gral.data.DataSource;
+import de.erichseifert.gral.data.Row;
+import de.erichseifert.gral.data.statistics.Statistics;
 
 /**
  * A table made of concrete values
  * @author Sylvain Hallé
  */
-public class DataTable extends Table
+public class DataTable extends Table implements DataSource
 {
 	/**
 	 * The set of entries in the table. Note that we use a list,
@@ -62,6 +68,11 @@ public class DataTable extends Table
 	 * The symbol used to represent missing values in a CSV rendition
 	 */
 	public static final transient String s_datafileMissing = "?";
+	
+	/**
+	 * The data listeners associated to this table
+	 */
+	protected Set<DataListener> m_dataListeners;
 
 	/**
 	 * Creates a new data table
@@ -87,7 +98,39 @@ public class DataTable extends Table
 			m_entries.addAll(entries);
 		}
 		m_preferredOrdering = ordering;
+		m_dataListeners = new HashSet<DataListener>();
 	}
+	
+	@Override
+	public void removeDataListener(DataListener dataListener)
+	{
+		m_dataListeners.remove(dataListener);
+	}
+	
+	@Override
+	public Row getRow(int row)
+	{
+		return new Row(this, row);
+	}
+	
+	@Override
+	public final Iterator<Comparable<?>> iterator()
+	{
+		return new RowIterator(this);
+	}
+
+	@Override
+	public final void addDataListener(DataListener dataListener)
+	{
+		m_dataListeners.add(dataListener);
+	}
+
+	@Override
+	public Statistics getStatistics()
+	{
+		return new Statistics(this);
+	}
+
 
 	/**
 	 * Adds a collection of entries to this data table
@@ -339,7 +382,11 @@ public class DataTable extends Table
 		return m_entries.size();
 	}
 
-	@Override
+	/**
+	 * Gets the type of the column of given name
+	 * @param col_name The name of the column
+	 * @return The type, or {@code null} if the column does not exist
+	 */
 	public Class<? extends Comparable<?>> getColumnTypeFor(String col_name)
 	{
 		for (TableEntry e : m_entries)
@@ -363,12 +410,16 @@ public class DataTable extends Table
 	}
 
 	@Override
-	public DataTable getConcreteTable(String ... ordering)
+	public DataTable getDataTable(String ... ordering)
 	{
 		return new DataTable(m_entries, ordering);
 	}
 
-	@Override
+	/**
+	 * Gets the name of the column at a given position in the table
+	 * @param col The position
+	 * @return The column's name, or null if the index is out of bounds
+	 */
 	public String getColumnName(int col)
 	{
 		if (col < 0 || col >= m_preferredOrdering.length)
@@ -378,7 +429,11 @@ public class DataTable extends Table
 		return m_preferredOrdering[col];
 	}
 
-	@Override
+	/**
+	 * Gets the position of the column of a given name in the table
+	 * @param name The name
+	 * @return The column's position, or -1 if the name was not found
+	 */
 	public int getColumnPosition(String name)
 	{
 		for (int i = 0; i < m_preferredOrdering.length; i++)
@@ -391,13 +446,21 @@ public class DataTable extends Table
 		return -1;
 	}
 
-	@Override
+	/**
+	 * Gets the names of all the columns in the table
+	 * @return An array of names
+	 */
 	public String[] getColumnNames()
 	{
 		return m_preferredOrdering;
 	}
 
-	@Override
+	/**
+	 * Finds an entry with the same key-value pairs as the entry given
+	 * as an argument
+	 * @param e The entry
+	 * @return The entry found, or {@code null} if none found
+	 */
 	public TableEntry findEntry(TableEntry e)
 	{
 		for (TableEntry tab_e : m_entries)
@@ -478,9 +541,9 @@ public class DataTable extends Table
 	}
 
 	@Override
-	public DataTable getConcreteTable()
+	public DataTable getDataTable()
 	{
-		return getConcreteTable(m_preferredOrdering);
+		return getDataTable(m_preferredOrdering);
 	}
 	
 	@Override
@@ -499,4 +562,36 @@ public class DataTable extends Table
 		out.append(toCsv());
 		return out.toString();
 	}
+	
+	@Override
+	public final boolean isColumnNumeric(int columnIndex)
+	{
+		Class<?> c = getColumnTypeFor(columnIndex);
+		return c.isAssignableFrom(Float.class);
+	}
+	
+	/**
+	 * Gets the type of the column of given name
+	 * @param position The position of the column, starting at 0 for the
+	 *   first column
+	 * @return The type, or {@code null} if the column does not exist
+	 */
+	public final Class<? extends Comparable<?>> getColumnTypeFor(int position)
+	{
+		String name = getColumnName(position);
+		return getColumnTypeFor(name);
+	}
+	
+	@Override
+	public final Column getColumn(int col)
+	{
+		return new Column(this, col);
+	}
+	
+	@Override
+	public String getName()
+	{
+		return m_title;
+	}
+
 }

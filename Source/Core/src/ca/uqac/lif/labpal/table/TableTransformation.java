@@ -24,9 +24,9 @@ package ca.uqac.lif.labpal.table;
 public interface TableTransformation
 {
 	/**
-	 * Transforms a data table
-	 * @param table The original table
+	 * Transforms one ore more data tables into another data table
+	 * @param tables The original tables
 	 * @return The new table
 	 */
-	public DataTable transform(DataTable table);
+	public DataTable transform(DataTable ... tables);
 }

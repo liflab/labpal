@@ -127,7 +127,7 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 	@Override
 	public String toGnuplot(ImageType term, String lab_title)
 	{
-		DataTable tab = processTable(m_table.getConcreteTable());
+		DataTable tab = processTable(m_table.getDataTable());
 		String[] columns = tab.getColumnNames();
 		String caption_x = m_captionX;
 		if (caption_x.isEmpty())

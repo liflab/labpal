@@ -22,6 +22,10 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+import ca.uqac.lif.json.JsonNull;
+import ca.uqac.lif.json.JsonNumber;
+import ca.uqac.lif.json.JsonString;
+
 /**
  * Provides various utility methods for formatting things into character
  * strings.
@@ -108,5 +112,35 @@ public class Formatter
 		BigDecimal bd = new BigDecimal(n.floatValue());
 		bd = bd.round(s_threeDigitsContext);
 		return bd.floatValue();
+	}
+	
+	/**
+	 * Converts an object into a string
+	 * @param o The object
+	 * @return The string
+	 */
+	public static String asString(Object o)
+	{
+		if (o == null || o instanceof JsonNull)
+		{
+			return "";
+		}
+		if (o instanceof String)
+		{
+			return (String) o;
+		}
+		if (o instanceof JsonString)
+		{
+			return ((JsonString) o).stringValue();
+		}
+		if (o instanceof Number)
+		{
+			return ((Number) o).toString();
+		}
+		if (o instanceof JsonNumber)
+		{
+			return ((JsonNumber) o).toString();
+		}
+		return o.toString();
 	}
 }

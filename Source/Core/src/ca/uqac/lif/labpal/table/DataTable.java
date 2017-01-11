@@ -558,7 +558,7 @@ public class DataTable extends Table implements DataSource
 			}
 			out.append(m_preferredOrdering[i]);
 		}
-		out.append(FileHelper.CRLF);
+		out.append(FileHelper.CRLF).append("---").append(FileHelper.CRLF);
 		out.append(toCsv());
 		return out.toString();
 	}

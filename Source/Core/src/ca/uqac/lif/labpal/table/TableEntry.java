@@ -35,6 +35,12 @@ public class TableEntry extends HashMap<String,Object>
 		super();
 	}
 	
+	public TableEntry(String key, Object value)
+	{
+		this();
+		put(key, value);
+	}
+	
 	public TableEntry(TableEntry e)
 	{
 		super();
@@ -73,7 +79,16 @@ public class TableEntry extends HashMap<String,Object>
 		}
 		for (Map.Entry<String,Object> entry : entrySet())
 		{
-			if (!te.get(entry.getKey()).equals(entry.getValue()))
+			Object e = te.get(entry.getKey());
+			if (e == null)
+			{
+				if (entry.getValue() == null)
+					continue; // Both are null
+				else
+					return false;
+			}
+			assert e != null;
+			if (!e.equals(entry.getValue()))
 			{
 				return false;
 			}

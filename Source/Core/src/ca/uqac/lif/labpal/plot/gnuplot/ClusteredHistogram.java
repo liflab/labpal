@@ -137,7 +137,7 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 	}
 
 	@Override
-	public String toGnuplot(ImageType term, String lab_title)
+	public String toGnuplot(ImageType term, String lab_title, boolean with_caption)
 	{
 		DataTable tab = processTable(m_table.getDataTable());
 		String[] columns = tab.getColumnNames();
@@ -149,7 +149,7 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 		String csv_values = tab.toCsv(s_datafileSeparator, s_datafileMissing);
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
-		out.append(getHeader(term, lab_title));
+		out.append(getHeader(term, lab_title, with_caption));
 		out.append("set xtics rotate out\n");
 		out.append("set style data histogram\n");
 		out.append("set xlabel \"").append(m_captionX).append("\"\n");

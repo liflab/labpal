@@ -125,7 +125,7 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 	}
 
 	@Override
-	public String toGnuplot(ImageType term, String lab_title)
+	public String toGnuplot(ImageType term, String lab_title, boolean with_caption)
 	{
 		DataTable tab = processTable(m_table.getDataTable());
 		String[] columns = tab.getColumnNames();
@@ -154,7 +154,7 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 		}
 		// Build GP string from table
 		StringBuilder out = new StringBuilder();
-		out.append(getHeader(term, lab_title));
+		out.append(getHeader(term, lab_title, with_caption));
 		if (m_logScaleX)
 		{
 			out.append("set logscale x").append("\n");

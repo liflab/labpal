@@ -41,7 +41,7 @@ public class GralPlot extends Plot
 	{
 		super(t);
 	}
-	
+
 	/**
 	 * Creates a new plot from a table, applying a transformation
 	 *  to this table
@@ -73,34 +73,41 @@ public class GralPlot extends Plot
 		}
 		return "image/png";
 	}
-	
+
 	/**
 	 * Runs GnuPlot on a file and returns the resulting graph
 	 * @param term The terminal (i.e. PNG, etc.) to use for the image
+	 * @param with_caption Set to true to ignore the plot's caption when
+	 *   rendering
 	 * @return The (binary) contents of the image produced by Gnuplot
 	 */
-	public final byte[] getImage(ImageType term)
+	public final byte[] getImage(ImageType term, boolean with_caption)
 	{
 		de.erichseifert.gral.plots.Plot plot = getPlot();
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    String type_string = getTypeName(term);
-    DrawableWriter wr = DrawableWriterFactory.getInstance().get(type_string);
-    try
+		if (!with_caption)
+		{
+			// Override caption with empty string
+			plot.getTitle().setText("");
+		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		String type_string = getTypeName(term);
+		DrawableWriter wr = DrawableWriterFactory.getInstance().get(type_string);
+		try
 		{
 			wr.write(plot, baos, 640, 480);
-	    baos.flush();
-	    byte[] bytes = baos.toByteArray();
-	    baos.close();
-	    return bytes;
+			baos.flush();
+			byte[] bytes = baos.toByteArray();
+			baos.close();
+			return bytes;
 		}
-    catch (IOException e)
+		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    return null;
+		return null;
 	}
-		
+
 	/**
 	 * Gets a Plot object from this LabPlot
 	 * @return The plot

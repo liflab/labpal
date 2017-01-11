@@ -532,7 +532,7 @@ public class LabPalTui
 				return;
 			}
 			GnuPlot p = (GnuPlot) plot;
-			String gnuplot = p.toGnuplot(ImageType.PDF, m_lab.getTitle());
+			String gnuplot = p.toGnuplot(ImageType.PDF, m_lab.getTitle(), true);
 			String filename = p.getTitle() + ".gp";
 			printer.print("Save to [" + filename + "] ");
 			String line = printer.readLine();

@@ -263,10 +263,23 @@ public abstract class Plot
 	/**
 	 * Gets an image from this plot
 	 * @param type The image type to produce
+	 * @param with_caption Set to false to remove the caption from the image
+	 *   (even if a caption is defined for the plot)
 	 * @return An array of bytes containing the image, or {@code null} if
 	 *   the image cannot be produced
 	 */
-	public abstract byte[] getImage(ImageType type);
+	public abstract byte[] getImage(ImageType type, boolean with_caption);
+
+	/**
+	 * Gets an image from this plot
+	 * @param type The image type to produce
+	 * @return An array of bytes containing the image, or {@code null} if
+	 *   the image cannot be produced
+	 */
+	public final byte[] getImage(ImageType type)
+	{
+		return getImage(type, true);
+	}
 	
 	/**
 	 * Transforms a data table before being plotted. A plot can override this

@@ -75,7 +75,7 @@ public class AllPlotsCallback extends WebCallback
 		{
 			Plot plot = m_lab.getPlot(id);
 			// Get plot's image and write to temporary file
-			byte[] image = plot.getImage(Plot.ImageType.PDF);
+			byte[] image = plot.getImage(Plot.ImageType.PDF, false);
 			try
 			{
 				if (image.length > 0)

@@ -67,7 +67,7 @@ public class PlotImageCallback extends WebCallback
 		}
 		if (params.get("format").compareToIgnoreCase("gp") == 0 && p instanceof GnuPlot)
 		{
-			response.setContents(((GnuPlot)p).toGnuplot(ImageType.PDF, m_lab.getTitle()));
+			response.setContents(((GnuPlot)p).toGnuplot(ImageType.PDF, m_lab.getTitle(), true));
 			response.setCode(CallbackResponse.HTTP_OK);
 			response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
 			return response;

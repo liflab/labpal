@@ -98,9 +98,8 @@ public class LinearAssistant extends LabAssistant
 				m_queueLock.unlock();
 				break;
 			}
-			m_queueLock.lock();
 			Experiment e = m_queue.get(0);
-			m_queueLock.lock();
+			m_queueLock.unlock();
 			Status s = e.getStatus();
 			if (s != Status.RUNNING && s != Status.DONE && s != Status.FAILED)
 			{
@@ -152,16 +151,19 @@ public class LinearAssistant extends LabAssistant
 			m_experimentThread.interrupt();
 		}
 		m_queueLock.lock();
-		if (!m_queue.isEmpty())
+		boolean empty = m_queue.isEmpty();
+		m_queueLock.unlock();
+		if (!empty)
 		{
+			m_queueLock.lock();
 			Experiment e = m_queue.get(0);
+			m_queueLock.unlock();
 			e.interrupt();
 		}
-		m_queueLock.unlock();
 	}
 
 	@Override
-	public synchronized LabAssistant stop()
+	public LabAssistant stop()
 	{
 		m_stop = true;
 		m_stopTime = System.currentTimeMillis();
@@ -169,13 +171,13 @@ public class LinearAssistant extends LabAssistant
 	}
 	
 	@Override
-	public synchronized LabAssistant unqueue(Experiment e)
+	public LabAssistant unqueue(Experiment e)
 	{
 		return unqueue(e.getId());
 	}
 	
 	@Override
-	public synchronized LabAssistant unqueue(int id)
+	public LabAssistant unqueue(int id)
 	{
 		m_queueLock.lock();
 		for (int i = 0; i < m_queue.size(); i++)
@@ -191,7 +193,7 @@ public class LinearAssistant extends LabAssistant
 	}
 	
 	@Override
-	public synchronized LabAssistant queue(Experiment e)
+	public LabAssistant queue(Experiment e)
 	{
 		m_queueLock.lock();
 		m_queue.add(e);
@@ -200,42 +202,53 @@ public class LinearAssistant extends LabAssistant
 	}
 	
 	@Override
-	public synchronized boolean isQueued(Experiment e)
+	public boolean isQueued(Experiment e)
 	{
-		return m_queue.contains(e);
+		m_queueLock.lock();
+		boolean b = m_queue.contains(e);
+		m_queueLock.unlock();
+		return b;
 	}
 	
 	@Override
-	public synchronized boolean isQueued(int id)
+	public boolean isQueued(int id)
 	{
+		boolean b = false;
+		m_queueLock.lock();
 		for (int i = 0; i < m_queue.size(); i++)
 		{
 			if (m_queue.get(i).getId() == id)
 			{
-				return true;
+				b = true;
+				break;
 			}
 		}
-		return false;
+		m_queueLock.unlock();
+		return b;
 	}
 	
 	@Override
-	public synchronized LabAssistant clear()
+	public LabAssistant clear()
 	{
 		stop();
+		m_queueLock.lock();
 		m_queue.clear();
+		m_queueLock.unlock();
 		return this;
 	}
 
 	@Override
-	public synchronized float getTimeEstimate()
+	public float getTimeEstimate()
 	{
 		float time = 0f;
 		float factor = Laboratory.s_parkMips;
+		m_queueLock.lock();
 		for (Experiment e : m_queue)
 		{
 			time += e.getDurationEstimate(factor);
 			time += ((float) m_sleepInterval / 1000);
 		}
+		m_queueLock.unlock();
 		return time;
 	}
 
@@ -257,5 +270,4 @@ public class LinearAssistant extends LabAssistant
 		m_queueLock.unlock();
 		return out;
 	}
-
 }

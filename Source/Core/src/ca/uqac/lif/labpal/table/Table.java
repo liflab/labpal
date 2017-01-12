@@ -38,22 +38,22 @@ public abstract class Table
 	 * A counter for auto-incrementing table IDs
 	 */
 	private static int s_idCounter = 1;
-	
+
 	/**
 	 * A lock for accessing the counter
 	 */
 	private static Lock s_counterLock = new ReentrantLock();
-	
+
 	/**
 	 * The table's title
 	 */
 	protected String m_title;
-	
+
 	/**
 	 * The types of values that a data cell can have
 	 */
 	public static enum Type {TEXT, NUMERIC};
-	
+
 	public Table()
 	{
 		super();
@@ -62,7 +62,7 @@ public abstract class Table
 		s_counterLock.unlock();
 		m_title = "Table " + m_id;
 	}
-		
+
 	/**
 	 * Assigns this table to a laboratory
 	 * @param a The lab
@@ -72,22 +72,22 @@ public abstract class Table
 	{
 		return this;
 	}	
-	
+
 	public final String getDescription()
 	{
 		return "";
 	}
-	
+
 	public final void setTitle(String title)
 	{
 		m_title = title;
 	}
-	
+
 	public final String getTitle()
 	{
 		return m_title;
 	}
-	
+
 	/**
 	 * Gets the table's unique ID
 	 * @return The ID
@@ -96,7 +96,7 @@ public abstract class Table
 	{
 		return m_id;
 	}
-	
+
 	/**
 	 * Gets an instance of {@link DataTable} from the table's
 	 * data, using the columns specified in the argument
@@ -111,7 +111,7 @@ public abstract class Table
 	 * @return The table
 	 */
 	public abstract DataTable getDataTable();
-		
+
 	/**
 	 * Casts a value as a number or an instance of {@code Comparable}
 	 * @param o The value
@@ -129,7 +129,29 @@ public abstract class Table
 		}
 		return (Comparable<?>) o;
 	}
-	
+
+	/**
+	 * Attempts to convert an object into a float
+	 * @param o The object
+	 * @return A float, or null if no conversion possible
+	 */
+	public static final Float readFloat(Object o)
+	{
+		if (o == null)
+		{
+			return null;
+		}
+		if (o instanceof JsonNumber)
+		{
+			return ((JsonNumber) o).numberValue().floatValue();
+		}
+		if (o instanceof Number)
+		{
+			return ((Number) o).floatValue();
+		}
+		return null;
+	}
+
 	@Override
 	public String toString()
 	{
@@ -149,7 +171,7 @@ public abstract class Table
 	 * @return The type
 	 */
 	public static Class<? extends Comparable<?>> getTypeOf(Object o)
-	{
+			{
 		if (o == null)
 		{
 			return null;
@@ -163,6 +185,6 @@ public abstract class Table
 			return JsonList.class;
 		}
 		return String.class;
-	}
+			}
 
 }

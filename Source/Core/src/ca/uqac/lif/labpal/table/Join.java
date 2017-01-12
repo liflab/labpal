@@ -37,7 +37,7 @@ public class Join implements TableTransformation
 	 * Creates a new join table
 	 * @param common_dimensions
 	 */
-	public Join(String[] common_dimensions)
+	public Join(String ... common_dimensions)
 	{
 		super();
 		m_commonDimensions = common_dimensions;
@@ -168,8 +168,7 @@ public class Join implements TableTransformation
 		List<TableEntry> keys = new ArrayList<TableEntry>();
 		for (DataTable t : tables)
 		{
-			DataTable dt = t.getDataTable(t.getColumnNames());
-			for (TableEntry e : dt.getEntries())
+			for (TableEntry e : t.getEntries())
 			{
 				TableEntry new_e = new TableEntry();
 				for (String k : m_commonDimensions)
@@ -195,7 +194,7 @@ public class Join implements TableTransformation
 		}
 		DataTable mt = new DataTable(ordering);
 		List<TableEntry> entries = new ArrayList<TableEntry>();
-		List<TableEntry> keys = getRowKeys();
+		List<TableEntry> keys = getRowKeys(tables);
 		for (TableEntry key : keys)
 		{
 			for (int table_pos = 0; table_pos < tables.length; table_pos++)

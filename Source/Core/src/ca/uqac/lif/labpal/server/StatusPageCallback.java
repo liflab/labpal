@@ -62,6 +62,7 @@ public class StatusPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%LAB_AUTHOR%\\}", m_lab.getAuthorName());
 		out = out.replaceAll("\\{%LAB_SEED%\\}", Integer.toString(m_lab.getRandomSeed()));
 		out = out.replaceAll("\\{%SPEED_FACTOR%\\}", String.format("%.2f", Laboratory.s_parkMips));
+		out = out.replaceAll("\\{%DATA_POINTS%\\}", Integer.toString(m_lab.countDataPoints()));
 		out = out.replaceAll("\\{%SEL_HOME%\\}", "selected");
 		out = out.replaceAll("\\{%OS_NAME%\\}", System.getProperty("os.name"));
 		out = out.replaceAll("\\{%OS_ARCH%\\}", System.getProperty("os.arch"));
@@ -85,7 +86,7 @@ public class StatusPageCallback extends TemplatePageCallback
 	public String getBar()
 	{
 		// Width of the bar, in pixels
-		final int bar_width_px = 400;
+		final float bar_width_px = 400;
 		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0;
 		for (int id : m_lab.getExperimentIds())
 		{
@@ -108,13 +109,13 @@ public class StatusPageCallback extends TemplatePageCallback
 			}
 		}
 		StringBuilder out = new StringBuilder();
-		int scale = bar_width_px / num_ex;
+		float scale = bar_width_px / num_ex;
 		int num_remaining = num_ex - num_done - num_q - num_failed;
-		out.append("<ul id=\"progress-bar\" style=\"float:left;margin-bottom:20px;width:").append(num_ex * scale).append("px;\">");
-		out.append("<li class=\"done\" title=\"Done: ").append(num_done).append("\" style=\"width:").append(num_done * scale).append("px\"><span class=\"text-only\">Done: ").append(num_done).append("</span></li>");
-		out.append("<li class=\"queued\" title=\"Queued: ").append(num_q).append("\" style=\"width:").append(num_q * scale).append("px\"><span class=\"text-only\">Queued: ").append(num_q).append("</span></li>");
-		out.append("<li class=\"failed\" title=\"Failed/cancelled: ").append(num_failed).append("\" style=\"width:").append(num_failed * scale).append("px\"><span class=\"text-only\">Failed/cancelled: ").append(num_failed).append("</span></li>");
-		out.append("<li class=\"other\" title=\"Other: ").append(num_remaining).append("\" style=\"width:").append(num_remaining * scale).append("px\"><span class=\"text-only\">Other: ").append(num_remaining).append("</span></li>");
+		out.append("<ul id=\"progress-bar\" style=\"float:left;margin-bottom:20px;width:").append(((float) num_ex) * scale).append("px;\">");
+		out.append("<li class=\"done\" title=\"Done: ").append(num_done).append("\" style=\"width:").append(((float) num_done) * scale).append("px\"><span class=\"text-only\">Done: ").append(num_done).append("</span></li>");
+		out.append("<li class=\"queued\" title=\"Queued: ").append(num_q).append("\" style=\"width:").append(((float) num_q) * scale).append("px\"><span class=\"text-only\">Queued: ").append(num_q).append("</span></li>");
+		out.append("<li class=\"failed\" title=\"Failed/cancelled: ").append(num_failed).append("\" style=\"width:").append(((float) num_failed) * scale).append("px\"><span class=\"text-only\">Failed/cancelled: ").append(num_failed).append("</span></li>");
+		out.append("<li class=\"other\" title=\"Other: ").append(num_remaining).append("\" style=\"width:").append(((float) num_remaining) * scale).append("px\"><span class=\"text-only\">Other: ").append(num_remaining).append("</span></li>");
 		out.append("</ul>");
 		out.append("<div>").append(num_done).append("/").append(num_ex).append("</div>");
 		out.append("<div style=\"clear:both\"></div>");

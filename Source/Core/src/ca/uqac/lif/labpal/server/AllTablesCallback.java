@@ -62,6 +62,10 @@ public class AllTablesCallback extends WebCallback
 			renderer.reset();
 			Table tab = m_lab.getTable(id);
 			String box_name = tab.getTitle();
+			if (!tab.getNickname().isEmpty())
+			{
+				box_name = tab.getNickname();
+			}
 			if (box_name.compareTo("Untitled") == 0)
 			{
 				box_name += id;

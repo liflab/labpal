@@ -45,6 +45,12 @@ public abstract class Table
 	private static Lock s_counterLock = new ReentrantLock();
 
 	/**
+	 * A table nickname. This can be used as a short "code" that refers
+	 * to the table (rather than using its ID).
+	 */
+	protected String m_nickname = "";
+
+	/**
 	 * The table's title
 	 */
 	protected String m_title;
@@ -61,6 +67,35 @@ public abstract class Table
 		m_id = s_idCounter++;
 		s_counterLock.unlock();
 		m_title = "Table " + m_id;
+	}
+
+	/**
+	 * Gets the table's nickname
+	 * @return The nickname
+	 */
+	public String getNickname()
+	{
+		return m_nickname;
+	}
+
+	/**
+	 * Sets a nickname for this table. 
+	 * This can be used as a short "code" that refers
+	 * to the table (rather than using its ID).
+	 * @param nickname The nickname
+	 * @return This table
+	 */
+	public Table setNickname(String nickname)
+	{
+		if (nickname == null)
+		{
+			m_nickname = "";
+		}
+		else
+		{
+			m_nickname = nickname;
+		}
+		return this;
 	}
 
 	/**

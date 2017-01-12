@@ -883,6 +883,23 @@ public abstract class Laboratory
 	}
 	
 	/**
+	 * Gets a table by its nickname
+	 * @param nickname The nickname
+	 * @return The table, {@code null} if not found
+	 */
+	public Table getTable(String nickname)
+	{
+		for (Table t : m_tables)
+		{
+			if (t.getNickname().compareTo(nickname) == 0)
+			{
+				return t;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Fetches a group based on its ID
 	 * @param id The group's id
 	 * @return The group, or <tt>null</tt> if not found

@@ -55,6 +55,7 @@ public abstract class Laboratory
 	public static transient int ERR_REQUIREMENTS = 2;
 	public static transient int ERR_IO = 3;
 	public static transient int ERR_SERVER = 4;
+	public static transient int ERR_ARGUMENTS = 5;
 	
 	/**
 	 * The major version number
@@ -554,6 +555,13 @@ public abstract class Laboratory
 		}));
 
 		new_lab.m_cliArguments = parser.parse(args);
+		if (new_lab.m_cliArguments == null)
+		{
+			// Could not parse command line arguments
+			parser.printHelp(getCliHeader(), System.out);
+			stdout.close();
+			System.exit(ERR_ARGUMENTS);
+		}
 		if (new_lab.m_cliArguments.hasOption("help"))
 		{
 			parser.printHelp(getCliHeader(), System.out);

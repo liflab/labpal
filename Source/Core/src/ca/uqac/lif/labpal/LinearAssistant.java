@@ -20,6 +20,8 @@ package ca.uqac.lif.labpal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.labpal.Experiment.Status;
 
@@ -47,10 +49,15 @@ public class LinearAssistant extends LabAssistant
 	private transient ArrayList<Experiment> m_queue;
 	
 	/**
+	 * A lock to control concurrent accesses to the queue
+	 */
+	private transient final Lock m_queueLock = new ReentrantLock();
+	
+	/**
 	 * The time (in ms) to wait before checking the state of the
 	 * thread again
 	 */
-	private static final transient int s_sleepInterval = 333;
+	private transient int m_sleepInterval = 100;
 
 	/**
 	 * Creates a new dispatcher
@@ -60,6 +67,16 @@ public class LinearAssistant extends LabAssistant
 		super();
 		m_stop = true;
 		m_queue = new ArrayList<Experiment>();
+	}
+	
+	/**
+	 * Sets the time (in ms) to wait before checking the state of the
+	 * thread again
+	 * @param interval The time
+	 */
+	public void setSleepInterval(int interval)
+	{
+		m_sleepInterval = interval;
 	}
 
 	@Override
@@ -74,12 +91,16 @@ public class LinearAssistant extends LabAssistant
 		m_stop = false;
 		while (!m_stop)
 		{
+			m_queueLock.lock();
 			if (m_queue.isEmpty())
 			{
 				m_stop = true;
+				m_queueLock.unlock();
 				break;
 			}
+			m_queueLock.lock();
 			Experiment e = m_queue.get(0);
+			m_queueLock.lock();
 			Status s = e.getStatus();
 			if (s != Status.RUNNING && s != Status.DONE && s != Status.FAILED)
 			{
@@ -92,7 +113,7 @@ public class LinearAssistant extends LabAssistant
 					try
 					{
 						// Wait .5 s
-						Thread.sleep(s_sleepInterval);
+						Thread.sleep(m_sleepInterval);
 					} 
 					catch (InterruptedException e1)
 					{
@@ -110,7 +131,9 @@ public class LinearAssistant extends LabAssistant
 						// Experiment takes too long: kill it
 						m_experimentThread.interrupt();
 						e.kill();
+						m_queueLock.lock();
 						m_queue.remove(0);
+						m_queueLock.unlock();
 						break;
 					}
 				}
@@ -118,16 +141,23 @@ public class LinearAssistant extends LabAssistant
 			else
 			{
 				// Experiment is finished: remove from queue
+				m_queueLock.lock();
 				m_queue.remove(0);
+				m_queueLock.unlock();
 			}
 		}
 		// If some experiment is running, interrupt it
-		m_experimentThread.interrupt();
+		if (m_experimentThread != null)
+		{
+			m_experimentThread.interrupt();
+		}
+		m_queueLock.lock();
 		if (!m_queue.isEmpty())
 		{
 			Experiment e = m_queue.get(0);
 			e.interrupt();
 		}
+		m_queueLock.unlock();
 	}
 
 	@Override
@@ -147,6 +177,7 @@ public class LinearAssistant extends LabAssistant
 	@Override
 	public synchronized LabAssistant unqueue(int id)
 	{
+		m_queueLock.lock();
 		for (int i = 0; i < m_queue.size(); i++)
 		{
 			if (m_queue.get(i).getId() == id)
@@ -155,13 +186,16 @@ public class LinearAssistant extends LabAssistant
 				break;
 			}
 		}
+		m_queueLock.unlock();
 		return this;
 	}
 	
 	@Override
 	public synchronized LabAssistant queue(Experiment e)
 	{
+		m_queueLock.lock();
 		m_queue.add(e);
+		m_queueLock.unlock();
 		return this;
 	}
 	
@@ -200,7 +234,7 @@ public class LinearAssistant extends LabAssistant
 		for (Experiment e : m_queue)
 		{
 			time += e.getDurationEstimate(factor);
-			time += ((float) s_sleepInterval / 1000);
+			time += ((float) m_sleepInterval / 1000);
 		}
 		return time;
 	}
@@ -214,11 +248,13 @@ public class LinearAssistant extends LabAssistant
 	@Override
 	public List<Integer> getCurrentQueue()
 	{
+		m_queueLock.lock();
 		List<Integer> out = new LinkedList<Integer>();
 		for (Experiment e : m_queue)
 		{
 			out.add(e.getId());
 		}
+		m_queueLock.unlock();
 		return out;
 	}
 

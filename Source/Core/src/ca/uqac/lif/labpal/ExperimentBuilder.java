@@ -71,11 +71,10 @@ public class ExperimentBuilder<T extends Experiment>
 	}
 
 	/**
-	 * Populates the content of an experiment based on results fetched from
+	 * Creates a set of experiments based on data fetched from
 	 * an external source.
-	 * @param exp The experiment to fill in
 	 * @param scanner A scanner to the source to read from
-	 * @return The experiment
+	 * @return The experiments
 	 * @throws ParseException If the format of the input does not follow
 	 *   the rules mentioned above
 	 */

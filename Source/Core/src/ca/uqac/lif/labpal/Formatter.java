@@ -22,6 +22,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
@@ -37,7 +38,7 @@ public class Formatter
 	 * A math context with three significant digits
 	 */
 	protected static final MathContext s_threeDigitsContext = new MathContext(3);
-	
+
 	/**
 	 * Formats a number into a character string using a "printf" format
 	 * string
@@ -53,7 +54,7 @@ public class Formatter
 		ps.printf(format_string, f);
 		return new String(baos.toByteArray());
 	}
-	
+
 	/**
 	 * Computes the ratio n/d. The purpose of this
 	 * method is to avoid writing lots of checks for these cases:
@@ -79,7 +80,7 @@ public class Formatter
 		}
 		return f_n / d_n;
 	}
-	
+
 	/**
 	 * Rounds a value to a given number of significant digits.
 	 * Please remind that significant digits is <em>not</em> the same thing
@@ -98,7 +99,7 @@ public class Formatter
 		bd = bd.round(new MathContext(digits));
 		return bd.floatValue();
 	}
-	
+
 	/**
 	 * Rounds a value to three significant digits. This method may be slightly
 	 * more efficient than calling {@code sigDig(n, 3)}, as it reuses an
@@ -113,7 +114,7 @@ public class Formatter
 		bd = bd.round(s_threeDigitsContext);
 		return bd.floatValue();
 	}
-	
+
 	/**
 	 * Converts an object into a string
 	 * @param o The object
@@ -142,5 +143,71 @@ public class Formatter
 			return ((JsonNumber) o).toString();
 		}
 		return o.toString();
+	}
+
+	/**
+	 * Casts a value into the most appropriate JSON element type. The method
+	 * uses the following rules:
+	 * <ul>
+	 * <li>Any {@code JsonElement} is left as is</li>
+	 * <li>A {@code null} becomes a {@code JsonNull}</li>
+	 * <li>Any {@code Number} becomes a {@code JsonNumber}</li>
+	 * <li>Any {@code String} is first attempted to be interpreted as a
+	 * number; if so, it becomes a {@code JsonNumber}; otherwise, it becomes
+	 * a {@code JsonString}</li>
+	 * <li>Anything else is converted to a {@code JsonString} using the
+	 * object's {@code toString()} method</li>
+	 * </ul> 
+	 * @param o The value
+	 * @return The corresponding JSON element
+	 */
+	public static JsonElement jsonCast(Object o)
+	{
+		if (o == null)
+			return JsonNull.instance;
+		if (o instanceof JsonElement)
+			return (JsonElement) o;
+		if (o instanceof Number)
+			return new JsonNumber((Number) o);
+		if (o instanceof String)
+		{
+			Number n = stringToNumber((String) o);
+			if (n == null)
+			{
+				return new JsonString((String) o);
+			}
+			return new JsonNumber(n);
+		}
+		return new JsonString(o.toString());
+	}
+	
+	/**
+	 * Attempts to create a number object out of a string
+	 * @param value The input string
+	 * @return A number of the operation succeeded, {@code null} otherwise
+	 */
+	public static Number stringToNumber(String value)
+	{
+		int x;
+		float f;
+		try
+		{
+			// Is it an int
+			x = Integer.parseInt(value);
+		}
+		catch (NumberFormatException e1)
+		{
+			try
+			{
+				// No; is it a float?
+				f = Float.parseFloat(value);
+			}
+			catch (NumberFormatException e2)
+			{
+				return null;
+			}
+			return (float) f;
+		}
+		return (int) x;		
 	}
 }

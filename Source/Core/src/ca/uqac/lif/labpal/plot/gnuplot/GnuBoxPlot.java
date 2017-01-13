@@ -1,11 +1,33 @@
+/*
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.labpal.plot.gnuplot;
 
 import ca.uqac.lif.labpal.FileHelper;
+import ca.uqac.lif.labpal.plot.BoxPlot;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot;
 import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
 
-public class BoxPlot extends GnuPlot implements TwoDimensionalPlot
+/**
+ * Gnuplot implementation of a boxplot.
+ * @author Sylvain Hallé
+ */
+public class GnuBoxPlot extends GnuPlot implements BoxPlot
 {
 	/**
 	 * The caption of the X axis
@@ -22,13 +44,13 @@ public class BoxPlot extends GnuPlot implements TwoDimensionalPlot
 	 */
 	protected String[] m_seriesNames;
 	
-	public BoxPlot(Table table) 
+	public GnuBoxPlot(Table table) 
 	{
 		super(table);
 		m_seriesNames = null;
 	}
 	
-	public BoxPlot(Table table, String ... series_names) 
+	public GnuBoxPlot(Table table, String ... series_names) 
 	{
 		super(table);
 		if (series_names.length == 0)

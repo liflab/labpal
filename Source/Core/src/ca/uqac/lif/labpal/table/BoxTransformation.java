@@ -22,12 +22,39 @@ import java.util.Collections;
 import java.util.List;
 
 import ca.uqac.lif.json.JsonNumber;
-import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.labpal.Formatter;
 
 /**
  * Computes box-and-whiskers statistics from each column of an
- * input table.
+ * input table. For example, given the following table:
+ * <table border="1">
+ * <tr><th>A</th><th>B</th><th>C</th></tr>
+ * <tr><td>0</td><td>1</td><td>1</td></tr>
+ * <tr><td>1</td><td>3</td><td>4</td></tr>
+ * <tr><td>2</td><td>5</td><td>2</td></tr>
+ * <tr><td>3</td><td>7</td><td>8</td></tr>
+ * </table>
+ * the box transformation will produce the following result:
+ * <table border="1">
+ * <tr><th>x</th><th>Min</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Max</th></tr>
+ * <tr><td>A</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td></tr>
+ * <tr><td>B</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td></tr>
+ * <tr><td>C</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td></tr>
+ * </table> 
+ * The columns represent respectively:
+ * <ol>
+ * <li>The name of the column header in the original table</li>
+ * <li>The minimum value of that column (Min)</li>
+ * <li>The value of the first quartile (Q1)</li>
+ * <li>The value of the second quartile (Q2)</li>
+ * <li>The value of the third quartile (Q3)</li>
+ * <li>The maximum value of that column (Max)</li> 
+ * </ol>
  * 
+ * This transformation is called a "box transform", because it produces a
+ * table in a form that can be used by a
+ * {@link ca.uqac.lif.labpal.plot.BoxPlot BoxPlot}.
+ *  
  * @author Sylvain Hallé
  */
 public class BoxTransformation implements TableTransformation 
@@ -85,7 +112,7 @@ public class BoxTransformation implements TableTransformation
 			Collections.sort(values);
 			float num_values = values.size();
 			TableEntry te = new TableEntry();
-			te.put(m_captionX, new JsonString(col_name));
+			te.put(m_captionX, Formatter.jsonCast(col_name));
 			te.put(m_captionMin, new JsonNumber(values.get(0)));
 			te.put(m_captionQ1, new JsonNumber(values.get((int)(num_values * 0.25) - 1)));
 			te.put(m_captionQ2, new JsonNumber(values.get((int)(num_values * 0.5) - 1)));

@@ -49,12 +49,34 @@ public abstract class LabAssistant implements Runnable
 	protected long m_stopTime = -1;
 	
 	/**
+	 * The total time the assistant has been running since the program was
+	 * started (in milliseconds)
+	 */
+	protected long m_runningTime = 0;
+	
+	/**
 	 * Creates a new lab assistant
 	 */
 	public LabAssistant()
 	{
 		super();
 		m_name = "George Jetson";
+	}
+	
+	/**
+	 * Gets the total time the assistant has been running since the program
+	 * was started (in milliseconds)
+	 * @return The time
+	 */
+	public long getRunningTime()
+	{
+		long time = m_runningTime;
+		if (isRunning())
+		{
+			long duration = System.currentTimeMillis() - getStartTime();
+			time += duration;
+		}
+		return time;
 	}
 	
 	/**

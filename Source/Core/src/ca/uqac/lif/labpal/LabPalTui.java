@@ -888,6 +888,13 @@ public class LabPalTui
 		printer.print("\n");
 	}
 	
+	/**
+	 * Formats a duration into a scale-dependent expression. For example,
+	 * a duration of 50 seconds will be shown as "50 seconds", while a duration
+	 * of 2000 seconds will be shown as "18 minutes" (exact seconds not shown).
+	 * @param n The duration (in seconds)
+	 * @return The formatted expression
+	 */
 	public static String formatEta(float n)
 	{
 		if (n < 90)

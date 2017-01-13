@@ -82,6 +82,10 @@ public class LinearAssistant extends LabAssistant
 	@Override
 	public void run()
 	{
+		if (m_stopTime > 0)
+		{
+			m_runningTime += (m_stopTime - m_startTime);
+		}
 		m_startTime = System.currentTimeMillis();
 		if (m_experimentThread != null && m_experimentThread.isAlive())
 		{

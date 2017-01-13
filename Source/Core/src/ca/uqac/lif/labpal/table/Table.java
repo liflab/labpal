@@ -54,6 +54,11 @@ public abstract class Table
 	 * The table's title
 	 */
 	protected String m_title;
+	
+	/**
+	 * A textual description of the table's contents
+	 */
+	public String m_description = "";
 
 	/**
 	 * The types of values that a data cell can have
@@ -108,9 +113,30 @@ public abstract class Table
 		return this;
 	}	
 
-	public final String getDescription()
+	/**
+	 * Gets the table's description
+	 * @return The description
+	 */
+	public String getDescription()
 	{
-		return "";
+		return m_description;
+	}
+	
+	/**
+	 * Sets the table's description
+	 * @param description The description. This string can contain any valid
+	 * HTML. This string will not be escaped when displayed in the web 
+	 * console.
+	 * @return This table
+	 */
+	public Table setDescription(String description)
+	{
+		if (description == null)
+		{
+			m_description = "";
+		}
+		m_description = description;
+		return this;
 	}
 
 	public final void setTitle(String title)

@@ -64,9 +64,16 @@ public class BoxPlot extends GnuPlot implements TwoDimensionalPlot
 		out.append("set xlabel \"").append(m_captionX).append("\"").append(FileHelper.CRLF);
 		out.append("set ylabel \"").append(m_captionY).append("\"").append(FileHelper.CRLF);
 		int num_series = (tab.getColumnCount() - 1) / 5;
-		float offset = -0.15f;
-		float offset_step = 0.3f;
-		out.append("plot ");//'-' using 2:4:xticlabels(1) linetype -3 notitle, ");
+		float offset = 0, offset_step = 0.3f;
+		if (num_series % 2 == 0)
+		{
+			offset = -((((float) num_series) / 2f) - 1f) * offset_step - 0.15f;
+		}
+		else
+		{
+			offset = - ((float) num_series - 1f) / 2f * offset_step;
+		}
+		out.append("plot ");
 		for (int s_count = 0; s_count < num_series; s_count++)
 		{
 			String signum = "+";

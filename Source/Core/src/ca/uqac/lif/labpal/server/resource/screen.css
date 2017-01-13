@@ -236,6 +236,10 @@ table.exp-table td {
   background: url('images/status-done-24.png') left center no-repeat;
 }
 
+.status-icon.status-warning {
+  background: url('images/status-warning-24.png') left center no-repeat;
+}
+
 .status-icon.status-running {
   background: url('images/status-running-24.png') left center no-repeat;
 }
@@ -381,6 +385,14 @@ table.exp-table td {
 
 #progress-bar .done:hover {
   background-color: lightgreen;
+}
+
+#progress-bar .warning {
+  background-color: orange;
+}
+
+#progress-bar .warning:hover {
+  background-color: yellow;
 }
 
 #progress-bar .queued {

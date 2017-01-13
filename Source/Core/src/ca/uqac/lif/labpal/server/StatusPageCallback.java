@@ -87,7 +87,7 @@ public class StatusPageCallback extends TemplatePageCallback
 	{
 		// Width of the bar, in pixels
 		final float bar_width_px = 400;
-		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0;
+		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0, num_warn = 0;
 		for (int id : m_lab.getExperimentIds())
 		{
 			num_ex++;
@@ -99,6 +99,9 @@ public class StatusPageCallback extends TemplatePageCallback
 				break;
 			case FAILED:
 				num_failed++;
+				break;
+			case DONE_WARNING:
+				num_warn++;
 				break;
 			default:
 				if (m_assistant.isQueued(id))
@@ -114,6 +117,7 @@ public class StatusPageCallback extends TemplatePageCallback
 		out.append("<ul id=\"progress-bar\" style=\"float:left;margin-bottom:20px;width:").append(((float) num_ex) * scale).append("px;\">");
 		out.append("<li class=\"done\" title=\"Done: ").append(num_done).append("\" style=\"width:").append(((float) num_done) * scale).append("px\"><span class=\"text-only\">Done: ").append(num_done).append("</span></li>");
 		out.append("<li class=\"queued\" title=\"Queued: ").append(num_q).append("\" style=\"width:").append(((float) num_q) * scale).append("px\"><span class=\"text-only\">Queued: ").append(num_q).append("</span></li>");
+		out.append("<li class=\"warning\" title=\"Warning: ").append(num_warn).append("\" style=\"width:").append(((float) num_warn) * scale).append("px\"><span class=\"text-only\">Warnings: ").append(num_warn).append("</span></li>");
 		out.append("<li class=\"failed\" title=\"Failed/cancelled: ").append(num_failed).append("\" style=\"width:").append(((float) num_failed) * scale).append("px\"><span class=\"text-only\">Failed/cancelled: ").append(num_failed).append("</span></li>");
 		out.append("<li class=\"other\" title=\"Other: ").append(num_remaining).append("\" style=\"width:").append(((float) num_remaining) * scale).append("px\"><span class=\"text-only\">Other: ").append(num_remaining).append("</span></li>");
 		out.append("</ul>");

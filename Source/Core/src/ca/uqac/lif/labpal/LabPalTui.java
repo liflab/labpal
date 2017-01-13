@@ -765,6 +765,15 @@ public class LabPalTui
 					{
 						printer.print(ex.getErrorMessage() + "\n");
 					}
+					if (ex.hasWarnings())
+					{
+						StringBuilder out = new StringBuilder();
+						for (ExperimentException eex : ex.getWarnings())
+						{
+							out.append(eex.getMessage()).append("\n");
+						}
+						printer.print(out);
+					}
 					printer.print(ex.getAllParameters() + "\n");
 				}
 			}
@@ -820,6 +829,12 @@ public class LabPalTui
 				printer.print("D");
 				printer.resetColors();
 				break;
+			case DONE_WARNING:
+				printer.setBackgroundColor(AnsiPrinter.Color.YELLOW);
+				printer.setForegroundColor(AnsiPrinter.Color.BLACK);
+				printer.print("W");
+				printer.resetColors();
+				break;
 			case RUNNING:
 				printer.print("R");
 				break;
@@ -841,7 +856,7 @@ public class LabPalTui
 	
 	protected static void showStatus(AnsiPrinter printer, Laboratory lab, LabAssistant assistant)
 	{
-		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0;
+		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0, num_warn = 0;
 		for (int id : lab.getExperimentIds())
 		{
 			num_ex++;
@@ -850,6 +865,9 @@ public class LabPalTui
 			{
 			case DONE:
 				num_done++;
+				break;
+			case DONE_WARNING:
+				num_warn++;
 				break;
 			case FAILED:
 				num_failed++;
@@ -872,6 +890,9 @@ public class LabPalTui
 		printer.setForegroundColor(Color.YELLOW).print(num_done);
 		printer.resetColors();
 		printer.print(" done, ");
+		printer.setForegroundColor(Color.YELLOW).print(num_warn);
+		printer.resetColors();
+		printer.print(" done with warnings, ");
 		printer.setForegroundColor(Color.YELLOW).print(num_failed);
 		printer.resetColors();
 		printer.print(" failed\n");

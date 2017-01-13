@@ -33,8 +33,9 @@ public class RelativizeRows implements TableTransformation
 	}
 
 	@Override
-	public DataTable transform(DataTable in_table)
+	public DataTable transform(DataTable ... tables)
 	{
+		DataTable in_table = tables[0];
 		DataTable out_table = new DataTable();
 		if (in_table.getRowCount() == 0)
 		{

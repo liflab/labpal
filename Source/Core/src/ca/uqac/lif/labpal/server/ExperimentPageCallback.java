@@ -27,6 +27,7 @@ import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -93,6 +94,19 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			String escaped_msg = error_msg.replace("\\", "\\\\");
 			escaped_msg = escaped_msg.replace("$", "\\$");
 			out = out.replaceAll("\\{%FAIL_MSG%\\}", "<h2>Error message</h2><pre>" + escaped_msg + "</pre>");
+		}
+		if (e.hasWarnings())
+		{
+			StringBuilder warning_msg_build = new StringBuilder();
+			for (ExperimentException ex : e.getWarnings())
+			{
+				warning_msg_build.append("<div>");
+				String escaped_msg = ex.getMessage().replace("\\", "\\\\");
+				escaped_msg = escaped_msg.replace("$", "\\$");
+				warning_msg_build.append(escaped_msg);
+				warning_msg_build.append("</div>\n");
+			}
+			out = out.replaceAll("\\{%WARNINGS%\\}", "<h2>Warnings</h2>" + warning_msg_build.toString() + "");
 		}
 		Set<Group> groups = m_lab.getGroups(experiment_nb);
 		String group_description = "";

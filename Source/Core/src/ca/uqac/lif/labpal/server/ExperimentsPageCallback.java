@@ -198,6 +198,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		{
 		case DONE:
 			return "<div class=\"status-icon status-done\" title=\"Done\"><span class=\"text-only\">D</span></div>";
+		case DONE_WARNING:
+			return "<div class=\"status-icon status-warning\" title=\"Done\"><span class=\"text-only\">W</span></div>";
 		case DUNNO:
 			break;
 		case FAILED:
@@ -247,6 +249,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		{
 		case DONE:
 			return "Done";
+		case DONE_WARNING:
+			return "Done with warnings";
 		case DUNNO:
 			break;
 		case FAILED:

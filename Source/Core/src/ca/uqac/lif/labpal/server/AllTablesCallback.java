@@ -96,6 +96,7 @@ public class AllTablesCallback extends WebCallback
 	{
 		String out_name = name;
 		out_name = out_name.replaceAll(" ", "");
+		out_name = out_name.replaceAll("_", "");
 		out_name = out_name.replaceAll("\\(", "");
 		out_name = out_name.replaceAll("\\)", "");
 		out_name = out_name.replaceAll(",", "");

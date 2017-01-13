@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Print stream with facilities for producing colored text using
@@ -334,8 +336,7 @@ public class AnsiPrinter extends PrintStream
 			} 
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
 			}
 			return "";
 		}

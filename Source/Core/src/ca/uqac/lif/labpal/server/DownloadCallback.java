@@ -19,6 +19,8 @@ package ca.uqac.lif.labpal.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -69,8 +71,7 @@ public class DownloadCallback extends WebCallback
 			}
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
 			}
 			response.setContents(bos.toByteArray());
 			response.setContentType(CallbackResponse.ContentType.ZIP);

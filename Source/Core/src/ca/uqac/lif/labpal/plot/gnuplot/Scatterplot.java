@@ -165,6 +165,10 @@ public class Scatterplot extends GnuPlot implements ca.uqac.lif.labpal.plot.Scat
 		}
 		out.append("set xlabel \"").append(caption_x).append("\"\n");
 		out.append("set ylabel \"").append(m_captionY).append("\"\n");
+		if (!hasKey())
+		{
+			out.append("set key off\n");
+		}
 		out.append("plot");
 		for (int i = 0; i < series.size(); i++)
 		{

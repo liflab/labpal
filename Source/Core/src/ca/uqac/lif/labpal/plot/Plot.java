@@ -143,6 +143,11 @@ public abstract class Plot
 	protected TableTransformation m_transformation = null;
 	
 	/**
+	 * Whether the plot shows a key
+	 */
+	protected transient boolean m_hasKey = true;
+	
+	/**
 	 * The bytes of a blank image, used as a placeholder when no plot can
 	 * be drawn
 	 */
@@ -258,6 +263,27 @@ public abstract class Plot
 	public int hashCode()
 	{
 		return m_id;
+	}
+	
+	/**
+	 * Sets if this plot shows a key when it has multiple data series
+	 * @param b Set to {@code true} to enable the key, {@code false}
+	 * otherwise
+	 * @return This plot
+	 */
+	public Plot setKey(boolean b)
+	{
+		m_hasKey = b;
+		return this;
+	}
+	
+	/**
+	 * Determines if this plot shows a key when it has multiple data series
+	 * @return {@code true} if the key is enabled, {@code false} otherwise
+	 */
+	public boolean hasKey()
+	{
+		return m_hasKey;
 	}
 	
 	/**

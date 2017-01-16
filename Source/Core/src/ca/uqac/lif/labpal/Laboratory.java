@@ -91,6 +91,11 @@ public abstract class Laboratory
 	 * The set of groups associated with this lab
 	 */
 	private transient HashSet<Group> m_groups;
+	
+	/**
+	 * The hostname of the machine running the lab
+	 */
+	private String m_hostName = guessHostName();
 
 	/**
 	 * The title given to this lab
@@ -511,8 +516,8 @@ public abstract class Laboratory
 		.withLongName("color")
 		.withDescription("Enables color and Unicode in text interface"));
 		parser.addArgument(new Argument()
-		.withLongName("web")
-		.withDescription("Start LabPal as a web server"));
+		.withLongName("console")
+		.withDescription("Start LabPal in console mode"));
 		parser.addArgument(new Argument()
 		.withLongName("seed")
 		.withArgument("x")
@@ -580,7 +585,7 @@ public abstract class Laboratory
 		stdout.print(getCliHeader());
 		int code = ERR_OK;
 		new_lab.setup();
-		if (new_lab.m_cliArguments.hasOption("web"))
+		if (!new_lab.m_cliArguments.hasOption("console"))
 		{
 			// Start ParkBench's web interface
 			LabPalServer server = new LabPalServer(new_lab.m_cliArguments, new_lab, assistant);
@@ -978,6 +983,29 @@ public abstract class Laboratory
 			pts += e.countDataPoints();
 		}
 		return pts;
+	}
+	
+	/**
+	 * Attempts to retrieve the host name of the machine running this lab.
+	 * This is done by running the "hostname" command at the command and
+	 * fetching its resulting string.
+	 * @return A string with the hostname. If launching the command
+	 * resulted in an error, returns an empty string or {@code null}
+	 */
+	public String getHostName()
+	{
+		return m_hostName;
+	}
+	
+	/**
+	 * Guesses the host name
+	 * @return The host name
+	 */
+	protected static String guessHostName()
+	{
+		byte[] bytes = CommandRunner.runAndGet("hostname", null);
+		String name = new String(bytes);
+		return name.trim();
 	}
 
 }

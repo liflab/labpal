@@ -65,7 +65,7 @@ public abstract class Laboratory
 	/**
 	 * The minor version number
 	 */
-	private static final int s_minorVersionNumber = 6;
+	private static final int s_minorVersionNumber = 7;
 	
 	/**
 	 * The revision version number

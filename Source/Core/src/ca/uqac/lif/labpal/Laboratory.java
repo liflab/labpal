@@ -598,6 +598,7 @@ public abstract class Laboratory
 				}				
 			}
 			stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort() + HomePageCallback.URL + " in your browser\n");
+			stdout.print("Hit Ctrl+C in this window to stop\n");
 			try
 			{
 				server.startServer();

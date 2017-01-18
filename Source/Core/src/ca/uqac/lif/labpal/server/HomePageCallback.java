@@ -65,11 +65,11 @@ public class HomePageCallback extends TemplatePageCallback
 	@Override
 	public String fill(String page, Map<String,String> params)
 	{
-		String out = page.replaceAll("\\{%TITLE%\\}", htmlEscape(m_lab.getTitle()));
+		String out = page.replaceAll("\\{%TITLE%\\}", Matcher.quoteReplacement(htmlEscape(m_lab.getTitle())));
 		out = out.replaceAll("\\{%SEL_HOME%\\}", "selected");
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.HOME));
 		// We deliberately DON'T escape the description, as it is already valid HTML 
-		out = out.replaceAll("\\{%LAB_DESCRIPTION%\\}", m_labDescription);
+		out = out.replaceAll("\\{%LAB_DESCRIPTION%\\}", Matcher.quoteReplacement(m_labDescription));
 		out = resolveClassText(out);
 		return out;
 	}	

@@ -83,7 +83,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		{
 			message = unqueue(params);
 		}
-		out = out.replaceAll("\\{%MESSAGE%\\}", message);
+		out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
 		StringBuilder list_of_lists = new StringBuilder();
 		boolean has_groups = false;
 		List<Integer> sorted_groups = new Vector<Integer>(m_lab.getGroupIds());
@@ -108,7 +108,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			}
 			list_of_lists.append(getExperimentList(m_lab, m_assistant, orphan_ids));
 		}
-		out = out.replaceAll("\\{%EXP_LIST%\\}", list_of_lists.toString());
+		out = out.replaceAll("\\{%EXP_LIST%\\}", Matcher.quoteReplacement(list_of_lists.toString()));
 		return out;
 	}
 	

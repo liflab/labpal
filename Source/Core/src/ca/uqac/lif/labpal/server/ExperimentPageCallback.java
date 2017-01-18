@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonMap;
@@ -78,10 +79,10 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		{
 			out = out.replaceAll("\\{%EXP_DURATION%\\}", LabPalTui.formatEta((e.getEndTime() - e.getStartTime()) / 1000f));
 		}
-		out = out.replaceAll("\\{%EXP_BY%\\}", htmlEscape(e.getWhoRan()));
-		out = out.replaceAll("\\{%EXP_DATA%\\}", renderHtml(e.getAllParameters(), "", e).toString());
+		out = out.replaceAll("\\{%EXP_BY%\\}", Matcher.quoteReplacement(htmlEscape(e.getWhoRan())));
+		out = out.replaceAll("\\{%EXP_DATA%\\}", Matcher.quoteReplacement(renderHtml(e.getAllParameters(), "", e).toString()));
 		String description = e.getDescription();
-		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", "<div class=\"description\">" + description + "</div>");
+		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", Matcher.quoteReplacement("<div class=\"description\">" + description + "</div>"));
 		String timeout_string = "No timeout";
 		if (e.getMaxDuration() > 0)
 		{
@@ -91,9 +92,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		String error_msg = e.getErrorMessage();
 		if (!error_msg.isEmpty())
 		{
-			String escaped_msg = error_msg.replace("\\", "\\\\");
-			escaped_msg = escaped_msg.replace("$", "\\$");
-			out = out.replaceAll("\\{%FAIL_MSG%\\}", "<h2>Error message</h2><pre>" + escaped_msg + "</pre>");
+			out = out.replaceAll("\\{%FAIL_MSG%\\}", Matcher.quoteReplacement("<h2>Error message</h2><pre>" + error_msg + "</pre>"));
 		}
 		if (e.hasWarnings())
 		{
@@ -101,12 +100,10 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			for (ExperimentException ex : e.getWarnings())
 			{
 				warning_msg_build.append("<div>");
-				String escaped_msg = ex.getMessage().replace("\\", "\\\\");
-				escaped_msg = escaped_msg.replace("$", "\\$");
-				warning_msg_build.append(escaped_msg);
+				warning_msg_build.append(ex.getMessage());
 				warning_msg_build.append("</div>\n");
 			}
-			out = out.replaceAll("\\{%WARNINGS%\\}", "<h2>Warnings</h2>" + warning_msg_build.toString() + "");
+			out = out.replaceAll("\\{%WARNINGS%\\}", Matcher.quoteReplacement("<h2>Warnings</h2>" + warning_msg_build.toString() + ""));
 		}
 		Set<Group> groups = m_lab.getGroups(experiment_nb);
 		String group_description = "";
@@ -116,7 +113,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		if (!group_description.trim().isEmpty())
 		{
-			out = out.replaceAll("\\{%GROUP_DESC%\\}", "<div class=\"around-pulldown\">\n<h3 class=\"pulldown\">Generic description</h3>\n<div class=\"pulldown-contents\">" + group_description + "</div></div>");
+			out = out.replaceAll("\\{%GROUP_DESC%\\}", Matcher.quoteReplacement("<div class=\"around-pulldown\">\n<h3 class=\"pulldown\">Generic description</h3>\n<div class=\"pulldown-contents\">" + group_description + "</div></div>"));
 		}
 		return out;
 	}

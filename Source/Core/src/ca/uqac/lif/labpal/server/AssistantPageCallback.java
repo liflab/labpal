@@ -19,6 +19,7 @@ package ca.uqac.lif.labpal.server;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -81,10 +82,10 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 		}
 		else
 		{
-			out = out.replaceAll("\\{%EXP_LIST%\\}", ExperimentsPageCallback.getExperimentList(m_lab, m_assistant, queue));
+			out = out.replaceAll("\\{%EXP_LIST%\\}", Matcher.quoteReplacement(ExperimentsPageCallback.getExperimentList(m_lab, m_assistant, queue)));
 		}
 		out = out.replaceAll("\\{%ASSISTANT_TIME%\\}", LabPalTui.formatEta(m_assistant.getRunningTime() / 1000));
-		out = out.replaceAll("\\{%ASSISTANT_NAME%\\}", htmlEscape(m_assistant.getName()));
+		out = out.replaceAll("\\{%ASSISTANT_NAME%\\}", Matcher.quoteReplacement(htmlEscape(m_assistant.getName())));
 		out = out.replaceAll("\\{%SEL_ASSISTANT%\\}", "selected");
 		out = out.replaceAll("\\{%TIME_ESTIMATE%\\}", LabPalTui.formatEta(m_assistant.getTimeEstimate()));
 		if (m_assistant.isRunning())
@@ -98,7 +99,7 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 				out = out.replaceAll("\\{%BTN_START%\\}", "<input type=\"submit\" class=\"btn\" id=\"btn-start\" name=\"start\" value=\"Start the assistant\"/>");
 			}
 		}
-		out = out.replaceAll("\\{%MESSAGE%\\}", message);
+		out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ASSISTANT));
 		return out;
 	}

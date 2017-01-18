@@ -18,6 +18,7 @@
 package ca.uqac.lif.labpal.server;
 
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -63,12 +64,12 @@ public class TablePageCallback extends TemplatePageCallback
 			return null;
 		}
 		DataTable tbl = tab.getDataTable();
-		s = s.replaceAll("\\{%TITLE%\\}", tab.getTitle());
-		s = s.replaceAll("\\{%TABLE%\\}", s_renderer.render(tbl.getTree(), tbl.getColumnNames()));
+		s = s.replaceAll("\\{%TITLE%\\}", Matcher.quoteReplacement(tab.getTitle()));
+		s = s.replaceAll("\\{%TABLE%\\}", Matcher.quoteReplacement(s_renderer.render(tbl.getTree(), tbl.getColumnNames())));
 		String desc = tab.getDescription();
 		if (desc != null && !desc.isEmpty())
 		{
-			s = s.replaceAll("\\{%DESCRIPTION%\\}", desc);
+			s = s.replaceAll("\\{%DESCRIPTION%\\}", Matcher.quoteReplacement(desc));
 		}
 		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return s;

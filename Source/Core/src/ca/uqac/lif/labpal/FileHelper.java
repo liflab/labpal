@@ -422,64 +422,78 @@ public class FileHelper
 	 * @throws URISyntaxException 
 	 * @throws IOException 
 	 */
-	public static List<String> getResourceListing(Class<?> clazz, String path, String glob) throws URISyntaxException, IOException 
+	public static List<String> getResourceListing(Class<?> clazz, String path, String glob) 
 	{
 		List<String> names = new ArrayList<String>();
-		URL dirURL = clazz.getClassLoader().getResource(path);
-		if (dirURL != null && dirURL.getProtocol().equals("file")) 
+		try
 		{
-			/* A file path: easy enough */
-			File f = new File(dirURL.toURI());
-			for (String filename : f.list())
+			URL dirURL = clazz.getClassLoader().getResource(path);
+			if (dirURL != null && dirURL.getProtocol().equals("file")) 
 			{
-				if (filename.matches(glob))
+				/* A file path: easy enough */
+				File f = new File(dirURL.toURI());
+				for (String filename : f.list())
 				{
-					names.add(filename);
+					if (filename.matches(glob))
+					{
+						names.add(filename);
+					}
 				}
-			}
-			return names;
-		} 
+				return names;
+			} 
 
-		if (dirURL == null) 
-		{
-			/* 
-			 * In case of a jar file, we can't actually find a directory.
-			 * Have to assume the same jar as clazz.
-			 */
-			String me = clazz.getName().replace(".", "/")+".class";
-			dirURL = clazz.getClassLoader().getResource(me);
-		}
-
-		if (dirURL.getProtocol().equals("jar")) 
-		{
-			/* A JAR path */
-			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
-			JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-			Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
-			Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
-			while(entries.hasMoreElements()) 
+			if (dirURL == null) 
 			{
-				String name = entries.nextElement().getName();
-				if (name.startsWith(path)) { //filter according to the path
-					String entry = name.substring(path.length());
-					int checkSubdir = entry.indexOf("/");
-					if (checkSubdir >= 0)
-					{
-						// if it is a subdirectory, we just return the directory name
-						entry = entry.substring(0, checkSubdir);
-					}
-					if (entry.matches(glob))
-					{
-						result.add(entry);
+				/* 
+				 * In case of a jar file, we can't actually find a directory.
+				 * Have to assume the same jar as clazz.
+				 */
+				String me = clazz.getName().replace(".", "/")+".class";
+				dirURL = clazz.getClassLoader().getResource(me);
+			}
+
+			if (dirURL.getProtocol().equals("jar")) 
+			{
+				/* A JAR path */
+				String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
+				JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+				Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+				Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
+				while(entries.hasMoreElements()) 
+				{
+					String name = entries.nextElement().getName();
+					if (name.startsWith(path)) { //filter according to the path
+						String entry = name.substring(path.length());
+						int checkSubdir = entry.indexOf("/");
+						if (checkSubdir >= 0)
+						{
+							// if it is a subdirectory, we just return the directory name
+							entry = entry.substring(0, checkSubdir);
+						}
+						if (entry.matches(glob))
+						{
+							result.add(entry);
+						}
 					}
 				}
+				jar.close();
+				names.addAll(result);
+				return names;
 			}
-			jar.close();
-			names.addAll(result);
+		}
+		catch (IOException e)
+		{
+			return names;
+		}
+		catch (RuntimeException e)
+		{
 			return names;
 		} 
-
-		throw new UnsupportedOperationException("Cannot list files for URL "+dirURL);
+		catch (URISyntaxException e) 
+		{
+			return names;
+		}
+		return names;
 	}
 
 }

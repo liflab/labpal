@@ -8,6 +8,7 @@ import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.Join;
 import ca.uqac.lif.labpal.table.RenameColumns;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TransformedTable;
 
 /**
  * Create data series from multiple experiments and plot them in the same
@@ -33,9 +34,10 @@ public class MultiplePlots extends Laboratory
 		}
 		
 		// Prepare a plot from the "y" values of both types of experiments
-		final Table table1 = new Join(new String[]{"a"},
-				new RenameColumns(table_exp_a, "a", "Experiment A"),
-				new RenameColumns(table_exp_b, "a", "Experiment B")
+		final Table table1 = new TransformedTable(
+				new Join("a"),
+				new TransformedTable(new RenameColumns("a", "Experiment A"), table_exp_a),
+				new TransformedTable(new RenameColumns("b", "Experiment B"), table_exp_b)
 				);
 		table1.setTitle("Comparison of Experiment A and Experiment B");
 		add(table1);

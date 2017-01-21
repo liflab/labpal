@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
@@ -150,7 +151,7 @@ public class ExperimentTable extends Table
 				JsonElement elem = readExperiment(e, col_name);
 				if (elem != null)
 				{
-					te.put(col_name, elem);
+					te.put(col_name, elem, e.getDataPointId(col_name));
 				}
 				else
 				{
@@ -166,7 +167,7 @@ public class ExperimentTable extends Table
 					JsonElement elem = list.get(i);
 					if (elem != null)
 					{
-						te.put(map_entry.getKey(), elem);
+						te.put(map_entry.getKey(), elem, e.getDataPointId(map_entry.getKey()));
 					}
 					else
 					{
@@ -196,4 +197,24 @@ public class ExperimentTable extends Table
 	{
 		return e.read(key);
 	}
+
+	@Override
+	public Object getValue(String id)
+	{
+		String[] parts = id.split(":");
+		int row = Integer.parseInt(parts[1].trim());
+		int col = Integer.parseInt(parts[2].trim());
+		return getDataTable().get(col, row);
+	}
+
+	@Override
+	public Set<String> dependsOn(String id)
+	{
+		String[] parts = id.split(":");
+		int row = Integer.parseInt(parts[1].trim());
+		int col = Integer.parseInt(parts[2].trim());
+		return getDataTable().dependsOn(row, col);
+	}
+	
+	
 }

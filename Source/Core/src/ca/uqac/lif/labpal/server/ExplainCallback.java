@@ -17,17 +17,13 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.table.DataTable;
-import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.Table.CellCoordinate;
-import ca.uqac.lif.labpal.table.rendering.HtmlTableNodeRenderer;
+import ca.uqac.lif.labpal.provenance.ProvenanceNode;
 
 /**
  * Callback producing an image from one of the lab's plots, in various
@@ -45,53 +41,60 @@ import ca.uqac.lif.labpal.table.rendering.HtmlTableNodeRenderer;
  * @author Sylvain Hallé
  *
  */
-public class TablePageCallback extends TemplatePageCallback
+public class ExplainCallback extends TemplatePageCallback
 {	
-	public TablePageCallback(Laboratory lab, LabAssistant assistant)
+	public ExplainCallback(Laboratory lab, LabAssistant assistant)
 	{
-		super("/table", lab, assistant);
+		super("/explain", lab, assistant);
 	}
 
 	@Override
 	public String fill(String s, Map<String,String> params)
 	{
-		int tab_id = Integer.parseInt(params.get("id"));
-		Table tab = m_lab.getTable(tab_id);
-		if (tab == null)
-		{
-			return null;
-		}
-		DataTable tbl = tab.getDataTable();
-		String highlight = "";
-		if (params.containsKey("highlight"))
-		{
-			highlight = params.get("highlight");
-		}
-		HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer(tab, getCellsToHighlight(highlight));
-		s = s.replaceAll("\\{%TITLE%\\}", Matcher.quoteReplacement(tab.getTitle()));
-		s = s.replaceAll("\\{%TABLE%\\}", Matcher.quoteReplacement(renderer.render(tbl.getTree(), tbl.getColumnNames())));
-		String desc = tab.getDescription();
-		if (desc != null && !desc.isEmpty())
-		{
-			s = s.replaceAll("\\{%DESCRIPTION%\\}", Matcher.quoteReplacement(desc));
-		}
+		String datapoint_id = params.get("id");
+		ProvenanceNode node = m_lab.getDataTracker().explain(datapoint_id);
+		StringBuilder out = new StringBuilder();
+		out.append("<ul class=\"explanation\">\n");
+		explanationToHtml(node, out);
+		out.append("</ul>\n");
+		s = s.replaceAll("\\{%TITLE%\\}", "Explanation");
+		s = s.replaceAll("\\{%EXPLANATION%\\}", Matcher.quoteReplacement(out.toString()));
 		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return s;
 	}
 	
-	protected Set<CellCoordinate> getCellsToHighlight(String highlight)
+	protected void explanationToHtml(ProvenanceNode node, StringBuilder out)
 	{
-		Set<CellCoordinate> to_highlight = new HashSet<CellCoordinate>();
-		String[] ids = highlight.split(",");
-		for (String id : ids)
+		out.append("<li><a title=\"Click to see where this value comes from\" href=\"").append(getDataPointUrl(node)).append("\">").append(node).append("</a>");
+		Set<ProvenanceNode> parents = node.getParents();
+		if (parents != null && !parents.isEmpty())
 		{
-			if (id.trim().isEmpty())
-				continue;
-			String[] parts = id.split(":");
-			int row = Integer.parseInt(parts[1]);
-			int col = Integer.parseInt(parts[2]);
-			to_highlight.add(new Table.CellCoordinate(row, col));
+			out.append("<ul>");
+			for (ProvenanceNode pn : parents)
+			{
+				explanationToHtml(pn, out);
+			}
+			out.append("</ul>");
 		}
-		return to_highlight;
+		out.append("</li>\n");
+	}
+	
+	protected String getDataPointUrl(ProvenanceNode node)
+	{
+		String id = node.getDataPointId();
+		String[] parts = id.split(":");
+		String type = parts[0].substring(0, 1);
+		int number = Integer.parseInt(parts[0].substring(1, parts[0].length()));
+		if (type.compareTo("T") == 0)
+		{
+			// Table
+			return "table?id=" + number + "&amp;highlight=" + id;
+		}
+		if (type.compareTo("E") == 0)
+		{
+			// Table
+			return "experiment?id=" + number + "&amp;highlight=" + id;
+		}
+		return "#";
 	}
 }

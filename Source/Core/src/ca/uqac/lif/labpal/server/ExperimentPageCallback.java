@@ -19,6 +19,7 @@ package ca.uqac.lif.labpal.server;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -54,6 +55,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	{
 		if (!params.containsKey("id"))
 			return "";
+		
 		int experiment_nb = Integer.parseInt(params.get("id"));
 		Experiment e = m_lab.getExperiment(experiment_nb);
 		if (e == null)
@@ -68,6 +70,11 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		{
 			e.clean();
 		}
+		Set<String> to_highlight = new HashSet<String>();
+		if (params.containsKey("highlight"))
+		{
+			to_highlight = getKeysToHighlight(params.get("highlight"));
+		}
 		String out = page.replaceAll("\\{%TITLE%\\}", "Experiment #" + experiment_nb);
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ERLENMEYER));
 		out = out.replaceAll("\\{%EXP_NB%\\}", Integer.toString(experiment_nb));
@@ -80,7 +87,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			out = out.replaceAll("\\{%EXP_DURATION%\\}", LabPalTui.formatEta((e.getEndTime() - e.getStartTime()) / 1000f));
 		}
 		out = out.replaceAll("\\{%EXP_BY%\\}", Matcher.quoteReplacement(htmlEscape(e.getWhoRan())));
-		out = out.replaceAll("\\{%EXP_DATA%\\}", Matcher.quoteReplacement(renderHtml(e.getAllParameters(), "", e).toString()));
+		out = out.replaceAll("\\{%EXP_DATA%\\}", Matcher.quoteReplacement(renderHtml(e.getAllParameters(), "", e, to_highlight).toString()));
 		String description = e.getDescription();
 		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", Matcher.quoteReplacement("<div class=\"description\">" + description + "</div>"));
 		String timeout_string = "No timeout";
@@ -137,9 +144,10 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	 * @param e The current JSON element in the parameters
 	 * @param path The path in the experiment's parameters from the root
 	 * @param exp The experiment
+	 * @param to_highlight A set of datapoint IDs to highlight 
 	 * @return A well-formatted HTML structure showing the parameters 
 	 */
-	public static StringBuilder renderHtml(JsonElement e, String path, Experiment exp)
+	public static StringBuilder renderHtml(JsonElement e, String path, Experiment exp, Set<String> to_highlight)
 	{
 		StringBuilder out = new StringBuilder();
 		if (e instanceof JsonString)
@@ -163,22 +171,46 @@ public class ExperimentPageCallback extends TemplatePageCallback
 				}
 				path_append += k;
 				out.append("<tr>");
+				String css_class = "";
+				if (to_highlight.contains(k))
+				{
+					css_class = " class=\"highlighted\"";
+				}
 				String p_desc = exp.getDescription(path_append);
 				if (p_desc.isEmpty())
 				{
-					out.append("<th>").append(htmlEscape(k)).append("</th>");
+					out.append("<th" + css_class + ">").append(htmlEscape(k)).append("</th>");
 				}
 				else
 				{
-					out.append("<th class=\"with-desc\" title=\"").append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");
+					if (css_class.isEmpty())
+					{
+						out.append("<th class=\"with-desc\" title=\"").append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");
+					}
+					else
+					{
+						out.append("<th class=\"with-desc highlighted\" title=\"").append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");
+					}
 				}
-				out.append("<td>");
+				out.append("<td " + css_class + ">");
 				JsonElement v = m.get(k);
-				out.append(renderHtml(v, path_append, exp));
+				out.append(renderHtml(v, path_append, exp, to_highlight));
 				out.append("</td></tr>\n");
 			}
 			out.append("</table>\n");
 		}
 		return out;
+	}
+	
+	protected Set<String> getKeysToHighlight(String highlight)
+	{
+		Set<String> to_highlight = new HashSet<String>();
+		String[] ids = highlight.split(",");
+		for (String id : ids)
+		{
+			String[] parts = id.split(":");
+			to_highlight.add(parts[1]);
+		}
+		return to_highlight;
 	}
 }

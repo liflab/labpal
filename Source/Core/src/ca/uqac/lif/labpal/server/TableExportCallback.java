@@ -68,7 +68,7 @@ public class TableExportCallback extends WebCallback
 		DataTable d_tab = tab.getDataTable();
 		if (params.get("format").compareToIgnoreCase("tex") == 0)
 		{
-			LatexTableRenderer renderer = new LatexTableRenderer();
+			LatexTableRenderer renderer = new LatexTableRenderer(tab);
 			String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
 			response.setContents(contents);
 			response.setCode(CallbackResponse.HTTP_OK);

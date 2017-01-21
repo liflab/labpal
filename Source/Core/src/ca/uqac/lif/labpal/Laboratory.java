@@ -38,6 +38,7 @@ import ca.uqac.lif.labpal.server.LabPalServer;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.provenance.DataTracker;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**
@@ -65,7 +66,7 @@ public abstract class Laboratory
 	/**
 	 * The minor version number
 	 */
-	private static final int s_minorVersionNumber = 6;
+	private static final int s_minorVersionNumber = 7;
 	
 	/**
 	 * The revision version number
@@ -96,6 +97,11 @@ public abstract class Laboratory
 	 * The hostname of the machine running the lab
 	 */
 	private String m_hostName = guessHostName();
+	
+	/**
+	 * A data tracker for generating provenance info
+	 */
+	private transient DataTracker m_dataTracker = new DataTracker();
 
 	/**
 	 * The title given to this lab
@@ -223,8 +229,10 @@ public abstract class Laboratory
 	 */
 	public Laboratory add(Experiment e, Group group, ExperimentTable ... tables)
 	{
-		e.setId(s_idCounter++);
+		int exp_id = s_idCounter++;
+		e.setId(exp_id);
 		m_experiments.add(e);
+		m_dataTracker.setOwner("E" + exp_id, e);
 		addClassToSerialize(e.getClass());
 		e.m_random = m_random;
 		for (ExperimentTable p : tables)
@@ -287,6 +295,7 @@ public abstract class Laboratory
 		for (Table t : tables)
 		{
 			m_tables.add(t);
+			m_dataTracker.setOwner("T" + t.getId(), t);
 		}
 		return this;
 	}
@@ -1007,6 +1016,11 @@ public abstract class Laboratory
 		byte[] bytes = CommandRunner.runAndGet("hostname", null);
 		String name = new String(bytes);
 		return name.trim();
+	}
+
+	public DataTracker getDataTracker()
+	{
+		return m_dataTracker;
 	}
 
 }

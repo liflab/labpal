@@ -17,17 +17,20 @@
  */
 package ca.uqac.lif.labpal.table;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.provenance.DataOwner;
 /**
  * A multi-dimensional array of values. Tables can be passed to
  * {@link ca.uqac.lif.labpal.plot.Plot Plot} objects to generate graphics.
  */
-public abstract class Table
+public abstract class Table implements DataOwner
 {
 	/**
 	 * The table's ID
@@ -54,7 +57,7 @@ public abstract class Table
 	 * The table's title
 	 */
 	protected String m_title;
-	
+
 	/**
 	 * A textual description of the table's contents
 	 */
@@ -121,7 +124,7 @@ public abstract class Table
 	{
 		return m_description;
 	}
-	
+
 	/**
 	 * Sets the table's description
 	 * @param description The description. This string can contain any valid
@@ -232,7 +235,7 @@ public abstract class Table
 	 * @return The type
 	 */
 	public static Class<? extends Comparable<?>> getTypeOf(Object o)
-			{
+	{
 		if (o == null)
 		{
 			return null;
@@ -246,6 +249,59 @@ public abstract class Table
 			return JsonList.class;
 		}
 		return String.class;
-			}
+	}
+	
+	@Override
+	public Table getOwner()
+	{
+		return this;
+	}
 
+	/**
+	 * Generates a datapoint ID for a given cell of the table
+	 * @param row The row
+	 * @param col The column
+	 * @return The cell
+	 */
+	public String getDatapointId(int row, int col)
+	{
+		return "T" + m_id + ":" + row + ":" + col;
+	}
+
+	@Override
+	public Object getValue(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<String> dependsOn(String id)
+	{
+		return new HashSet<String>();
+	}
+	
+	/**
+	 * Represents a cell in a table by its row-column
+	 * coordinates.
+	 *
+	 */
+	public static class CellCoordinate
+	{
+		public final int row;
+		public final int col;
+		
+		public CellCoordinate(int row, int col)
+		{
+			super();
+			this.row = row;
+			this.col = col;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return "(" + row + "," + col + ")";
+		}
+	}
 }

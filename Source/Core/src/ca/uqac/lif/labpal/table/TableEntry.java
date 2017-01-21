@@ -30,21 +30,40 @@ public class TableEntry extends HashMap<String,Object>
 	 */
 	private static final transient long serialVersionUID = 1L;
 	
+	/**
+	 * Associates to each key of the map a datapoint ID
+	 */
+	private final Map<String,String> m_datapointIds;
+	
 	public TableEntry()
 	{
 		super();
+		m_datapointIds = new HashMap<String,String>();
 	}
 	
 	public TableEntry(String key, Object value)
 	{
+		this(key, value, null);
+	}
+	
+	public TableEntry(String key, Object value, String datapoint_id)
+	{
 		this();
-		put(key, value);
+		put(key, value, datapoint_id);
+		m_datapointIds.put(key, datapoint_id);
 	}
 	
 	public TableEntry(TableEntry e)
 	{
-		super();
+		this();
 		putAll(e);
+		m_datapointIds.putAll(e.m_datapointIds);
+	}
+	
+	public void put(String key, Object value, String datapoint_id)
+	{
+		put(key, value);
+		m_datapointIds.put(key, datapoint_id);
 	}
 	
 	@Override
@@ -94,5 +113,19 @@ public class TableEntry extends HashMap<String,Object>
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Gets the datapoint ID associated to a key
+	 * @param key
+	 * @return
+	 */
+	public String getDatapointId(String key)
+	{
+		if (!m_datapointIds.containsKey(key))
+		{
+			return null;
+		}
+		return m_datapointIds.get(key);
 	}
 }

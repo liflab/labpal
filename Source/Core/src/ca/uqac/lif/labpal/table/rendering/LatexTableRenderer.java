@@ -22,6 +22,7 @@ import java.util.List;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.labpal.table.Table;
 
 /**
  * Renders a result tree as a LaTeX table. The resulting table
@@ -31,6 +32,11 @@ import ca.uqac.lif.json.JsonString;
  */
 public class LatexTableRenderer extends TableNodeRenderer 
 {
+	public LatexTableRenderer(Table t)
+	{
+		super(t);
+	}
+
 	/**
 	 * OS-dependent carriage return
 	 */

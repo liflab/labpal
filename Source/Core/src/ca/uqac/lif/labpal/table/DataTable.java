@@ -138,7 +138,10 @@ public class DataTable extends Table implements DataSource
 	 */
 	public void addAll(Collection<TableEntry> entries)
 	{
-		m_entries.addAll(entries);
+		for (TableEntry te : entries)
+		{
+			add(te);
+		}
 	}
 	
 	/**
@@ -594,4 +597,44 @@ public class DataTable extends Table implements DataSource
 		return m_title;
 	}
 
+	public Set<String> dependsOn(int row, int col)
+	{
+		Set<String> depends = new HashSet<String>();
+		if (row >= m_entries.size())
+		{
+			return depends;
+		}
+		TableEntry entry = m_entries.get(row);
+		if (col > m_preferredOrdering.length)
+		{
+			return depends;
+		}
+		String key = m_preferredOrdering[col];
+		if (!entry.containsKey(key))
+		{
+			return depends;
+		}
+		String id = entry.getDatapointId(key);
+		if (id != null)
+			depends.add(id);
+		return depends;
+	}
+
+	@Override
+	public Object getValue(String id)
+	{
+		String[] parts = id.split(":");
+		int row = Integer.parseInt(parts[1].trim());
+		int col = Integer.parseInt(parts[2].trim());
+		return get(col, row);
+	}
+
+	@Override
+	public Set<String> dependsOn(String id)
+	{
+		String[] parts = id.split(":");
+		int row = Integer.parseInt(parts[1].trim());
+		int col = Integer.parseInt(parts[2].trim());
+		return dependsOn(row, col);
+	}
 }

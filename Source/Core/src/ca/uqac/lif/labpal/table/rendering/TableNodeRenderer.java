@@ -18,9 +18,14 @@
 package ca.uqac.lif.labpal.table.rendering;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.Table.CellCoordinate;
 import ca.uqac.lif.labpal.table.TableNode;
 
 /**
@@ -31,6 +36,32 @@ import ca.uqac.lif.labpal.table.TableNode;
  */
 public abstract class TableNodeRenderer
 {
+	/**
+	 * The table to render
+	 */
+	protected Table m_table;
+	
+	/**
+	 * A collection of cell coordinates that should be "highlighted" when
+	 * displaying the table
+	 */
+	protected Set<CellCoordinate> m_cellsToHighlight;
+	
+	public TableNodeRenderer(Table t)
+	{
+		super();
+		m_table = t;
+		m_cellsToHighlight = new HashSet<CellCoordinate>();
+	}
+	
+	public TableNodeRenderer(Table t, Collection<CellCoordinate> to_highlight)
+	{
+		super();
+		m_table = t;
+		m_cellsToHighlight = new HashSet<CellCoordinate>();
+		m_cellsToHighlight.addAll(to_highlight);
+	}
+	
 	/**
 	 * Renders a results tree
 	 * @param node The root of the results tree
@@ -178,5 +209,21 @@ public abstract class TableNodeRenderer
 	 * @param out The string builder to which the rendering is written
 	 */
 	public abstract void endStructure(StringBuilder out);
+	
+	/**
+	 * Determines if an x-y cell should be highlighted
+	 * @param row The row
+	 * @param col The column
+	 * @return true if the cell should be highlighted
+	 */
+	public boolean isHighlighted(int row, int col)
+	{
+		for (CellCoordinate cc : m_cellsToHighlight)
+		{
+			if (cc.row == row && cc.col == col)
+				return true;
+		}
+		return false;
+	}
 	
 }

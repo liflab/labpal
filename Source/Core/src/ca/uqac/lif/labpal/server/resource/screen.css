@@ -9,6 +9,12 @@ html, body {
   display: none;
 }
 
+.highlighted {
+  background: yellow;
+  border: solid red 2px;
+  font-weight: bold;
+}
+
 #content {
   border: solid 1px darkgrey;
   margin: 20px;
@@ -435,4 +441,10 @@ table.results {
 
 table.results th {
   background: #ddd;
+}
+
+a.explanation {
+  color: black;
+  text-decoration: none;
+  cursor: help;
 }

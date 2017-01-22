@@ -616,10 +616,10 @@ public class DataTable extends Table implements DataSource
 		{
 			return depends;
 		}
-		String id = entry.getDatapointId(key);
-		if (id != null)
+		Set<String> ids = entry.getDatapointIds(key);
+		for (String dp_id : ids)
 		{
-			ProvenanceLeaf pl = new ProvenanceLeaf(id, null);
+			ProvenanceLeaf pl = new ProvenanceLeaf(dp_id, null);
 			depends.addParent(pl);
 		}
 		return depends;

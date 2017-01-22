@@ -127,6 +127,8 @@ public class ExpandAsColumns implements TableTransformation
 			{
 				String s = getString(te.get(m_columnKey));
 				existing_entry.put(s, te.get(m_valueKey));
+				existing_entry.addDependency(s, te.getDatapointIds(m_valueKey));
+				existing_entry.addDependency(s, te.getDatapointIds(m_columnKey));
 			}
 		}
 		new_table.addAll(entries);

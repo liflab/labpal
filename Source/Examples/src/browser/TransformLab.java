@@ -24,6 +24,7 @@ import ca.uqac.lif.labpal.plot.gnuplot.ClusteredHistogram;
 import ca.uqac.lif.labpal.plot.gral.PieChart;
 import ca.uqac.lif.labpal.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.labpal.table.TransformedTable;
 
 /**
  * Perform a transformation on a table before plotting it.
@@ -63,7 +64,9 @@ public class TransformLab extends Laboratory
 		add(new BrowserExperiment("Firefox", "js", 10), group_ff, et);
 		
 		// Create a histogram
-		ClusteredHistogram plot = new ClusteredHistogram(et, new ExpandAsColumns("market", "share"));
+		TransformedTable tt = new TransformedTable(new ExpandAsColumns("market", "share"), et);
+		add(tt);
+		ClusteredHistogram plot = new ClusteredHistogram(tt);
 		plot.setTitle("My bar plot");
 		plot.setCaption(Axis.X, "Browser").setCaption(Axis.Y, "Share");
 		add(plot);

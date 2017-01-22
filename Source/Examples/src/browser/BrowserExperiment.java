@@ -4,9 +4,6 @@ import ca.uqac.lif.labpal.Experiment;
 
 public class BrowserExperiment extends Experiment
 {
-	float value;
-	String name;
-	
 	BrowserExperiment()
 	{
 		super();
@@ -14,17 +11,16 @@ public class BrowserExperiment extends Experiment
 	
 	public BrowserExperiment(String browser, String name, float value)
 	{
-		super();
+		super(Status.DONE);
 		setInput("browser", browser);
-		this.name = name;
-		this.value = value;
+		write("market", name);
+		write("share", value);
 	}
 
 	@Override
 	public void execute()
 	{
-		write("market", name);
-		write("share", value);
+		// Nothing to do
 	}
 
 }

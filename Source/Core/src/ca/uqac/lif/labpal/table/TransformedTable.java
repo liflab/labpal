@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.labpal.table;
 
+import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+
 /**
  * Table obtained from applying a transformation to other tables
  * @author Sylvain Hallé
@@ -61,4 +63,11 @@ public class TransformedTable extends Table
 		}
 		return m_transformation.transform(concrete_tables);
 	}
+	
+	@Override
+	public ProvenanceNode dependsOn(Table owner, int row, int col)
+	{
+		return getDataTable().dependsOn(this, row, col);
+	}
+
 }

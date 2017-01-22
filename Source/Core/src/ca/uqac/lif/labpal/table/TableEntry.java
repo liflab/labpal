@@ -18,7 +18,9 @@
 package ca.uqac.lif.labpal.table;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * An entry in a data table
@@ -31,26 +33,25 @@ public class TableEntry extends HashMap<String,Object>
 	private static final transient long serialVersionUID = 1L;
 	
 	/**
-	 * Associates to each key of the map a datapoint ID
+	 * Associates to each key of the map to a set of datapoint IDs
 	 */
-	private final Map<String,String> m_datapointIds;
+	private final Map<String,Set<String>> m_datapointIds;
 	
 	public TableEntry()
 	{
 		super();
-		m_datapointIds = new HashMap<String,String>();
+		m_datapointIds = new HashMap<String,Set<String>>();
 	}
 	
 	public TableEntry(String key, Object value)
 	{
-		this(key, value, null);
+		this(key, value, new String[]{});
 	}
 	
-	public TableEntry(String key, Object value, String datapoint_id)
+	public TableEntry(String key, Object value, String ... datapoint_ids)
 	{
 		this();
-		put(key, value, datapoint_id);
-		m_datapointIds.put(key, datapoint_id);
+		put(key, value, datapoint_ids);
 	}
 	
 	public TableEntry(TableEntry e)
@@ -60,10 +61,15 @@ public class TableEntry extends HashMap<String,Object>
 		m_datapointIds.putAll(e.m_datapointIds);
 	}
 	
-	public void put(String key, Object value, String datapoint_id)
+	public void put(String key, Object value, String ... datapoint_ids)
 	{
 		put(key, value);
-		m_datapointIds.put(key, datapoint_id);
+		Set<String> ids = new HashSet<String>();
+		for (String id : datapoint_ids)
+		{
+			ids.add(id);
+		}
+		m_datapointIds.put(key, ids);
 	}
 	
 	@Override
@@ -116,16 +122,58 @@ public class TableEntry extends HashMap<String,Object>
 	}
 	
 	/**
-	 * Gets the datapoint ID associated to a key
+	 * Gets the datapoint IDs associated to a key
 	 * @param key
 	 * @return
 	 */
-	public String getDatapointId(String key)
+	public Set<String> getDatapointIds(String key)
 	{
 		if (!m_datapointIds.containsKey(key))
 		{
-			return null;
+			return new HashSet<String>();
 		}
 		return m_datapointIds.get(key);
+	}
+	
+	/**
+	 * Adds a new data point as a dependency of a datapoint contained in this
+	 * table entry.
+	 * @param key The key corresponding to the table entry
+	 * @param dependency The data point entry to add as a dependency
+	 */
+	public void addDependency(String key, String dependency)
+	{
+		Set<String> deps = null;
+		if (m_datapointIds.containsKey(key))
+		{
+			deps = m_datapointIds.get(key);
+		}
+		if (deps == null)
+		{
+			deps = new HashSet<String>();
+		}
+		deps.add(dependency);
+		m_datapointIds.put(key, deps);
+	}
+	
+	/**
+	 * Adds a new data point as a dependency of a datapoint contained in this
+	 * table entry.
+	 * @param key The key corresponding to the table entry
+	 * @param dependencies A set of data point entry to add as a dependency
+	 */
+	public void addDependency(String key, Set<String> dependencies)
+	{
+		Set<String> deps = null;
+		if (m_datapointIds.containsKey(key))
+		{
+			deps = m_datapointIds.get(key);
+		}
+		if (deps == null)
+		{
+			deps = new HashSet<String>();
+		}
+		deps.addAll(dependencies);
+		m_datapointIds.put(key, deps);
 	}
 }

@@ -206,15 +206,11 @@ public class ExperimentTable extends Table
 		int col = Integer.parseInt(parts[2].trim());
 		return getDataTable().get(col, row);
 	}
-
+	
 	@Override
-	public ProvenanceNode dependsOn(String id)
+	public ProvenanceNode dependsOn(Table owner, int row, int col)
 	{
-		String[] parts = id.split(":");
-		int row = Integer.parseInt(parts[1].trim());
-		int col = Integer.parseInt(parts[2].trim());
 		return getDataTable().dependsOn(this, row, col);
 	}
-	
-	
+
 }

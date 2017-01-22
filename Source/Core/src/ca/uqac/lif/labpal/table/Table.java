@@ -24,7 +24,6 @@ import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.provenance.DataOwner;
-import ca.uqac.lif.labpal.provenance.ProvenanceLeaf;
 import ca.uqac.lif.labpal.provenance.ProvenanceNode;
 /**
  * A multi-dimensional array of values. Tables can be passed to
@@ -275,10 +274,9 @@ public abstract class Table implements DataOwner
 		return null;
 	}
 
-	@Override
-	public ProvenanceNode dependsOn(String id)
+	public ProvenanceNode dependsOn(Table owner, int row, int col)
 	{
-		return new ProvenanceLeaf(id, this);
+		return new TableCellProvenanceNode(owner, row, col);
 	}
 	
 	/**
@@ -304,4 +302,14 @@ public abstract class Table implements DataOwner
 			return "(" + row + "," + col + ")";
 		}
 	}
+	
+	@Override
+	public ProvenanceNode dependsOn(String id)
+	{
+		String[] parts = id.split(":");
+		int row = Integer.parseInt(parts[1].trim());
+		int col = Integer.parseInt(parts[2].trim());
+		return getDataTable().dependsOn(this, row, col);
+	}
+	
 }

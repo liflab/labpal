@@ -17,8 +17,6 @@
  */
 package ca.uqac.lif.labpal.table;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -26,6 +24,8 @@ import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.provenance.DataOwner;
+import ca.uqac.lif.labpal.provenance.ProvenanceLeaf;
+import ca.uqac.lif.labpal.provenance.ProvenanceNode;
 /**
  * A multi-dimensional array of values. Tables can be passed to
  * {@link ca.uqac.lif.labpal.plot.Plot Plot} objects to generate graphics.
@@ -276,9 +276,9 @@ public abstract class Table implements DataOwner
 	}
 
 	@Override
-	public Set<String> dependsOn(String id)
+	public ProvenanceNode dependsOn(String id)
 	{
-		return new HashSet<String>();
+		return new ProvenanceLeaf(id, this);
 	}
 	
 	/**

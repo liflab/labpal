@@ -17,8 +17,8 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.LabAssistant;
@@ -66,7 +66,7 @@ public class ExplainCallback extends TemplatePageCallback
 	protected void explanationToHtml(ProvenanceNode node, StringBuilder out)
 	{
 		out.append("<li><a title=\"Click to see where this value comes from\" href=\"").append(getDataPointUrl(node)).append("\">").append(node).append("</a>");
-		Set<ProvenanceNode> parents = node.getParents();
+		List<ProvenanceNode> parents = node.getParents();
 		if (parents != null && !parents.isEmpty())
 		{
 			out.append("<ul>");

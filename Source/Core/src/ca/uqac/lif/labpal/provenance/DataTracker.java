@@ -1,7 +1,25 @@
+/*
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2014-2017 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.labpal.provenance;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,8 +70,7 @@ public class DataTracker
 	{
 		Set<String> ids = new HashSet<String>();
 		ids.add(id);
-		ProvenanceNodeFactory factory = new ProvenanceNodeFactory();
-		return explain(id, ids, factory);
+		return explain(id, ids);
 	}
 
 	/**
@@ -65,21 +82,25 @@ public class DataTracker
 	 *   with unique IDs
 	 * @return The root of the provenance tree
 	 */
-	protected ProvenanceNode explain(String id, Set<String> added_ids, ProvenanceNodeFactory factory)
+	protected ProvenanceNode explain(String id, Set<String> added_ids)
 	{
 		DataOwner owner = getOwner(id);
-		ProvenanceNode pn = factory.newNode(id, owner);
+		ProvenanceNode pn = owner.dependsOn(id);
 		if (owner != null)
 		{
-			Set<String> dep_ids = owner.dependsOn(id);
-			for (String dep_id : dep_ids)
+			ProvenanceNode dep = owner.dependsOn(id);
+			List<ProvenanceNode> parents = dep.getParents();
+			int i = 0;
+			for (ProvenanceNode dep_id : parents)
 			{
 				if (!added_ids.contains(dep_id))
 				{
-					ProvenanceNode pn_parent = explain(dep_id, added_ids, factory);
-					added_ids.add(dep_id);
-					pn.addParent(pn_parent);
+					String datapoint_id = dep_id.getDataPointId();
+					ProvenanceNode pn_parent = explain(datapoint_id, added_ids);
+					added_ids.add(datapoint_id);
+					pn.replaceParent(i, pn_parent);
 				}
+				i++;
 			}
 		}
 		return pn;

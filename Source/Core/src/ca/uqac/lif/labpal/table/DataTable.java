@@ -34,6 +34,8 @@ import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
+import ca.uqac.lif.labpal.provenance.ProvenanceLeaf;
+import ca.uqac.lif.labpal.provenance.ProvenanceNode;
 import de.erichseifert.gral.data.Column;
 import de.erichseifert.gral.data.DataListener;
 import de.erichseifert.gral.data.DataSource;
@@ -597,9 +599,9 @@ public class DataTable extends Table implements DataSource
 		return m_title;
 	}
 
-	public Set<String> dependsOn(int row, int col)
+	public ProvenanceNode dependsOn(Table owner, int row, int col)
 	{
-		Set<String> depends = new HashSet<String>();
+		ProvenanceNode depends = new TableCellProvenanceNode(owner, row, col);
 		if (row >= m_entries.size())
 		{
 			return depends;
@@ -616,7 +618,10 @@ public class DataTable extends Table implements DataSource
 		}
 		String id = entry.getDatapointId(key);
 		if (id != null)
-			depends.add(id);
+		{
+			ProvenanceLeaf pl = new ProvenanceLeaf(id, null);
+			depends.addParent(pl);
+		}
 		return depends;
 	}
 
@@ -630,11 +635,11 @@ public class DataTable extends Table implements DataSource
 	}
 
 	@Override
-	public Set<String> dependsOn(String id)
+	public ProvenanceNode dependsOn(String id)
 	{
 		String[] parts = id.split(":");
 		int row = Integer.parseInt(parts[1].trim());
 		int col = Integer.parseInt(parts[2].trim());
-		return dependsOn(row, col);
+		return dependsOn(this, row, col);
 	}
 }

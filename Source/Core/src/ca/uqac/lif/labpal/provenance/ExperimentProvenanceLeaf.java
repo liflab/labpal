@@ -17,26 +17,18 @@
  */
 package ca.uqac.lif.labpal.provenance;
 
-public interface DataOwner
+public class ExperimentProvenanceLeaf extends ProvenanceLeaf
 {
-	/**
-	 * Gets an instance of the actual object who is encapsulated by this
-	 * owner
-	 * @return The object. Must not be null.
-	 */
-	public Object getOwner();
-	
-	/**
-	 * Gets the current value of the data point with given ID
-	 * @param id The ID
-	 * @return A value
-	 */
-	public Object getValue(String id);
-	
-	/**
-	 * For a given data point, gets the set of data points it depends on.
-	 * @param id The data point
-	 * @return A provenance node
-	 */
-	public ProvenanceNode dependsOn(String id);
+	public ExperimentProvenanceLeaf(String datapoint_id, DataOwner owner)
+	{
+		super(datapoint_id, owner);
+	}
+
+	@Override
+	public String toString()
+	{
+		String dpid = getDataPointId();
+		String[] parts = dpid.split(":");
+		return "Value of " + parts[1] + " in experiment #" + parts[0].substring(1);
+	}
 }

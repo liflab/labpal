@@ -21,12 +21,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.provenance.ProvenanceNode;
 
 /**
  * Table whose rows and columns are populated from the parameters of a set
@@ -208,12 +208,12 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public Set<String> dependsOn(String id)
+	public ProvenanceNode dependsOn(String id)
 	{
 		String[] parts = id.split(":");
 		int row = Integer.parseInt(parts[1].trim());
 		int col = Integer.parseInt(parts[2].trim());
-		return getDataTable().dependsOn(row, col);
+		return getDataTable().dependsOn(this, row, col);
 	}
 	
 	

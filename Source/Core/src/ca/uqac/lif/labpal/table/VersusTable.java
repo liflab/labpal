@@ -88,16 +88,17 @@ public class VersusTable extends Table
 	}
 	
 	@Override
-	public DataTable getDataTable(String... ordering) 
+	protected DataTable getDataTable(boolean link_to_experiments, String... ordering) 
 	{
 		// Ignore ordering
-		return getDataTable();
+		return getDataTable(link_to_experiments);
 	}
 
 	@Override
-	public DataTable getDataTable()
+	protected DataTable getDataTable(boolean link_to_experiments)
 	{
 		DataTable table = new DataTable(m_captionX, m_captionY);
+		int row = 0;
 		for (ExperimentPair pair : m_pairs)
 		{
 			Object x = pair.getExperimentX().read(m_parameter);
@@ -109,6 +110,16 @@ public class VersusTable extends Table
 			TableEntry te = new TableEntry();
 			te.put(m_captionX, x);
 			te.put(m_captionY, y);
+			if (link_to_experiments)
+			{
+				te.addDependency(m_captionX, pair.getExperimentX().getDataPointId(m_parameter));
+				te.addDependency(m_captionY, pair.getExperimentY().getDataPointId(m_parameter));
+			}
+			else
+			{
+				te.addDependency(m_captionX, "T" + getId() + row + ":" + "0");
+				te.addDependency(m_captionY, "T" + getId() + row + ":" + "1");
+			}
 			table.add(te);
 		}
 		return table;

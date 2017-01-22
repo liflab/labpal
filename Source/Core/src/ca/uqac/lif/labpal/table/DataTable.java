@@ -414,11 +414,11 @@ public class DataTable extends Table implements DataSource
 		//return m_columnTypes[pos];
 	}
 
-	@Override
-	public DataTable getDataTable(String ... ordering)
+	/*@Override
+	public DataTable getDataTable(boolean link_to_experiments, String ... ordering)
 	{
 		return new DataTable(m_entries, ordering);
-	}
+	}*/
 
 	/**
 	 * Gets the name of the column at a given position in the table
@@ -544,12 +544,6 @@ public class DataTable extends Table implements DataSource
 		}
 		return out.toString();
 	}
-
-	@Override
-	public DataTable getDataTable()
-	{
-		return getDataTable(m_preferredOrdering);
-	}
 	
 	@Override
 	public String toString()
@@ -641,5 +635,17 @@ public class DataTable extends Table implements DataSource
 		int row = Integer.parseInt(parts[1].trim());
 		int col = Integer.parseInt(parts[2].trim());
 		return dependsOn(this, row, col);
+	}
+
+	@Override
+	protected DataTable getDataTable(boolean link_to_experiments)
+	{
+		return new DataTable(m_entries, m_preferredOrdering);
+	}
+
+	@Override
+	public DataTable getDataTable(boolean link_to_experiments, String ... ordering) 
+	{
+		return new DataTable(m_entries, ordering);
 	}
 }

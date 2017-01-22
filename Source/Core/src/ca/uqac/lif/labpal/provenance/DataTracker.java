@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ca.uqac.lif.labpal.table.ExperimentTable;
+
 public class DataTracker
 {
 	/**
@@ -84,11 +86,18 @@ public class DataTracker
 	 */
 	protected ProvenanceNode explain(String id, Set<String> added_ids)
 	{
+		ProvenanceNode dep = null;
 		DataOwner owner = getOwner(id);
-		ProvenanceNode pn = owner.dependsOn(id);
 		if (owner != null)
 		{
-			ProvenanceNode dep = owner.dependsOn(id);
+			if (owner instanceof ExperimentTable)
+			{
+				dep = ((ExperimentTable) owner).dependsOn(true, id);
+			}
+			else
+			{
+				dep = owner.dependsOn(id);
+			}
 			List<ProvenanceNode> parents = dep.getParents();
 			int i = 0;
 			for (ProvenanceNode dep_id : parents)
@@ -96,13 +105,19 @@ public class DataTracker
 				if (!added_ids.contains(dep_id))
 				{
 					String datapoint_id = dep_id.getDataPointId();
-					ProvenanceNode pn_parent = explain(datapoint_id, added_ids);
-					added_ids.add(datapoint_id);
-					pn.replaceParent(i, pn_parent);
+					if (!added_ids.contains(datapoint_id))
+					{
+						added_ids.add(datapoint_id);
+						ProvenanceNode pn_parent = explain(datapoint_id, added_ids);
+						if (pn_parent != null)
+						{
+							dep.replaceParent(i, pn_parent);
+						}
+					}
 				}
 				i++;
 			}
 		}
-		return pn;
+		return dep;
 	}
 }

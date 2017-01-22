@@ -159,21 +159,47 @@ public abstract class Table implements DataOwner
 	{
 		return m_id;
 	}
-
+	
 	/**
 	 * Gets an instance of {@link DataTable} from the table's
 	 * data, using the columns specified in the argument
 	 * @param ordering The columns to use
 	 * @return The table
 	 */
-	public abstract DataTable getDataTable(String ... ordering);
+	public final DataTable getDataTable(String ... ordering)
+	{
+		return getDataTable(false, ordering);
+	}
+
+	/**
+	 * Gets an instance of {@link DataTable} from the table's
+	 * data, using the columns specified in the argument
+	 * @param link_to_experiments Set to true to have the table
+	 *   entries link directly to the experiments, instead of
+	 * @param ordering The columns to use
+	 * @return The table
+	 */
+	protected abstract DataTable getDataTable(boolean link_to_experiments, String ... ordering);
 
 	/**
 	 * Gets an instance of {@link DataTable} from the table's
 	 * data, using the default column ordering
 	 * @return The table
 	 */
-	public abstract DataTable getDataTable();
+	public final DataTable getDataTable()
+	{
+		return getDataTable(false);
+	}
+	
+	/**
+	 * Gets an instance of {@link DataTable} from the table's
+	 * data, using the default column ordering
+	 * @param link_to_experiments Set to true to have the table
+	 *   entries link directly to the experiments, instead of
+	 *   the table itself
+	 * @return The table
+	 */
+	protected abstract DataTable getDataTable(boolean link_to_experiments);
 
 	/**
 	 * Casts a value as a number or an instance of {@code Comparable}
@@ -302,14 +328,19 @@ public abstract class Table implements DataOwner
 			return "(" + row + "," + col + ")";
 		}
 	}
-	
+
 	@Override
 	public ProvenanceNode dependsOn(String id)
+	{
+		return dependsOn(false, id);
+	}
+	
+	public ProvenanceNode dependsOn(boolean link_to_experiments, String id)
 	{
 		String[] parts = id.split(":");
 		int row = Integer.parseInt(parts[1].trim());
 		int col = Integer.parseInt(parts[2].trim());
-		return getDataTable().dependsOn(this, row, col);
+		return getDataTable(link_to_experiments).dependsOn(this, row, col);
 	}
 	
 }

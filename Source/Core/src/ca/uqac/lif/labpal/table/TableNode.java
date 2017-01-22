@@ -26,6 +26,10 @@ public class TableNode
 	
 	protected final Object m_value;
 	
+	protected int m_row;
+	
+	protected int m_col;
+	
 	public List<TableNode> m_children;
 	
 	public TableNode(String key, Object value)
@@ -34,6 +38,26 @@ public class TableNode
 		m_children = new LinkedList<TableNode>();
 		m_key = key;
 		m_value = value;
+	}
+	
+	public void setRow(int row)
+	{
+		m_row = row;
+	}
+	
+	public void setCol(int col)
+	{
+		m_col = col;
+	}
+	
+	public int getRow()
+	{
+		return m_row;
+	}
+	
+	public int getCol()
+	{
+		return m_col;
 	}
 	
 	/**

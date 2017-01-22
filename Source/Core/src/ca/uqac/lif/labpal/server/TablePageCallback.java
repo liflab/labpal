@@ -28,6 +28,7 @@ import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.Table.CellCoordinate;
 import ca.uqac.lif.labpal.table.rendering.HtmlTableNodeRenderer;
+import ca.uqac.lif.labpal.table.rendering.PlainTableRenderer;
 
 /**
  * Callback producing an image from one of the lab's plots, in various
@@ -63,13 +64,22 @@ public class TablePageCallback extends TemplatePageCallback
 		}
 		DataTable tbl = tab.getDataTable();
 		String highlight = "";
+		String table_html = "";
 		if (params.containsKey("highlight"))
 		{
+			// If cells have to be highlighted, display the table without
+			// sorting the cells
 			highlight = params.get("highlight");
+			PlainTableRenderer renderer = new PlainTableRenderer(tab, getCellsToHighlight(highlight));
+			table_html = renderer.render();
 		}
-		HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer(tab, getCellsToHighlight(highlight));
+		else
+		{
+			HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer(tab);
+			table_html = renderer.render(tbl.getTree(), tbl.getColumnNames());
+		}
 		s = s.replaceAll("\\{%TITLE%\\}", Matcher.quoteReplacement(tab.getTitle()));
-		s = s.replaceAll("\\{%TABLE%\\}", Matcher.quoteReplacement(renderer.render(tbl.getTree(), tbl.getColumnNames())));
+		s = s.replaceAll("\\{%TABLE%\\}", Matcher.quoteReplacement(table_html));
 		String desc = tab.getDescription();
 		if (desc != null && !desc.isEmpty())
 		{

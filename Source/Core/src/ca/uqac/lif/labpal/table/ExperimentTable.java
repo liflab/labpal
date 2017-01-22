@@ -70,18 +70,18 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public DataTable getDataTable()
+	protected DataTable getDataTable(boolean link_to_experiments)
 	{
-		return getDataTable(m_dimensions);
+		return getDataTable(link_to_experiments, m_dimensions);
 	}
 
 	@Override
-	public DataTable getDataTable(String ... ordering)
+	protected DataTable getDataTable(boolean link_to_experiments, String ... ordering)
 	{
 		DataTable mt = new DataTable(ordering);
 		for (Experiment e : m_experiments)
 		{
-			List<TableEntry> entries = getEntries(e, ordering);
+			List<TableEntry> entries = getEntries(link_to_experiments, e, ordering);
 			mt.addAll(entries);
 		}
 		return mt;
@@ -120,7 +120,7 @@ public class ExperimentTable extends Table
 	 * @return A list of table entries corresponding to the data
 	 *   points in the experiment
 	 */
-	public List<TableEntry> getEntries(Experiment e, String ... dimensions)
+	public List<TableEntry> getEntries(boolean link_to_experiments, Experiment e, String ... dimensions)
 	{
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		List<String> scalar_columns = new ArrayList<String>();
@@ -146,17 +146,26 @@ public class ExperimentTable extends Table
 		{
 			TableEntry te = new TableEntry();
 			// Fill each with values of the scalar columns...
+			int col_nb = 0;
 			for (String col_name : scalar_columns)
 			{
 				JsonElement elem = readExperiment(e, col_name);
 				if (elem != null)
 				{
-					te.put(col_name, elem, e.getDataPointId(col_name));
+					if (link_to_experiments)
+					{
+						te.put(col_name, elem, e.getDataPointId(col_name));
+					}
+					else
+					{
+						te.put(col_name, elem, "T" + getId() + ":" + i + ":" + col_nb);
+					}
 				}
 				else
 				{
 					te.put(col_name, JsonNull.instance);
 				}
+				col_nb++;
 			}
 			// ...and the i-th value of each list column
 			for (Map.Entry<String,JsonList> map_entry : list_columns.entrySet())
@@ -167,7 +176,14 @@ public class ExperimentTable extends Table
 					JsonElement elem = list.get(i);
 					if (elem != null)
 					{
-						te.put(map_entry.getKey(), elem, e.getDataPointId(map_entry.getKey()));
+						if (link_to_experiments)
+						{
+							te.put(map_entry.getKey(), elem, e.getDataPointId(map_entry.getKey()));
+						}
+						else
+						{
+							te.put(map_entry.getKey(), elem, "T" + getId() + ":" + i + ":" + col_nb);
+						}
 					}
 					else
 					{
@@ -180,6 +196,7 @@ public class ExperimentTable extends Table
 					// Substitute with null if one of the lists is shorter
 					te.put(map_entry.getKey(), JsonNull.instance);
 				}
+				col_nb++;
 			}
 			entries.add(te);
 		}
@@ -206,11 +223,11 @@ public class ExperimentTable extends Table
 		int col = Integer.parseInt(parts[2].trim());
 		return getDataTable().get(col, row);
 	}
-	
+
 	@Override
 	public ProvenanceNode dependsOn(Table owner, int row, int col)
 	{
-		return getDataTable().dependsOn(this, row, col);
+		return getDataTable(true).dependsOn(this, row, col);
 	}
 
 }

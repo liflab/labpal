@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 
 import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
@@ -157,6 +158,19 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		else if (e instanceof JsonNumber)
 		{
 			out.append(((JsonNumber) e).numberValue());
+		}
+		else if (e instanceof JsonList)
+		{
+			out.append("<table class=\"json-table\">\n");
+			int el_cnt = 0;
+			for (JsonElement v : (JsonList) e)
+			{
+				out.append("<tr><th>").append(el_cnt).append("</th><td>");
+				String path_append = path += "[" + el_cnt + "]";
+				out.append(renderHtml(v, path_append, exp, to_highlight));
+				out.append("</td></tr>\n");
+			}
+			out.append("</table>\n");
 		}
 		else if (e instanceof JsonMap)
 		{

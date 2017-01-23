@@ -89,7 +89,7 @@ public class ExperimentTable extends Table
 		}
 		for (Experiment e : m_experiments)
 		{
-			List<TableEntry> entries = getEntries(temporary, e, ordering);
+			List<TableEntry> entries = getEntries(false, e, ordering);
 			mt.addAll(entries);
 		}
 		return mt;
@@ -168,7 +168,9 @@ public class ExperimentTable extends Table
 					}
 					else
 					{
-						te.put(col_name, elem, new TableCellProvenanceNode(this, i, col_nb));
+						TableCellProvenanceNode tpn = new TableCellProvenanceNode(this, i, col_nb);
+						tpn.addParent(e.dependsOn(col_name));
+						te.put(col_name, elem, tpn);
 					}
 				}
 				else
@@ -194,7 +196,9 @@ public class ExperimentTable extends Table
 						}
 						else
 						{
-							te.put(key, elem, new TableCellProvenanceNode(this, i, col_nb));
+							TableCellProvenanceNode tpn = new TableCellProvenanceNode(this, i, col_nb);
+							tpn.addParent(e.dependsOn(key, i));
+							te.put(key, elem, tpn);
 						}
 					}
 					else

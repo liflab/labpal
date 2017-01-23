@@ -165,10 +165,22 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			int el_cnt = 0;
 			for (JsonElement v : (JsonList) e)
 			{
-				out.append("<tr><th>").append(el_cnt).append("</th><td>");
-				String path_append = path += "[" + el_cnt + "]";
+				String path_append = path + "[" + el_cnt + "]";
+				String css_class_key = "";
+				String css_class_value = "";
+				if (containsExactly(to_highlight, path_append))
+				{
+					css_class_value += " class=\"highlighted\"";
+				}
+				if (containsPrefix(to_highlight, path_append))
+				{
+					css_class_key += " class=\"highlighted\"";
+				}
+				out.append("<tr><th").append(css_class_key).append(">").append(el_cnt).append("</th>");
+				out.append("<td").append(css_class_value).append(">");
 				out.append(renderHtml(v, path_append, exp, to_highlight));
 				out.append("</td></tr>\n");
+				el_cnt++;
 			}
 			out.append("</table>\n");
 		}
@@ -185,28 +197,26 @@ public class ExperimentPageCallback extends TemplatePageCallback
 				}
 				path_append += k;
 				out.append("<tr>");
-				String css_class = "";
-				if (to_highlight.contains(k))
+				String css_class_key = "";
+				String css_class_value = "";
+				if (containsExactly(to_highlight, path_append))
 				{
-					css_class = " class=\"highlighted\"";
+					css_class_value += " class=\"highlighted\"";
+				}
+				if (containsPrefix(to_highlight, path_append))
+				{
+					css_class_key += " highlighted";
 				}
 				String p_desc = exp.getDescription(path_append);
 				if (p_desc.isEmpty())
 				{
-					out.append("<th" + css_class + ">").append(htmlEscape(k)).append("</th>");
+					out.append("<th class=\"" + css_class_key + "\">").append(htmlEscape(k)).append("</th>");
 				}
 				else
 				{
-					if (css_class.isEmpty())
-					{
-						out.append("<th class=\"with-desc\" title=\"").append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");
-					}
-					else
-					{
-						out.append("<th class=\"with-desc highlighted\" title=\"").append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");
-					}
+					out.append("<th class=\"with-desc").append(css_class_key).append("\" title=\"").append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");					
 				}
-				out.append("<td " + css_class + ">");
+				out.append("<td " + css_class_value + ">");
 				JsonElement v = m.get(k);
 				out.append(renderHtml(v, path_append, exp, to_highlight));
 				out.append("</td></tr>\n");
@@ -226,5 +236,22 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			to_highlight.add(parts[1]);
 		}
 		return to_highlight;
+	}
+	
+	protected static boolean containsExactly(Set<String> set, String key)
+	{
+		return set.contains(key);
+	}
+	
+	protected static boolean containsPrefix(Set<String> set, String key)
+	{
+		for (String s : set)
+		{
+			if (s.startsWith(key))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

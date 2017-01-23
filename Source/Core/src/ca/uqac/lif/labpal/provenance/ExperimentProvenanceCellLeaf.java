@@ -23,7 +23,7 @@ public class ExperimentProvenanceCellLeaf extends ExperimentProvenanceLeaf
 	
 	public ExperimentProvenanceCellLeaf(String param_name, int position, DataOwner owner)
 	{
-		super(param_name + ":" + position, owner);
+		super(param_name + "[" + position + "]", owner);
 		m_position = position;
 	}
 }

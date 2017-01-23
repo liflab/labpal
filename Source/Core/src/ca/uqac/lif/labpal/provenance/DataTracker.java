@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ca.uqac.lif.labpal.table.ExperimentTable;
-
 public class DataTracker
 {
 	/**

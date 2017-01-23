@@ -118,9 +118,22 @@ public class VersusTable extends Table
 			TableEntry te = new TableEntry();
 			te.put(m_captionX, x);
 			te.put(m_captionY, y);
-			te.addDependency(m_captionX, pair.getExperimentX().dependsOn(m_parameter));
-			te.addDependency(m_captionY, pair.getExperimentY().dependsOn(m_parameter));
+			if (temporary)
+			{
+				te.addDependency(m_captionX, pair.getExperimentX().dependsOn(m_parameter));
+				te.addDependency(m_captionY, pair.getExperimentY().dependsOn(m_parameter));				
+			}
+			else
+			{
+				TableCellProvenanceNode tpn_x = new TableCellProvenanceNode(this, row, 0);
+				tpn_x.addParent(pair.getExperimentX().dependsOn(m_parameter));
+				te.addDependency(m_captionX, tpn_x);
+				TableCellProvenanceNode tpn_y = new TableCellProvenanceNode(this, row, 1);
+				tpn_y.addParent(pair.getExperimentY().dependsOn(m_parameter));
+				te.addDependency(m_captionX, tpn_y);
+			}
 			table.add(te);
+			row++;
 		}
 		return table;
 	}

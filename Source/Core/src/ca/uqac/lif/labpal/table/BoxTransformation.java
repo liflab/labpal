@@ -101,12 +101,10 @@ public class BoxTransformation implements TableTransformation
 	{
 		DataTable table = tables[0];
 		DataTable new_table = new TemporaryDataTable(m_captionX, m_captionMin, m_captionQ1, m_captionQ2, m_captionQ3, m_captionMax);
-		int col = 0;
 		for (String col_name : table.getColumnNames())
 		{
 			Set<ProvenanceNode> deps = new HashSet<ProvenanceNode>();
 			List<Float> values = new ArrayList<Float>();
-			int row = 0;
 			for (TableEntry te : table.getEntries())
 			{
 				Float f = Table.readFloat(te.get(col_name));
@@ -136,7 +134,6 @@ public class BoxTransformation implements TableTransformation
 			te.addDependency(m_captionQ3, new FunctionProvenanceNode("T", table, "Third quartile of column " + col_name, deps));
 			te.addDependency(m_captionMax, new FunctionProvenanceNode("T", table, "Maximum value of column " + col_name, deps));
 			new_table.add(te);
-			col++;
 		}
 		return new_table;
 	}

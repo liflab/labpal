@@ -534,6 +534,9 @@ public abstract class Laboratory
 		parser.addArgument(new Argument()
 		.withLongName("help")
 		.withDescription("Prints command line usage"));
+		parser.addArgument(new Argument()
+		.withLongName("autostart")
+		.withDescription("Queues all experiments and starts the assistant"));
 		Laboratory new_lab = null;
 		try
 		{
@@ -618,6 +621,7 @@ public abstract class Laboratory
 				stdout.close();
 				System.exit(ERR_SERVER);
 			}
+			new_lab.startAll();
 			while (true)
 			{
 				Experiment.wait(10000);
@@ -1018,9 +1022,26 @@ public abstract class Laboratory
 		return name.trim();
 	}
 
+	/**
+	 * Gets the instance of the data tracker used for provenance
+	 * information
+	 * @return The data tracker
+	 */
 	public DataTracker getDataTracker()
 	{
 		return m_dataTracker;
+	}
+	
+	/**
+	 * Queues all the experiments and starts the assistant
+	 */
+	public void startAll()
+	{
+		for (Experiment e : m_experiments)
+		{
+			m_assistant.queue(e);
+		}
+		start();
 	}
 
 }

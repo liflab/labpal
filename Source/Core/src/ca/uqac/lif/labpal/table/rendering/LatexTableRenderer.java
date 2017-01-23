@@ -48,6 +48,11 @@ public class LatexTableRenderer extends TableNodeRenderer
 	protected transient int m_numColumns = 0;
 	
 	/**
+	 * Whether to enclose data points inside hyperlinks
+	 */
+	protected boolean m_datapointHyperlinks = true;
+	
+	/**
 	 * A buffer to hold the column headers until we know how many
 	 * columns there are. This is due to the fact that a <code>tabular</code>
 	 * environment in LaTeX must specify the alignment of each column
@@ -101,6 +106,17 @@ public class LatexTableRenderer extends TableNodeRenderer
 	public void setBoldKeys(boolean b)
 	{
 		m_boldKeys = b;
+	}
+	
+	/**
+	 * Sets whether the data points in the table will be enclosed in
+	 * hyperlinks containing their ID
+	 * @param b Set to <code>true</code> to enable hyperlinks,
+	 *   <code>false</code> otherwise 
+	 */
+	public void setDatapointHyperlinks(boolean b)
+	{
+		m_datapointHyperlinks = b;
 	}
 	
 	/**
@@ -259,9 +275,39 @@ public class LatexTableRenderer extends TableNodeRenderer
 	public static String escape(String input)
 	{
 		String output = input;
+		output = output.replaceAll("_", "\\\\_");
+		output = output.replaceAll("~", "\\\\~");
 		output = output.replaceAll("&", "\\\\&");
+		output = output.replaceAll("#", "\\\\$");
+		output = output.replaceAll("%", "\\\\%");
+		output = output.replaceAll("\\\\", "\\\\\\\\");
+		output = output.replaceAll("\\$", "\\\\\\$");
 		output = output.replaceAll("\\{", "\\\\\\{");
 		output = output.replaceAll("\\}", "\\\\\\}");
+		return output;
+	}
+	
+	/**
+	 * Formats a table name to be a valid name in LaTeX
+	 * @param name The name
+	 * @return The formatted name
+	 */
+	public static String formatName(String name)
+	{
+		String output = name;
+		// Keep only letters and numbers
+		output = output.replaceAll("[^A-Za-z0-9]", "");
+		// Since macro names cannot have numbers, replace them by letters
+		output = output.replaceAll("0", "a");
+		output = output.replaceAll("1", "b");
+		output = output.replaceAll("2", "c");
+		output = output.replaceAll("3", "d");
+		output = output.replaceAll("4", "e");
+		output = output.replaceAll("5", "f");
+		output = output.replaceAll("6", "g");
+		output = output.replaceAll("7", "h");
+		output = output.replaceAll("8", "i");
+		output = output.replaceAll("9", "j");
 		return output;
 	}
 

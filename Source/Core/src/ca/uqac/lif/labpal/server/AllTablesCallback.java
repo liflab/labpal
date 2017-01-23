@@ -69,7 +69,7 @@ public class AllTablesCallback extends WebCallback
 			{
 				box_name += id;
 			}
-			box_name = formatName(box_name);
+			box_name = LatexTableRenderer.formatName(box_name);
 			DataTable d_tab = tab.getDataTable();
 			String tab_contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
 			out.append("% ----------------------").append(FileHelper.CRLF).append("% Table: ").append(box_name).append(FileHelper.CRLF);
@@ -85,21 +85,4 @@ public class AllTablesCallback extends WebCallback
 		response.setContents(out.toString());
 		return response;
 	}
-	
-	/**
-	 * Formats a table name to be a valid name in LaTeX
-	 * @param name The name
-	 * @return The formatted name
-	 */
-	protected static String formatName(String name)
-	{
-		String out_name = name;
-		out_name = out_name.replaceAll(" ", "");
-		out_name = out_name.replaceAll("_", "");
-		out_name = out_name.replaceAll("\\(", "");
-		out_name = out_name.replaceAll("\\)", "");
-		out_name = out_name.replaceAll(",", "");
-		return out_name;
-	}
-
 }

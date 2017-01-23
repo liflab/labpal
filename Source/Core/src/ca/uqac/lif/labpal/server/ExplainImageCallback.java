@@ -22,35 +22,36 @@ import java.util.Map;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
+import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.plot.Plot.ImageType;
-import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
+import ca.uqac.lif.labpal.provenance.DotProvenanceTreeRenderer;
+import ca.uqac.lif.labpal.provenance.ProvenanceNode;
 
 import com.sun.net.httpserver.HttpExchange;
 
 /**
- * Callback producing an image from one of the lab's plots, in various
- * formats.
+ * Callback producing an image explaining the provenance of a data point,
+ * as an image in various formats.
  * <p>
  * The HTTP request accepts the following parameters:
  * <ul>
  * <li><tt>dl=1</tt>: to download the image instead of displaying it. This
  *   will prompt the user to save the file in its browser</li>
- * <li><tt>id=x</tt>: mandatory; the ID of the plot to display</li>
+ * <li><tt>id=x</tt>: mandatory; the ID of the data point to create the graph
+ * from</li>
  * <li><tt>format=x</tt>: the requested image format. Currenly supports
- *   pdf, dumb (text), png and gp (raw data file for Gnuplot).
+ *   pdf and png
  * </ul>
  * 
  * @author Sylvain Hallé
  *
  */
-public class PlotImageCallback extends WebCallback
+public class ExplainImageCallback extends WebCallback
 {
-	public PlotImageCallback(Laboratory lab, LabAssistant assistant)
+	public ExplainImageCallback(Laboratory lab, LabAssistant assistant)
 	{
-		super("/plot", lab, assistant);
+		super("/provenance-graph", lab, assistant);
 	}
 
 	@Override
@@ -58,49 +59,41 @@ public class PlotImageCallback extends WebCallback
 	{
 		CallbackResponse response = new CallbackResponse(t);
 		Map<String,String> params = getParameters(t);
-		int plot_id = Integer.parseInt(params.get("id"));
-		Plot p = m_lab.getPlot(plot_id);
-		if (p == null)
+		String datapoint_id = params.get("id");
+		ProvenanceNode node = m_lab.getDataTracker().explain(datapoint_id);
+		if (node == null)
 		{
+			response.setContents("<html><body><h1>Not Found</h1><p>This data point does not seem to exist.</p></body></html>");
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
-		if (params.containsKey("format") && params.get("format").compareToIgnoreCase("gp") == 0 && p instanceof GnuPlot)
+		DotProvenanceTreeRenderer renderer = new DotProvenanceTreeRenderer();
+		if (!GraphvizRenderer.s_dotPresent)
 		{
-			response.setContents(((GnuPlot)p).toGnuplot(ImageType.PDF, m_lab.getTitle(), true));
-			response.setCode(CallbackResponse.HTTP_OK);
-			response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
-			return response;
-		}
-		if (!GnuPlot.isGnuplotPresent())
-		{
-			// Asking for an image, but Gnuplot not available: stop right here
+			// Asking for an image, but DOT not available: stop right here
+			response.setContents("<html><body><h1>Not Found</h1><p>DOT is not present on this system, so the picture cannot be shown.</p></body></html>");
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
-		ImageType term = ImageType.PNG;
-		response.setContentType(ContentType.PNG);
+		String extension = "svg";
+		response.setContentType("image/svg+xml");
 		if (params.containsKey("format") && params.get("format").compareToIgnoreCase("pdf") == 0)
 		{
-			term = ImageType.PDF;
 			response.setContentType(ContentType.PDF);
+			extension = "pdf";
 		}
-		if (params.containsKey("format") && params.get("format").compareToIgnoreCase("dumb") == 0)
-		{
-			term = ImageType.DUMB;
-			response.setContentType(ContentType.TEXT);
-		}
-		byte[] image = p.getImage(term);
+		byte[] image = renderer.toImage(node, extension);
 		if (image == null)
 		{
-			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+			response.setContents("<html><body><h1>Internal Server Error</h1><p>The image cannot be displayed.</p></body></html>");
+			response.setCode(CallbackResponse.HTTP_INTERNAL_SERVER_ERROR);
 			return response;			
 		}
 		response.setContents(image);
 		response.setCode(CallbackResponse.HTTP_OK);
 		if (params.containsKey("dl"))
 		{
-			response.setAttachment(Server.urlEncode(p.getTitle() + "." + Plot.getTypeExtension(term)));
+			response.setAttachment(Server.urlEncode(node.getDataPointId() + "." + extension));
 		}
 		return response;
 	}

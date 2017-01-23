@@ -63,6 +63,7 @@ public class ExplainCallback extends TemplatePageCallback
 			s = s.replaceAll("\\{%EXPLANATION%\\}", "<p>There does not seem to be an explanation available for this data point. Some data points are available only when the experiments they depend on have been executed.</p>");
 			return s;
 		}
+		s = s.replaceAll("\\{%IMAGE_URL%\\}", Matcher.quoteReplacement("provenance-graph?id=" + datapoint_id));
 		Map<String,Map<String,Set<String>>> highlight_groups = new HashMap<String,Map<String,Set<String>>>();
 		getHighlightGroups(node, highlight_groups);
 		StringBuilder out = new StringBuilder();
@@ -91,7 +92,7 @@ public class ExplainCallback extends TemplatePageCallback
 		out.append("</li>\n");
 	}
 	
-	protected void getHighlightGroups(ProvenanceNode node, Map<String,Map<String,Set<String>>> map)
+	public static void getHighlightGroups(ProvenanceNode node, Map<String,Map<String,Set<String>>> map)
 	{
 		if (node == null)
 		{
@@ -121,7 +122,7 @@ public class ExplainCallback extends TemplatePageCallback
 		}
 	}
 	
-	protected String getDataPointUrl(ProvenanceNode node, String parent_id, Map<String,Map<String,Set<String>>> highlight_groups)
+	public static String getDataPointUrl(ProvenanceNode node, String parent_id, Map<String,Map<String,Set<String>>> highlight_groups)
 	{
 		String id = node.getDataPointId();
 		String[] parts = id.split(":");

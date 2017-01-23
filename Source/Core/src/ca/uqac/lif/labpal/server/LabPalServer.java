@@ -65,6 +65,7 @@ public class LabPalServer extends InnerFileServer
 		registerCallback(0, new TableExportCallback(lab, assistant));
 		registerCallback(0, new AllTablesCallback(lab, assistant));
 		registerCallback(0, new ExplainCallback(lab, assistant));
+		registerCallback(0, new ExplainImageCallback(lab, assistant));
 	}
 	
 	/**

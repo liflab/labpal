@@ -51,7 +51,7 @@ public class RenameColumns implements TableTransformation
 			String col_name = table.getColumnName(pos);
 			new_ordering[i] = col_name;
 		}
-		return table.getDataTable(new_ordering);
+		return table.getDataTable(true, new_ordering);
 
 	}
 }

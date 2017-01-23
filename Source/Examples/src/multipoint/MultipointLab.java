@@ -21,7 +21,9 @@ import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.gral.Scatterplot;
+import ca.uqac.lif.labpal.table.BoxTransformation;
 import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.labpal.table.TransformedTable;
 
 /**
  * Create an experiment that generates multiple values for some of
@@ -56,6 +58,8 @@ public class MultipointLab extends Laboratory
 		Scatterplot plot = new Scatterplot(table);
 		add(plot);
 		add(new MultipointExperiment(), table);
+		TransformedTable tt = new TransformedTable(new BoxTransformation(), table);
+		add(tt);
 	}
 
 	public static class MultipointExperiment extends Experiment 

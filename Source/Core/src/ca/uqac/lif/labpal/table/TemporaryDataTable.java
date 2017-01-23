@@ -15,24 +15,37 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.labpal.provenance;
+package ca.uqac.lif.labpal.table;
 
-import ca.uqac.lif.labpal.Experiment;
+import java.util.List;
 
-public class ExperimentProvenanceLeaf extends ProvenanceLeaf
+/**
+ * Data table only used temporarily. Typically, such a stable is a
+ * single-use object to render the contents of another table.
+ * 
+ * @author Sylvain Hallé
+ */
+public class TemporaryDataTable extends DataTable 
 {
-	protected final String m_paramName;
-	
-	public ExperimentProvenanceLeaf(String param_name, DataOwner owner)
+	/**
+	 * Creates a new data table
+	 * @param ordering The ordering of the columns in this table. This array
+	 * should contain column names
+	 */
+	public TemporaryDataTable(String ... ordering)
 	{
-		super("E" + ((Experiment) owner).getId() + ":" + param_name, owner);
-		m_paramName = param_name;
+		super(null, ordering);	
 	}
 
-	@Override
-	public String toString()
+	public TemporaryDataTable(List<TableEntry> entries, String[] preferredOrdering)
 	{
-		Experiment e = (Experiment) m_owner;
-		return "Value of " + m_paramName + " in experiment #" + e.getId();
+		super(entries, preferredOrdering);
 	}
+	
+	@Override
+	public boolean isTemporary()
+	{
+		return true;
+	}
+	
 }

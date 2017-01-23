@@ -88,16 +88,24 @@ public class VersusTable extends Table
 	}
 	
 	@Override
-	protected DataTable getDataTable(boolean link_to_experiments, String... ordering) 
+	protected DataTable getDataTable(boolean temporary, String... ordering) 
 	{
 		// Ignore ordering
-		return getDataTable(link_to_experiments);
+		return getDataTable(temporary);
 	}
 
 	@Override
-	protected DataTable getDataTable(boolean link_to_experiments)
+	public DataTable getDataTable(boolean temporary)
 	{
-		DataTable table = new DataTable(m_captionX, m_captionY);
+		DataTable table;
+		if (temporary)
+		{
+			table = new TemporaryDataTable(m_captionX, m_captionY);
+		}
+		else
+		{
+			table = new DataTable(m_captionX, m_captionY);
+		}
 		int row = 0;
 		for (ExperimentPair pair : m_pairs)
 		{
@@ -110,16 +118,8 @@ public class VersusTable extends Table
 			TableEntry te = new TableEntry();
 			te.put(m_captionX, x);
 			te.put(m_captionY, y);
-			if (link_to_experiments)
-			{
-				te.addDependency(m_captionX, pair.getExperimentX().getDataPointId(m_parameter));
-				te.addDependency(m_captionY, pair.getExperimentY().getDataPointId(m_parameter));
-			}
-			else
-			{
-				te.addDependency(m_captionX, "T" + getId() + row + ":" + "0");
-				te.addDependency(m_captionY, "T" + getId() + row + ":" + "1");
-			}
+			te.addDependency(m_captionX, pair.getExperimentX().dependsOn(m_parameter));
+			te.addDependency(m_captionY, pair.getExperimentY().dependsOn(m_parameter));
 			table.add(te);
 		}
 		return table;

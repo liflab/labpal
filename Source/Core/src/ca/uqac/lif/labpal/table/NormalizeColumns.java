@@ -34,7 +34,7 @@ public class NormalizeColumns implements TableTransformation
 	public DataTable transform(DataTable ... tables)
 	{
 		DataTable in_table = tables[0];
-		DataTable out_table = new DataTable();
+		DataTable out_table = new TemporaryDataTable();
 		if (in_table.getRowCount() == 0)
 		{
 			return out_table;

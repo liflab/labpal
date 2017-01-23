@@ -17,22 +17,13 @@
  */
 package ca.uqac.lif.labpal.provenance;
 
-import ca.uqac.lif.labpal.Experiment;
-
-public class ExperimentProvenanceLeaf extends ProvenanceLeaf
+public class ExperimentProvenanceCellLeaf extends ExperimentProvenanceLeaf
 {
-	protected final String m_paramName;
+	protected final int m_position;
 	
-	public ExperimentProvenanceLeaf(String param_name, DataOwner owner)
+	public ExperimentProvenanceCellLeaf(String param_name, int position, DataOwner owner)
 	{
-		super("E" + ((Experiment) owner).getId() + ":" + param_name, owner);
-		m_paramName = param_name;
-	}
-
-	@Override
-	public String toString()
-	{
-		Experiment e = (Experiment) m_owner;
-		return "Value of " + m_paramName + " in experiment #" + e.getId();
+		super(param_name + ":" + position, owner);
+		m_position = position;
 	}
 }

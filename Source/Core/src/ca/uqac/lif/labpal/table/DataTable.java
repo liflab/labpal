@@ -34,7 +34,6 @@ import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
-import ca.uqac.lif.labpal.provenance.ProvenanceLeaf;
 import ca.uqac.lif.labpal.provenance.ProvenanceNode;
 import de.erichseifert.gral.data.Column;
 import de.erichseifert.gral.data.DataListener;
@@ -610,11 +609,10 @@ public class DataTable extends Table implements DataSource
 		{
 			return depends;
 		}
-		Set<String> ids = entry.getDatapointIds(key);
-		for (String dp_id : ids)
+		Set<ProvenanceNode> ids = entry.getDatapointIds(key);
+		for (ProvenanceNode dp_id : ids)
 		{
-			ProvenanceLeaf pl = new ProvenanceLeaf(dp_id, null);
-			depends.addParent(pl);
+			depends.addParent(dp_id);
 		}
 		return depends;
 	}
@@ -638,8 +636,12 @@ public class DataTable extends Table implements DataSource
 	}
 
 	@Override
-	protected DataTable getDataTable(boolean link_to_experiments)
+	public DataTable getDataTable(boolean temporary)
 	{
+		if (temporary)
+		{
+			return new TemporaryDataTable(m_entries, m_preferredOrdering);
+		}
 		return new DataTable(m_entries, m_preferredOrdering);
 	}
 

@@ -19,10 +19,13 @@ package ca.uqac.lif.labpal.table;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Formatter;
+import ca.uqac.lif.labpal.provenance.ProvenanceNode;
 
 /**
  * Computes box-and-whiskers statistics from each column of an
@@ -97,10 +100,13 @@ public class BoxTransformation implements TableTransformation
 	public DataTable transform(DataTable... tables) 
 	{
 		DataTable table = tables[0];
-		DataTable new_table = new DataTable(m_captionX, m_captionMin, m_captionQ1, m_captionQ2, m_captionQ3, m_captionMax);
+		DataTable new_table = new TemporaryDataTable(m_captionX, m_captionMin, m_captionQ1, m_captionQ2, m_captionQ3, m_captionMax);
+		int col = 0;
 		for (String col_name : table.getColumnNames())
 		{
+			Set<ProvenanceNode> deps = new HashSet<ProvenanceNode>();
 			List<Float> values = new ArrayList<Float>();
+			int row = 0;
 			for (TableEntry te : table.getEntries())
 			{
 				Float f = Table.readFloat(te.get(col_name));
@@ -108,8 +114,14 @@ public class BoxTransformation implements TableTransformation
 				{
 					values.add(f);
 				}
+				deps.addAll(te.getDatapointIds(col_name));
 			}
 			Collections.sort(values);
+			if (values.isEmpty())
+			{
+				// Nothing to do
+				return new_table;
+			}
 			float num_values = values.size();
 			TableEntry te = new TableEntry();
 			te.put(m_captionX, Formatter.jsonCast(col_name));
@@ -118,7 +130,13 @@ public class BoxTransformation implements TableTransformation
 			te.put(m_captionQ2, new JsonNumber(values.get((int)(num_values * 0.5) - 1)));
 			te.put(m_captionQ3, new JsonNumber(values.get((int)(num_values * 0.75) - 1)));
 			te.put(m_captionMax, new JsonNumber(values.get((int) num_values - 1)));
+			te.addDependency(m_captionMin, new FunctionProvenanceNode("T", table, "Minimum value of column " + col_name, deps));
+			te.addDependency(m_captionQ1, new FunctionProvenanceNode("T", table, "First quartile " + col_name, deps));
+			te.addDependency(m_captionQ2, new FunctionProvenanceNode("T", table, "Second quartile of column " + col_name, deps));
+			te.addDependency(m_captionQ3, new FunctionProvenanceNode("T", table, "Third quartile of column " + col_name, deps));
+			te.addDependency(m_captionMax, new FunctionProvenanceNode("T", table, "Maximum value of column " + col_name, deps));
 			new_table.add(te);
+			col++;
 		}
 		return new_table;
 	}

@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+
 /**
  * An entry in a data table
  */
@@ -35,23 +37,23 @@ public class TableEntry extends HashMap<String,Object>
 	/**
 	 * Associates to each key of the map to a set of datapoint IDs
 	 */
-	private final Map<String,Set<String>> m_datapointIds;
+	private final Map<String,Set<ProvenanceNode>> m_datapointIds;
 	
 	public TableEntry()
 	{
 		super();
-		m_datapointIds = new HashMap<String,Set<String>>();
+		m_datapointIds = new HashMap<String,Set<ProvenanceNode>>();
 	}
 	
 	public TableEntry(String key, Object value)
 	{
-		this(key, value, new String[]{});
+		this(key, value, new ProvenanceNode[]{});
 	}
 	
-	public TableEntry(String key, Object value, String ... datapoint_ids)
+	public TableEntry(String key, Object value, ProvenanceNode ... provenance_nodes)
 	{
 		this();
-		put(key, value, datapoint_ids);
+		put(key, value, provenance_nodes);
 	}
 	
 	public TableEntry(TableEntry e)
@@ -61,11 +63,11 @@ public class TableEntry extends HashMap<String,Object>
 		m_datapointIds.putAll(e.m_datapointIds);
 	}
 	
-	public void put(String key, Object value, String ... datapoint_ids)
+	public void put(String key, Object value, ProvenanceNode ... provenance_nodes)
 	{
 		put(key, value);
-		Set<String> ids = new HashSet<String>();
-		for (String id : datapoint_ids)
+		Set<ProvenanceNode> ids = new HashSet<ProvenanceNode>();
+		for (ProvenanceNode id : provenance_nodes)
 		{
 			ids.add(id);
 		}
@@ -126,11 +128,11 @@ public class TableEntry extends HashMap<String,Object>
 	 * @param key
 	 * @return
 	 */
-	public Set<String> getDatapointIds(String key)
+	public Set<ProvenanceNode> getDatapointIds(String key)
 	{
 		if (!m_datapointIds.containsKey(key))
 		{
-			return new HashSet<String>();
+			return new HashSet<ProvenanceNode>();
 		}
 		return m_datapointIds.get(key);
 	}
@@ -141,16 +143,16 @@ public class TableEntry extends HashMap<String,Object>
 	 * @param key The key corresponding to the table entry
 	 * @param dependency The data point entry to add as a dependency
 	 */
-	public void addDependency(String key, String dependency)
+	public void addDependency(String key, ProvenanceNode dependency)
 	{
-		Set<String> deps = null;
+		Set<ProvenanceNode> deps = null;
 		if (m_datapointIds.containsKey(key))
 		{
 			deps = m_datapointIds.get(key);
 		}
 		if (deps == null)
 		{
-			deps = new HashSet<String>();
+			deps = new HashSet<ProvenanceNode>();
 		}
 		deps.add(dependency);
 		m_datapointIds.put(key, deps);
@@ -162,16 +164,16 @@ public class TableEntry extends HashMap<String,Object>
 	 * @param key The key corresponding to the table entry
 	 * @param dependencies A set of data point entry to add as a dependency
 	 */
-	public void addDependency(String key, Set<String> dependencies)
+	public void addDependency(String key, Set<ProvenanceNode> dependencies)
 	{
-		Set<String> deps = null;
+		Set<ProvenanceNode> deps = null;
 		if (m_datapointIds.containsKey(key))
 		{
 			deps = m_datapointIds.get(key);
 		}
 		if (deps == null)
 		{
-			deps = new HashSet<String>();
+			deps = new HashSet<ProvenanceNode>();
 		}
 		deps.addAll(dependencies);
 		m_datapointIds.put(key, deps);

@@ -194,12 +194,10 @@ public abstract class Table implements DataOwner
 	/**
 	 * Gets an instance of {@link DataTable} from the table's
 	 * data, using the default column ordering
-	 * @param link_to_experiments Set to true to have the table
-	 *   entries link directly to the experiments, instead of
-	 *   the table itself
+	 * @param temporary Set {@code true} to get a temporary data table
 	 * @return The table
 	 */
-	protected abstract DataTable getDataTable(boolean link_to_experiments);
+	public abstract DataTable getDataTable(boolean temporary);
 
 	/**
 	 * Casts a value as a number or an instance of {@code Comparable}
@@ -332,7 +330,7 @@ public abstract class Table implements DataOwner
 	@Override
 	public ProvenanceNode dependsOn(String id)
 	{
-		return dependsOn(false, id);
+		return dependsOn(true, id);
 	}
 	
 	public ProvenanceNode dependsOn(boolean link_to_experiments, String id)
@@ -340,7 +338,17 @@ public abstract class Table implements DataOwner
 		String[] parts = id.split(":");
 		int row = Integer.parseInt(parts[1].trim());
 		int col = Integer.parseInt(parts[2].trim());
-		return getDataTable(link_to_experiments).dependsOn(this, row, col);
+		DataTable dt = getDataTable(link_to_experiments);
+		return dt.dependsOn(this, row, col);
+	}
+	
+	/**
+	 * Determines if this table is temporary
+	 * @return {@code true} if temporary, {@code false} otherwise
+	 */
+	public boolean isTemporary()
+	{
+		return false;
 	}
 	
 }

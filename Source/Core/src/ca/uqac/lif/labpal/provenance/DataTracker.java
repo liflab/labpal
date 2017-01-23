@@ -90,14 +90,7 @@ public class DataTracker
 		DataOwner owner = getOwner(id);
 		if (owner != null)
 		{
-			if (owner instanceof ExperimentTable)
-			{
-				dep = ((ExperimentTable) owner).dependsOn(true, id);
-			}
-			else
-			{
-				dep = owner.dependsOn(id);
-			}
+			dep = owner.dependsOn(id);
 			List<ProvenanceNode> parents = dep.getParents();
 			int i = 0;
 			for (ProvenanceNode dep_id : parents)

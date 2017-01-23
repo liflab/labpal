@@ -54,12 +54,12 @@ public class TransformedTable extends Table
 	}
 
 	@Override
-	protected DataTable getDataTable(boolean link_to_experiments) 
+	public DataTable getDataTable(boolean temporary) 
 	{
 		DataTable[] concrete_tables = new DataTable[m_inputTables.length];
 		for (int i = 0; i < m_inputTables.length; i++)
 		{
-			concrete_tables[i] = m_inputTables[i].getDataTable(link_to_experiments);
+			concrete_tables[i] = m_inputTables[i].getDataTable(temporary);
 		}
 		return m_transformation.transform(concrete_tables);
 	}
@@ -67,7 +67,9 @@ public class TransformedTable extends Table
 	@Override
 	public ProvenanceNode dependsOn(Table owner, int row, int col)
 	{
-		return getDataTable(false).dependsOn(this, row, col);
+		System.out.println("HEY");
+		DataTable dt = getDataTable(owner.isTemporary());
+		return dt.dependsOn(this, row, col);
 	}
 
 }

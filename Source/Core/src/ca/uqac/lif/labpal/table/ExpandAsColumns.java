@@ -118,7 +118,7 @@ public class ExpandAsColumns implements TableTransformation
 			new_names[pos] = name;
 			pos++;
 		}
-		DataTable new_table = new DataTable(new_names);
+		DataTable new_table = new TemporaryDataTable(new_names);
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		for (TableEntry te : table.getEntries())
 		{

@@ -55,16 +55,22 @@ public class ExplainCallback extends TemplatePageCallback
 	public String fill(String s, Map<String,String> params)
 	{
 		String datapoint_id = params.get("id");
+		s = s.replaceAll("\\{%TITLE%\\}", "Explanation");
+		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		ProvenanceNode node = m_lab.getDataTracker().explain(datapoint_id);
+		if (node == null)
+		{
+			s = s.replaceAll("\\{%EXPLANATION%\\}", "<p>There does not seem to be an explanation available for this data point. Some data points are available only when the experiments they depend on have been executed.</p>");
+			return s;
+		}
 		Map<String,Map<String,Set<String>>> highlight_groups = new HashMap<String,Map<String,Set<String>>>();
 		getHighlightGroups(node, highlight_groups);
 		StringBuilder out = new StringBuilder();
 		out.append("<ul class=\"explanation\">\n");
 		explanationToHtml(node, node.getDataPointId(), highlight_groups, out);
 		out.append("</ul>\n");
-		s = s.replaceAll("\\{%TITLE%\\}", "Explanation");
 		s = s.replaceAll("\\{%EXPLANATION%\\}", Matcher.quoteReplacement(out.toString()));
-		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
+		
 		return s;
 	}
 	
@@ -87,6 +93,10 @@ public class ExplainCallback extends TemplatePageCallback
 	
 	protected void getHighlightGroups(ProvenanceNode node, Map<String,Map<String,Set<String>>> map)
 	{
+		if (node == null)
+		{
+			return;
+		}
 		String key = node.getDataPointId();
 		Map<String,Set<String>> children = new HashMap<String,Set<String>>();
 		List<ProvenanceNode> parents = node.getParents();
@@ -116,7 +126,12 @@ public class ExplainCallback extends TemplatePageCallback
 		String id = node.getDataPointId();
 		String[] parts = id.split(":");
 		String type = parts[0].substring(0, 1);
-		int number = Integer.parseInt(parts[0].substring(1, parts[0].length()));
+		String id_part = parts[0].substring(1, parts[0].length());
+		if (id_part.isEmpty())
+		{
+			return "";
+		}
+		int number = Integer.parseInt(id_part);
 		Map<String,Set<String>> to_highlight = highlight_groups.get(parent_id);
 		StringBuilder highlight_string = new StringBuilder();
 		highlight_string.append(node.getDataPointId());

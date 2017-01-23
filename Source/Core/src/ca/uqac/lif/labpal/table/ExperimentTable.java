@@ -70,18 +70,26 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	protected DataTable getDataTable(boolean link_to_experiments)
+	public DataTable getDataTable(boolean temporary)
 	{
-		return getDataTable(link_to_experiments, m_dimensions);
+		return getDataTable(temporary, m_dimensions);
 	}
 
 	@Override
-	protected DataTable getDataTable(boolean link_to_experiments, String ... ordering)
+	protected DataTable getDataTable(boolean temporary, String ... ordering)
 	{
-		DataTable mt = new DataTable(ordering);
+		DataTable mt;
+		if (temporary)
+		{
+			mt = new TemporaryDataTable(ordering);
+		}
+		else
+		{
+			mt = new DataTable(ordering);
+		}
 		for (Experiment e : m_experiments)
 		{
-			List<TableEntry> entries = getEntries(link_to_experiments, e, ordering);
+			List<TableEntry> entries = getEntries(temporary, e, ordering);
 			mt.addAll(entries);
 		}
 		return mt;
@@ -120,7 +128,7 @@ public class ExperimentTable extends Table
 	 * @return A list of table entries corresponding to the data
 	 *   points in the experiment
 	 */
-	public List<TableEntry> getEntries(boolean link_to_experiments, Experiment e, String ... dimensions)
+	public List<TableEntry> getEntries(boolean temporary, Experiment e, String ... dimensions)
 	{
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		List<String> scalar_columns = new ArrayList<String>();
@@ -152,13 +160,15 @@ public class ExperimentTable extends Table
 				JsonElement elem = readExperiment(e, col_name);
 				if (elem != null)
 				{
-					if (link_to_experiments)
+					if (temporary)
 					{
-						te.put(col_name, elem, e.getDataPointId(col_name));
+						// If the table is temporary
+						te.put(col_name, elem);
+						te.addDependency(col_name, e.dependsOn(col_name));
 					}
 					else
 					{
-						te.put(col_name, elem, "T" + getId() + ":" + i + ":" + col_nb);
+						te.put(col_name, elem, new TableCellProvenanceNode(this, i, col_nb));
 					}
 				}
 				else
@@ -170,31 +180,33 @@ public class ExperimentTable extends Table
 			// ...and the i-th value of each list column
 			for (Map.Entry<String,JsonList> map_entry : list_columns.entrySet())
 			{
+				String key = map_entry.getKey();
 				JsonList list = map_entry.getValue();
 				if (i < list.size())
 				{
 					JsonElement elem = list.get(i);
 					if (elem != null)
 					{
-						if (link_to_experiments)
+						if (temporary)
 						{
-							te.put(map_entry.getKey(), elem, e.getDataPointId(map_entry.getKey()));
+							te.put(key, elem);
+							te.addDependency(key, e.dependsOn(key, i));
 						}
 						else
 						{
-							te.put(map_entry.getKey(), elem, "T" + getId() + ":" + i + ":" + col_nb);
+							te.put(key, elem, new TableCellProvenanceNode(this, i, col_nb));
 						}
 					}
 					else
 					{
-						te.put(map_entry.getKey(), JsonNull.instance);
+						te.put(key, JsonNull.instance);
 					}
-					te.put(map_entry.getKey(), elem);
+					te.put(key, elem);
 				}
 				else
 				{
 					// Substitute with null if one of the lists is shorter
-					te.put(map_entry.getKey(), JsonNull.instance);
+					te.put(key, JsonNull.instance);
 				}
 				col_nb++;
 			}

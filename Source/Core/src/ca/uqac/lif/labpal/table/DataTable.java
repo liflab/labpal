@@ -132,7 +132,6 @@ public class DataTable extends Table implements DataSource
 		return new Statistics(this);
 	}
 
-
 	/**
 	 * Adds a collection of entries to this data table
 	 * @param entries The entries
@@ -151,6 +150,7 @@ public class DataTable extends Table implements DataSource
 	 */
 	public void add(TableEntry e)
 	{
+		e.m_rowIndex = m_entries.size();
 		m_entries.add(e);
 	}
 	
@@ -209,7 +209,12 @@ public class DataTable extends Table implements DataSource
 		for (Object value : keys)
 		{
 			TableNode new_node = new TableNode(current_key, value);
-			List<TableNode> new_node_children = getChildren(sort_order, index + 1, partition.get(value));
+			Set<TableEntry> entries = partition.get(value);
+			for (TableEntry te : entries)
+			{
+				new_node.addCoordinate(te.getRowIndex(), index);
+			}
+			List<TableNode> new_node_children = getChildren(sort_order, index + 1, entries);
 			new_node.m_children.addAll(new_node_children);
 			children.add(new_node);
 		}

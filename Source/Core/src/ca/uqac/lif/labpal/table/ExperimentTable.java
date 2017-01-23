@@ -87,10 +87,12 @@ public class ExperimentTable extends Table
 		{
 			mt = new DataTable(ordering);
 		}
+		int row_nb = 0;
 		for (Experiment e : m_experiments)
 		{
-			List<TableEntry> entries = getEntries(false, e, ordering);
+			List<TableEntry> entries = getEntries(false, e, row_nb, ordering);
 			mt.addAll(entries);
+			row_nb += entries.size();
 		}
 		return mt;
 	}
@@ -128,7 +130,7 @@ public class ExperimentTable extends Table
 	 * @return A list of table entries corresponding to the data
 	 *   points in the experiment
 	 */
-	public List<TableEntry> getEntries(boolean temporary, Experiment e, String ... dimensions)
+	public List<TableEntry> getEntries(boolean temporary, Experiment e, int row_start, String ... dimensions)
 	{
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		List<String> scalar_columns = new ArrayList<String>();
@@ -168,7 +170,7 @@ public class ExperimentTable extends Table
 					}
 					else
 					{
-						TableCellProvenanceNode tpn = new TableCellProvenanceNode(this, i, col_nb);
+						TableCellProvenanceNode tpn = new TableCellProvenanceNode(this, i + row_start, col_nb);
 						tpn.addParent(e.dependsOn(col_name));
 						te.put(col_name, elem, tpn);
 					}

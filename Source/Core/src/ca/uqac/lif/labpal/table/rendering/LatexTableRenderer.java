@@ -23,6 +23,7 @@ import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableNode;
 
 /**
  * Renders a result tree as a LaTeX table. The resulting table
@@ -198,7 +199,7 @@ public class LatexTableRenderer extends TableNodeRenderer
 	}
 
 	@Override
-	public void printCell(StringBuilder out, List<JsonElement> values, int nb_children, int max_depth) 
+	public void printCell(StringBuilder out, List<JsonElement> values, int nb_children, int max_depth, TableNode node) 
 	{
 		if (nb_children > 2)
 		{

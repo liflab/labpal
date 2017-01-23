@@ -47,7 +47,13 @@ import ca.uqac.lif.labpal.table.rendering.PlainTableRenderer;
  *
  */
 public class TablePageCallback extends TemplatePageCallback
-{	
+{
+	/**
+	 * Whether to render the tables as "plain". This is mostly to debug the
+	 * highlighting of tables with the normal renderer.
+	 */
+	protected static boolean s_renderPlain = false;
+	
 	public TablePageCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/table", lab, assistant);
@@ -70,12 +76,15 @@ public class TablePageCallback extends TemplatePageCallback
 			// If cells have to be highlighted, display the table without
 			// sorting the cells
 			highlight = params.get("highlight");
+		}
+		if (s_renderPlain && params.containsKey("highlight"))
+		{
 			PlainTableRenderer renderer = new PlainTableRenderer(tab, getCellsToHighlight(highlight));
 			table_html = renderer.render();
 		}
 		else
 		{
-			HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer(tab);
+			HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer(tab, getCellsToHighlight(highlight));
 			table_html = renderer.render(tbl.getTree(), tbl.getColumnNames());
 		}
 		s = s.replaceAll("\\{%TITLE%\\}", Matcher.quoteReplacement(tab.getTitle()));

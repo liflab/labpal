@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2014-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@ package ca.uqac.lif.labpal.table;
 import java.util.LinkedList;
 import java.util.List;
 
+import ca.uqac.lif.labpal.table.Table.CellCoordinate;
+
 public class TableNode
 {
 	protected final String m_key;
@@ -30,6 +32,8 @@ public class TableNode
 	
 	protected int m_col;
 	
+	protected List<CellCoordinate> m_coordinates;
+	
 	public List<TableNode> m_children;
 	
 	public TableNode(String key, Object value)
@@ -38,6 +42,17 @@ public class TableNode
 		m_children = new LinkedList<TableNode>();
 		m_key = key;
 		m_value = value;
+		m_coordinates = new LinkedList<CellCoordinate>();
+	}
+	
+	public void addCoordinate(CellCoordinate c)
+	{
+		m_coordinates.add(c);
+	}
+	
+	public void addCoordinate(int row, int col)
+	{
+		m_coordinates.add(new CellCoordinate(row, col));
 	}
 	
 	public void setRow(int row)
@@ -128,5 +143,15 @@ public class TableNode
 	public Object getValue()
 	{
 		return m_value;
+	}
+
+	/**
+	 * Gets the cell coordinates associated to this table node
+	 * @return The list of coordinates
+	 */
+	public List<CellCoordinate> getCoordinates()
+	{
+		return m_coordinates;
+		
 	}
 }

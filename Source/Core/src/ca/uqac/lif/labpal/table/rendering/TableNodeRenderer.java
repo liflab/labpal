@@ -101,7 +101,7 @@ public abstract class TableNodeRenderer
 	{
 		if (values.size() > 0)
 		{
-			printCell(out, values, cur_node.countLeaves(), max_depth);			
+			printCell(out, values, cur_node.countLeaves(), max_depth, cur_node);			
 		}
 		boolean first_child = true;
 		for (TableNode child : cur_node.m_children)
@@ -174,8 +174,9 @@ public abstract class TableNodeRenderer
 	 * @param values The list of values in this row of the structure
 	 * @param nb_children The number of children this cell has in the tree
 	 * @param max_depth The number of columns in a row of the structure
+	 * @param node The table node corresponding to the cell to print
 	 */
-	public abstract void printCell(StringBuilder out, List<JsonElement> values, int nb_children, int max_depth);
+	public abstract void printCell(StringBuilder out, List<JsonElement> values, int nb_children, int max_depth, TableNode node);
 	
 	/**
 	 * Prints a cell whose value has already been printed in a previous row

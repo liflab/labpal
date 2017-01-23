@@ -35,6 +35,11 @@ public class TableEntry extends HashMap<String,Object>
 	private static final transient long serialVersionUID = 1L;
 	
 	/**
+	 * An (optional) index of the row where this entry is in the table
+	 */
+	protected int m_rowIndex = -1;
+	
+	/**
 	 * Associates to each key of the map to a set of datapoint IDs
 	 */
 	private final Map<String,Set<ProvenanceNode>> m_datapointIds;
@@ -72,6 +77,16 @@ public class TableEntry extends HashMap<String,Object>
 			ids.add(id);
 		}
 		m_datapointIds.put(key, ids);
+	}
+	
+	/**
+	 * Gets the index of the row in the table that corresponds to this
+	 * table entry.
+	 * @return An index, or -1 if no index was given to this entry
+	 */
+	public int getRowIndex()
+	{
+		return m_rowIndex;
 	}
 	
 	@Override

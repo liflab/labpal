@@ -129,6 +129,10 @@ public class ExplainCallback extends TemplatePageCallback
 	public static String getDataPointUrl(ProvenanceNode node, String parent_id, Map<String,Map<String,Set<String>>> highlight_groups)
 	{
 		NodeFunction nf = node.getNodeFunction();
+		if (nf == null)
+		{
+			return "#";
+		}
 		String id = nf.getDataPointId();
 		Map<String,Set<String>> to_highlight = highlight_groups.get(parent_id);
 		StringBuilder highlight_string = new StringBuilder();

@@ -22,9 +22,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.TableTransformation;
+import ca.uqac.lif.labpal.table.TempTable;
 
 /**
  * A representation of data into a picture
@@ -313,7 +313,7 @@ public abstract class Plot
 	 * @param table The original table
 	 * @return The transformed table
 	 */
-	public DataTable processTable(DataTable table)
+	public TempTable processTable(TempTable table)
 	{
 		if (m_transformation == null)
 		{

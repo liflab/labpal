@@ -31,10 +31,10 @@ public class NormalizeColumns implements TableTransformation
 	}
 
 	@Override
-	public DataTable transform(DataTable ... tables)
+	public TempTable transform(TempTable ... tables)
 	{
-		DataTable in_table = tables[0];
-		DataTable out_table = new TemporaryDataTable();
+		TempTable in_table = tables[0];
+		TempTable out_table = new TempTable(in_table.getId());
 		if (in_table.getRowCount() == 0)
 		{
 			return out_table;

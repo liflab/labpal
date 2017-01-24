@@ -78,7 +78,11 @@ public class ProvenanceNode
 	@Override
 	public String toString()
 	{
-		return m_nodeFunction.getDataPointId();
+		if (m_nodeFunction != null)
+		{
+			return m_nodeFunction.toString();
+		}
+		return "?";
 	}
 
 	public void addParents(Collection<ProvenanceNode> parents)

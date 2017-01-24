@@ -19,7 +19,6 @@ package ca.uqac.lif.labpal.table;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Joins multiple tables on the values of specific columns.
@@ -188,7 +187,7 @@ public class Join implements TableTransformation
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public DataTable transform(DataTable ... tables)
+	public TempTable transform(TempTable ... tables)
 	{
 		String[] ordering = getColumnNames(tables);
 		Class<? extends Comparable<?>>[] new_types = new Class[getColumnCount(tables)];
@@ -197,9 +196,10 @@ public class Join implements TableTransformation
 			Class<? extends Comparable<?>> col_type = getColumnTypeFor(ordering[i], tables);
 			new_types[i] = col_type;
 		}
-		DataTable mt = new TemporaryDataTable(ordering);
+		TempTable mt = new TempTable(-1, ordering);
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		List<TableEntry> keys = getRowKeys(tables);
+		int row = 0;
 		for (TableEntry key : keys)
 		{
 			for (int table_pos = 0; table_pos < tables.length; table_pos++)
@@ -209,11 +209,12 @@ public class Join implements TableTransformation
 				if (t_entry != null)
 				{
 					TableEntry existing_e = findExistingEntry(t_entry, entries);
-					for (Map.Entry<String,Object> map_entry : t_entry.entrySet())
+					String[] col_names = t.getColumnNames();
+					for (int col = 0; col < col_names.length; col++)
 					{
-						String map_key = map_entry.getKey();
-						existing_e.put(map_key, map_entry.getValue());
-						existing_e.addDependency(map_key, t_entry.getDependency(map_key));
+						String map_key = col_names[col];
+						existing_e.put(map_key, t_entry.get(map_key));
+						existing_e.addDependency(map_key, t.dependsOn(row, col));
 					}
 				}
 			}

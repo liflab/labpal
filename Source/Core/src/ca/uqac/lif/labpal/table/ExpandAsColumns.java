@@ -70,9 +70,9 @@ public class ExpandAsColumns implements TableTransformation
 	}
 	
 	@Override
-	public DataTable transform(DataTable ... tables)
+	public TempTable transform(TempTable ... tables)
 	{
-		DataTable table = tables[0];
+		TempTable table = tables[0];
 		Set<String> new_keys = new HashSet<String>();
 		for (TableEntry te : table.getEntries())
 		{
@@ -119,7 +119,7 @@ public class ExpandAsColumns implements TableTransformation
 			new_names[pos] = name;
 			pos++;
 		}
-		DataTable new_table = new TemporaryDataTable(new_names);
+		TempTable new_table = new TempTable(-2, new_names);
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		for (TableEntry te : table.getEntries())
 		{

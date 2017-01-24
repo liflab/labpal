@@ -117,7 +117,7 @@ public class DataTracker
 			ProvenanceNode pn = new ProvenanceNode(nf);
 			TableCellNode tcn = (TableCellNode) nf;
 			Table t = tcn.getOwner();
-			NodeFunction nf_dep = t.dependsOn(tcn.getRow(), tcn.getCol());
+			NodeFunction nf_dep = t.getDependency(tcn.getRow(), tcn.getCol());
 			pn.addParent(explain(nf_dep));
 			return pn;
 		}

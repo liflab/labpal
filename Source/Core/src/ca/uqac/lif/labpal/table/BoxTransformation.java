@@ -97,14 +97,16 @@ public class BoxTransformation implements TableTransformation
 	}
 
 	@Override
-	public DataTable transform(DataTable... tables) 
+	public TempTable transform(TempTable... tables) 
 	{
-		DataTable table = tables[0];
-		TemporaryDataTable new_table = new TemporaryDataTable(m_captionX, m_captionMin, m_captionQ1, m_captionQ2, m_captionQ3, m_captionMax);
+		TempTable table = tables[0];
+		TempTable new_table = new TempTable(-10, m_captionX, m_captionMin, m_captionQ1, m_captionQ2, m_captionQ3, m_captionMax);
+		int col = 0;
 		for (String col_name : table.getColumnNames())
 		{
 			List<NodeFunction> deps = new LinkedList<NodeFunction>();
 			List<Float> values = new ArrayList<Float>();
+			int row = 0;
 			for (TableEntry te : table.getEntries())
 			{
 				Float f = Table.readFloat(te.get(col_name));
@@ -112,7 +114,13 @@ public class BoxTransformation implements TableTransformation
 				{
 					values.add(f);
 				}
-				deps.add(te.getDependency(col_name));
+				NodeFunction nf = table.dependsOn(row, col);
+				//NodeFunction nf = //te.getDependency(col_name);
+				if (nf != null)
+				{
+					deps.add(nf);
+				}
+				row++;
 			}
 			Collections.sort(values);
 			if (values.isEmpty())
@@ -128,12 +136,13 @@ public class BoxTransformation implements TableTransformation
 			te.put(m_captionQ2, new JsonNumber(values.get(Math.max(0, (int)(num_values * 0.5) - 1))));
 			te.put(m_captionQ3, new JsonNumber(values.get(Math.max(0, (int)(num_values * 0.75) - 1))));
 			te.put(m_captionMax, new JsonNumber(values.get(Math.max(0, (int) num_values - 1))));
-			te.addDependency(m_captionMin, new AggregateFunction("Minimum value of column " + col_name, deps));
-			te.addDependency(m_captionQ1, new AggregateFunction("First quartile " + col_name, deps));
-			te.addDependency(m_captionQ2, new AggregateFunction("Median of column " + col_name, deps));
-			te.addDependency(m_captionQ3, new AggregateFunction("Third quartile of column " + col_name, deps));
-			te.addDependency(m_captionMax, new AggregateFunction("Maximum value of column " + col_name, deps));
+			te.addDependency(m_captionMin, new AggregateFunction("Minimum value of column " + col_name + " in Table #" + table.m_id, deps));
+			te.addDependency(m_captionQ1, new AggregateFunction("First quartile " + col_name + " in Table #" + table.m_id, deps));
+			te.addDependency(m_captionQ2, new AggregateFunction("Median of column " + col_name + " in Table #" + table.m_id, deps));
+			te.addDependency(m_captionQ3, new AggregateFunction("Third quartile of column " + col_name + " in Table #" + table.m_id, deps));
+			te.addDependency(m_captionMax, new AggregateFunction("Maximum value of column " + col_name + " in Table #" + table.m_id, deps));
 			new_table.add(te);
+			col++;
 		}
 		return new_table;
 	}

@@ -81,6 +81,13 @@ public abstract class Table implements DataOwner
 		s_counterLock.unlock();
 		m_title = "Table " + m_id;
 	}
+	
+	protected Table(int id)
+	{
+		super();
+		m_id = id;
+		m_title = "Table " + m_id;
+	}
 
 	/**
 	 * Gets the table's nickname
@@ -214,7 +221,7 @@ public abstract class Table implements DataOwner
 	 * data, using the default column ordering
 	 * @return The table
 	 */
-	public final DataTable getDataTable()
+	public final TempTable getDataTable()
 	{
 		return getDataTable(false);
 	}
@@ -225,7 +232,7 @@ public abstract class Table implements DataOwner
 	 * @param temporary Set {@code true} to get a temporary data table
 	 * @return The table
 	 */
-	public abstract DataTable getDataTable(boolean temporary);
+	public abstract TempTable getDataTable(boolean temporary);
 
 	/**
 	 * Casts a value as a number or an instance of {@code Comparable}
@@ -308,7 +315,12 @@ public abstract class Table implements DataOwner
 		return this;
 	}
 	
-	public abstract NodeFunction dependsOn(int row, int col);
+	public final NodeFunction dependsOn(int row, int col)
+	{
+		return new TableCellNode(this, row, col);
+	}
+	
+	public abstract NodeFunction getDependency(int row, int col);
 	
 	/**
 	 * Represents a cell in a table by its row-column

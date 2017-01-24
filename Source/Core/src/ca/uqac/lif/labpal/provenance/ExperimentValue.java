@@ -96,4 +96,11 @@ public class ExperimentValue implements NodeFunction
 		int id = Integer.parseInt(parts[0].substring(1).trim());
 		return lab.getExperiment(id);
 	}
+
+	@Override
+	public NodeFunction dependsOn() 
+	{
+		// Depends on nothing
+		return this;
+	}
 }

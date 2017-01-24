@@ -40,9 +40,9 @@ public class RenameColumns implements TableTransformation
 	}
 
 	@Override
-	public DataTable transform(DataTable ... tables)
+	public TempTable transform(TempTable ... tables)
 	{
-		DataTable table = tables[0];
+		TempTable table = tables[0];
 		String[] ordering = table.getColumnNames();
 		String[] new_ordering = new String[ordering.length];
 		for (int i = 0; i < ordering.length; i++)
@@ -51,7 +51,9 @@ public class RenameColumns implements TableTransformation
 			String col_name = table.getColumnName(pos);
 			new_ordering[i] = col_name;
 		}
-		return table.getDataTable(true, new_ordering);
+		TempTable tt = new TempTable(-4, new_ordering);
+		tt.addAll(table.getDataTable(true, new_ordering).getEntries());
+		return tt;
 
 	}
 }

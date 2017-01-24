@@ -71,23 +71,23 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public DataTable getDataTable(boolean temporary)
+	public TempTable getDataTable(boolean temporary)
 	{
 		return getDataTable(temporary, m_dimensions);
 	}
 
 	@Override
-	protected DataTable getDataTable(boolean temporary, String ... ordering)
+	protected TempTable getDataTable(boolean temporary, String ... ordering)
 	{
-		DataTable mt;
+		TempTable mt;
 		if (temporary)
 		{
-			mt = new TemporaryDataTable(ordering);
+			mt = new TempTable(getId(), ordering);
 			mt.m_id = getId();
 		}
 		else
 		{
-			mt = new DataTable(ordering);
+			mt = new TempTable(getId(), ordering);
 		}
 		int row_nb = 0;
 		for (Experiment e : m_experiments)
@@ -212,10 +212,10 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public NodeFunction dependsOn(int row, int col)
+	public NodeFunction getDependency(int row, int col)
 	{
 		DataTable dt = getDataTable(false);
-		return dt.dependsOn(row, col);
+		return dt.getDependency(row, col);
 	}
 
 }

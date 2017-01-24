@@ -25,27 +25,36 @@ import java.util.List;
  * 
  * @author Sylvain Hallé
  */
-public class TemporaryDataTable extends DataTable 
+public class TempTable extends DataTable 
 {
 	/**
 	 * Creates a new data table
 	 * @param ordering The ordering of the columns in this table. This array
 	 * should contain column names
 	 */
-	public TemporaryDataTable(String ... ordering)
+	public TempTable(int id, String ... ordering)
 	{
-		super(null, ordering);	
+		super(id, null, ordering);	
 	}
 
-	public TemporaryDataTable(List<TableEntry> entries, String[] preferredOrdering)
+	public TempTable(int id, List<TableEntry> entries, String[] preferredOrdering)
 	{
-		super(entries, preferredOrdering);
+		super(id, entries, preferredOrdering);
 	}
 	
 	@Override
 	public boolean isTemporary()
 	{
 		return true;
+	}
+	
+	/**
+	 * Resets the ID for this table
+	 * @param id
+	 */
+	public void setId(int id)
+	{
+		m_id = id;
 	}
 	
 }

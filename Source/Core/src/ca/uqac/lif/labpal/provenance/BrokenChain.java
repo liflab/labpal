@@ -6,5 +6,11 @@ public class BrokenChain extends ProvenanceNode
 	{
 		super(null);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Broken chain";
+	}
 
 }

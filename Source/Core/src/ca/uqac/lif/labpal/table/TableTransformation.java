@@ -28,5 +28,5 @@ public interface TableTransformation
 	 * @param tables The original tables
 	 * @return The new table
 	 */
-	public DataTable transform(DataTable ... tables);
+	public TempTable transform(TempTable ... tables);
 }

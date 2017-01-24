@@ -97,18 +97,10 @@ public class VersusTable extends Table
 	}
 
 	@Override
-	public DataTable getDataTable(boolean temporary)
+	public TempTable getDataTable(boolean temporary)
 	{
-		DataTable table;
-		if (temporary)
-		{
-			table = new TemporaryDataTable(m_captionX, m_captionY);
-			table.m_id = getId();
-		}
-		else
-		{
-			table = new DataTable(m_captionX, m_captionY);
-		}
+		TempTable table = new TempTable(getId(), m_captionX, m_captionY);
+		table.m_id = getId();
 		for (ExperimentPair pair : m_pairs)
 		{
 			Object x = pair.getExperimentX().read(m_parameter);
@@ -173,7 +165,7 @@ public class VersusTable extends Table
 	}
 
 	@Override
-	public NodeFunction dependsOn(int row, int col) 
+	public NodeFunction getDependency(int row, int col) 
 	{
 		if (col < 0 || col > 1)
 		{

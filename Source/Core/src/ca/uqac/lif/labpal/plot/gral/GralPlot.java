@@ -24,6 +24,7 @@ import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.TableTransformation;
+import ca.uqac.lif.labpal.table.TempTable;
 import de.erichseifert.gral.io.plots.DrawableWriter;
 import de.erichseifert.gral.io.plots.DrawableWriterFactory;
 
@@ -114,7 +115,7 @@ public class GralPlot extends Plot
 	 */
 	public final de.erichseifert.gral.plots.Plot getPlot()
 	{
-		DataTable dt = m_table.getDataTable();
+		TempTable dt = m_table.getDataTable();
 		return getPlot(processTable(dt));
 	}
 

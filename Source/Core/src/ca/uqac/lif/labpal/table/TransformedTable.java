@@ -43,14 +43,17 @@ public class TransformedTable extends Table
 	}
 	
 	@Override
-	protected DataTable getDataTable(boolean link_to_experiments, String... ordering) 
+	protected TempTable getDataTable(boolean link_to_experiments, String... ordering) 
 	{
-		DataTable[] concrete_tables = new DataTable[m_inputTables.length];
+		TempTable[] concrete_tables = new TempTable[m_inputTables.length];
 		for (int i = 0; i < m_inputTables.length; i++)
 		{
 			concrete_tables[i] = m_inputTables[i].getDataTable(link_to_experiments);
+			concrete_tables[i].setId(m_inputTables[i].getId());
 		}
-		return m_transformation.transform(concrete_tables);
+		TempTable out = m_transformation.transform(concrete_tables);
+		out.setId(getId());
+		return out;
 	}
 	
 	/**
@@ -64,18 +67,21 @@ public class TransformedTable extends Table
 	}
 
 	@Override
-	public DataTable getDataTable(boolean temporary) 
+	public TempTable getDataTable(boolean temporary) 
 	{
-		DataTable[] concrete_tables = new DataTable[m_inputTables.length];
+		TempTable[] concrete_tables = new TempTable[m_inputTables.length];
 		for (int i = 0; i < m_inputTables.length; i++)
 		{
 			concrete_tables[i] = m_inputTables[i].getDataTable(temporary);
+			concrete_tables[i].setId(m_inputTables[i].getId());
 		}
-		return m_transformation.transform(concrete_tables);
+		TempTable out = m_transformation.transform(concrete_tables);
+		out.setId(getId());
+		return out;
 	}
 	
 	@Override
-	public NodeFunction dependsOn(int row, int col)
+	public NodeFunction getDependency(int row, int col)
 	{
 		DataTable dt = getDataTable();
 		return dt.dependsOn(row, col);

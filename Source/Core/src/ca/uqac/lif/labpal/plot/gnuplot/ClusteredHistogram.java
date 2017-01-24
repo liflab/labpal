@@ -20,9 +20,9 @@ package ca.uqac.lif.labpal.plot.gnuplot;
 import java.util.Vector;
 
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot;
-import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.TableTransformation;
+import ca.uqac.lif.labpal.table.TempTable;
 
 /**
  * Two-dimensional bar diagram, also called a "clustered histogram".
@@ -139,7 +139,7 @@ public class ClusteredHistogram extends GnuPlot implements TwoDimensionalPlot
 	@Override
 	public String toGnuplot(ImageType term, String lab_title, boolean with_caption)
 	{
-		DataTable tab = processTable(m_table.getDataTable());
+		TempTable tab = processTable(m_table.getDataTable());
 		String[] columns = tab.getColumnNames();
 		Vector<String> series = new Vector<String>();
 		for (int i = 1; i < columns.length; i++)

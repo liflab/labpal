@@ -70,9 +70,9 @@ public class GroupInColumns implements TableTransformation
 	}
 
 	@Override
-	public DataTable transform(DataTable... tables) 
+	public TempTable transform(TempTable... tables) 
 	{
-		DataTable table = tables[0];
+		TempTable table = tables[0];
 		Map<String,List<Object>> values = new HashMap<String,List<Object>>();
 		Map<String,List<TableEntry>> entries = new HashMap<String,List<TableEntry>>();
 		for (TableEntry te : table.getEntries())
@@ -113,7 +113,7 @@ public class GroupInColumns implements TableTransformation
 			a_entries[i] = entries.get(map_entry.getKey());
 			i++;
 		}
-		DataTable new_table = new TemporaryDataTable(a_headers);
+		TempTable new_table = new TempTable(-3, a_headers);
 		i = 0;
 		boolean added = true;
 		while (added)
@@ -125,7 +125,8 @@ public class GroupInColumns implements TableTransformation
 				if (i < a_values[j].size())
 				{
 					te.put(a_headers[j], a_values[j].get(i));
-					te.addDependency(a_headers[j], a_entries[j].get(i).getDependency(a_headers[j]));
+					TableEntry t_ent = a_entries[j].get(i);
+					te.addDependency(a_headers[j], t_ent.getDependency(m_parameter));
 					added = true;
 				}
 				else

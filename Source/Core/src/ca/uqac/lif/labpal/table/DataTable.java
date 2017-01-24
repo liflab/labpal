@@ -86,6 +86,16 @@ public class DataTable extends Table implements DataSource
 	}
 	
 	/**
+	 * Creates a new data table
+	 * @param ordering The ordering of the columns in this table. This array
+	 * should contain column names
+	 */
+	DataTable(int id, String ... ordering)
+	{
+		this(id, null, ordering);	
+	}
+	
+	/**
 	 * Creates a new data table and fills it with existing data
 	 * @param entries
 	 * @param ordering
@@ -93,6 +103,23 @@ public class DataTable extends Table implements DataSource
 	DataTable(Collection<TableEntry> entries, String ... ordering)
 	{
 		super();
+		m_entries = new ArrayList<TableEntry>();
+		if (entries != null)
+		{
+			m_entries.addAll(entries);
+		}
+		m_preferredOrdering = ordering;
+		m_dataListeners = new HashSet<DataListener>();
+	}
+	
+	/**
+	 * Creates a new data table and fills it with existing data
+	 * @param entries
+	 * @param ordering
+	 */
+	DataTable(int id, Collection<TableEntry> entries, String ... ordering)
+	{
+		super(id);
 		m_entries = new ArrayList<TableEntry>();
 		if (entries != null)
 		{
@@ -598,7 +625,7 @@ public class DataTable extends Table implements DataSource
 	}
 
 	@Override
-	public NodeFunction dependsOn(int row, int col)
+	public NodeFunction getDependency(int row, int col)
 	{
 		if (row >= m_entries.size())
 		{
@@ -614,25 +641,18 @@ public class DataTable extends Table implements DataSource
 		{
 			return null;
 		}
-		TableCellNode tcn = new TableCellNode(this, row, col);
 		return entry.getDependency(key);
 	}
 
 	@Override
-	public DataTable getDataTable(boolean temporary)
+	public TempTable getDataTable(boolean temporary)
 	{
-		if (temporary)
-		{
-			TemporaryDataTable tdt = new TemporaryDataTable(m_entries, m_preferredOrdering);
-			tdt.m_id = getId();
-			return tdt;
-		}
-		return new DataTable(m_entries, m_preferredOrdering);
+		return new TempTable(getId(), m_entries, m_preferredOrdering);
 	}
 
 	@Override
-	public DataTable getDataTable(boolean link_to_experiments, String ... ordering) 
+	public TempTable getDataTable(boolean link_to_experiments, String ... ordering) 
 	{
-		return new DataTable(m_entries, ordering);
+		return new TempTable(getId(), m_entries, ordering);
 	}
 }

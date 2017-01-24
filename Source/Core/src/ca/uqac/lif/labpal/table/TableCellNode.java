@@ -31,6 +31,12 @@ public class TableCellNode implements NodeFunction
 		return "T" + m_table.getId() + s_separator + m_row + s_separator + m_col;
 	}
 	
+	@Override
+	public NodeFunction dependsOn()
+	{
+		return m_table.getDependency(m_row, m_col);
+	}
+	
 	public static NodeFunction dependsOn(Table t, String datapoint_id)
 	{
 		// Parse the datapoint ID and call the table on the extracted values
@@ -40,7 +46,7 @@ public class TableCellNode implements NodeFunction
 			// Invalid datapoint
 			return null;
 		}
-		int id = Integer.parseInt(parts[0].trim());
+		int id = Integer.parseInt(parts[0].substring(1).trim());
 		if (id != t.getId())
 		{
 			// Wrong table

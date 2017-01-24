@@ -53,4 +53,10 @@ public class AggregateFunction implements NodeFunction
 	{
 		return null;
 	}
+
+	@Override
+	public NodeFunction dependsOn() 
+	{
+		return this;
+	}
 }

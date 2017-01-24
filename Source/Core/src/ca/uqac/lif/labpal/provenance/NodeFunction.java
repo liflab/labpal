@@ -17,5 +17,8 @@ public interface NodeFunction
 	 *   can be generated
 	 */
 	public String getDataPointId();
+	
+	
+	public NodeFunction dependsOn();
 
 }

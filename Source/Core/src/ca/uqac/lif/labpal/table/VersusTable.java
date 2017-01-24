@@ -22,6 +22,8 @@ import java.util.List;
 
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.provenance.ExperimentValue;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 
 /**
  * Table creating (x,y) points from the results of pairs of experiments.
@@ -101,12 +103,12 @@ public class VersusTable extends Table
 		if (temporary)
 		{
 			table = new TemporaryDataTable(m_captionX, m_captionY);
+			table.m_id = getId();
 		}
 		else
 		{
 			table = new DataTable(m_captionX, m_captionY);
 		}
-		int row = 0;
 		for (ExperimentPair pair : m_pairs)
 		{
 			Object x = pair.getExperimentX().read(m_parameter);
@@ -118,22 +120,8 @@ public class VersusTable extends Table
 			TableEntry te = new TableEntry();
 			te.put(m_captionX, x);
 			te.put(m_captionY, y);
-			if (temporary)
-			{
-				te.addDependency(m_captionX, pair.getExperimentX().dependsOn(m_parameter));
-				te.addDependency(m_captionY, pair.getExperimentY().dependsOn(m_parameter));				
-			}
-			else
-			{
-				TableCellProvenanceNode tpn_x = new TableCellProvenanceNode(this, row, 0);
-				tpn_x.addParent(pair.getExperimentX().dependsOn(m_parameter));
-				te.addDependency(m_captionX, tpn_x);
-				TableCellProvenanceNode tpn_y = new TableCellProvenanceNode(this, row, 1);
-				tpn_y.addParent(pair.getExperimentY().dependsOn(m_parameter));
-				te.addDependency(m_captionX, tpn_y);
-			}
-			table.add(te);
-			row++;
+			te.addDependency(m_captionX, new ExperimentValue(pair.getExperimentX(), m_parameter));
+			te.addDependency(m_captionY, new ExperimentValue(pair.getExperimentY(), m_parameter));
 		}
 		return table;
 	}
@@ -182,6 +170,25 @@ public class VersusTable extends Table
 		{
 			return m_experimentY;
 		}
+	}
+
+	@Override
+	public NodeFunction dependsOn(int row, int col) 
+	{
+		if (col < 0 || col > 1)
+		{
+			return null;
+		}
+		if (row < 0 || row >= m_pairs.size())
+		{
+			return null;
+		}
+		ExperimentPair pair = m_pairs.get(row);
+		if (col == 0)
+		{
+			return new ExperimentValue(pair.getExperimentX(), m_parameter);
+		}
+		return new ExperimentValue(pair.getExperimentY(), m_parameter);
 	}
 
 }

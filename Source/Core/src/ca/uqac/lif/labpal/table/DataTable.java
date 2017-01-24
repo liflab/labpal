@@ -34,7 +34,7 @@ import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
-import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 import de.erichseifert.gral.data.Column;
 import de.erichseifert.gral.data.DataListener;
 import de.erichseifert.gral.data.DataSource;
@@ -597,47 +597,25 @@ public class DataTable extends Table implements DataSource
 		return m_title;
 	}
 
-	public ProvenanceNode dependsOn(Table owner, int row, int col)
+	@Override
+	public NodeFunction dependsOn(int row, int col)
 	{
-		ProvenanceNode depends = new TableCellProvenanceNode(owner, row, col);
 		if (row >= m_entries.size())
 		{
-			return depends;
+			return null;
 		}
 		TableEntry entry = m_entries.get(row);
 		if (col > m_preferredOrdering.length)
 		{
-			return depends;
+			return null;
 		}
 		String key = m_preferredOrdering[col];
 		if (!entry.containsKey(key))
 		{
-			return depends;
+			return null;
 		}
-		Set<ProvenanceNode> ids = entry.getDatapointIds(key);
-		for (ProvenanceNode dp_id : ids)
-		{
-			depends.addParent(dp_id);
-		}
-		return depends;
-	}
-
-	@Override
-	public Object getValue(String id)
-	{
-		String[] parts = id.split(":");
-		int row = Integer.parseInt(parts[1].trim());
-		int col = Integer.parseInt(parts[2].trim());
-		return get(col, row);
-	}
-
-	@Override
-	public ProvenanceNode dependsOn(String id)
-	{
-		String[] parts = id.split(":");
-		int row = Integer.parseInt(parts[1].trim());
-		int col = Integer.parseInt(parts[2].trim());
-		return dependsOn(this, row, col);
+		TableCellNode tcn = new TableCellNode(this, row, col);
+		return entry.getDependency(key);
 	}
 
 	@Override
@@ -645,7 +623,9 @@ public class DataTable extends Table implements DataSource
 	{
 		if (temporary)
 		{
-			return new TemporaryDataTable(m_entries, m_preferredOrdering);
+			TemporaryDataTable tdt = new TemporaryDataTable(m_entries, m_preferredOrdering);
+			tdt.m_id = getId();
+			return tdt;
 		}
 		return new DataTable(m_entries, m_preferredOrdering);
 	}

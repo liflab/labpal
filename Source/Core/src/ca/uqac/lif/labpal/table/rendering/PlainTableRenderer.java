@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.Table.CellCoordinate;
@@ -61,7 +62,9 @@ public class PlainTableRenderer
 				{
 					css_class += " class=\"highlighted\"";
 				}
-				out.append("<td").append(css_class).append("><a class=\"explanation\" href=\"explain?id=").append(m_table.getDatapointId(row, col)).append("\">").append(value).append("</a></td>");
+				NodeFunction nf = m_table.dependsOn(row, col);
+				String dp_id = nf.getDataPointId();
+				out.append("<td").append(css_class).append("><a class=\"explanation\" href=\"explain?id=").append(dp_id).append("\">").append(value).append("</a></td>");
 			}
 			out.append("</tr>\n");
 			row++;

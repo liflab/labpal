@@ -27,16 +27,9 @@ public interface DataOwner
 	public Object getOwner();
 	
 	/**
-	 * Gets the current value of the data point with given ID
-	 * @param id The ID
-	 * @return A value
-	 */
-	public Object getValue(String id);
-	
-	/**
 	 * For a given data point, gets the set of data points it depends on.
 	 * @param id The data point
 	 * @return A provenance node
 	 */
-	public ProvenanceNode dependsOn(String id);
+	public NodeFunction dependsOn(String id);
 }

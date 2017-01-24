@@ -24,7 +24,7 @@ import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.provenance.DataOwner;
-import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 /**
  * A multi-dimensional array of values. Tables can be passed to
  * {@link ca.uqac.lif.labpal.plot.Plot Plot} objects to generate graphics.
@@ -61,6 +61,12 @@ public abstract class Table implements DataOwner
 	 * A textual description of the table's contents
 	 */
 	public String m_description = "";
+	
+	/**
+	 * Whether this table should be shown in the list of tables.
+	 * This value may be set to {@code false} for intermediate tables.
+	 */
+	protected boolean m_showInList = true;
 
 	/**
 	 * The types of values that a data cell can have
@@ -103,6 +109,28 @@ public abstract class Table implements DataOwner
 			m_nickname = nickname;
 		}
 		return this;
+	}
+	
+	/**
+	 * Sets whether the table is shown in the list of tables.
+	 * @param b Set to {@code true} to show in the list of
+	 * tables, {@code false} otherwise
+	 * @return This table
+	 */
+	public Table setShowInList(boolean b)
+	{
+		m_showInList = b;
+		return this;
+	}
+	
+	/**
+	 * Gets whether the table is shown in the list of tables.
+	 * @return {@code true} if shown in the list of
+	 * tables, {@code false} otherwise
+	 */
+	public boolean showsInList()
+	{
+		return m_showInList;
 	}
 
 	/**
@@ -279,29 +307,8 @@ public abstract class Table implements DataOwner
 	{
 		return this;
 	}
-
-	/**
-	 * Generates a datapoint ID for a given cell of the table
-	 * @param row The row
-	 * @param col The column
-	 * @return The cell
-	 */
-	public String getDatapointId(int row, int col)
-	{
-		return "T" + m_id + ":" + row + ":" + col;
-	}
-
-	@Override
-	public Object getValue(String id)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ProvenanceNode dependsOn(Table owner, int row, int col)
-	{
-		return new TableCellProvenanceNode(owner, row, col);
-	}
+	
+	public abstract NodeFunction dependsOn(int row, int col);
 	
 	/**
 	 * Represents a cell in a table by its row-column
@@ -328,18 +335,9 @@ public abstract class Table implements DataOwner
 	}
 
 	@Override
-	public ProvenanceNode dependsOn(String id)
+	public final NodeFunction dependsOn(String id)
 	{
-		return dependsOn(true, id);
-	}
-	
-	public ProvenanceNode dependsOn(boolean link_to_experiments, String id)
-	{
-		String[] parts = id.split(":");
-		int row = Integer.parseInt(parts[1].trim());
-		int col = Integer.parseInt(parts[2].trim());
-		DataTable dt = getDataTable(link_to_experiments);
-		return dt.dependsOn(this, row, col);
+		return TableCellNode.dependsOn(this, id);
 	}
 	
 	/**

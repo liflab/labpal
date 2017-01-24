@@ -56,7 +56,7 @@ public class AllTablesCallback extends WebCallback
 		out.append("% \\begin{table}").append(FileHelper.CRLF).append("% \\usebox{\\boxname}").append(FileHelper.CRLF).append("% \\end{table}").append(FileHelper.CRLF);
 		out.append("% where \\boxname is one of the boxes defined in the file below").append(FileHelper.CRLF);
 		out.append("% ----------------------------------------------------------------").append(FileHelper.CRLF).append(FileHelper.CRLF);
-		for (int id : m_lab.getTableIds())
+		for (int id : m_lab.getTableIds(true))
 		{
 			Table tab = m_lab.getTable(id);
 			LatexTableRenderer renderer = new LatexTableRenderer(tab);

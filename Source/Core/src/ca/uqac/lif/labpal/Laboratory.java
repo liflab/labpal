@@ -37,6 +37,7 @@ import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.server.LabPalServer;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TransformedTable;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.provenance.DataTracker;
 import ca.uqac.lif.tui.AnsiPrinter;
@@ -57,7 +58,7 @@ public abstract class Laboratory
 	public static transient int ERR_IO = 3;
 	public static transient int ERR_SERVER = 4;
 	public static transient int ERR_ARGUMENTS = 5;
-	
+
 	/**
 	 * The major version number
 	 */
@@ -67,7 +68,7 @@ public abstract class Laboratory
 	 * The minor version number
 	 */
 	private static final int s_minorVersionNumber = 7;
-	
+
 	/**
 	 * The revision version number
 	 */
@@ -82,26 +83,26 @@ public abstract class Laboratory
 	 * The set of plots associated with this lab
 	 */
 	private transient HashSet<Plot> m_plots;
-	
+
 	/**
 	 * The set of tables associated to this lab
 	 */
 	private transient HashSet<Table> m_tables;
-	
+
 	/**
 	 * The set of groups associated with this lab
 	 */
 	private transient HashSet<Group> m_groups;
-	
+
 	/**
 	 * The hostname of the machine running the lab
 	 */
 	private String m_hostName = guessHostName();
-	
+
 	/**
 	 * A data tracker for generating provenance info
 	 */
-	private transient DataTracker m_dataTracker = new DataTracker();
+	private transient DataTracker m_dataTracker;
 
 	/**
 	 * The title given to this lab
@@ -137,7 +138,7 @@ public abstract class Laboratory
 	 * The number of parkmips (see {@link #countParkMips()})
 	 */
 	public transient static float s_parkMips = countParkMips();
-	
+
 	/**
 	 * The number of loops that equal to 1 parkmip
 	 */
@@ -167,7 +168,7 @@ public abstract class Laboratory
 	 * The serializer used to save/load the assistant's status
 	 */
 	private transient JsonSerializer m_serializer;
-	
+
 	/**
 	 * The arguments parsed from the command line
 	 */
@@ -180,6 +181,7 @@ public abstract class Laboratory
 	{
 		super();
 		m_experiments = new HashSet<Experiment>();
+		m_dataTracker = new DataTracker(this);
 		m_plots = new HashSet<Plot>();
 		m_tables = new HashSet<Table>();
 		m_groups = new HashSet<Group>();
@@ -232,7 +234,6 @@ public abstract class Laboratory
 		int exp_id = s_idCounter++;
 		e.setId(exp_id);
 		m_experiments.add(e);
-		m_dataTracker.setOwner("E" + exp_id, e);
 		addClassToSerialize(e.getClass());
 		e.m_random = m_random;
 		for (ExperimentTable p : tables)
@@ -295,9 +296,30 @@ public abstract class Laboratory
 		for (Table t : tables)
 		{
 			m_tables.add(t);
-			m_dataTracker.setOwner("T" + t.getId(), t);
+			if (t instanceof TransformedTable)
+			{
+				addInternalTable((TransformedTable) t);
+			}
 		}
 		return this;
+	}
+
+	/**
+	 * Adds the arguments of a transformed table 
+	 * @param table
+	 */
+	protected void addInternalTable(TransformedTable table)
+	{
+		Set<Integer> table_ids = getTableIds();
+		for (Table t : table.getInputTables())
+		{
+			if (!table_ids.contains(t.getId()))
+			{
+				// Add table to lab but make it invisible
+				t.setShowInList(false);
+				add(t);
+			}
+		}
 	}
 
 	/**
@@ -320,10 +342,24 @@ public abstract class Laboratory
 	 */
 	public Set<Integer> getTableIds()
 	{
+		return getTableIds(false);
+	}
+
+	/**
+	 * Gets the IDs of all the tables for this lab assistant
+	 * @param including_invisible Set to {@code true} to also
+	 * show invisible tables
+	 * @return The set of IDs
+	 */
+	public Set<Integer> getTableIds(boolean including_invisible)
+	{
 		Set<Integer> ids = new HashSet<Integer>();
 		for (Table p : m_tables)
 		{
-			ids.add(p.getId());
+			if (including_invisible || p.showsInList())
+			{
+				ids.add(p.getId());
+			}
 		}
 		return ids;
 	}
@@ -522,21 +558,21 @@ public abstract class Laboratory
 	{
 		CliParser parser = new CliParser();
 		parser.addArgument(new Argument()
-		.withLongName("color")
-		.withDescription("Enables color and Unicode in text interface"));
+				.withLongName("color")
+				.withDescription("Enables color and Unicode in text interface"));
 		parser.addArgument(new Argument()
-		.withLongName("console")
-		.withDescription("Start LabPal in console mode"));
+				.withLongName("console")
+				.withDescription("Start LabPal in console mode"));
 		parser.addArgument(new Argument()
-		.withLongName("seed")
-		.withArgument("x")
-		.withDescription("Sets the seed for the random number generator to x"));
+				.withLongName("seed")
+				.withArgument("x")
+				.withDescription("Sets the seed for the random number generator to x"));
 		parser.addArgument(new Argument()
-		.withLongName("help")
-		.withDescription("Prints command line usage"));
+				.withLongName("help")
+				.withDescription("Prints command line usage"));
 		parser.addArgument(new Argument()
-		.withLongName("autostart")
-		.withDescription("Queues all experiments and starts the assistant"));
+				.withLongName("autostart")
+				.withDescription("Queues all experiments and starts the assistant"));
 		Laboratory new_lab = null;
 		try
 		{
@@ -621,7 +657,10 @@ public abstract class Laboratory
 				stdout.close();
 				System.exit(ERR_SERVER);
 			}
-			new_lab.startAll();
+			if (new_lab.m_cliArguments.hasOption("autostart"))
+			{
+				new_lab.startAll();
+			}
 			while (true)
 			{
 				Experiment.wait(10000);
@@ -675,7 +714,7 @@ public abstract class Laboratory
 	 * (otherwise there won't be anything to do with your lab).
 	 */
 	public abstract void setup();
-	
+
 	/**
 	 * Sets the custom callbacks to the web server. 
 	 * This allows a lab to include custom pages in its web interface.
@@ -688,7 +727,7 @@ public abstract class Laboratory
 	{
 		// Do nothing
 	}
-	
+
 	/**
 	 * Gets the command-line arguments parsed when launching this lab.
 	 * @return A map of arguments and values parsed from the command line.
@@ -851,7 +890,7 @@ public abstract class Laboratory
 		}
 		return groups;
 	}
-	
+
 	public final Set<Integer> getGroupIds()
 	{
 		HashSet<Integer> ids = new HashSet<Integer>();
@@ -900,7 +939,7 @@ public abstract class Laboratory
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets a table by its nickname
 	 * @param nickname The nickname
@@ -917,7 +956,7 @@ public abstract class Laboratory
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Fetches a group based on its ID
 	 * @param id The group's id
@@ -934,7 +973,7 @@ public abstract class Laboratory
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Creates a new group and adds it to the current lab
 	 * @see Group#Group(String)
@@ -947,7 +986,7 @@ public abstract class Laboratory
 		add(g);
 		return g;
 	}
-	
+
 	/**
 	 * Gets the major version number
 	 * @return The number
@@ -965,7 +1004,7 @@ public abstract class Laboratory
 	{
 		return s_minorVersionNumber;
 	}
-	
+
 	/**
 	 * Gets the revision version number
 	 * @return The number
@@ -974,7 +1013,7 @@ public abstract class Laboratory
 	{
 		return s_revisionVersionNumber;
 	}
-	
+
 	protected static String formatVersion()
 	{
 		if (getRevision() == 0)
@@ -983,7 +1022,7 @@ public abstract class Laboratory
 		}
 		return s_majorVersionNumber + "." + s_minorVersionNumber + "." + s_revisionVersionNumber;
 	}
-	
+
 	/**
 	 * Gets the number of "data points" generated by this lab. This can be
 	 * used to get an estimate "size" of the lab.
@@ -998,7 +1037,7 @@ public abstract class Laboratory
 		}
 		return pts;
 	}
-	
+
 	/**
 	 * Attempts to retrieve the host name of the machine running this lab.
 	 * This is done by running the "hostname" command at the command and
@@ -1010,7 +1049,7 @@ public abstract class Laboratory
 	{
 		return m_hostName;
 	}
-	
+
 	/**
 	 * Guesses the host name
 	 * @return The host name
@@ -1031,7 +1070,7 @@ public abstract class Laboratory
 	{
 		return m_dataTracker;
 	}
-	
+
 	/**
 	 * Queues all the experiments and starts the assistant
 	 */

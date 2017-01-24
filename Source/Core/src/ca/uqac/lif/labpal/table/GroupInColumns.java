@@ -74,6 +74,7 @@ public class GroupInColumns implements TableTransformation
 	{
 		DataTable table = tables[0];
 		Map<String,List<Object>> values = new HashMap<String,List<Object>>();
+		Map<String,List<TableEntry>> entries = new HashMap<String,List<TableEntry>>();
 		for (TableEntry te : table.getEntries())
 		{
 			if (!te.containsKey(m_parameter))
@@ -86,26 +87,33 @@ public class GroupInColumns implements TableTransformation
 				{
 					String p_s = Formatter.asString(p);
 					List<Object> l_values = new LinkedList<Object>();
+					List<TableEntry> e_values = new LinkedList<TableEntry>();
 					if (values.containsKey(p_s))
 					{
 						l_values = values.get(p_s);
+						e_values = entries.get(p_s);
 					}
 					l_values.add(v);
+					e_values.add(te);
 					values.put(p_s, l_values);
+					entries.put(p_s, e_values);
 				}
 			}
 		}
 		String[] a_headers = new String[values.keySet().size()];
 		@SuppressWarnings("unchecked")
 		List<Object>[] a_values = new List[values.keySet().size()];
+		@SuppressWarnings("unchecked")
+		List<TableEntry>[] a_entries = new List[values.keySet().size()];
 		int i = 0;
 		for (Map.Entry<String,List<Object>> map_entry : values.entrySet())
 		{
 			a_headers[i] = map_entry.getKey();
 			a_values[i] = map_entry.getValue();
+			a_entries[i] = entries.get(map_entry.getKey());
 			i++;
 		}
-		DataTable new_table = new DataTable(a_headers);
+		DataTable new_table = new TemporaryDataTable(a_headers);
 		i = 0;
 		boolean added = true;
 		while (added)
@@ -117,6 +125,7 @@ public class GroupInColumns implements TableTransformation
 				if (i < a_values[j].size())
 				{
 					te.put(a_headers[j], a_values[j].get(i));
+					te.addDependency(a_headers[j], a_entries[j].get(i).getDependency(a_headers[j]));
 					added = true;
 				}
 				else

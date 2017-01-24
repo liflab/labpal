@@ -17,7 +17,7 @@
  */
 package ca.uqac.lif.labpal.table;
 
-import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 
 /**
  * Table obtained from applying a transformation to other tables
@@ -52,6 +52,16 @@ public class TransformedTable extends Table
 		}
 		return m_transformation.transform(concrete_tables);
 	}
+	
+	/**
+	 * Gets the tables used as the input for the transformation to
+	 * be applied
+	 * @return An array of tables
+	 */
+	public Table[] getInputTables()
+	{
+		return m_inputTables;
+	}
 
 	@Override
 	public DataTable getDataTable(boolean temporary) 
@@ -65,11 +75,10 @@ public class TransformedTable extends Table
 	}
 	
 	@Override
-	public ProvenanceNode dependsOn(Table owner, int row, int col)
+	public NodeFunction dependsOn(int row, int col)
 	{
-		System.out.println("HEY");
-		DataTable dt = getDataTable(owner.isTemporary());
-		return dt.dependsOn(this, row, col);
+		DataTable dt = getDataTable();
+		return dt.dependsOn(row, col);
 	}
 
 }

@@ -23,6 +23,7 @@ import java.util.List;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.Table.CellCoordinate;
 import ca.uqac.lif.labpal.table.TableNode;
@@ -104,7 +105,7 @@ public class HtmlTableNodeRenderer extends TableNodeRenderer
 		}
 		if (nb_children < 2)
 		{
-			out.append(" <td" + css_class + " id=\"").append(m_table.getDatapointId(m_row, m_col)).append("\">");
+			out.append(" <td" + css_class + ">");
 		}
 		else
 		{
@@ -113,7 +114,13 @@ public class HtmlTableNodeRenderer extends TableNodeRenderer
 		if (coordinates.size() > 0)
 		{
 			CellCoordinate cc = coordinates.get(0);
-			out.append("<a class=\"explanation\" title=\"Click to see where this value comes from\" href=\"explain?id=").append(m_table.getDatapointId(cc.row, cc.col)).append("\">");
+			String dp_id = "";
+			NodeFunction nf = m_table.dependsOn(cc.row, cc.col);
+			if (nf != null)
+			{
+				dp_id = nf.getDataPointId();
+			}
+			out.append("<a class=\"explanation\" title=\"Click to see where this value comes from\" href=\"explain?id=").append(dp_id).append("\">");
 		}
 		JsonElement last = values.get(values.size() - 1);
 		if (last instanceof JsonString)

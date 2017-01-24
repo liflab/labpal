@@ -93,7 +93,7 @@ public class ExplainImageCallback extends WebCallback
 		response.setCode(CallbackResponse.HTTP_OK);
 		if (params.containsKey("dl"))
 		{
-			response.setAttachment(Server.urlEncode(node.getDataPointId() + "." + extension));
+			response.setAttachment(Server.urlEncode(node.getNodeFunction().getDataPointId() + "." + extension));
 		}
 		return response;
 	}

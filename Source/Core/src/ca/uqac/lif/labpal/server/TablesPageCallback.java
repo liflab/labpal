@@ -47,7 +47,7 @@ public class TablesPageCallback extends TemplatePageCallback
 		String out = page.replaceAll("\\{%TITLE%\\}", "Tables");
 		{
 			Vector<Integer> ids = new Vector<Integer>();
-			ids.addAll(m_lab.getTableIds());
+			ids.addAll(m_lab.getTableIds(true));
 			if (ids.isEmpty())
 			{
 				out = out.replaceAll("\\{%TABLES%\\}", "<p>No table is associated to this lab</p>\n");

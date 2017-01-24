@@ -26,7 +26,8 @@ import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.labpal.Experiment;
-import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+import ca.uqac.lif.labpal.provenance.ExperimentValue;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 
 /**
  * Table whose rows and columns are populated from the parameters of a set
@@ -82,6 +83,7 @@ public class ExperimentTable extends Table
 		if (temporary)
 		{
 			mt = new TemporaryDataTable(ordering);
+			mt.m_id = getId();
 		}
 		else
 		{
@@ -156,30 +158,17 @@ public class ExperimentTable extends Table
 		{
 			TableEntry te = new TableEntry();
 			// Fill each with values of the scalar columns...
-			int col_nb = 0;
 			for (String col_name : scalar_columns)
 			{
 				JsonElement elem = readExperiment(e, col_name);
 				if (elem != null)
 				{
-					if (temporary)
-					{
-						// If the table is temporary
-						te.put(col_name, elem);
-						te.addDependency(col_name, e.dependsOn(col_name));
-					}
-					else
-					{
-						TableCellProvenanceNode tpn = new TableCellProvenanceNode(this, i + row_start, col_nb);
-						tpn.addParent(e.dependsOn(col_name));
-						te.put(col_name, elem, tpn);
-					}
+					te.put(col_name, elem, new ExperimentValue(e, col_name));
 				}
 				else
 				{
 					te.put(col_name, JsonNull.instance);
 				}
-				col_nb++;
 			}
 			// ...and the i-th value of each list column
 			for (Map.Entry<String,JsonList> map_entry : list_columns.entrySet())
@@ -191,17 +180,7 @@ public class ExperimentTable extends Table
 					JsonElement elem = list.get(i);
 					if (elem != null)
 					{
-						if (temporary)
-						{
-							te.put(key, elem);
-							te.addDependency(key, e.dependsOn(key, i));
-						}
-						else
-						{
-							TableCellProvenanceNode tpn = new TableCellProvenanceNode(this, i, col_nb);
-							tpn.addParent(e.dependsOn(key, i));
-							te.put(key, elem, tpn);
-						}
+						te.put(key, elem, new ExperimentValue(e, key, i));
 					}
 					else
 					{
@@ -214,7 +193,6 @@ public class ExperimentTable extends Table
 					// Substitute with null if one of the lists is shorter
 					te.put(key, JsonNull.instance);
 				}
-				col_nb++;
 			}
 			entries.add(te);
 		}
@@ -234,18 +212,10 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public Object getValue(String id)
+	public NodeFunction dependsOn(int row, int col)
 	{
-		String[] parts = id.split(":");
-		int row = Integer.parseInt(parts[1].trim());
-		int col = Integer.parseInt(parts[2].trim());
-		return getDataTable().get(col, row);
-	}
-
-	@Override
-	public ProvenanceNode dependsOn(Table owner, int row, int col)
-	{
-		return getDataTable(true).dependsOn(this, row, col);
+		DataTable dt = getDataTable(false);
+		return dt.dependsOn(row, col);
 	}
 
 }

@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.labpal.provenance.DirectValue;
 
 /**
  * Transforms a table by expanding the values of one column as column
@@ -127,8 +128,8 @@ public class ExpandAsColumns implements TableTransformation
 			{
 				String s = getString(te.get(m_columnKey));
 				existing_entry.put(s, te.get(m_valueKey));
-				existing_entry.addDependency(s, te.getDatapointIds(m_valueKey));
-				existing_entry.addDependency(s, te.getDatapointIds(m_columnKey));
+				DirectValue dv = new DirectValue(te.getDependency(m_valueKey), te.getDependency(m_columnKey));
+				existing_entry.addDependency(s, dv);
 			}
 		}
 		new_table.addAll(entries);

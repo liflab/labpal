@@ -18,19 +18,15 @@
 package ca.uqac.lif.labpal.provenance;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ProvenanceNode
-{
-	/**
-	 * The owner of the data point
-	 */
-	protected final DataOwner m_owner;
-	
+{	
 	/**
 	 * The ID of the data point
 	 */
-	protected final String m_dataPointId;
+	protected final NodeFunction m_nodeFunction;
 	
 	/**
 	 * A set of points this data point depends on
@@ -42,11 +38,10 @@ public class ProvenanceNode
 	 * @param datapoint_id The ID of the data point
 	 * @param owner The owner of the data point
 	 */
-	public ProvenanceNode(String datapoint_id, DataOwner owner)
+	public ProvenanceNode(NodeFunction node)
 	{
 		super();
-		m_owner = owner;
-		m_dataPointId = datapoint_id;
+		m_nodeFunction = node;
 		m_parents = new ArrayList<ProvenanceNode>();
 	}
 	
@@ -70,9 +65,9 @@ public class ProvenanceNode
 		m_parents.set(position, p);
 	}
 	
-	public String getDataPointId()
+	public NodeFunction getNodeFunction()
 	{
-		return m_dataPointId;
+		return m_nodeFunction;
 	}
 	
 	public List<ProvenanceNode> getParents()
@@ -83,6 +78,12 @@ public class ProvenanceNode
 	@Override
 	public String toString()
 	{
-		return m_dataPointId;
+		return m_nodeFunction.getDataPointId();
+	}
+
+	public void addParents(Collection<ProvenanceNode> parents)
+	{
+		m_parents.addAll(parents);
+		
 	}
 }

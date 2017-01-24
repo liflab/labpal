@@ -17,60 +17,79 @@
  */
 package ca.uqac.lif.labpal.provenance;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableCellNode;
 
 public class DataTracker
 {
 	/**
-	 * A map keeping track of who owns what data point
+	 * The lab
 	 */
-	protected Map<String,DataOwner> m_owners;
+	protected Laboratory m_lab;
 	
 	/**
 	 * Creates a new data tracker
 	 */
-	public DataTracker()
+	public DataTracker(Laboratory lab)
 	{
 		super();
-		m_owners = new HashMap<String,DataOwner>();
+		m_lab = lab;
 	}
 	
-	public void setOwner(String prefix, DataOwner owner)
+	public Object getOwner(String id)
 	{
-		m_owners.put(prefix, owner);
-	}
-		
-	/**
-	 * Retrieves the owner of a data point
-	 * @param id The id for the data point
-	 * @return The owner, or {@code null} if no such data point exists
-	 */
-	public DataOwner getOwner(String id)
-	{
-		for (Map.Entry<String,DataOwner> me : m_owners.entrySet())
+		if (id.startsWith("T"))
 		{
-			if (id.startsWith(me.getKey()))
+			// Is it a table?
+			Table t = TableCellNode.getOwner(m_lab, id);
+			if (t != null)
 			{
-				return me.getValue();
+				return t;
+			}
+		}
+		if (id.startsWith("E"))
+		{
+			// Is it an experiment?
+			Experiment e = ExperimentValue.getOwner(m_lab, id);
+			if (e != null)
+			{
+				return e;
 			}
 		}
 		return null;
 	}
 	
-	/**
-	 * Builds a provenance tree for a given data point 
-	 * @param id The ID of the data point
-	 * @return The root of the provenance tree
-	 */
-	public ProvenanceNode explain(String id)
+	public NodeFunction getNodeFunction(String datapoint_id)
 	{
-		Set<String> ids = new HashSet<String>();
-		ids.add(id);
-		return explain(id, ids);
+		Object owner = getOwner(datapoint_id);
+		if (owner == null)
+		{
+			return null;
+		}
+		if (owner instanceof Table)
+		{
+			return TableCellNode.dependsOn((Table) owner, datapoint_id);
+		}
+		if (owner instanceof Experiment)
+		{
+			return ExperimentValue.dependsOn((Experiment) owner, datapoint_id);
+		}
+		return null;
+	}
+	
+	public ProvenanceNode explain(String datapoint_id)
+	{
+		NodeFunction nf = getNodeFunction(datapoint_id);
+		if (nf == null)
+		{
+			return new BrokenChain();
+		}
+		return explain(nf);
 	}
 
 	/**
@@ -82,33 +101,40 @@ public class DataTracker
 	 *   with unique IDs
 	 * @return The root of the provenance tree
 	 */
-	protected ProvenanceNode explain(String id, Set<String> added_ids)
+	public ProvenanceNode explain(NodeFunction nf)
 	{
-		ProvenanceNode dep = null;
-		DataOwner owner = getOwner(id);
-		if (owner != null)
+		List<ProvenanceNode> nodes = new LinkedList<ProvenanceNode>();
+		if (nf instanceof ExperimentValue)
 		{
-			dep = owner.dependsOn(id);
-			List<ProvenanceNode> parents = dep.getParents();
-			int i = 0;
-			for (ProvenanceNode dep_id : parents)
-			{
-				if (!added_ids.contains(dep_id))
-				{
-					String datapoint_id = dep_id.getDataPointId();
-					if (!added_ids.contains(datapoint_id))
-					{
-						added_ids.add(datapoint_id);
-						ProvenanceNode pn_parent = explain(datapoint_id, added_ids);
-						if (pn_parent != null)
-						{
-							dep.replaceParent(i, pn_parent);
-						}
-					}
-				}
-				i++;
-			}
+			// Leaf
+			ProvenanceNode pn = new ProvenanceNode(nf);
+			nodes.add(pn);
+			return pn;
 		}
-		return dep;
+		if (nf instanceof TableCellNode)
+		{
+			// Table cell; does it depend on something else?
+			ProvenanceNode pn = new ProvenanceNode(nf);
+			TableCellNode tcn = (TableCellNode) nf;
+			Table t = tcn.getOwner();
+			NodeFunction nf_dep = t.dependsOn(tcn.getRow(), tcn.getCol());
+			pn.addParent(explain(nf_dep));
+			return pn;
+		}
+		if (nf instanceof AggregateFunction)
+		{
+			ProvenanceNode pn = new ProvenanceNode(nf);
+			AggregateFunction af = (AggregateFunction) nf;
+			List<NodeFunction> dependencies = af.m_nodes;
+			List<ProvenanceNode> parents = new LinkedList<ProvenanceNode>();
+			for (NodeFunction par_nf : dependencies)
+			{
+				ProvenanceNode par_pn = explain(par_nf);
+				parents.add(par_pn);
+			}
+			pn.addParents(parents);
+			return pn;
+		}
+		return new BrokenChain();
 	}
 }

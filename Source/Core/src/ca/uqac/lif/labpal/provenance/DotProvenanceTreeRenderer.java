@@ -6,7 +6,7 @@ import java.util.Set;
 
 import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.server.ExplainCallback;
-import ca.uqac.lif.labpal.table.TableCellProvenanceNode;
+import ca.uqac.lif.labpal.table.TableCellNode;
 
 /**
  * Renders a provenance node into a picture
@@ -55,7 +55,7 @@ public class DotProvenanceTreeRenderer
 		}
 		for (ProvenanceNode pn : node.getParents())
 		{
-			String p_id = node.getDataPointId();
+			String p_id = node.getNodeFunction().getDataPointId();
 			toDot(pn, p_id, id, out, highlight_groups);
 		}
 	}
@@ -77,7 +77,7 @@ public class DotProvenanceTreeRenderer
 	public String styleNode(ProvenanceNode n)
 	{
 		String style = "";
-		if (n instanceof TableCellProvenanceNode)
+		if (n.getNodeFunction() instanceof TableCellNode)
 		{
 			style = "style=filled,fillcolor=blue";
 		}

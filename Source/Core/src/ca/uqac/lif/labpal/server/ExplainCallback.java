@@ -26,7 +26,10 @@ import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.provenance.ExperimentValue;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+import ca.uqac.lif.labpal.table.TableCellNode;
 
 /**
  * Callback producing an image from one of the lab's plots, in various
@@ -68,7 +71,7 @@ public class ExplainCallback extends TemplatePageCallback
 		getHighlightGroups(node, highlight_groups);
 		StringBuilder out = new StringBuilder();
 		out.append("<ul class=\"explanation\">\n");
-		explanationToHtml(node, node.getDataPointId(), highlight_groups, out);
+		explanationToHtml(node, "", highlight_groups, out);
 		out.append("</ul>\n");
 		s = s.replaceAll("\\{%EXPLANATION%\\}", Matcher.quoteReplacement(out.toString()));
 		
@@ -81,7 +84,7 @@ public class ExplainCallback extends TemplatePageCallback
 		List<ProvenanceNode> parents = node.getParents();
 		if (parents != null && !parents.isEmpty())
 		{
-			String new_parent = node.getDataPointId();
+			String new_parent = node.getNodeFunction().getDataPointId();
 			out.append("<ul>");
 			for (ProvenanceNode pn : parents)
 			{
@@ -94,17 +97,17 @@ public class ExplainCallback extends TemplatePageCallback
 	
 	public static void getHighlightGroups(ProvenanceNode node, Map<String,Map<String,Set<String>>> map)
 	{
-		if (node == null)
+		/*if (node == null)
 		{
 			return;
 		}
-		String key = node.getDataPointId();
+		String key = node.getNodeFunction().getDataPointId();
 		Map<String,Set<String>> children = new HashMap<String,Set<String>>();
 		List<ProvenanceNode> parents = node.getParents();
 		for (ProvenanceNode pn : parents)
 		{
-			String parent_id = pn.getDataPointId();
-			String prefix = parent_id.split(":")[0];
+			String parent_id = pn.getNodeFunction().getDataPointId();
+			String prefix = parent_id.split(NodeFunction.s_separator)[0];
 			if (!children.containsKey(prefix))
 			{
 				Set<String> new_set = new HashSet<String>();
@@ -119,23 +122,17 @@ public class ExplainCallback extends TemplatePageCallback
 		for (ProvenanceNode pn : parents)
 		{
 			getHighlightGroups(pn, map);
-		}
+		}*/
+		return;
 	}
 	
 	public static String getDataPointUrl(ProvenanceNode node, String parent_id, Map<String,Map<String,Set<String>>> highlight_groups)
 	{
-		String id = node.getDataPointId();
-		String[] parts = id.split(":");
-		String type = parts[0].substring(0, 1);
-		String id_part = parts[0].substring(1, parts[0].length());
-		if (id_part.isEmpty())
-		{
-			return "";
-		}
-		int number = Integer.parseInt(id_part);
+		NodeFunction nf = node.getNodeFunction();
+		String id = nf.getDataPointId();
 		Map<String,Set<String>> to_highlight = highlight_groups.get(parent_id);
 		StringBuilder highlight_string = new StringBuilder();
-		highlight_string.append(node.getDataPointId());
+		/*highlight_string.append(id);
 		if (!parent_id.isEmpty())
 		{
 			String prefix = parts[0];
@@ -147,16 +144,16 @@ public class ExplainCallback extends TemplatePageCallback
 					highlight_string.append(",").append(id_to_highlight);
 				}
 			}
-		}
-		if (type.compareTo("T") == 0)
+		}*/
+		if (nf instanceof TableCellNode)
 		{
-			// Table
-			return "table?id=" + number + "&amp;highlight=" + highlight_string.toString();
+			TableCellNode tcn = (TableCellNode) nf;
+			return "table?id=" + tcn.getOwner().getId() + "&amp;highlight=" + highlight_string.toString();
 		}
-		if (type.compareTo("E") == 0)
+		if (nf instanceof ExperimentValue)
 		{
-			// Table
-			return "experiment?id=" + number + "&amp;highlight=" + highlight_string.toString();
+			ExperimentValue ev = (ExperimentValue) nf;
+			return "experiment?id=" + ev.getOwner().getId() + "&amp;highlight=" + highlight_string.toString();
 		}
 		return "#";
 	}

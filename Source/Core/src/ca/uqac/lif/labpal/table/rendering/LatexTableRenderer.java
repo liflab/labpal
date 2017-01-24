@@ -22,8 +22,10 @@ import java.util.List;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.TableNode;
+import ca.uqac.lif.labpal.table.Table.CellCoordinate;
 
 /**
  * Renders a result tree as a LaTeX table. The resulting table
@@ -201,6 +203,7 @@ public class LatexTableRenderer extends TableNodeRenderer
 	@Override
 	public void printCell(StringBuilder out, List<JsonElement> values, int nb_children, int max_depth, TableNode node) 
 	{
+		List<CellCoordinate> coordinates = node.getCoordinates();
 		if (nb_children > 2)
 		{
 			m_keyBuffer.append(" \\multirow{").append(nb_children).append("}{*}{");
@@ -208,6 +211,17 @@ public class LatexTableRenderer extends TableNodeRenderer
 		else
 		{
 			m_keyBuffer.append("{");
+		}
+		if (coordinates.size() > 0)
+		{
+			CellCoordinate cc = coordinates.get(0);
+			String dp_id = "";
+			NodeFunction nf = m_table.dependsOn(cc.row, cc.col);
+			if (nf != null)
+			{
+				dp_id = nf.getDataPointId();
+			}
+			out.append("\\href{").append(dp_id).append("}{");
 		}
 		JsonElement last = values.get(values.size() - 1);
 		if (last instanceof JsonString)
@@ -220,7 +234,11 @@ public class LatexTableRenderer extends TableNodeRenderer
 		}
 		else
 		{
-			m_keyBuffer.append(last);
+			m_keyBuffer.append(escape(last.toString()));
+		}
+		if (coordinates.size() > 0)
+		{
+			m_keyBuffer.append("}");
 		}
 		m_keyBuffer.append("}");
 		if (values.size() < max_depth)

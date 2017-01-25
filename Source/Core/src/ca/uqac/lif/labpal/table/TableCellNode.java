@@ -87,4 +87,22 @@ public class TableCellNode implements NodeFunction
 	{
 		return m_col;
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return m_table.getId() + m_row + m_col;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == null || !(o instanceof TableCellNode))
+		{
+			return false;
+		}
+		TableCellNode tcn = (TableCellNode) o;
+		return tcn.m_table.getId() == m_table.getId() &&
+				tcn.m_col == m_col && tcn.m_row == m_row;
+	}
 }

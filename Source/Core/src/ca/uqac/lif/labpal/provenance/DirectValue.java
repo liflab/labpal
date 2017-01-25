@@ -21,5 +21,5 @@ public class DirectValue extends AggregateFunction
 			return "The values of";
 		}
 		return "The value of";
-	}
+	}	
 }

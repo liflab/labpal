@@ -59,4 +59,26 @@ public class AggregateFunction implements NodeFunction
 	{
 		return this;
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		int code = 0;
+		for (NodeFunction nf : m_nodes)
+		{
+			code += nf.hashCode();
+		}
+		return code;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == null || !(o instanceof AggregateFunction))
+		{
+			return false;
+		}
+		AggregateFunction af = (AggregateFunction) o;
+		return af.getDataPointId().compareTo(getDataPointId()) == 0;
+	}
 }

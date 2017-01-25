@@ -17,8 +17,10 @@
  */
 package ca.uqac.lif.labpal.provenance;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
@@ -87,21 +89,30 @@ public class DataTracker
 		NodeFunction nf = getNodeFunction(datapoint_id);
 		if (nf == null)
 		{
-			return new BrokenChain();
+			return BrokenChain.instance;
 		}
 		return explain(nf);
 	}
 
 	/**
 	 * Builds a provenance tree for a given data point 
-	 * @param id The ID of the data point
-	 * @param added_ids A set of IDs already included in the tree. This
-	 *   is to avoid infinite looping due to possible circular dependencies.
-	 * @param factory A factory for creating instances of provenance nodes
-	 *   with unique IDs
+	 * @param id The ID of the current node
 	 * @return The root of the provenance tree
 	 */
 	public ProvenanceNode explain(NodeFunction nf)
+	{
+		Set<NodeFunction> functions = new HashSet<NodeFunction>();
+		return explain(nf, functions);
+	}
+
+	/**
+	 * Builds a provenance tree for a given data point 
+	 * @param nf The ID of the current node
+	 * @param added_ids A set of nodes already included in the tree. This
+	 *   is to avoid infinite looping due to possible circular dependencies.
+	 * @return The root of the provenance tree
+	 */
+	protected ProvenanceNode explain(NodeFunction nf, Set<NodeFunction> seen_functions)
 	{
 		List<ProvenanceNode> nodes = new LinkedList<ProvenanceNode>();
 		if (nf instanceof ExperimentValue)
@@ -118,6 +129,12 @@ public class DataTracker
 			TableCellNode tcn = (TableCellNode) nf;
 			Table t = tcn.getOwner();
 			NodeFunction nf_dep = t.getDependency(tcn.getRow(), tcn.getCol());
+			if (seen_functions.contains(nf_dep))
+			{
+				// Infinite loop
+				return InfiniteLoop.instance;
+			}
+			seen_functions.add(nf_dep);
 			pn.addParent(explain(nf_dep));
 			return pn;
 		}
@@ -129,12 +146,18 @@ public class DataTracker
 			List<ProvenanceNode> parents = new LinkedList<ProvenanceNode>();
 			for (NodeFunction par_nf : dependencies)
 			{
+				if (seen_functions.contains(par_nf))
+				{
+					// Infinite loop
+					return InfiniteLoop.instance;
+				}
+				seen_functions.add(par_nf);
 				ProvenanceNode par_pn = explain(par_nf);
 				parents.add(par_pn);
 			}
 			pn.addParents(parents);
 			return pn;
 		}
-		return new BrokenChain();
+		return BrokenChain.instance;
 	}
 }

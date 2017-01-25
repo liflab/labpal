@@ -103,4 +103,23 @@ public class ExperimentValue implements NodeFunction
 		// Depends on nothing
 		return this;
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return m_experiment.hashCode() + m_parameter.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == null || !(o instanceof ExperimentValue))
+		{
+			return false;
+		}
+		ExperimentValue ev = (ExperimentValue) o;
+		return ev.m_experiment.getId() == m_experiment.getId() &&
+				ev.m_parameter.compareTo(m_parameter) == 0 &&
+				ev.m_position == m_position;
+ 	}
 }

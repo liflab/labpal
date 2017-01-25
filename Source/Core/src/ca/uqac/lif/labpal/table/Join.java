@@ -199,7 +199,6 @@ public class Join implements TableTransformation
 		TempTable mt = new TempTable(-1, ordering);
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		List<TableEntry> keys = getRowKeys(tables);
-		int row = 0;
 		for (TableEntry key : keys)
 		{
 			for (int table_pos = 0; table_pos < tables.length; table_pos++)
@@ -208,6 +207,7 @@ public class Join implements TableTransformation
 				TableEntry t_entry = t.findEntry(key);
 				if (t_entry != null)
 				{
+					int row = t_entry.getRowIndex();
 					TableEntry existing_e = findExistingEntry(t_entry, entries);
 					String[] col_names = t.getColumnNames();
 					for (int col = 0; col < col_names.length; col++)

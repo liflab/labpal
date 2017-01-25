@@ -632,7 +632,7 @@ public class DataTable extends Table implements DataSource
 			return null;
 		}
 		TableEntry entry = m_entries.get(row);
-		if (col > m_preferredOrdering.length)
+		if (col >= m_preferredOrdering.length)
 		{
 			return null;
 		}

@@ -37,6 +37,11 @@ public class AggregateFunction implements NodeFunction
 		}
 	}
 	
+	public List<NodeFunction> getDependencyNodes()
+	{
+		return m_nodes;
+	}
+	
 	@Override
 	public String toString()
 	{

@@ -113,7 +113,7 @@ public class GroupInColumns implements TableTransformation
 			a_entries[i] = entries.get(map_entry.getKey());
 			i++;
 		}
-		TempTable new_table = new TempTable(-3, a_headers);
+		TempTable new_table = new TempTable(table.getId(), a_headers);
 		i = 0;
 		boolean added = true;
 		while (added)
@@ -126,7 +126,7 @@ public class GroupInColumns implements TableTransformation
 				{
 					te.put(a_headers[j], a_values[j].get(i));
 					TableEntry t_ent = a_entries[j].get(i);
-					te.addDependency(a_headers[j], t_ent.getDependency(m_parameter));
+					te.addDependency(a_headers[j], table.dependsOn(t_ent.getRowIndex(), j));
 					added = true;
 				}
 				else

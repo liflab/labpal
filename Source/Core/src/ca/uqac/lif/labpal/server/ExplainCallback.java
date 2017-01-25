@@ -18,7 +18,6 @@
 package ca.uqac.lif.labpal.server;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,14 +25,15 @@ import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.provenance.AggregateFunction;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
 import ca.uqac.lif.labpal.provenance.NodeFunction;
 import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.TableCellNode;
 
 /**
- * Callback producing an image from one of the lab's plots, in various
- * formats.
+ * Callback producing a provenance tree from one of the lab's data points.
  * <p>
  * The HTTP request accepts the following parameters:
  * <ul>
@@ -133,30 +133,48 @@ public class ExplainCallback extends TemplatePageCallback
 		{
 			return "#";
 		}
-		String id = nf.getDataPointId();
-		Map<String,Set<String>> to_highlight = highlight_groups.get(parent_id);
 		StringBuilder highlight_string = new StringBuilder();
-		/*highlight_string.append(id);
-		if (!parent_id.isEmpty())
+		if (nf instanceof AggregateFunction)
 		{
-			String prefix = parts[0];
-			if (to_highlight.containsKey(prefix))
+			AggregateFunction af = (AggregateFunction) nf;
+			boolean first = true;
+			Table first_owner = null;
+			for (NodeFunction dep_node : af.getDependencyNodes())
 			{
-				Set<String> id_set = to_highlight.get(prefix);
-				for (String id_to_highlight : id_set)
+				if (first)
 				{
-					highlight_string.append(",").append(id_to_highlight);
+					first = false;
 				}
+				else
+				{
+					highlight_string.append(",");
+				}
+				if (first_owner == null && dep_node instanceof TableCellNode)
+				{
+					first_owner = ((TableCellNode) dep_node).getOwner();
+				}
+				highlight_string.append(dep_node.getDataPointId());
 			}
-		}*/
-		if (nf instanceof TableCellNode)
+			if (first_owner != null)
+			{
+				return "table?id=" + first_owner.getId() + "&amp;highlight=" + highlight_string.toString();
+			}
+			else
+			{
+				return "#";
+			}
+			
+		}
+		else if (nf instanceof TableCellNode)
 		{
 			TableCellNode tcn = (TableCellNode) nf;
+			highlight_string.append(tcn.getDataPointId());
 			return "table?id=" + tcn.getOwner().getId() + "&amp;highlight=" + highlight_string.toString();
 		}
-		if (nf instanceof ExperimentValue)
+		else if (nf instanceof ExperimentValue)
 		{
 			ExperimentValue ev = (ExperimentValue) nf;
+			highlight_string.append(ev.getDataPointId());
 			return "experiment?id=" + ev.getOwner().getId() + "&amp;highlight=" + highlight_string.toString();
 		}
 		return "#";

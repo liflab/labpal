@@ -21,12 +21,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.table.DataTable;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.Table.CellCoordinate;
+import ca.uqac.lif.labpal.table.TableCellNode;
 import ca.uqac.lif.labpal.table.rendering.HtmlTableNodeRenderer;
 import ca.uqac.lif.labpal.table.rendering.PlainTableRenderer;
 
@@ -100,13 +102,14 @@ public class TablePageCallback extends TemplatePageCallback
 	
 	protected Set<CellCoordinate> getCellsToHighlight(String highlight)
 	{
+		// TODO: we should call TableCellNode to get the x,y coordinates of a datapoint
 		Set<CellCoordinate> to_highlight = new HashSet<CellCoordinate>();
 		String[] ids = highlight.split(",");
 		for (String id : ids)
 		{
 			if (id.trim().isEmpty())
 				continue;
-			String[] parts = id.split(":");
+			String[] parts = id.split(Pattern.quote(TableCellNode.s_separator));
 			int row = Integer.parseInt(parts[1]);
 			int col = Integer.parseInt(parts[2]);
 			to_highlight.add(new Table.CellCoordinate(row, col));

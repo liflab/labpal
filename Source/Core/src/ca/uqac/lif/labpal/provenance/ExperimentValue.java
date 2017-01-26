@@ -1,5 +1,7 @@
 package ca.uqac.lif.labpal.provenance;
 
+import java.util.regex.Pattern;
+
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
 
@@ -58,7 +60,7 @@ public class ExperimentValue implements NodeFunction
 	public static NodeFunction dependsOn(Experiment e, String datapoint_id)
 	{
 		// Parse the datapoint ID and call the experiment on the extracted values
-		String[] parts = datapoint_id.split(NodeFunction.s_separator);
+		String[] parts = datapoint_id.split(Pattern.quote(NodeFunction.s_separator));
 		if (parts.length >= 2)
 		{
 			int id = Integer.parseInt(parts[0].substring(1).trim());
@@ -92,7 +94,7 @@ public class ExperimentValue implements NodeFunction
 	{
 		if (!datapoint_id.startsWith("E"))
 			return null;
-		String[] parts = datapoint_id.split(NodeFunction.s_separator);
+		String[] parts = datapoint_id.split(Pattern.quote(NodeFunction.s_separator));
 		int id = Integer.parseInt(parts[0].substring(1).trim());
 		return lab.getExperiment(id);
 	}

@@ -44,7 +44,7 @@ import ca.uqac.lif.labpal.Laboratory;
  */
 public class TemplatePageCallback extends WebCallback
 {
-	protected static final transient String s_path = "resource";
+	public static final transient String s_path = "resource";
 	
 	protected static final transient Pattern s_patternInclude = Pattern.compile("\\{!(.*?)!\\}");
 	

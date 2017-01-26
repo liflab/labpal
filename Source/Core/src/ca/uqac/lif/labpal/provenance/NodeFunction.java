@@ -9,7 +9,7 @@ public interface NodeFunction
 	/**
 	 * The symbol for separating elements in a datapoint ID
 	 */
-	public static final String s_separator = ":";
+	public static final String s_separator = ".";
 	
 	/**
 	 * Generates a datapoint ID for this node

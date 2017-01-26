@@ -17,10 +17,8 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.LabAssistant;
@@ -67,20 +65,18 @@ public class ExplainCallback extends TemplatePageCallback
 			return s;
 		}
 		s = s.replaceAll("\\{%IMAGE_URL%\\}", Matcher.quoteReplacement("provenance-graph?id=" + datapoint_id));
-		Map<String,Map<String,Set<String>>> highlight_groups = new HashMap<String,Map<String,Set<String>>>();
-		getHighlightGroups(node, highlight_groups);
 		StringBuilder out = new StringBuilder();
 		out.append("<ul class=\"explanation\">\n");
-		explanationToHtml(node, "", highlight_groups, out);
+		explanationToHtml(node, "", out);
 		out.append("</ul>\n");
 		s = s.replaceAll("\\{%EXPLANATION%\\}", Matcher.quoteReplacement(out.toString()));
 		
 		return s;
 	}
 	
-	protected void explanationToHtml(ProvenanceNode node, String parent_id, Map<String,Map<String,Set<String>>> highlight_groups, StringBuilder out)
+	protected void explanationToHtml(ProvenanceNode node, String parent_id, StringBuilder out)
 	{
-		out.append("<li><a title=\"Click to see where this value comes from\" href=\"").append(getDataPointUrl(node, parent_id, highlight_groups)).append("\">").append(node).append("</a>");
+		out.append("<li><a title=\"Click to see where this value comes from\" href=\"").append(htmlEscape(getDataPointUrl(node))).append("\">").append(node).append("</a>");
 		List<ProvenanceNode> parents = node.getParents();
 		if (parents != null && !parents.isEmpty())
 		{
@@ -88,45 +84,14 @@ public class ExplainCallback extends TemplatePageCallback
 			out.append("<ul>");
 			for (ProvenanceNode pn : parents)
 			{
-				explanationToHtml(pn, new_parent, highlight_groups, out);
+				explanationToHtml(pn, new_parent, out);
 			}
 			out.append("</ul>");
 		}
 		out.append("</li>\n");
 	}
 	
-	public static void getHighlightGroups(ProvenanceNode node, Map<String,Map<String,Set<String>>> map)
-	{
-		/*if (node == null)
-		{
-			return;
-		}
-		String key = node.getNodeFunction().getDataPointId();
-		Map<String,Set<String>> children = new HashMap<String,Set<String>>();
-		List<ProvenanceNode> parents = node.getParents();
-		for (ProvenanceNode pn : parents)
-		{
-			String parent_id = pn.getNodeFunction().getDataPointId();
-			String prefix = parent_id.split(NodeFunction.s_separator)[0];
-			if (!children.containsKey(prefix))
-			{
-				Set<String> new_set = new HashSet<String>();
-				//new_set.add(key);
-				children.put(prefix, new_set);
-			}
-			Set<String> to_highlight = children.get(prefix);
-			to_highlight.add(parent_id);
-			children.put(prefix, to_highlight);
-		}
-		map.put(key, children);
-		for (ProvenanceNode pn : parents)
-		{
-			getHighlightGroups(pn, map);
-		}*/
-		return;
-	}
-	
-	public static String getDataPointUrl(ProvenanceNode node, String parent_id, Map<String,Map<String,Set<String>>> highlight_groups)
+	public static String getDataPointUrl(ProvenanceNode node)
 	{
 		NodeFunction nf = node.getNodeFunction();
 		if (nf == null)
@@ -157,7 +122,7 @@ public class ExplainCallback extends TemplatePageCallback
 			}
 			if (first_owner != null)
 			{
-				return "table?id=" + first_owner.getId() + "&amp;highlight=" + highlight_string.toString();
+				return "table?id=" + first_owner.getId() + "&highlight=" + highlight_string.toString();
 			}
 			else
 			{
@@ -169,13 +134,13 @@ public class ExplainCallback extends TemplatePageCallback
 		{
 			TableCellNode tcn = (TableCellNode) nf;
 			highlight_string.append(tcn.getDataPointId());
-			return "table?id=" + tcn.getOwner().getId() + "&amp;highlight=" + highlight_string.toString();
+			return "table?id=" + tcn.getOwner().getId() + "&highlight=" + highlight_string.toString();
 		}
 		else if (nf instanceof ExperimentValue)
 		{
 			ExperimentValue ev = (ExperimentValue) nf;
 			highlight_string.append(ev.getDataPointId());
-			return "experiment?id=" + ev.getOwner().getId() + "&amp;highlight=" + highlight_string.toString();
+			return "experiment?id=" + ev.getOwner().getId() + "&highlight=" + highlight_string.toString();
 		}
 		return "#";
 	}

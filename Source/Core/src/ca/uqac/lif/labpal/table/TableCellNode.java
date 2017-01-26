@@ -1,5 +1,7 @@
 package ca.uqac.lif.labpal.table;
 
+import java.util.regex.Pattern;
+
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.provenance.NodeFunction;
 
@@ -40,7 +42,7 @@ public class TableCellNode implements NodeFunction
 	public static NodeFunction dependsOn(Table t, String datapoint_id)
 	{
 		// Parse the datapoint ID and call the table on the extracted values
-		String[] parts = datapoint_id.split(NodeFunction.s_separator);
+		String[] parts = datapoint_id.split(Pattern.quote(NodeFunction.s_separator));
 		if (parts.length != 3)
 		{
 			// Invalid datapoint
@@ -68,7 +70,7 @@ public class TableCellNode implements NodeFunction
 	{
 		if (!datapoint_id.startsWith("T"))
 			return null;
-		String[] parts = datapoint_id.split(NodeFunction.s_separator);
+		String[] parts = datapoint_id.split(Pattern.quote(NodeFunction.s_separator));
 		int id = Integer.parseInt(parts[0].substring(1).trim());
 		return lab.getTable(id);
 	}

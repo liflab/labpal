@@ -1,9 +1,5 @@
 package ca.uqac.lif.labpal.provenance;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.server.ExplainCallback;
 import ca.uqac.lif.labpal.table.TableCellNode;
@@ -28,21 +24,19 @@ public class DotProvenanceTreeRenderer
 	
 	public String toDot(ProvenanceNode node)
 	{
-		Map<String,Map<String,Set<String>>> highlight_groups = new HashMap<String,Map<String,Set<String>>>();
-		ExplainCallback.getHighlightGroups(node, highlight_groups);
 		StringBuilder out = new StringBuilder();
 		out.append("digraph {\n");
 		out.append("node [shape=\"rect\"];\n");
-		toDot(node, "", -1, out, highlight_groups);
+		toDot(node, "", -1, out);
 		out.append("}\n");
 		return out.toString();
 	}
 	
-	protected void toDot(ProvenanceNode node, String parent_id, int parent, StringBuilder out, Map<String,Map<String,Set<String>>> highlight_groups)
+	protected void toDot(ProvenanceNode node, String parent_id, int parent, StringBuilder out)
 	{
 		int id = m_nodeCounter++;
 		String style = styleNode(node);
-		String url = ExplainCallback.getDataPointUrl(node, parent_id, highlight_groups);
+		String url = ExplainCallback.getDataPointUrl(node);
 		out.append(id).append(" [label=\"").append(escape(node.toString())).append("\",href=\"").append(url).append("\"");
 		if (!style.isEmpty())
 		{
@@ -56,7 +50,7 @@ public class DotProvenanceTreeRenderer
 		for (ProvenanceNode pn : node.getParents())
 		{
 			String p_id = node.getNodeFunction().getDataPointId();
-			toDot(pn, p_id, id, out, highlight_groups);
+			toDot(pn, p_id, id, out);
 		}
 	}
 	

@@ -315,7 +315,7 @@ public abstract class Table implements DataOwner
 		return this;
 	}
 	
-	public final NodeFunction dependsOn(int row, int col)
+	public NodeFunction dependsOn(int row, int col)
 	{
 		return new TableCellNode(this, row, col);
 	}

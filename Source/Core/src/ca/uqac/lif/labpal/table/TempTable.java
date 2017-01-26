@@ -19,6 +19,8 @@ package ca.uqac.lif.labpal.table;
 
 import java.util.List;
 
+import ca.uqac.lif.labpal.provenance.NodeFunction;
+
 /**
  * Data table only used temporarily. Typically, such a stable is a
  * single-use object to render the contents of another table.
@@ -55,6 +57,22 @@ public class TempTable extends DataTable
 	public void setId(int id)
 	{
 		m_id = id;
+	}
+	
+	@Override
+	public final NodeFunction dependsOn(int row, int col)
+	{
+		if (row < 0 || row >= m_entries.size())
+		{
+			return null;
+		}
+		TableEntry ent = m_entries.get(row);
+		if (col < 0 || col >= getColumnCount())
+		{
+			return null;
+		}
+		String col_name = getColumnNames()[col];
+		return ent.getDependency(col_name);
 	}
 	
 }

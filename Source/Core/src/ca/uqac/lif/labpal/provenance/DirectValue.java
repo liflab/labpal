@@ -14,6 +14,11 @@ public class DirectValue extends AggregateFunction
 		super(getCaption(nodes.length), nodes);
 	}
 	
+	public void add(NodeFunction node)
+	{
+		m_nodes.add(node);
+	}
+	
 	protected static String getCaption(int n)
 	{
 		if (n > 1)

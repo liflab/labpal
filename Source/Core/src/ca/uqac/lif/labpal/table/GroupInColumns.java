@@ -24,6 +24,7 @@ import java.util.Map;
 
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.labpal.Formatter;
+import ca.uqac.lif.labpal.provenance.DirectValue;
 
 /**
  * Creates columns from values of two parameters in an existing table.
@@ -75,6 +76,8 @@ public class GroupInColumns implements TableTransformation
 		TempTable table = tables[0];
 		Map<String,List<Object>> values = new HashMap<String,List<Object>>();
 		Map<String,List<TableEntry>> entries = new HashMap<String,List<TableEntry>>();
+		int parameter_column = table.getColumnPosition(m_parameter);
+		int value_column = table.getColumnPosition(m_value);
 		for (TableEntry te : table.getEntries())
 		{
 			if (!te.containsKey(m_parameter))
@@ -126,7 +129,10 @@ public class GroupInColumns implements TableTransformation
 				{
 					te.put(a_headers[j], a_values[j].get(i));
 					TableEntry t_ent = a_entries[j].get(i);
-					te.addDependency(a_headers[j], table.dependsOn(t_ent.getRowIndex(), j));
+					DirectValue dv = new DirectValue();
+					dv.add(new TableCellNode(table, t_ent.getRowIndex(), parameter_column));
+					dv.add(new TableCellNode(table, t_ent.getRowIndex(), value_column));
+					te.addDependency(a_headers[j], dv);
 					added = true;
 				}
 				else

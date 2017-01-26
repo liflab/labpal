@@ -210,4 +210,20 @@ public class Formatter
 		}
 		return (int) x;		
 	}
+	
+	/**
+	 * Attempts to create a number out of a string; if unsuccessful,
+	 * returns the string.
+	 * @param value The value to try to convert
+	 * @return The converted value
+	 */
+	public static Object getStringOrNumber(String value)
+	{
+		Object o = stringToNumber(value);
+		if (o != null)
+		{
+			return o;
+		}
+		return value;
+	}
 }

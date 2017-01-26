@@ -119,16 +119,21 @@ public class ExpandAsColumns implements TableTransformation
 			new_names[pos] = name;
 			pos++;
 		}
-		TempTable new_table = new TempTable(-2, new_names);
+		TempTable new_table = new TempTable(table.getId(), new_names);
 		List<TableEntry> entries = new ArrayList<TableEntry>();
+		int value_pos = table.getColumnPosition(m_valueKey);
+		int column_pos = table.getColumnPosition(m_columnKey);
 		for (TableEntry te : table.getEntries())
 		{
 			TableEntry existing_entry = findEntry(te, entries);
 			if (te.containsKey(m_columnKey))
 			{
+				
 				String s = getString(te.get(m_columnKey));
 				existing_entry.put(s, te.get(m_valueKey));
-				DirectValue dv = new DirectValue(te.getDependency(m_valueKey), te.getDependency(m_columnKey));
+				DirectValue dv = new DirectValue();
+				dv.add(new TableCellNode(table, te.getRowIndex(), value_pos));
+				dv.add(new TableCellNode(table, te.getRowIndex(), column_pos));
 				existing_entry.addDependency(s, dv);
 			}
 		}

@@ -102,7 +102,7 @@ public class DataTracker
 	public ProvenanceNode explain(NodeFunction nf)
 	{
 		Set<NodeFunction> functions = new HashSet<NodeFunction>();
-		return explain(nf, functions);
+		return explain(nf, functions, 10);
 	}
 
 	/**
@@ -112,8 +112,12 @@ public class DataTracker
 	 *   is to avoid infinite looping due to possible circular dependencies.
 	 * @return The root of the provenance tree
 	 */
-	protected ProvenanceNode explain(NodeFunction nf, Set<NodeFunction> seen_functions)
+	protected ProvenanceNode explain(NodeFunction nf, Set<NodeFunction> seen_functions, int depth)
 	{
+		if (depth == 0)
+		{
+			return InfiniteLoop.instance;
+		}
 		List<ProvenanceNode> nodes = new LinkedList<ProvenanceNode>();
 		if (nf instanceof ExperimentValue)
 		{
@@ -129,13 +133,13 @@ public class DataTracker
 			TableCellNode tcn = (TableCellNode) nf;
 			Table t = tcn.getOwner();
 			NodeFunction nf_dep = t.getDependency(tcn.getRow(), tcn.getCol());
-			if (seen_functions.contains(nf_dep))
+			/*if (seen_functions.contains(nf_dep))
 			{
 				// Infinite loop
 				return InfiniteLoop.instance;
-			}
+			}*/
 			seen_functions.add(nf_dep);
-			pn.addParent(explain(nf_dep));
+			pn.addParent(explain(nf_dep, seen_functions, depth - 1));
 			return pn;
 		}
 		if (nf instanceof AggregateFunction)
@@ -146,11 +150,11 @@ public class DataTracker
 			List<ProvenanceNode> parents = new LinkedList<ProvenanceNode>();
 			for (NodeFunction par_nf : dependencies)
 			{
-				if (seen_functions.contains(par_nf))
+				/*if (seen_functions.contains(par_nf))
 				{
 					// Infinite loop
 					return InfiniteLoop.instance;
-				}
+				}*/
 				seen_functions.add(par_nf);
 				ProvenanceNode par_pn = explain(par_nf);
 				parents.add(par_pn);

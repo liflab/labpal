@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.Set;
 
 import ca.uqac.lif.json.JsonElement;
@@ -34,6 +35,7 @@ import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
+import ca.uqac.lif.labpal.Formatter;
 import ca.uqac.lif.labpal.provenance.NodeFunction;
 import de.erichseifert.gral.data.Column;
 import de.erichseifert.gral.data.DataListener;
@@ -654,5 +656,46 @@ public class DataTable extends Table implements DataSource
 	public TempTable getDataTable(boolean link_to_experiments, String ... ordering) 
 	{
 		return new TempTable(getId(), m_entries, ordering);
+	}
+	
+	/**
+	 * Populates a table from a CSV file
+	 * @param scanner A scanner to an open CSV text file
+	 * @return A data table
+	 */
+	public static DataTable read(Scanner scanner, String separator)
+	{
+		DataTable dt = null;
+		boolean first_line = true;
+		String[] col_names = null;
+		while (scanner.hasNextLine())
+		{
+			String line = scanner.nextLine().trim();
+			if (line.isEmpty() || line.startsWith("#"))
+				continue;
+			String[] parts = line.split(separator);
+			if (first_line)
+			{
+				col_names = new String[parts.length];
+				for (int i = 0; i < parts.length; i++)
+				{
+					col_names[i] = parts[i].trim();
+				}
+				dt = new DataTable(col_names);
+				first_line = false;
+			}
+			else
+			{
+				assert col_names != null;
+				assert dt != null;
+				TableEntry entry = new TableEntry();
+				for (int i = 0; i < Math.min(col_names.length, parts.length); i++)
+				{
+					entry.put(col_names[i], Formatter.getStringOrNumber(parts[i]));
+				}
+				dt.add(entry);
+			}
+		}
+		return dt;
 	}
 }

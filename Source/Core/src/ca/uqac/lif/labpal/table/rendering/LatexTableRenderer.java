@@ -163,7 +163,7 @@ public class LatexTableRenderer extends TableNodeRenderer
 		{
 			m_keyBuffer.append("{");
 		}
-		m_keyBuffer.append(key).append("}");
+		m_keyBuffer.append(escape(key)).append("}");
 		m_numColumns++;
 	}
 
@@ -212,33 +212,36 @@ public class LatexTableRenderer extends TableNodeRenderer
 		{
 			m_keyBuffer.append("{");
 		}
-		if (coordinates.size() > 0)
-		{
-			CellCoordinate cc = coordinates.get(0);
-			String dp_id = "";
-			NodeFunction nf = m_table.dependsOn(cc.row, cc.col);
-			if (nf != null)
-			{
-				dp_id = nf.getDataPointId();
-			}
-			out.append("\\href{").append(dp_id).append("}{");
-		}
 		JsonElement last = values.get(values.size() - 1);
-		if (last instanceof JsonString)
+		if (!(last instanceof JsonNull))
 		{
-			m_keyBuffer.append(escape(((JsonString) last).stringValue()));
-		}
-		else if (last instanceof JsonNull)
-		{
-			m_keyBuffer.append("");
+			if (coordinates.size() > 0)
+			{
+				CellCoordinate cc = coordinates.get(0);
+				String dp_id = "";
+				NodeFunction nf = m_table.dependsOn(cc.row, cc.col);
+				if (nf != null)
+				{
+					dp_id = nf.getDataPointId();
+				}
+				m_keyBuffer.append("\\href{").append(dp_id).append("}{");
+			}		
+			if (last instanceof JsonString)
+			{
+				m_keyBuffer.append(escape(((JsonString) last).stringValue()));
+			}
+			else
+			{
+				m_keyBuffer.append(escape(last.toString()));
+			}
+			if (coordinates.size() > 0)
+			{
+				m_keyBuffer.append("}");
+			}
 		}
 		else
 		{
-			m_keyBuffer.append(escape(last.toString()));
-		}
-		if (coordinates.size() > 0)
-		{
-			m_keyBuffer.append("}");
+			m_keyBuffer.append("");
 		}
 		m_keyBuffer.append("}");
 		if (values.size() < max_depth)

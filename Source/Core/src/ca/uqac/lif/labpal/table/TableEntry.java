@@ -153,11 +153,10 @@ public class TableEntry extends HashMap<String,Object>
 	 */
 	public void addDependency(String key, NodeFunction dependency)
 	{
-		if (dependency == null)
+		if (dependency != null)
 		{
-			System.out.println("BIZ");
+			m_datapointIds.put(key, dependency);
 		}
-		m_datapointIds.put(key, dependency);
 	}
 
 }

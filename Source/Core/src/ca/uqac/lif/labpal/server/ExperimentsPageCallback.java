@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,7 +86,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
 		StringBuilder list_of_lists = new StringBuilder();
 		boolean has_groups = false;
-		List<Integer> sorted_groups = new Vector<Integer>(m_lab.getGroupIds());
+		List<Integer> sorted_groups = new ArrayList<Integer>();
+		sorted_groups.addAll(m_lab.getGroupIds());
 		Collections.sort(sorted_groups);
 		for (int id : sorted_groups)
 		{
@@ -121,7 +122,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	 */
 	public static String getExperimentList(Laboratory lab, LabAssistant assistant, Set<Integer> ids)
 	{
-		Vector<Integer> v_ids = new Vector<Integer>();
+		List<Integer> v_ids = new ArrayList<Integer>(ids.size());
 		v_ids.addAll(ids);
 		return getExperimentList(lab, assistant, v_ids);
 	}
@@ -143,7 +144,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			Experiment e = lab.getExperiment(id);
 			param_set.addAll(e.getInputKeys(true));
 		}
-		Vector<String> param_list = new Vector<String>();
+		List<String> param_list = new ArrayList<String>(param_set.size());
 		param_list.addAll(param_set);
 		Collections.sort(param_list);
 		// Step 2: create the table
@@ -309,7 +310,13 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				}
 			}
 		}
-		return "<p class=\"message info\"><span>" + queued + " experiment(s) added to the queue</span></p>";
+		String out = "<p class=\"message info\"><span>" + queued + " experiment(s) added to the queue";
+		if (!m_assistant.isRunning())
+		{
+			out += " <a href=\"assistant?start\">Start the assistant</a>"; 
+		}
+		out += "</span></p>";
+		return out;
 	}
 	
 	/**

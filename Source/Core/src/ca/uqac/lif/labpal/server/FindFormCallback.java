@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2014-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ public class FindFormCallback extends WebCallback
 				response.setContents("<html><body><h1>Not Found</h1><p>This data point does not seem to exist.</p></body></html>");
 				return response;
 			}
-			response.setCode(303); // Redirect
+			response.setCode(CallbackResponse.HTTP_REDIRECT);
 			response.setHeader("Location", url);
 			return response;
 		}
@@ -84,6 +84,16 @@ public class FindFormCallback extends WebCallback
 		file_contents = TemplatePageCallback.resolveInclude(file_contents);
 		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Find a data point");
 		file_contents = file_contents.replaceAll("\\{%SEL_FIND%\\}", "selected");
+		file_contents = file_contents.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
+		String doi = m_lab.getDoi();
+		if (!doi.isEmpty())
+		{
+			file_contents = file_contents.replaceAll("\\{%DOI%\\}", doi + "/");
+		}
+		else
+		{
+			file_contents = file_contents.replaceAll("\\{%DOI%\\}", "");
+		}
 		file_contents = file_contents.replaceAll("\\{%FAVICON%\\}", TemplatePageCallback.getFavicon(TemplatePageCallback.IconType.STATUS));
 		response.setContents(file_contents);
 		response.setCode(CallbackResponse.HTTP_OK);

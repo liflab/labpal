@@ -103,6 +103,11 @@ public abstract class Laboratory
 	 * A data tracker for generating provenance info
 	 */
 	private transient DataTracker m_dataTracker;
+	
+	/**
+	 * A DOI assigned to this lab artifact, if any
+	 */
+	private transient String m_doi = "";
 
 	/**
 	 * The title given to this lab
@@ -219,6 +224,30 @@ public abstract class Laboratory
 	public final String getAuthorName()
 	{
 		return m_author;
+	}
+	
+	/**
+	 * Assigns a DOI to this laboratory
+	 * @param doi The DOI. If this is the null string, the argument is
+	 * simply ignored.
+	 * @return This lab
+	 */
+	public final Laboratory setDoi(String doi)
+	{
+		if (doi != null)
+		{
+			m_doi = doi;
+		}
+		return this;
+	}
+	
+	/**
+	 * Gets the DOI associated to this lab, if any
+	 * @return The DOI or an empty string
+	 */
+	public final String getDoi()
+	{
+		return m_doi;
 	}
 
 	/**

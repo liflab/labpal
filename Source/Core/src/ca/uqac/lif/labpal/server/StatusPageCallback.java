@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2014-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 package ca.uqac.lif.labpal.server;
 
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
@@ -39,19 +40,19 @@ public class StatusPageCallback extends TemplatePageCallback
 	 * class. 
 	 */
 	protected final transient String m_environmentMessage;
-	
+
 	/**
 	 * The description associated to the lab
 	 */
 	protected final transient String m_labDescription;
-	
+
 	public StatusPageCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/status", lab, assistant);
 		m_environmentMessage = lab.isEnvironmentOk();
 		m_labDescription = lab.getDescription();
 	}
-	
+
 	@Override
 	public String fill(String page, Map<String,String> params)
 	{
@@ -68,6 +69,11 @@ public class StatusPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%OS_NAME%\\}", System.getProperty("os.name"));
 		out = out.replaceAll("\\{%OS_ARCH%\\}", System.getProperty("os.arch"));
 		out = out.replaceAll("\\{%OS_VERSION%\\}", System.getProperty("os.version"));
+		String doi = m_lab.getDoi();
+		if (!doi.isEmpty())
+		{
+			out = out.replaceAll("\\{%DOI%\\}", "<tr><th title=\"The Digital Object Identifier assigned to this lab\">DOI</th><td>" + Matcher.quoteReplacement(htmlEscape(doi)) + "</td></tr>\n");
+		}
 		out = out.replaceAll("\\{%PROGRESS_BAR%\\}", getBar());
 		if (m_environmentMessage != null)
 		{
@@ -78,7 +84,7 @@ public class StatusPageCallback extends TemplatePageCallback
 		}
 		return out;
 	}
-	
+
 	/**
 	 * Produces a status bar indicating the relative completion of the
 	 * experiments in this lab.

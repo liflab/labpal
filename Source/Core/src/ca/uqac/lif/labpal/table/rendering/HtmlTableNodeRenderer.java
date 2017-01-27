@@ -118,7 +118,7 @@ public class HtmlTableNodeRenderer extends TableNodeRenderer
 			NodeFunction nf = m_table.dependsOn(cc.row, cc.col);
 			if (nf != null)
 			{
-				dp_id = "T" + m_table.getId() + ":" + cc.row + ":" + cc.col; //nf.getDataPointId();
+				dp_id = nf.getDataPointId();//"""T" + m_table.getId() + ":" + cc.row + ":" + cc.col; //nf.getDataPointId();
 			}
 			out.append("<a class=\"explanation\" title=\"Click to see where this value comes from\" href=\"explain?id=").append(dp_id).append("\">");
 		}

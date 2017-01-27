@@ -9,6 +9,18 @@ html, body {
   display: none;
 }
 
+#labpal-logo {
+  background: url('images/labpal-32.png') top left no-repeat;
+  width: 98px;
+  height: 32px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+#labpal-logo span {
+  display: none;
+}
+
 .highlighted {
   background: yellow;
   border: solid red 2px;
@@ -129,15 +141,28 @@ h1 {
 }
 
 #footer > div {
-  line-height: 40px;
   margin-left: 8px;
+}
+
+#footer-text {
+  display: inline-block;
+  line-height: 40px;
+  height: 32px;
+  float: left;
+}
+
+#logo-container {
+  display: inline-block;
+  height: 32px;
+  float: left;
+  margin-right: 12px;
 }
 
 .btn {
   border: solid 1px darkgrey;
   border-radius: 4px;
   height: 32px;
-  line-height: 32px;
+  line-height: 20px;
   background: #e0e0e0;
   padding: 4px;
   display: inline-block;
@@ -162,12 +187,12 @@ h1 {
 }
 
 #btn-download {
-  background: #e0e0e0 url('images/download-32.png') 4px 4px no-repeat;
+  background: #e0e0e0 url('images/download-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 #btn-upload {
-  background: #e0e0e0 url('images/upload-32.png') 4px 4px no-repeat;
+  background: #e0e0e0 url('images/upload-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
@@ -201,14 +226,14 @@ h1 {
   padding-left: 40px;
 }
 
-.btn-clean {
-  background: #e0e0e0 url('images/clean-24.png') 4px 4px no-repeat;
+#btn-find {
+  background: #e0e0e0 url('images/find-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .json-table th {
   text-align: left;
-  background: #ccc;
+  background: #eef;
   margin: 2px;
   padding: 2px;
   border-radius: 2px;
@@ -452,4 +477,26 @@ a.explanation {
   color: black;
   text-decoration: none;
   cursor: help;
+}
+
+a.explanation:hover {
+  background: yellow;
+  color: red;
+}
+
+.description {
+  margin-bottom: 10pt;
+}
+
+.status-table {
+  margin-top: 10pt;
+  margin-bottom: 10pt;
+}
+
+.status-table th {
+  background: #eef;
+}
+
+.status-table td {
+  background-color: rgba(224, 224, 236, 0.5);
 }

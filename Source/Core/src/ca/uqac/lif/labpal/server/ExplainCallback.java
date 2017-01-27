@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2014-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -76,17 +76,17 @@ public class ExplainCallback extends TemplatePageCallback
 	
 	protected void explanationToHtml(ProvenanceNode node, String parent_id, StringBuilder out)
 	{
-		out.append("<li><a title=\"Click to see where this value comes from\" href=\"").append(htmlEscape(getDataPointUrl(node))).append("\">").append(node).append("</a>");
+		out.append("<li><div class=\"around-pulldown\"><div class=\"pulldown\"><a title=\"Click to see where this value comes from\" href=\"").append(htmlEscape(getDataPointUrl(node))).append("\">").append(node).append("</a></div>\n");
 		List<ProvenanceNode> parents = node.getParents();
 		if (parents != null && !parents.isEmpty())
 		{
 			String new_parent = node.getNodeFunction().getDataPointId();
-			out.append("<ul>");
+			out.append("<div class=\"pulldown-contents\"><ul>");
 			for (ProvenanceNode pn : parents)
 			{
 				explanationToHtml(pn, new_parent, out);
 			}
-			out.append("</ul>");
+			out.append("</ul></div></div>");
 		}
 		out.append("</li>\n");
 	}

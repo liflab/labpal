@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
@@ -35,6 +36,7 @@ import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LabPalTui;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 
 /**
  * Callback to display the details of one specific experiment.
@@ -232,7 +234,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		String[] ids = highlight.split(",");
 		for (String id : ids)
 		{
-			String[] parts = id.split(":");
+			String[] parts = id.split(Pattern.quote(NodeFunction.s_separator));
 			to_highlight.add(parts[1]);
 		}
 		return to_highlight;

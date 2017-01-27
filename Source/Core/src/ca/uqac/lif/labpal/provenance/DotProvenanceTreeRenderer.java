@@ -2,6 +2,7 @@ package ca.uqac.lif.labpal.provenance;
 
 import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.server.ExplainCallback;
+import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.TableCellNode;
 
 /**
@@ -36,7 +37,7 @@ public class DotProvenanceTreeRenderer
 	{
 		int id = m_nodeCounter++;
 		String style = styleNode(node);
-		String url = ExplainCallback.getDataPointUrl(node);
+		String url = WebCallback.htmlEscape(ExplainCallback.getDataPointUrl(node));
 		out.append(id).append(" [label=\"").append(escape(node.toString())).append("\",href=\"").append(url).append("\"");
 		if (!style.isEmpty())
 		{

@@ -33,7 +33,7 @@ public class DataTracker
 	 * The lab
 	 */
 	protected Laboratory m_lab;
-	
+
 	/**
 	 * Creates a new data tracker
 	 */
@@ -42,30 +42,24 @@ public class DataTracker
 		super();
 		m_lab = lab;
 	}
-	
+
 	public Object getOwner(String id)
 	{
-		if (id.startsWith("T"))
+		// Is it a table?
+		Table t = TableCellNode.getOwner(m_lab, id);
+		if (t != null)
 		{
-			// Is it a table?
-			Table t = TableCellNode.getOwner(m_lab, id);
-			if (t != null)
-			{
-				return t;
-			}
+			return t;
 		}
-		if (id.startsWith("E"))
+		// Is it an experiment?
+		Experiment e = ExperimentValue.getOwner(m_lab, id);
+		if (e != null)
 		{
-			// Is it an experiment?
-			Experiment e = ExperimentValue.getOwner(m_lab, id);
-			if (e != null)
-			{
-				return e;
-			}
+			return e;
 		}
 		return null;
 	}
-	
+
 	public NodeFunction getNodeFunction(String datapoint_id)
 	{
 		Object owner = getOwner(datapoint_id);
@@ -83,7 +77,7 @@ public class DataTracker
 		}
 		return null;
 	}
-	
+
 	public ProvenanceNode explain(String datapoint_id)
 	{
 		NodeFunction nf = getNodeFunction(datapoint_id);

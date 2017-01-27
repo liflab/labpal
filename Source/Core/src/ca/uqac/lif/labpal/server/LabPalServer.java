@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2014-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ public class LabPalServer extends InnerFileServer
 	
 	public LabPalServer(ArgumentMap args, Laboratory lab, LabAssistant assistant)
 	{
-		super(LabPalServer.class);
+		super(LabPalServer.class, true);
 		setUserAgent("LabPal " + Laboratory.s_versionString);
 		if (args.hasOption("port"))
 		{

@@ -20,6 +20,7 @@ package ca.uqac.lif.labpal.server;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.LabAssistant;
@@ -58,7 +59,7 @@ public class TablesPageCallback extends TemplatePageCallback
 				out = out.replaceAll("\\{%TABLES%\\}", getTables(ids));			
 			}
 		}
-		out = out.replaceAll("\\{%ALL_TABLES%\\}", "<p><a class=\"btn btn-all-tables\" title=\"Download all tables as a single LaTeX file\" href=\"all-tables\">Download all tables</a></p>");
+		out = out.replaceAll("\\{%ALL_TABLES%\\}", Matcher.quoteReplacement("<p><a title=\"Download all tables as a single LaTeX file\" href=\"all-tables\"><button class=\"btn btn-all-tables\">Download all tables</button></a></p>"));
 		out = out.replaceAll("\\{%SEL_TABLES%\\}", "selected");
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return out;
@@ -76,13 +77,14 @@ public class TablesPageCallback extends TemplatePageCallback
 		{
 			Table table = m_lab.getTable(id);
 			out.append("<tr>");
-			out.append("<td class=\"table-icon\"></td>");
-			out.append("<td><a href=\"table?id=").append(id).append("\" title=\"Click on table to view in new window\">");
+			out.append("<td class=\"id-cell\"><a href=\"table?id=").append(id).append("\" title=\"Click on table to view in new window\">");
 			out.append(id).append("</a></td>");
+			out.append("<td class=\"table-icon\"></td>");
+			out.append("<td><a href=\"table?id=").append(id).append("\">").append(htmlEscape(table.getTitle())).append("</a></td>");
 			out.append("<td><a class=\"btn-csv\" href=\"table-export?id=").append(id).append("&amp;format=csv&amp;dl=1\" title=\"Download as CSV\"><span class=\"text-only\">CSV</span></a></td>");
 			out.append("<td><a class=\"btn-tex\" href=\"table-export?id=").append(id).append("&amp;format=tex&amp;dl=1\" title=\"Download as LaTeX\"><span class=\"text-only\">TeX</span></a></td>");
 			out.append("<td><a class=\"btn-html\" href=\"table-export?id=").append(id).append("&amp;format=html&amp;dl=1\" title=\"Download as HTML\"><span class=\"text-only\">HTML</span></a></td>");
-			out.append("<td>").append(table.getTitle()).append("</td></tr>\n");			
+			out.append("</tr>\n");
 		}
 		out.append("</table>\n");
 		return out.toString();

@@ -799,7 +799,7 @@ public abstract class Laboratory
 	{
 		String out = "";
 		out += "LabPal " + formatVersion() + " - A versatile environment for running experiments\n";
-		out += "(C) 2015-2017 Laboratoire d'informatique formelle\nUniversité du Québec à Chicoutimi, Canada\n";
+		out += "(C) 2014-2017 Laboratoire d'informatique formelle\nUniversité du Québec à Chicoutimi, Canada\n";
 		return out;
 	}
 

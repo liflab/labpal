@@ -294,13 +294,12 @@ public class LatexTableRenderer extends TableNodeRenderer
 	public static String escape(String input)
 	{
 		String output = input;
+		output = output.replaceAll("\\\\", "\\\\\\\\");
 		output = output.replaceAll("_", "\\\\_");
 		output = output.replaceAll("~", "\\\\~");
 		output = output.replaceAll("&", "\\\\&");
 		output = output.replaceAll("#", "\\\\$");
 		output = output.replaceAll("%", "\\\\%");
-		output = output.replaceAll("\\\\", "\\\\\\\\");
-		output = output.replaceAll("\\$", "\\\\\\$");
 		output = output.replaceAll("\\{", "\\\\\\{");
 		output = output.replaceAll("\\}", "\\\\\\}");
 		return output;

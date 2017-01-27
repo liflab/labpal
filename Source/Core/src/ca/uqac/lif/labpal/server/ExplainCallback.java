@@ -57,7 +57,7 @@ public class ExplainCallback extends TemplatePageCallback
 	{
 		String datapoint_id = params.get("id");
 		s = s.replaceAll("\\{%TITLE%\\}", "Explanation");
-		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
+		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.BINOCULARS));
 		ProvenanceNode node = m_lab.getDataTracker().explain(datapoint_id);
 		if (node == null)
 		{

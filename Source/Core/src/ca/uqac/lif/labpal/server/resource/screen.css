@@ -248,13 +248,18 @@ table th {
   text-align: left;
 }
 
+table.exp-table th {
+  font-weight: bold;
+  background: #eef;
+}
+
 table.exp-table tr:hover td {
-  background-color: rgba(255, 255, 0, 128);
+  background-color: rgba(224, 224, 236, 0.5);
 }
 
 table.exp-table td.exp-chk {
-  background: url('images/erlenmeyer-16.png') left center no-repeat;
-  padding-left: 20px;
+  background: url('images/erlenmeyer-16.png') right center no-repeat;
+  padding-right: 20px;
 }
 
 table.exp-table td {
@@ -463,6 +468,16 @@ table.exp-table td {
 .tables .table-icon {
   width: 24px;
   background: url('images/table-24.png') top center no-repeat;
+  padding-right: 8pt;
+}
+
+.tables a, .exp-table a {
+  text-decoration: none;
+  color: #225;
+}
+
+.tables a:hover, .exp-table a:hover {
+  color: #88a;
 }
 
 table.results {
@@ -499,4 +514,10 @@ a.explanation:hover {
 
 .status-table td {
   background-color: rgba(224, 224, 236, 0.5);
+}
+
+.id-cell {
+  font-weight: bold;
+  font-style: italic;
+  color: #88a;
 }

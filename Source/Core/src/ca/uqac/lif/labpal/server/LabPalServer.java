@@ -37,9 +37,21 @@ public class LabPalServer extends InnerFileServer
 	 */
 	protected static final transient int s_defaultPort = 21212;
 	
+	/**
+	 * The time (in seconds) during which the client is allowed to cache
+	 * static resources (such as images or JS files) locally
+	 */
+	protected static final transient int s_cacheInterval = 600;
+	
+	/**
+	 * Creates a new LabPal server
+	 * @param args
+	 * @param lab
+	 * @param assistant
+	 */
 	public LabPalServer(ArgumentMap args, Laboratory lab, LabAssistant assistant)
 	{
-		super(LabPalServer.class, true);
+		super(LabPalServer.class, true, s_cacheInterval);
 		setUserAgent("LabPal " + Laboratory.s_versionString);
 		if (args.hasOption("port"))
 		{

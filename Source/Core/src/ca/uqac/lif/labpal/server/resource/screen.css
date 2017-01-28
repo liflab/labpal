@@ -521,3 +521,13 @@ a.explanation:hover {
   font-style: italic;
   color: #88a;
 }
+
+#content a {
+  color: #225;
+  text-decoration: none;
+}
+
+#content a:hover {
+  color: #88a;
+  text-decoration: underline;
+}

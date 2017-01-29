@@ -23,12 +23,14 @@ import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.plot.PlotNode;
 import ca.uqac.lif.labpal.provenance.AggregateFunction;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
 import ca.uqac.lif.labpal.provenance.NodeFunction;
 import ca.uqac.lif.labpal.provenance.ProvenanceNode;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.TableCellNode;
+import ca.uqac.lif.labpal.table.TableFunctionNode;
 
 /**
  * Callback producing a provenance tree from one of the lab's data points.
@@ -135,6 +137,16 @@ public class ExplainCallback extends TemplatePageCallback
 			TableCellNode tcn = (TableCellNode) nf;
 			highlight_string.append(tcn.getDataPointId());
 			return "table?id=" + tcn.getOwner().getId() + "&highlight=" + highlight_string.toString();
+		}
+		else if (nf instanceof TableFunctionNode)
+		{
+			TableFunctionNode tcn = (TableFunctionNode) nf;
+			return "table?id=" + tcn.getOwner().getId();
+		}
+		else if (nf instanceof PlotNode)
+		{
+			PlotNode tcn = (PlotNode) nf;
+			return "plot?id=" + tcn.getOwner().getId();
 		}
 		else if (nf instanceof ExperimentValue)
 		{

@@ -54,7 +54,7 @@ public class AllPlotsCallback extends WebCallback
 	 * Whether pdftk is present on the system
 	 */
 	protected static transient final boolean s_pdftkPresent = FileHelper.commandExists(s_path);
-
+	
 	public AllPlotsCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/all-plots", lab, assistant);
@@ -129,10 +129,19 @@ public class AllPlotsCallback extends WebCallback
 		// pdftk is done; read the output
 		byte[] file_contents = runner.getBytes();
 		response.setContentType(ContentType.PDF);
-		String filename = Server.urlEncode(m_lab.getTitle()) + ".pdf";
+		String filename = Server.urlEncode(getPlotsFilename(m_lab));
 		response.setAttachment(filename);
 		response.setContents(file_contents);
 		return response;
 	}
 
+	/**
+	 * Gets the name given to the file containing all the plots
+	 * @param lab The lab
+	 * @return The name
+	 */
+	public static String getPlotsFilename(Laboratory lab)
+	{
+		return lab.getTitle() + ".pdf";
+	}
 }

@@ -72,6 +72,7 @@ public class LabPalServer extends InnerFileServer
 		registerCallback(0, new UploadCallback(this, lab, assistant));
 		registerCallback(0, new HelpPageCallback(lab, assistant));
 		registerCallback(0, new AllPlotsCallback(lab, assistant));
+		registerCallback(0, new AllPlotsLatexCallback(lab, assistant));
 		registerCallback(0, new TablesPageCallback(lab, assistant));
 		registerCallback(0, new TablePageCallback(lab, assistant));
 		registerCallback(0, new TableExportCallback(lab, assistant));

@@ -24,8 +24,12 @@ import java.util.Set;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.plot.PlotNode;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.TableCellNode;
+import ca.uqac.lif.labpal.table.TableFunctionNode;
+import ca.uqac.lif.labpal.table.TableNode;
 
 public class DataTracker
 {
@@ -51,11 +55,22 @@ public class DataTracker
 		{
 			return t;
 		}
+		t = TableNode.getOwner(m_lab, id);
+		if (t != null)
+		{
+			return t;
+		}
 		// Is it an experiment?
 		Experiment e = ExperimentValue.getOwner(m_lab, id);
 		if (e != null)
 		{
 			return e;
+		}
+		// Is it a plot?
+		Plot p = PlotNode.getOwner(m_lab, id);
+		if (p != null)
+		{
+			return p;
 		}
 		return null;
 	}
@@ -69,11 +84,20 @@ public class DataTracker
 		}
 		if (owner instanceof Table)
 		{
-			return TableCellNode.dependsOn((Table) owner, datapoint_id);
+			NodeFunction nf = TableCellNode.dependsOn((Table) owner, datapoint_id);
+			if (nf != null)
+			{
+				return nf;
+			}
+			return new TableFunctionNode((Table) owner, 0, 0);
 		}
 		if (owner instanceof Experiment)
 		{
 			return ExperimentValue.dependsOn((Experiment) owner, datapoint_id);
+		}
+		if (owner instanceof Plot)
+		{
+			return PlotNode.dependsOn((Plot) owner, datapoint_id);
 		}
 		return null;
 	}
@@ -118,6 +142,22 @@ public class DataTracker
 			// Leaf
 			ProvenanceNode pn = new ProvenanceNode(nf);
 			nodes.add(pn);
+			return pn;
+		}
+		if (nf instanceof TableFunctionNode)
+		{
+			ProvenanceNode pn = new ProvenanceNode(nf);
+			// TODO: in the case of whole tables, track dependencies of each of its cells
+			return pn;
+		}
+		if (nf instanceof PlotNode)
+		{
+			ProvenanceNode pn = new ProvenanceNode(nf);
+			PlotNode plot_n = (PlotNode) nf;
+			Plot p = plot_n.getOwner();
+			NodeFunction nf_dep = p.getDependency();
+			seen_functions.add(nf_dep);
+			pn.addParent(explain(nf_dep, seen_functions, depth - 1));
 			return pn;
 		}
 		if (nf instanceof TableCellNode)

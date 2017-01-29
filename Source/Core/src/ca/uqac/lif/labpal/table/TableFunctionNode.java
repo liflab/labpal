@@ -20,22 +20,33 @@ package ca.uqac.lif.labpal.table;
 import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.provenance.DirectValue;
 import ca.uqac.lif.labpal.provenance.NodeFunction;
 
-public class TableCellNode implements NodeFunction 
+/**
+ * Provenance function that links to a whole table
+ * @author Sylvain Hallé
+ */
+public class TableFunctionNode implements NodeFunction 
 {
 	protected final Table m_table;
 	
-	protected final int m_row;
+	/**
+	 * The number of rows in the table
+	 */
+	protected final int m_rows;
 	
-	protected final int m_col;
+	/**
+	 * The number of columns in the table
+	 */
+	protected final int m_cols;
 	
-	public TableCellNode(Table t, int row, int col)
+	public TableFunctionNode(Table t, int rows, int cols)
 	{
 		super();
 		m_table = t;
-		m_row = row;
-		m_col = col;
+		m_rows = rows;
+		m_cols = cols;
 	}
 	
 	/**
@@ -51,39 +62,28 @@ public class TableCellNode implements NodeFunction
 	@Override
 	public String toString()
 	{
-		return "Cell (" + m_row + "," + m_col + ") in Table #" + m_table.getId();
+		return "Table #" + m_table.getId();
 	}
 	
 	@Override
 	public String getDataPointId()
 	{
-		return "T" + m_table.getId() + s_separator + m_row + s_separator + m_col;
+		return "T" + m_table.getId();
 	}
 	
 	@Override
 	public NodeFunction dependsOn()
 	{
-		return m_table.getDependency(m_row, m_col);
-	}
-	
-	public static NodeFunction dependsOn(Table t, String datapoint_id)
-	{
-		// Parse the datapoint ID and call the table on the extracted values
-		String[] parts = datapoint_id.split(Pattern.quote(NodeFunction.s_separator));
-		if (parts.length != 3)
+		// Depends on all the cells
+		DirectValue dv = new DirectValue();
+		for (int r = 0; r < m_rows; r++)
 		{
-			// Invalid datapoint
-			return null;
+			for (int c = 0; c < m_cols; c++)
+			{
+				dv.add(new TableCellNode(m_table, r, c));
+			}
 		}
-		int id = Integer.parseInt(parts[0].substring(1).trim());
-		if (id != t.getId())
-		{
-			// Wrong table
-			return null;
-		}
-		int row = Integer.parseInt(parts[1].trim());
-		int col = Integer.parseInt(parts[2].trim());
-		return t.dependsOn(row, col);
+		return dv;
 	}
 	
 	/**
@@ -106,32 +106,21 @@ public class TableCellNode implements NodeFunction
 	{
 		return m_table;
 	}
-	
-	public int getRow()
-	{
-		return m_row;
-	}
-	
-	public int getCol()
-	{
-		return m_col;
-	}
-	
+		
 	@Override
 	public int hashCode()
 	{
-		return m_table.getId() + m_row + m_col;
+		return m_table.getId();
 	}
 	
 	@Override
 	public boolean equals(Object o)
 	{
-		if (o == null || !(o instanceof TableCellNode))
+		if (o == null || !(o instanceof TableFunctionNode))
 		{
 			return false;
 		}
-		TableCellNode tcn = (TableCellNode) o;
-		return tcn.m_table.getId() == m_table.getId() &&
-				tcn.m_col == m_col && tcn.m_row == m_row;
+		TableFunctionNode tcn = (TableFunctionNode) o;
+		return tcn.m_table.getId() == m_table.getId();
 	}
 }

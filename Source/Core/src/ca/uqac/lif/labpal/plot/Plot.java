@@ -22,7 +22,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableFunctionNode;
 import ca.uqac.lif.labpal.table.TableTransformation;
 import ca.uqac.lif.labpal.table.TempTable;
 
@@ -321,6 +323,15 @@ public abstract class Plot
 		}
 		return m_transformation.transform(table);
 	}
+	
+	/**
+	 * Gets a reference to the data table from which this plot is drawn.
+	 * @return The table, or {@node null} if no table reference can be given
+	 */
+	public Table getTable()
+	{
+		return m_table;
+	}
 
 	/**
 	 * Generates a suitable file extension for a given image type
@@ -343,5 +354,10 @@ public abstract class Plot
 			return "";
 		
 		}
+	}
+
+	public NodeFunction getDependency()
+	{
+		return new TableFunctionNode(m_table, 0, 0);
 	}
 }

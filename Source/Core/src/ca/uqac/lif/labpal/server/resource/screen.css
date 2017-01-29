@@ -341,6 +341,11 @@ table.exp-table td {
   padding-left: 32px;
 }
 
+.btn-table {
+  background: #e0e0e0 url('images/table-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
+}
+
 .btn-csv {
   width: 24px;
   height: 24px;
@@ -364,6 +369,11 @@ table.exp-table td {
 
 .btn-all-plots {
   background: #e0e0e0 url('images/pages-24.png') 4px 4px no-repeat;
+  padding-left: 28px;
+}
+
+.btn-all-plots-latex {
+  background: #e0e0e0 url('images/tex-24.png') 4px 4px no-repeat;
   padding-left: 28px;
 }
 

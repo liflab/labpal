@@ -26,6 +26,7 @@ import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
+import ca.uqac.lif.labpal.table.Table;
 
 /**
  * Callback showing a list of plots
@@ -53,8 +54,9 @@ public class PlotsPageCallback extends TemplatePageCallback
 			out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
 			if (AllPlotsCallback.s_pdftkPresent)
 			{
-				out = out.replaceAll("\\{%ALL_PLOTS%\\}", "<p><a class=\"btn btn-all-plots\" title=\"Download all plots as a single PDF file\" href=\"all-plots\">Download all plots</a></p>");
+				out = out.replaceAll("\\{%ALL_PLOTS%\\}", "<a title=\"Download all plots as a single PDF file\" href=\"all-plots\"><button class=\"btn btn-all-plots\">Download all plots</button></a>");
 			}
+			out = out.replaceAll("\\{%ALL_PLOTS_LATEX%\\}", "<a title=\"Download LaTeX macros for using the plots\" href=\"all-plots-latex\"><button class=\"btn btn-all-plots-latex\">Download LaTeX macros</button></a>");
 		}
 		else
 		{
@@ -77,6 +79,7 @@ public class PlotsPageCallback extends TemplatePageCallback
 		for (int id : ids)
 		{
 			Plot plot = m_lab.getPlot(id);
+			Table t = plot.getTable();
 			out.append("<div class=\"plot\">\n");
 			out.append("<a href=\"plot?id=").append(id).append("&amp;format=png\" target=\"_blank\" title=\"Click on plot to view in new window\">");
 			out.append("<img src=\"plot?id=").append(id).append("&amp;format=png\" alt=\"Plot\" /></a>\n");
@@ -86,7 +89,12 @@ public class PlotsPageCallback extends TemplatePageCallback
 				out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot?id=").append(id).append("&amp;format=gp&amp;dl=1\" title=\"Download as GnuPlot source file\">GP</a></li>");
 				out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot?id=").append(id).append("&amp;format=dumb\" title=\"View as ASCII art\" target=\"_blank\">ASCII</a></li>");
 			}
-			out.append("<li><a class=\"btn-24 btn-pdf\" href=\"plot?id=").append(id).append("&amp;format=pdf&amp;dl=1\" title=\"Download as PDF\">PDF</a></li></ul></div>");
+			out.append("<li><a class=\"btn-24 btn-pdf\" href=\"plot?id=").append(id).append("&amp;format=pdf&amp;dl=1\" title=\"Download as PDF\">PDF</a></li>");
+			if (t != null)
+			{
+				out.append("<li><a class=\"btn-24 btn-table\" href=\"table?id=").append(t.getId()).append("\" title=\"Show the data for this plot\">Table</a></li>");
+			}
+			out.append("</ul></div>\n");
 			out.append("</div>\n");			
 		}
 		out.append("<div style=\"clear:both\"></div>\n");

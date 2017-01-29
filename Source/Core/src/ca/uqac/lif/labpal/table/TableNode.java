@@ -19,7 +19,10 @@ package ca.uqac.lif.labpal.table;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.provenance.NodeFunction;
 import ca.uqac.lif.labpal.table.Table.CellCoordinate;
 
 public class TableNode
@@ -152,6 +155,21 @@ public class TableNode
 	public List<CellCoordinate> getCoordinates()
 	{
 		return m_coordinates;
-		
+	}
+	
+	/**
+	 * Gets the owner of a datapoint
+	 * @param lab
+	 * @param datapoint_id
+	 * @return The owner, or {@code null} if this object could not
+	 * find the owner
+	 */
+	public static Table getOwner(Laboratory lab, String datapoint_id)
+	{
+		if (!datapoint_id.startsWith("T"))
+			return null;
+		String[] parts = datapoint_id.split(Pattern.quote(NodeFunction.s_separator));
+		int id = Integer.parseInt(parts[0].substring(1).trim());
+		return lab.getTable(id);
 	}
 }

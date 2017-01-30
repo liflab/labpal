@@ -19,7 +19,7 @@ package sorting;
 
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.labpal.plot.gral.Scatterplot;
+import ca.uqac.lif.labpal.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.labpal.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
@@ -29,11 +29,13 @@ public class SortingLab extends Laboratory
 	{
 		// Give a name to the lab
 		setTitle("Sorting Algorithms");
+		setAuthor("Fred Flintstone");
 		setDescription("This lab compares the performance of a few common sorting algorithms.");
 		
 		// Prepare a table
 		ExperimentTable table = new ExperimentTable("size", "time", "name");
 		table.setTitle("Comparison of sorting algorithms");
+		table.setNickname("sorttime");
 		add(table);
 
 		// Initialize experiments
@@ -48,7 +50,7 @@ public class SortingLab extends Laboratory
 		// Prepare a plot from the results of the table
 		Scatterplot plot = new Scatterplot(table, new ExpandAsColumns("name", "time"));
 		plot.setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)");
-		plot.withLines();
+		plot.withLines().setNickname("sortplot");
 		add(plot);
 	}
 	

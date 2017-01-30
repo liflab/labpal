@@ -81,7 +81,7 @@ public class AllTablesCallback extends WebCallback
 			out.append(FileHelper.CRLF).append("\\end{lrbox}").append(FileHelper.CRLF).append(FileHelper.CRLF);
 		}
 		response.setContentType(ContentType.LATEX);
-		String filename = Server.urlEncode(m_lab.getTitle()) + ".tex";
+		String filename = Server.urlEncode("labpal-tables.tex");
 		response.setAttachment(filename);
 		response.setContents(out.toString());
 		return response;

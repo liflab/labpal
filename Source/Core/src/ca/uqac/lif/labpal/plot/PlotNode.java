@@ -42,7 +42,9 @@ public class PlotNode implements NodeFunction
 
 	public static String getDataPointId(Plot p)
 	{
-		return "P" + p.getId();
+		// We add a ".0" suffix so that a PDF viewer does not take the
+		// hyperlink for a filename
+		return "P" + p.getId() + ".0";
 	}
 
 	@Override
@@ -82,7 +84,10 @@ public class PlotNode implements NodeFunction
 	public static NodeFunction dependsOn(Plot p, String datapoint_id)
 	{
 		// Parse the datapoint ID and call the experiment on the extracted values
-		int id = Integer.parseInt(datapoint_id.substring(1).trim());
+		if (!datapoint_id.startsWith("P"))
+			return null;
+		String[] parts = datapoint_id.split(Pattern.quote(NodeFunction.s_separator));
+		int id = Integer.parseInt(parts[0].substring(1).trim());
 		if (id != p.getId())
 		{
 			// Wrong experiment

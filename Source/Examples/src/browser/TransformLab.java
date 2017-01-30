@@ -41,7 +41,7 @@ public class TransformLab extends Laboratory
 	public void setup()
 	{
 		setTitle("Browser market share");
-		setAuthorName("Emmett Brown");
+		setAuthor("Emmett Brown");
 		ExperimentTable et = new ExperimentTable("browser", "market", "share");
 		et.setTitle("Browser market share");
 		ExperimentTable pc_et = new ExperimentTable("share");

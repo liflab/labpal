@@ -129,7 +129,7 @@ public class AllPlotsCallback extends WebCallback
 		// pdftk is done; read the output
 		byte[] file_contents = runner.getBytes();
 		response.setContentType(ContentType.PDF);
-		String filename = Server.urlEncode(getPlotsFilename(m_lab));
+		String filename = Server.urlEncode("labpal-plots.pdf");
 		response.setAttachment(filename);
 		response.setContents(file_contents);
 		return response;
@@ -142,6 +142,7 @@ public class AllPlotsCallback extends WebCallback
 	 */
 	public static String getPlotsFilename(Laboratory lab)
 	{
-		return lab.getTitle() + ".pdf";
+		return "labpal-plots.pdf";
+		//return lab.getTitle() + ".pdf";
 	}
 }

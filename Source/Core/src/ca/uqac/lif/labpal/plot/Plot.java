@@ -150,6 +150,12 @@ public abstract class Plot
 	protected transient boolean m_hasKey = true;
 	
 	/**
+	 * A table nickname. This can be used as a short "code" that refers
+	 * to the table (rather than using its ID).
+	 */
+	protected String m_nickname = "";
+	
+	/**
 	 * The bytes of a blank image, used as a placeholder when no plot can
 	 * be drawn
 	 */
@@ -359,5 +365,34 @@ public abstract class Plot
 	public NodeFunction getDependency()
 	{
 		return new TableFunctionNode(m_table, 0, 0);
+	}
+
+	/**
+	 * Sets a nickname for this plot. 
+	 * This can be used as a short "code" that refers
+	 * to the plot (rather than using its ID).
+	 * @param nickname The nickname
+	 * @return This table
+	 */
+	public Plot setNickname(String nickname)
+	{
+		if (nickname == null)
+		{
+			m_nickname = "";
+		}
+		else
+		{
+			m_nickname = nickname;
+		}
+		return this;
+	}
+	
+	/**
+	 * Gets the plot's nickname
+	 * @return The nickname
+	 */
+	public String getNickname()
+	{
+		return m_nickname;
 	}
 }

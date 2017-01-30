@@ -20,7 +20,7 @@ public class MultiplePlots extends Laboratory
 	public void setup()
 	{
 		// Sets the title of this lab
-		setTitle("Two simple experiments").setAuthorName("Emmett Brown");
+		setTitle("Two simple experiments").setAuthor("Emmett Brown");
 		
 		// Put the results of the experiments in tables
 		ExperimentTable table_exp_a = new ExperimentTable("a", "y");

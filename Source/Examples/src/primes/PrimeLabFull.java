@@ -49,7 +49,7 @@ public class PrimeLabFull extends Laboratory
 		
 		// Lab metadata
 		setTitle("Comparison of primality tests");
-		setAuthorName("Emmett Brown");
+		setAuthor("Emmett Brown");
 		setDescription("This lab compares various methods for checking if a number is prime.");
 		
 		// Create a table

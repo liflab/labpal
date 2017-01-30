@@ -67,7 +67,11 @@ public class AllPlotsLatexCallback extends WebCallback
 			Plot plot = m_lab.getPlot(id);
 			Table tab = plot.getTable();
 			String box_name = plot.getTitle();
-			if (!tab.getNickname().isEmpty())
+			if (!plot.getNickname().isEmpty())
+			{
+				box_name = plot.getNickname();
+			}
+			else if (!tab.getNickname().isEmpty())
 			{
 				box_name = "plot" + tab.getNickname();
 			}
@@ -82,12 +86,12 @@ public class AllPlotsLatexCallback extends WebCallback
 			out.append("\\newsavebox{\\").append(box_name).append("}").append(FileHelper.CRLF);
 			out.append("\\begin{lrbox}{\\").append(box_name).append("}").append(FileHelper.CRLF);
 			out.append("\\href{").append(PlotNode.getDataPointId(plot)).append("}{");
-			out.append("\\includepdf[pages=").append(page_nb).append("]{").append(plots_filename).append("}");
+			out.append("\\includegraphics[page=").append(page_nb).append(",width=\\linewidth]{").append(plots_filename).append("}");
 			out.append("}");
 			out.append(FileHelper.CRLF).append("\\end{lrbox}").append(FileHelper.CRLF).append(FileHelper.CRLF);
 		}
 		response.setContentType(ContentType.LATEX);
-		String filename = Server.urlEncode(m_lab.getTitle()) + "-plots.tex";
+		String filename = Server.urlEncode("labpal-plots.tex");
 		response.setAttachment(filename);
 		response.setContents(out.toString());
 		return response;

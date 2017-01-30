@@ -63,6 +63,7 @@ h1 {
   padding: 4px;
   border: solid 1px #d8d8d8;
   border-radius: 4px;
+  box-shadow: 2px 2px 0px 0px rgba(115,115,115,1);
 }
 
 #top-menu ul li:hover {
@@ -168,6 +169,7 @@ h1 {
   display: inline-block;
   text-decoration: none;
   color: #222;
+  box-shadow: 2px 2px 0px 0px rgba(115,115,115,1);
 }
 
 .btn:hover, .btn-24:hover {

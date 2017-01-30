@@ -33,7 +33,7 @@ public class SimpleLab extends Laboratory
 	{
 		// Sets the title of this lab
 		setTitle("A simple experiment");
-		setAuthorName("Emmett Brown");
+		setAuthor("Emmett Brown");
 		
 		// Setup a table to collate experiment results
 		ExperimentTable table = new ExperimentTable("a", "y");

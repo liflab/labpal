@@ -211,7 +211,7 @@ public abstract class Laboratory
 	 * @param author The author's name
 	 * @return This lab
 	 */
-	public final Laboratory setAuthorName(String author)
+	public final Laboratory setAuthor(String author)
 	{
 		m_author = author;
 		return this;

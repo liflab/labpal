@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.macro.MacroNode;
 import ca.uqac.lif.labpal.plot.PlotNode;
 import ca.uqac.lif.labpal.provenance.AggregateFunction;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
@@ -147,6 +148,11 @@ public class ExplainCallback extends TemplatePageCallback
 		{
 			PlotNode tcn = (PlotNode) nf;
 			return "plot?id=" + tcn.getOwner().getId();
+		}
+		else if (nf instanceof MacroNode)
+		{
+			MacroNode tcn = (MacroNode) nf;
+			return "macros" + "?highlight=" + tcn.getDataPointId() + "#" + tcn.getOwner().getId();
 		}
 		else if (nf instanceof ExperimentValue)
 		{

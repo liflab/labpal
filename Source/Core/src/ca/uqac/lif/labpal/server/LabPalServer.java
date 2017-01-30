@@ -80,6 +80,8 @@ public class LabPalServer extends InnerFileServer
 		registerCallback(0, new ExplainCallback(lab, assistant));
 		registerCallback(0, new ExplainImageCallback(lab, assistant));
 		registerCallback(0, new FindFormCallback(lab, assistant));
+		registerCallback(0, new MacrosPageCallback(lab, assistant));
+		registerCallback(0, new AllMacrosLatexCallback(lab, assistant));
 	}
 	
 	/**

@@ -12,6 +12,7 @@
 
 \input{labpal-tables.tex}
 \input{labpal-plots.tex}
+\input{labpal-macros.tex}
 
 This is a simple \LaTeX{} document showing how to include plots, macros and
 tables generated with LabPal inside your research paper. Our paper will use the
@@ -30,7 +31,7 @@ Make sure your \LaTeX{} file imports the following packages:
 
 \section*{Importing the Files}
 
-The first step is to run the experiments in the lab, and to export three files:
+The first step is to run the experiments in the lab, and to export four files:
 
 \begin{itemize}
 \item The PDF files for all plots in the lab. Go to the \textsl{Plots} page and
@@ -42,9 +43,12 @@ click on the ``Download \LaTeX{} macros'' button. By default, the file is called
 \item The \LaTeX{} file for the tables. In the \textsl{Tables} page, click on
 the ``Download all tables'' button. By default, the file is called
 \verb+labpal-tables.tex+.
+\item The \LaTeX{} file for the macros. In the \textsl{Macros} page, click on
+the ``Download all macros'' button. By default, the file is called
+\verb+labpal-macros.tex+.
 \end{itemize}
 
-Copy these three files in the same folder as your research paper. At the top
+Copy these files in the same folder as your research paper. At the top
 of the paper, make sure you include the two \texttt{.tex} files using the \texttt{input}
 command.
 
@@ -88,5 +92,12 @@ Figure \ref{table-sort} shows an example of a figure included in such a way. The
 figure is surrounded by a hyperlink. The destination of this link can be
 copy-pasted in LabPal's web console, in the \textsl{Find} page, which takes you
 to the plot and its associated data table.
+
+\section*{Referring to Macros}
+
+Referring to macros is even easier. Simply call any of the commands defined in
+\verb+labpal-macros.tex+ wherever in the text. For example, we know that the
+slowest sorting algorithm is \slowestAlgo{}, and that our lab has considered
+arrays of size up to \maxSize{}.
 
 \end{document}

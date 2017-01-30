@@ -120,6 +120,11 @@ h1 {
   padding-left: 56px;
 }
 
+#top-menu-macros {
+  background: url('images/tulip-48.png') left center no-repeat;
+  padding-left: 56px;
+}
+
 #top-menu-help {
   background: url('images/help-48.png') left center no-repeat;
   padding-left: 56px;
@@ -542,4 +547,25 @@ a.explanation:hover {
 #content a:hover {
   color: #88a;
   text-decoration: underline;
+}
+
+dl.macros dt {
+  background: url('images/tulip-24.png') center left no-repeat;
+  padding-left: 28px;
+  margin-bottom: 6pt;
+}
+
+dl.macros dt span.macro-name {
+  font-weight: bold;
+  font-style: italic;
+  color: #225;
+}
+
+dl.macros dd {
+  margin-bottom: 10pt;
+}
+
+a.anchor {
+  padding-top: 90px;
+  margin-top: -90px;
 }

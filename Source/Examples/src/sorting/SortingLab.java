@@ -17,7 +17,12 @@
  */
 package sorting;
 
+import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.macro.ConstantNumberMacro;
+import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.labpal.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.labpal.table.ExpandAsColumns;
@@ -27,6 +32,11 @@ public class SortingLab extends Laboratory
 {
 	public void setup()
 	{
+		// A few constants
+		final int min_length = 5000;
+		final int max_length = 30000;
+		final int increment = 5000;
+		
 		// Give a name to the lab
 		setTitle("Sorting Algorithms");
 		setAuthor("Fred Flintstone");
@@ -39,7 +49,7 @@ public class SortingLab extends Laboratory
 		add(table);
 
 		// Initialize experiments
-		for (int length = 5000; length <= 30000; length += 5000)
+		for (int length = min_length; length <= max_length; length += increment)
 		{
 			add(new QuickSort(length), table);
 			add(new ShellSort(length), table);
@@ -52,11 +62,45 @@ public class SortingLab extends Laboratory
 		plot.setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)");
 		plot.withLines().setNickname("sortplot");
 		add(plot);
+		
+		// Create a few macros showing summary information
+		add(new ConstantNumberMacro("maxSize", "The maximum size of the arrays sorted in the experiments", max_length));
+		add(new ConstantNumberMacro("numAlgos", "The number of algorithms compared in this lab", 4));
+		add(new SlowestMacro());
 	}
 	
 	public static void main(String[] args)
 	{
 		// Nothing more to do here
 		initialize(args, SortingLab.class);
+	}
+	
+	/**
+	 * This macro finds the name of the sorting algorithm with the slowest
+	 * sorting time
+	 */
+	protected class SlowestMacro extends Macro
+	{
+		public SlowestMacro()
+		{
+			super("slowestAlgo", "The name of the slowest sorting algorithm");
+		}
+		
+		@Override
+		public JsonElement getValue()
+		{
+			float longest_time = 0f;
+			String algo_name = "None";
+			for (Experiment e : getExperiments())
+			{
+				float time = e.readFloat("time");
+				if (time > longest_time)
+				{
+					longest_time = time;
+					algo_name = e.readString("name");
+				}
+			}
+			return new JsonString(algo_name);
+		}
 	}
 }

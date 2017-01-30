@@ -24,6 +24,8 @@ import java.util.Set;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.macro.Macro;
+import ca.uqac.lif.labpal.macro.MacroNode;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.plot.PlotNode;
 import ca.uqac.lif.labpal.table.Table;
@@ -72,6 +74,12 @@ public class DataTracker
 		{
 			return p;
 		}
+		// Is it a macro?
+		Macro m = MacroNode.getOwner(m_lab, id);
+		if (m != null)
+		{
+			return m;
+		}
 		return null;
 	}
 
@@ -98,6 +106,10 @@ public class DataTracker
 		if (owner instanceof Plot)
 		{
 			return PlotNode.dependsOn((Plot) owner, datapoint_id);
+		}
+		if (owner instanceof Macro)
+		{
+			return MacroNode.dependsOn((Macro) owner, datapoint_id);
 		}
 		return null;
 	}
@@ -156,6 +168,16 @@ public class DataTracker
 			PlotNode plot_n = (PlotNode) nf;
 			Plot p = plot_n.getOwner();
 			NodeFunction nf_dep = p.getDependency();
+			seen_functions.add(nf_dep);
+			pn.addParent(explain(nf_dep, seen_functions, depth - 1));
+			return pn;
+		}
+		if (nf instanceof MacroNode)
+		{
+			ProvenanceNode pn = new ProvenanceNode(nf);
+			MacroNode plot_n = (MacroNode) nf;
+			Macro m = plot_n.getOwner();
+			NodeFunction nf_dep = m.getDependency();
 			seen_functions.add(nf_dep);
 			pn.addParent(explain(nf_dep, seen_functions, depth - 1));
 			return pn;

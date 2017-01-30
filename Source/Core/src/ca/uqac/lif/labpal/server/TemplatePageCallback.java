@@ -48,7 +48,7 @@ public class TemplatePageCallback extends WebCallback
 	
 	protected static final transient Pattern s_patternInclude = Pattern.compile("\\{!(.*?)!\\}");
 	
-	public static enum IconType {ERLENMEYER, TABLE, STATUS, GRAPH, HOME, HELP, ASSISTANT, BINOCULARS};
+	public static enum IconType {ERLENMEYER, TABLE, STATUS, GRAPH, HOME, HELP, ASSISTANT, BINOCULARS, TULIP};
 	
 	protected String m_filename = null;
 
@@ -154,6 +154,8 @@ public class TemplatePageCallback extends WebCallback
 			return "images/assistant-48.png";
 		case BINOCULARS:
 			return "images/find-48.png";
+		case TULIP:
+			return "images/tulip-48.png";
 		default:
 			return "images/erlenmeyer-48.png";
 		

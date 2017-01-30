@@ -20,10 +20,8 @@ package ca.uqac.lif.labpal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,7 +94,7 @@ public abstract class Laboratory
 	/**
 	 * The set of macros associated to this lab
 	 */
-	private transient Map<String,Macro> m_macros;
+	private transient Set<Macro> m_macros;
 
 	/**
 	 * The set of groups associated with this lab
@@ -199,7 +197,7 @@ public abstract class Laboratory
 		m_plots = new HashSet<Plot>();
 		m_tables = new HashSet<Table>();
 		m_groups = new HashSet<Group>();
-		m_macros = new HashMap<String,Macro>();
+		m_macros = new HashSet<Macro>();
 		m_assistant = null;
 		m_serializer = new JsonSerializer();
 		m_serializer.addClassLoader(ca.uqac.lif.labpal.Laboratory.class.getClassLoader());
@@ -352,7 +350,7 @@ public abstract class Laboratory
 	{
 		for (Macro m : macros)
 		{
-			m_macros.put(m.getName(), m);
+			m_macros.add(m);
 		}
 		return this;
 	}
@@ -1142,7 +1140,7 @@ public abstract class Laboratory
 	 */
 	public Collection<Macro> getMacros() 
 	{
-		return m_macros.values();
+		return m_macros;
 	}
 	
 	/**
@@ -1161,7 +1159,7 @@ public abstract class Laboratory
 	 */
 	public Macro getMacro(int id) 
 	{
-		for (Macro m : m_macros.values())
+		for (Macro m : m_macros)
 		{
 			if (m.getId() == id)
 			{

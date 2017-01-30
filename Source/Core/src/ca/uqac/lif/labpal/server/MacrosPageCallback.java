@@ -19,14 +19,18 @@ package ca.uqac.lif.labpal.server;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.Macro;
+import ca.uqac.lif.labpal.macro.MacroMap;
 import ca.uqac.lif.labpal.macro.MacroNode;
+import ca.uqac.lif.labpal.macro.MacroScalar;
 
 /**
  * Callback showing the list of macros defined in this lab
@@ -78,15 +82,37 @@ public class MacrosPageCallback extends TemplatePageCallback
 		out.append("<dl class=\"macros\">\n");
 		for (Macro m : macros)
 		{
-			String css_class = "";
-			String dp_id = MacroNode.getDatapointId(m);
-			if (to_highlight.contains(dp_id))
+			if (m instanceof MacroScalar)
 			{
-				css_class = " class=\"highlighted\"";
+				MacroScalar ms = (MacroScalar) m;
+				String css_class = "";
+				String dp_id = MacroNode.getDatapointId(ms, "");
+				if (to_highlight.contains(dp_id))
+				{
+					css_class = " class=\"highlighted\"";
+				}
+				out.append("<dt>").append("<a class=\"anchor\" name=\"").append(ms.getId()).append("\"></a>");
+				out.append("<a").append(css_class).append(" href=\"explain?id=").append(dp_id).append("\"><span class=\"macro-name\">").append(ms.getName()).append("</span></a>: <span class=\"macro-value\">").append(ms.getValue()).append("</span></dt>\n");
+				out.append("<dd>").append(ms.getDescription()).append("</dd>\n");
 			}
-			out.append("<dt>").append("<a class=\"anchor\" name=\"").append(m.getId()).append("\"></a>");
-			out.append("<a").append(css_class).append(" href=\"explain?id=").append(dp_id).append("\"><span class=\"macro-name\">").append(m.getName()).append("</span></a>: <span class=\"macro-value\">").append(m.getValue()).append("</span></dt>\n");
-			out.append("<dd>").append(m.getDescription()).append("</dd>\n");
+			else if (m instanceof MacroMap)
+			{
+				MacroMap mm = (MacroMap) m;
+				List<String> names = mm.getNames();
+				Map<String,JsonElement> values = mm.getValues();
+				for (String name : names)
+				{
+					String css_class = "";
+					String dp_id = MacroNode.getDatapointId(mm, name);
+					if (to_highlight.contains(dp_id))
+					{
+						css_class = " class=\"highlighted\"";
+					}
+					out.append("<dt>").append("<a class=\"anchor\" name=\"").append(m.getId()).append("\"></a>");
+					out.append("<a").append(css_class).append(" href=\"explain?id=").append(dp_id).append("\"><span class=\"macro-name\">").append(name).append("</span></a>: <span class=\"macro-value\">").append(values.get(name)).append("</span></dt>\n");
+					out.append("<dd>").append(mm.getDescription(name)).append("</dd>\n");
+				}
+			}
 		}
 		out.append("</dl>\n");
 		return out.toString();

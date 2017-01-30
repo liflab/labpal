@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.labpal.macro;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.Laboratory;
@@ -29,11 +30,19 @@ import ca.uqac.lif.labpal.provenance.NodeFunction;
 public class MacroNode implements NodeFunction 
 {
 	protected final Macro m_macro;
+	
+	protected final String m_key;
 
-	public MacroNode(Macro m)
+	public MacroNode(Macro m, String key)
 	{
 		super();
 		m_macro = m;
+		m_key = key;
+	}
+	
+	public MacroNode(Macro m)
+	{
+		this(m, "");
 	}
 
 	/**
@@ -41,8 +50,14 @@ public class MacroNode implements NodeFunction
 	 * @param t The table
 	 * @return The identifier
 	 */
-	public static String getDatapointId(Macro m)
+	public static String getDatapointId(Macro m, String key)
 	{
+		if (m instanceof MacroMap)
+		{
+			MacroMap mm = (MacroMap) m;
+			int index = mm.m_names.indexOf(key.intern());
+			return "M" + m.getId() + NodeFunction.s_separator + index;
+		}
 		// We add a ".0" suffix so that a PDF viewer does not take the
 		// hyperlink for a filename
 		return "M" + m.getId() + ".0";
@@ -51,13 +66,28 @@ public class MacroNode implements NodeFunction
 	@Override
 	public String toString()
 	{
-		return "Macro #" + m_macro.getId();
+		if (m_key == null || m_key.isEmpty())
+		{
+			return "Macro #" + m_macro.getId();
+		}
+		else
+		{
+			return "Value of " + m_key + " in Macro #" + m_macro.getId();
+		}
 	}
 
 	@Override
 	public String getDataPointId()
 	{
-		return "M" + m_macro.getId() + ".0";
+		if (m_key == null || m_key.isEmpty())
+		{
+			return "M" + m_macro.getId() + NodeFunction.s_separator + "0";
+		}
+		else
+		{
+			int index = ((MacroMap) m_macro).m_names.indexOf(m_key.intern());
+			return "M" + m_macro.getId() + NodeFunction.s_separator + index;
+		}
 	}
 
 	@Override
@@ -66,7 +96,7 @@ public class MacroNode implements NodeFunction
 		// Can be overridden, but for now, depend on nothing
 		return null;
 	}
-	
+
 	public static NodeFunction dependsOn(Macro m, String datapoint_id)
 	{
 		// Parse the datapoint ID and call the experiment on the extracted values
@@ -76,10 +106,21 @@ public class MacroNode implements NodeFunction
 		int id = Integer.parseInt(parts[0].substring(1).trim());
 		if (id != m.getId())
 		{
-			// Wrong experiment
+			// Wrong macro
 			return null;
 		}
-		return new MacroNode(m);
+		if (m instanceof MacroScalar)
+		{
+			return new MacroNode(m);
+		}
+		int index = Integer.parseInt(parts[1]);
+		List<String> names = ((MacroMap) m).getNames();
+		if (index < 0 || index >= names.size())
+		{
+			// Wrong index
+			return null;
+		}
+		return new MacroNode(m, names.get(index));
 	}
 
 	/**
@@ -106,7 +147,7 @@ public class MacroNode implements NodeFunction
 	@Override
 	public int hashCode()
 	{
-		return m_macro.getId();
+		return m_macro.getId() + m_key.hashCode();
 	}
 
 	@Override
@@ -117,6 +158,7 @@ public class MacroNode implements NodeFunction
 			return false;
 		}
 		MacroNode tcn = (MacroNode) o;
-		return tcn.m_macro.getId() == m_macro.getId();
+		return tcn.m_macro.getId() == m_macro.getId() 
+				&& tcn.m_key.compareTo(m_key) == 0;
 	}
 }

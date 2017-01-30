@@ -3,7 +3,7 @@ package ca.uqac.lif.labpal.macro;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNumber;
 
-public class NumberMacro extends Macro 
+public class NumberMacro extends MacroScalar
 {
 	public NumberMacro(String name, String description) 
 	{

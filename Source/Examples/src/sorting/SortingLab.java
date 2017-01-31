@@ -17,35 +17,41 @@
  */
 package sorting;
 
-import ca.uqac.lif.json.JsonElement;
-import ca.uqac.lif.json.JsonString;
-import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.ConstantNumberMacro;
-import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
+import ca.uqac.lif.labpal.plot.gnuplot.ClusteredHistogram;
 import ca.uqac.lif.labpal.plot.gnuplot.Scatterplot;
+import ca.uqac.lif.labpal.table.ColumnSum;
 import ca.uqac.lif.labpal.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.labpal.table.TransformedTable;
 
+/**
+ * This is an example of a lab that creates experiments to compare
+ * sorting algorithms. It is intended as a showcase of the various
+ * features that are available in LabPal.
+ * 
+ * @author Sylvain Hallé
+ */
 public class SortingLab extends Laboratory
 {
 	public void setup()
 	{
 		// A few constants
 		final int min_length = 5000;
-		final int max_length = 30000;
+		final int max_length = 80000;
 		final int increment = 5000;
 		
 		// Give a name to the lab
 		setTitle("Sorting Algorithms");
 		setAuthor("Fred Flintstone");
-		setDescription("This lab compares the performance of a few common sorting algorithms.");
+		setDescription(FileHelper.internalFileToString(this, "description.html"));
 		
 		// Prepare a table
 		ExperimentTable table = new ExperimentTable("size", "time", "name");
-		table.setTitle("Comparison of sorting algorithms");
-		table.setNickname("sorttime");
+		table.setTitle("Comparison of sorting algorithms").setNickname("sorttime");
 		add(table);
 
 		// Initialize experiments
@@ -58,49 +64,36 @@ public class SortingLab extends Laboratory
 		}
 		
 		// Prepare a plot from the results of the table
-		Scatterplot plot = new Scatterplot(table, new ExpandAsColumns("name", "time"));
+		TransformedTable t_table = new TransformedTable(ExpandAsColumns.get("name", "time"), table);
+		t_table.setTitle("Sorting time per algorithm").setNickname("sorttimealg");
+		add(t_table);
+		Scatterplot plot = new Scatterplot(t_table);
 		plot.setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)");
 		plot.withLines().setNickname("sortplot");
 		add(plot);
+		ClusteredHistogram c_plot = new ClusteredHistogram(t_table);
+		c_plot.setTitle("Sorting time for each array").setNickname("sorthisto");
+		c_plot.setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)");
+		add(c_plot);
+		
+		// Just for fun, create another plot with the sum of all sorting
+		// times for each algorithm
+		TransformedTable p_table = new TransformedTable(ColumnSum.get(), t_table);
+		p_table.setTitle("Cumulative sorting time").setNickname("sumtime");
+		add(p_table);
+		ClusteredHistogram p_plot = new ClusteredHistogram(p_table);
+		c_plot.setCaption(Axis.X, "Total size").setCaption(Axis.Y, "Time (ms)");
+		add(p_plot);
 		
 		// Create a few macros showing summary information
-		add(new ConstantNumberMacro("maxSize", "The maximum size of the arrays sorted in the experiments", max_length));
-		add(new ConstantNumberMacro("numAlgos", "The number of algorithms compared in this lab", 4));
-		add(new SlowestMacro());
+		add(new ConstantNumberMacro(this, "maxSize", "The maximum size of the arrays sorted in the experiments", max_length));
+		add(new ConstantNumberMacro(this, "numAlgos", "The number of algorithms compared in this lab", 4));
+		add(new SlowestMacro(this));
 	}
 	
 	public static void main(String[] args)
 	{
 		// Nothing more to do here
 		initialize(args, SortingLab.class);
-	}
-	
-	/**
-	 * This macro finds the name of the sorting algorithm with the slowest
-	 * sorting time
-	 */
-	protected class SlowestMacro extends Macro
-	{
-		public SlowestMacro()
-		{
-			super("slowestAlgo", "The name of the slowest sorting algorithm");
-		}
-		
-		@Override
-		public JsonElement getValue()
-		{
-			float longest_time = 0f;
-			String algo_name = "None";
-			for (Experiment e : getExperiments())
-			{
-				float time = e.readFloat("time");
-				if (time > longest_time)
-				{
-					longest_time = time;
-					algo_name = e.readString("name");
-				}
-			}
-			return new JsonString(algo_name);
-		}
 	}
 }

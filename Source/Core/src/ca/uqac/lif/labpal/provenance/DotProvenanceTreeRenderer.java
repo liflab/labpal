@@ -4,6 +4,7 @@ import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.server.ExplainCallback;
 import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.TableCellNode;
+import ca.uqac.lif.labpal.table.TableNode;
 
 /**
  * Renders a provenance node into a picture
@@ -72,9 +73,30 @@ public class DotProvenanceTreeRenderer
 	public String styleNode(ProvenanceNode n)
 	{
 		String style = "";
-		if (n.getNodeFunction() instanceof TableCellNode)
+		NodeFunction nf = n.getNodeFunction();
+		if (nf instanceof TableCellNode)
 		{
-			style = "style=filled,fillcolor=blue";
+			style = "style=filled,fillcolor=cornflowerblue";
+		}
+		else if (nf instanceof TableNode)
+		{
+			style = "style=filled,fillcolor=deepskyblue2";
+		}
+		else if (nf instanceof AggregateFunction)
+		{
+			style = "style=filled,fillcolor=deeppink";
+		}
+		else if (nf instanceof ExperimentValue)
+		{
+			style = "style=filled,fillcolor=darkgoldenrod1";
+		}
+		else if (n instanceof BrokenChain)
+		{
+			style = "style=filled,fillcolor=crimson";
+		}
+		else if (n instanceof InfiniteLoop)
+		{
+			style = "style=filled,fillcolor=crimson";
 		}
 		return style;
 	}

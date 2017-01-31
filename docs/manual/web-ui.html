@@ -28,6 +28,22 @@
 
   <!-- RSS -->
   <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> -->
+  
+  <!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  // tracker methods like "setCustomDimension" should be called before "trackPageView"
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//leduotang.ca/piwik/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '3']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
 </head>
   <body class="layout-reverse theme-base-0e">
 
@@ -45,10 +61,11 @@
   <nav class="sidebar-nav">
     <a class="sidebar-nav-item" href="../">Home</a>
     <a class="sidebar-nav-item" href="../manual/quick-tutorial.html">Quick tutorial</a>
+    <a class="sidebar-nav-item" href="../videos.html">Videos</a>
     <a class="sidebar-nav-item" href="../manual/index.html">User manual</a>
     <a class="sidebar-nav-item" href="https://github.com/liflab/labpal/releases/latest">Download</a>
     <a class="sidebar-nav-item" href="https://github.com/liflab/labpal">GitHub project</a>
-    <span class="sidebar-nav-item">Currently v2.5</span>
+    <span class="sidebar-nav-item">Currently v2.7</span>
   </nav>
 
   <div class="sidebar-item">
@@ -82,6 +99,7 @@
 <p>In this section, you will learn the following features:</p>
 
 <ul>
+<li><a href="#video">A video demo</a></li>
 <li><a href="#usage">Typical usage of the web console</a></li>
 <li><a href="#elements">The elements of the web console</a></li>
 <li><a href="#remote">Running a lab on a remote machine</a></li>
@@ -89,170 +107,177 @@
 </ul>
 
 <h3>
-  <a name="usage">Typical usage of the web console</a>
+  <a name="video">A video demo</a>
 </h3>
 
-<p>If you are in a hurry, here is a quick run through on how to use the console to run experiments.</p>
+<p>An image is worth a thousand words, so you may want to first watch this video demo of the main features of the web console.</p>
 
-<ol>
-<li>Go to the <em>Experiments</em> page by clicking on the button at the top of the page. This will display a list of experiments.</li>
-<li>Select some experiments in the list by clicking on the corresponding checkbox.</li>
-<li>Click on the "Add to assistant" button to queue these experiments</li>
-<li>Go to the <em>Lab assistant</em> page by clicking on the button at the top of the page.</li>
-<li>Click on the <em>Start</em> button. This will launch the execution of each experiment one after the other.</li>
-<li>At any point, you can look at the results of the experiments that have run so far. You can do so by:
+<iframe width="560" height="315" src="https://www.youtube.com/embed/5uL7i6SytyM" frameborder="0" allowfullscreen="">
 
-<ul>
-<li>Going to the Plots or the Tables page and see the plots and tables created for this lab being updated in real time</li>
-<li>Going back to the list of experiments, clicking on one of them and get the detailed description and data points that this experiment has generated</li>
-</ul>
-</li>
-<li>Once the assistant is done, you can export any of the plots and tables to a file, or the raw data points by using the <em>Export</em> button in the <em>Status</em> page.</li>
-</ol>
+&lt;h3&gt;
+  &lt;a name="usage"&gt;Typical usage of the web console&lt;/a&gt;
+&lt;/h3&gt;
 
-<h3>
-  <a name="elements">The elements of the web console</a>
-</h3>
+&lt;p&gt;If you are in a hurry, here is a quick run through on how to use the console to run experiments.&lt;/p&gt;
 
-<p>We will not look at the elements of the web console in more detail.</p>
+&lt;ol&gt;
+&lt;li&gt;Go to the &lt;em&gt;Experiments&lt;/em&gt; page by clicking on the button at the top of the page. This will display a list of experiments.&lt;/li&gt;
+&lt;li&gt;Select some experiments in the list by clicking on the corresponding checkbox.&lt;/li&gt;
+&lt;li&gt;Click on the "Add to assistant" button to queue these experiments&lt;/li&gt;
+&lt;li&gt;Go to the &lt;em&gt;Lab assistant&lt;/em&gt; page by clicking on the button at the top of the page.&lt;/li&gt;
+&lt;li&gt;Click on the &lt;em&gt;Start&lt;/em&gt; button. This will launch the execution of each experiment one after the other.&lt;/li&gt;
+&lt;li&gt;At any point, you can look at the results of the experiments that have run so far. You can do so by:
 
-<p>The web console is divided into seven pages, each of which gives details about specific parts of a lab.</p>
+&lt;ul&gt;
+&lt;li&gt;Going to the Plots or the Tables page and see the plots and tables created for this lab being updated in real time&lt;/li&gt;
+&lt;li&gt;Going back to the list of experiments, clicking on one of them and get the detailed description and data points that this experiment has generated&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Once the assistant is done, you can export any of the plots and tables to a file, or the raw data points by using the &lt;em&gt;Export&lt;/em&gt; button in the &lt;em&gt;Status&lt;/em&gt; page.&lt;/li&gt;
+&lt;/ol&gt;
 
-<h4>The <em>Home</em> page</h4>
+&lt;h3&gt;
+  &lt;a name="elements"&gt;The elements of the web console&lt;/a&gt;
+&lt;/h3&gt;
 
-<p>As its name implies, the Home page is the first page that is displayed when opening the web console.</p>
+&lt;p&gt;We will not look at the elements of the web console in more detail.&lt;/p&gt;
 
-<p>
-  <a href="../index.png" title="Click to zoom">
-    <img src="../index.png" alt="Home page" width="400">
-  </a>
-</p>
+&lt;p&gt;The web console is divided into seven pages, each of which gives details about specific parts of a lab.&lt;/p&gt;
 
-<p>It displays two things:</p>
+&lt;h4&gt;The &lt;em&gt;Home&lt;/em&gt; page&lt;/h4&gt;
 
-<ul>
-<li>If no description for the lab has been defined by its author, the home page displays the same basic information as the Help page on how to use the lab.</li>
-<li>Otherwise, the page displays the text that has been written by the lab's author to describe this specific lab. When creating a lab, we recommend you use this space to give a description of the lab:
+&lt;p&gt;As its name implies, the Home page is the first page that is displayed when opening the web console.&lt;/p&gt;
 
-<ul>
-<li>What does it do?</li>
-<li>What are its expected conclusions?</li>
-<li>What are the experiments in the lab?</li>
-<li>What is the broader context in which these experiments have been designed (research paper, academic project, etc.)?</li>
-</ul>
-</li>
-</ul>
+&lt;p&gt;
+  &lt;a href="../index.png" title="Click to zoom"&gt;
+    &lt;img src="../index.png" alt="Home page" width="400"/&gt;
+  &lt;/a&gt;
+&lt;/p&gt;
 
-<h4>The <em>Status</em> page</h4>
+&lt;p&gt;It displays two things:&lt;/p&gt;
 
-<p>The status page displays global information about the lab.</p>
+&lt;ul&gt;
+&lt;li&gt;If no description for the lab has been defined by its author, the home page displays the same basic information as the Help page on how to use the lab.&lt;/li&gt;
+&lt;li&gt;Otherwise, the page displays the text that has been written by the lab's author to describe this specific lab. When creating a lab, we recommend you use this space to give a description of the lab:
 
-<p>
-  <a href="../status.png" title="Click to zoom">
-    <img src="../status.png" alt="Status page" width="400">
-  </a>
-</p>
+&lt;ul&gt;
+&lt;li&gt;What does it do?&lt;/li&gt;
+&lt;li&gt;What are its expected conclusions?&lt;/li&gt;
+&lt;li&gt;What are the experiments in the lab?&lt;/li&gt;
+&lt;li&gt;What is the broader context in which these experiments have been designed (research paper, academic project, etc.)?&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-<p>At the top of the page, you see the name given to the lab by its author, the name of the lab assistant associated to the lab, the name of the lab's author, etc.</p>
+&lt;h4&gt;The &lt;em&gt;Status&lt;/em&gt; page&lt;/h4&gt;
 
-<p>Below is a progress bar that shows:
+&lt;p&gt;The status page displays global information about the lab.&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;a href="../status.png" title="Click to zoom"&gt;
+    &lt;img src="../status.png" alt="Status page" width="400"/&gt;
+  &lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;At the top of the page, you see the name given to the lab by its author, the name of the lab assistant associated to the lab, the name of the lab's author, etc.&lt;/p&gt;
+
+&lt;p&gt;Below is a progress bar that shows:
 - How many experiments have successfully executed (green)
 - How many experiments have failed (red)
-- How many experiments have yet to be executed (grey)</p>
+- How many experiments have yet to be executed (grey)&lt;/p&gt;
 
-<p>When experiments are running, you can refresh the page and the bar will update accordingly.</p>
+&lt;p&gt;When experiments are running, you can refresh the page and the bar will update accordingly.&lt;/p&gt;
 
-<p>Still below are two buttons that allow you to save and load the lab's state. This feature has <a href="saving.html">its own section</a>.</p>
+&lt;p&gt;Still below are two buttons that allow you to save and load the lab's state. This feature has &lt;a href="saving.html"&gt;its own section&lt;/a&gt;.&lt;/p&gt;
 
-<p>Finally, the bottom part of the page gives some more information about the environment in which the lab is running: name and version of the operating system, etc.</p>
+&lt;p&gt;Finally, the bottom part of the page gives some more information about the environment in which the lab is running: name and version of the operating system, etc.&lt;/p&gt;
 
-<h4>The <em>Experiments</em> page</h4>
+&lt;h4&gt;The &lt;em&gt;Experiments&lt;/em&gt; page&lt;/h4&gt;
 
-<p>This page shows the list of all the experiments that have been incorporated into the lab.</p>
+&lt;p&gt;This page shows the list of all the experiments that have been incorporated into the lab.&lt;/p&gt;
 
-<p>
-  <a href="../experiments-before.png" title="Click to zoom">
-    <img src="../experiments-before.png" alt="Experiments page" width="400">
-  </a>
-</p>
+&lt;p&gt;
+  &lt;a href="../experiments-before.png" title="Click to zoom"&gt;
+    &lt;img src="../experiments-before.png" alt="Experiments page" width="400"/&gt;
+  &lt;/a&gt;
+&lt;/p&gt;
 
-<p>Each experiment corresponds to one row in the list. Each experiment is given by the lab an internal unique number, which is displayed at the left. This number has no meaning, except for distinguishing experiments; you should not rely on this for anything else. Then, if the experiments have any input parameters, the value for each of these parameters is shown in the respective column.</p>
+&lt;p&gt;Each experiment corresponds to one row in the list. Each experiment is given by the lab an internal unique number, which is displayed at the left. This number has no meaning, except for distinguishing experiments; you should not rely on this for anything else. Then, if the experiments have any input parameters, the value for each of these parameters is shown in the respective column.&lt;/p&gt;
 
-<p>The last column shows the status of the experiment. The status can either be:</p>
+&lt;p&gt;The last column shows the status of the experiment. The status can either be:&lt;/p&gt;
 
-<ul>
-<li><p><img src="status-ok-24.png" alt="OK" style="display:inline-block;margin:0">: the experiment is ready to run</p></li>
-<li><p><img src="status-queued-24.png" alt="Queued" style="display:inline-block;margin:0">: the experiment is in the lab assistant's queue, waiting to be run</p></li>
-<li><p><img src="status-running-24.png" alt="Running" style="display:inline-block;margin:0">: the experiment is currently running</p></li>
-<li><p><img src="status-prereq-24.png" alt="Prerequisites" style="display:inline-block;margin:0">: the experiment must generate some <a href="experiments.html#prerequisites">prerequisites</a> before it is ready to be run</p></li>
-<li><p><img src="status-done-24.png" alt="Done" style="display:inline-block;margin:0">: the experiment has completed successfully</p></li>
-<li><p><img src="status-fail-24.png" alt="Failed" style="display:inline-block;margin:0">: the experiment has failed (see <a href="experiments.html#errors">errors</a>)</p></li>
-</ul>
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;img src="status-ok-24.png" alt="OK" style="display:inline-block;margin:0"/&gt;: the experiment is ready to run&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;img src="status-queued-24.png" alt="Queued" style="display:inline-block;margin:0"/&gt;: the experiment is in the lab assistant's queue, waiting to be run&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;img src="status-running-24.png" alt="Running" style="display:inline-block;margin:0"/&gt;: the experiment is currently running&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;img src="status-prereq-24.png" alt="Prerequisites" style="display:inline-block;margin:0"/&gt;: the experiment must generate some &lt;a href="experiments.html#prerequisites"&gt;prerequisites&lt;/a&gt; before it is ready to be run&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;img src="status-done-24.png" alt="Done" style="display:inline-block;margin:0"/&gt;: the experiment has completed successfully&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;img src="status-fail-24.png" alt="Failed" style="display:inline-block;margin:0"/&gt;: the experiment has failed (see &lt;a href="experiments.html#errors"&gt;errors&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-<p>A check box next to each experiment allows the user to select/unselect some of them, and apply a few operations in bulk. These operations are represented by the buttons at the very bottom of the page (you may have to scroll a bit to see them). You can:</p>
+&lt;p&gt;A check box next to each experiment allows the user to select/unselect some of them, and apply a few operations in bulk. These operations are represented by the buttons at the very bottom of the page (you may have to scroll a bit to see them). You can:&lt;/p&gt;
 
-<ul>
-<li>Add the selected experiments to the lab assistant's queue</li>
-<li>Reset the experiments to their initial state</li>
-<li>Clean the experiments. If an experiment generates resources or performs other operations before running, the <em>Clean</em> operation will clear them. See <a href="experiments.html#prerequisites">experiment prerequisites</a>.</li>
-</ul>
+&lt;ul&gt;
+&lt;li&gt;Add the selected experiments to the lab assistant's queue&lt;/li&gt;
+&lt;li&gt;Reset the experiments to their initial state&lt;/li&gt;
+&lt;li&gt;Clean the experiments. If an experiment generates resources or performs other operations before running, the &lt;em&gt;Clean&lt;/em&gt; operation will clear them. See &lt;a href="experiments.html#prerequisites"&gt;experiment prerequisites&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
 
-<h4>The <em>Experiment</em> page</h4>
+&lt;h4&gt;The &lt;em&gt;Experiment&lt;/em&gt; page&lt;/h4&gt;
 
-<p>Clicking on an experiment number brings a page that is specific to this experiment. This page shows:</p>
+&lt;p&gt;Clicking on an experiment number brings a page that is specific to this experiment. This page shows:&lt;/p&gt;
 
-<ul>
-<li>The name of the experiment</li>
-<li>The status of the experiment (running/failed/etc.), start time, etc.</li>
-<li>If the lab's author has entered a textual description for this experiment, it will be displayed there. See <a href="metadata.html">metadata</a>.</li>
-<li>If the experiment has failed, the corresponding error message will be displayed there.</li>
-<li>The experiment's input and output parameters, with their name and their value. If the lab's author has entered a textual description for these parameters, this description can be shown by hovering the mouse over the corresponding parameter name.</li>
-</ul>
+&lt;ul&gt;
+&lt;li&gt;The name of the experiment&lt;/li&gt;
+&lt;li&gt;The status of the experiment (running/failed/etc.), start time, etc.&lt;/li&gt;
+&lt;li&gt;If the lab's author has entered a textual description for this experiment, it will be displayed there. See &lt;a href="metadata.html"&gt;metadata&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;If the experiment has failed, the corresponding error message will be displayed there.&lt;/li&gt;
+&lt;li&gt;The experiment's input and output parameters, with their name and their value. If the lab's author has entered a textual description for these parameters, this description can be shown by hovering the mouse over the corresponding parameter name.&lt;/li&gt;
+&lt;/ul&gt;
 
-<h4>The <em>Lab assistant</em> page</h4>
+&lt;h4&gt;The &lt;em&gt;Lab assistant&lt;/em&gt; page&lt;/h4&gt;
 
-<p>The lab assistant is responsible for managing the queue of experiments to be run. The contents of that queue are displayed in the <em>Lab assistant</em> page.</p>
+&lt;p&gt;The lab assistant is responsible for managing the queue of experiments to be run. The contents of that queue are displayed in the &lt;em&gt;Lab assistant&lt;/em&gt; page.&lt;/p&gt;
 
-<p>
-  <a href="../assistant.png" title="Click to zoom">
-    <img src="../assistant.png" alt="Assistant page" width="400">
-  </a>
-</p>
+&lt;p&gt;
+  &lt;a href="../assistant.png" title="Click to zoom"&gt;
+    &lt;img src="../assistant.png" alt="Assistant page" width="400"/&gt;
+  &lt;/a&gt;
+&lt;/p&gt;
 
-<p>Currently, LabPal provides only one type of lab assistant, nicknamed "George Jetson". George executes the experiments sequentially, one by one, in the order in which they were added to the queue. (LabPal is planned to eventually provide other assistants that will run the experiments differently --for example using multiple threads.)</p>
+&lt;p&gt;Currently, LabPal provides only one type of lab assistant, nicknamed "George Jetson". George executes the experiments sequentially, one by one, in the order in which they were added to the queue. (LabPal is planned to eventually provide other assistants that will run the experiments differently --for example using multiple threads.)&lt;/p&gt;
 
-<p>To start the assistant, click on the <em>Start</em> button at the top of the page. If the assistant is already running, the page will rather display a button that allows you to <em>Stop</em> the assistant. Stopping the assistant means that the experiment that is currently running will finish, but that no other experiment will be started. All the queued experiments remain in the queue, so that the assistant can be started again at a later time.</p>
+&lt;p&gt;To start the assistant, click on the &lt;em&gt;Start&lt;/em&gt; button at the top of the page. If the assistant is already running, the page will rather display a button that allows you to &lt;em&gt;Stop&lt;/em&gt; the assistant. Stopping the assistant means that the experiment that is currently running will finish, but that no other experiment will be started. All the queued experiments remain in the queue, so that the assistant can be started again at a later time.&lt;/p&gt;
 
-<p>Otherwise, this page provides a few controls for managing the contents of the queue: one can select experiments and remove them from the queue, or completely clear the queue altogether. Modifications to the queue apply immediately, and they can be done even while the assistant is running.</p>
+&lt;p&gt;Otherwise, this page provides a few controls for managing the contents of the queue: one can select experiments and remove them from the queue, or completely clear the queue altogether. Modifications to the queue apply immediately, and they can be done even while the assistant is running.&lt;/p&gt;
 
-<h4>The <em>Plots</em> page</h4>
+&lt;h4&gt;The &lt;em&gt;Plots&lt;/em&gt; page&lt;/h4&gt;
 
-<p>This is where the plots created from the lab's data are displayed.</p>
+&lt;p&gt;This is where the plots created from the lab's data are displayed.&lt;/p&gt;
 
-<ul>
-<li>Clicking on a plot displays it as a full-sized PNG image in a separate window. You can save this file using your browser's <em>Save</em> menu.</li>
-<li>If the plot can be exported as a PDF file, clicking on the PDF button will launch the download of the plot.</li>
-<li>If the plot is generated by Gnuplot, an additional button allows you to download a stand-alone source Gnuplot file (see <a href="plots.html#libraries">plot libraries</a>). You can save this file and run Gnuplot by yourself on any machine.</li>
-<li>Finally, a button at the top of the page allows you to download all the plots in a single, multi-page PDF file. This option requires <a href="https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/">pdftk</a> to be installed on the machine; otherwise the button will not show.</li>
-</ul>
+&lt;ul&gt;
+&lt;li&gt;Clicking on a plot displays it as a full-sized PNG image in a separate window. You can save this file using your browser's &lt;em&gt;Save&lt;/em&gt; menu.&lt;/li&gt;
+&lt;li&gt;If the plot can be exported as a PDF file, clicking on the PDF button will launch the download of the plot.&lt;/li&gt;
+&lt;li&gt;If the plot is generated by Gnuplot, an additional button allows you to download a stand-alone source Gnuplot file (see &lt;a href="plots.html#libraries"&gt;plot libraries&lt;/a&gt;). You can save this file and run Gnuplot by yourself on any machine.&lt;/li&gt;
+&lt;li&gt;Finally, a button at the top of the page allows you to download all the plots in a single, multi-page PDF file. This option requires &lt;a href="https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/"&gt;pdftk&lt;/a&gt; to be installed on the machine; otherwise the button will not show.&lt;/li&gt;
+&lt;/ul&gt;
 
-<p>This latter option turns out to be very convenient when writing research papers using LaTeX. With the <code>pdfpages</code> package, it is possible to display a specific page of a PDF file. When including a figure in the paper, one can hence write:</p>
+&lt;p&gt;This latter option turns out to be very convenient when writing research papers using LaTeX. With the &lt;code&gt;pdfpages&lt;/code&gt; package, it is possible to display a specific page of a PDF file. When including a figure in the paper, one can hence write:&lt;/p&gt;
 
-<pre>  <code>\begin{figure}
+&lt;pre&gt;
+  &lt;code&gt;\begin{figure}
 \includepdf[pages=2]{all-plots.pdf}
 \end{figure}
-</code>
-</pre>
+&lt;/code&gt;
+&lt;/pre&gt;
 
-<p>to include the second plot of the multi-page PDF (and similarly for the remaining figures). The advantage of doing this is that, if the lab is re-run, all the figures in the paper can be updated at the same time by simply replacing the old PDF file by the new one, which can save lots of time. (The plots are always included in the same order every time the PDF is generated.)</p>
+&lt;p&gt;to include the second plot of the multi-page PDF (and similarly for the remaining figures). The advantage of doing this is that, if the lab is re-run, all the figures in the paper can be updated at the same time by simply replacing the old PDF file by the new one, which can save lots of time. (The plots are always included in the same order every time the PDF is generated.)&lt;/p&gt;
 
-<h4>The <em>Tables</em> page</h4>
+&lt;h4&gt;The &lt;em&gt;Tables&lt;/em&gt; page&lt;/h4&gt;
 
-<p>Similarly to the plots page, this page shows the list of tables included in the lab. Clicking on a table displays its contents, and a few buttons allow each table to be exported in various formats (HTML, CSV, LaTeX).</p>
+&lt;p&gt;Similarly to the plots page, this page shows the list of tables included in the lab. Clicking on a table displays its contents, and a few buttons allow each table to be exported in various formats (HTML, CSV, LaTeX).&lt;/p&gt;
 
-<p>The "Download all tables" button is similar to the "Download all plots" button. It creates a single file including all the tables exported as LaTeX <code>tabular</code> environments. However, each table is enclosed in a <code>savebox</code> environment with a different name (generally the table's name), like this:</p>
+&lt;p&gt;The "Download all tables" button is similar to the "Download all plots" button. It creates a single file including all the tables exported as LaTeX &lt;code&gt;tabular&lt;/code&gt; environments. However, each table is enclosed in a &lt;code&gt;savebox&lt;/code&gt; environment with a different name (generally the table's name), like this:&lt;/p&gt;
 
-<pre>\newsavebox{\my_table_1}
+&lt;pre&gt;\newsavebox{\my_table_1}
 \savebox{\my_table_1}{%
 \begin{tabular}
 (Table's contents)
@@ -261,83 +286,73 @@
 
 \newsavebox{\my_table_2}
 ...
-</pre>
+&lt;/pre&gt;
 
-<p>One then simply has to <code>\include</code> the file at the beginning of the document, and to use one of the tables, write:</p>
+&lt;p&gt;One then simply has to &lt;code&gt;\include&lt;/code&gt; the file at the beginning of the document, and to use one of the tables, write:&lt;/p&gt;
 
-<pre>  <code>\begin{table}
+&lt;pre&gt;
+  &lt;code&gt;\begin{table}
 \usebox{\my_table_1}
 \end{table}
-</code>
-</pre>
+&lt;/code&gt;
+&lt;/pre&gt;
 
-<p>The advantage of doing this is that, if the lab is re-run, all the tables in the paper can be updated at the same time by simply replacing the old file by the new one.</p>
+&lt;p&gt;The advantage of doing this is that, if the lab is re-run, all the tables in the paper can be updated at the same time by simply replacing the old file by the new one.&lt;/p&gt;
 
-<h3>
-  <a name="remote">Running a lab on a remote machine</a>
-</h3>
+&lt;h3&gt;
+  &lt;a name="remote"&gt;Running a lab on a remote machine&lt;/a&gt;
+&lt;/h3&gt;
 
-<p>Since the web console runs in a browser, experiments can be controlled from a remote machine. To this end, it suffices to start LabPal on some machine A, and to open the web console in a browser on some other machine B. In this case, you must replace <code>localhost</code> in the URL by the name (or IP address) of machine A.</p>
+&lt;p&gt;Since the web console runs in a browser, experiments can be controlled from a remote machine. To this end, it suffices to start LabPal on some machine A, and to open the web console in a browser on some other machine B. In this case, you must replace &lt;code&gt;localhost&lt;/code&gt; in the URL by the name (or IP address) of machine A.&lt;/p&gt;
 
-<p>This makes it possible to run experiments on a machine for which you do not have physical access, or that does not have a graphical environment installed (such as a server, or a headless virtual machine).</p>
+&lt;p&gt;This makes it possible to run experiments on a machine for which you do not have physical access, or that does not have a graphical environment installed (such as a server, or a headless virtual machine).&lt;/p&gt;
 
-<p>As an example, suppose you have a compiled lab, called <code>my-lab.jar</code>, that you wish to run on a machine with IP address 1.2.3.4. You can first open a terminal connection to the remote machine and upload <code>my-lab.jar</code> (or instruct it to download the file from some online location). You then start the lab on that machine as usual:</p>
+&lt;p&gt;As an example, suppose you have a compiled lab, called &lt;code&gt;my-lab.jar&lt;/code&gt;, that you wish to run on a machine with IP address 1.2.3.4. You can first open a terminal connection to the remote machine and upload &lt;code&gt;my-lab.jar&lt;/code&gt; (or instruct it to download the file from some online location). You then start the lab on that machine as usual:&lt;/p&gt;
 
-<pre>  <code>$ java -jar my-lab.jar
+&lt;pre&gt;
+  &lt;code&gt;$ java -jar my-lab.jar
 
 LabPal 2.5
 (C) 2014-2017 Laboratoire d'informatique formelle
-Université du Québec à Chicoutimi, Canada
+Universit&amp;eacute; du Qu&amp;eacute;bec &amp;agrave; Chicoutimi, Canada
 Visit http://localhost:21212/index in your browser
-</code>
-</pre>
+&lt;/code&gt;
+&lt;/pre&gt;
 
-<p>However, at this point, you open your <em>local</em> web browser, and type the URL <code>http://1.2.3.4:21212/index</code>. This will open the web console of the remote instance of LabPal. From this point on, you can use LabPal as usual; however, all the experiments will actually run on machine 1.2.3.4, not on your local machine.</p>
+&lt;p&gt;However, at this point, you open your &lt;em&gt;local&lt;/em&gt; web browser, and type the URL &lt;code&gt;http://1.2.3.4:21212/index&lt;/code&gt;. This will open the web console of the remote instance of LabPal. From this point on, you can use LabPal as usual; however, all the experiments will actually run on machine 1.2.3.4, not on your local machine.&lt;/p&gt;
 
-<h3>
-  <a name="port">Changing the server port</a>
-</h3>
+&lt;h3&gt;
+  &lt;a name="port"&gt;Changing the server port&lt;/a&gt;
+&lt;/h3&gt;
 
-<p>The default port for accessing the web console is 21212. If this port is not available on the machine where LabPal is run, this can be changed through the command-line switch <code>--port</code>. For example, to open LabPal on port 8080, you start it like this:</p>
+&lt;p&gt;The default port for accessing the web console is 21212. If this port is not available on the machine where LabPal is run, this can be changed through the command-line switch &lt;code&gt;--port&lt;/code&gt;. For example, to open LabPal on port 8080, you start it like this:&lt;/p&gt;
 
-<pre>  <code>$ java -jar my-lab.jar --port 8080
-</code>
-</pre>
+&lt;pre&gt;
+  &lt;code&gt;$ java -jar my-lab.jar --port 8080
+&lt;/code&gt;
+&lt;/pre&gt;
 
-<p>If LabPal (or some other process) is already using the intended port, the lab won't be able to start, and LabPal will issue a mesage like this:</p>
+&lt;p&gt;If LabPal (or some other process) is already using the intended port, the lab won't be able to start, and LabPal will issue a mesage like this:&lt;/p&gt;
 
-<pre>  <code>Cannot open port 8080; is another instance of LabPal already running?
-</code>
-</pre>
+&lt;pre&gt;
+  &lt;code&gt;Cannot open port 8080; is another instance of LabPal already running?
+&lt;/code&gt;
+&lt;/pre&gt;
 
-<p>Look out in particular when trying to use ports 80 or 8080, as these ports are frequently already in use by a web server that runs on the host machine (such as Apache or IIS).</p>
+&lt;p&gt;Look out in particular when trying to use ports 80 or 8080, as these ports are frequently already in use by a web server that runs on the host machine (such as Apache or IIS).&lt;/p&gt;
 
-<p>Changing the port also means that you can run multiple instances of LabPal at the same time, by giving them a different TCP port at startup.</p>
+&lt;p&gt;Changing the port also means that you can run multiple instances of LabPal at the same time, by giving them a different TCP port at startup.&lt;/p&gt;
 
-<!-- :wrap=soft:mode=markdown: -->
-      </div>
-    </div>
+&lt;!-- :wrap=soft:mode=markdown: --&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
 
-    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+    &lt;label for="sidebar-checkbox" class="sidebar-toggle"&gt;&lt;/label&gt;
 
-
-
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  // tracker methods like "setCustomDimension" should be called before "trackPageView"
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//leduotang.ca/piwik/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '3']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->
-  
-
+  &lt;/body&gt;
+&lt;/html&gt;
+</iframe>
+</div>
+</div>
 </body>
 </html>

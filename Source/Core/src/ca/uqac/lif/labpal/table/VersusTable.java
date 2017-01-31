@@ -90,7 +90,7 @@ public class VersusTable extends Table
 	}
 	
 	@Override
-	protected DataTable getDataTable(boolean temporary, String... ordering) 
+	protected TempTable getDataTable(boolean temporary, String... ordering) 
 	{
 		// Ignore ordering
 		return getDataTable(temporary);

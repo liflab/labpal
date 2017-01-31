@@ -69,6 +69,11 @@ public class ExpandAsColumns implements TableTransformation
 		m_valueKey = value_key;
 	}
 	
+	public static ExpandAsColumns get(String column_key, String value_key)
+	{
+		return new ExpandAsColumns(column_key, value_key);
+	}
+	
 	@Override
 	public TempTable transform(TempTable ... tables)
 	{

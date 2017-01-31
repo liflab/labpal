@@ -238,6 +238,11 @@ h1 {
   padding-left: 40px;
 }
 
+.btn-picture {
+  background: #e0e0e0 url('images/image-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
 .json-table th {
   text-align: left;
   background: #eef;
@@ -568,4 +573,8 @@ dl.macros dd {
 a.anchor {
   padding-top: 90px;
   margin-top: -90px;
+}
+
+.explanation a {
+  text-decoration: none;
 }

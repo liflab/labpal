@@ -42,7 +42,7 @@ import ca.uqac.lif.jerrydog.InnerFileServer;
 
 /**
  * A number of helpful utilities to read, write and manage files
- *
+ * @author Sylvain Hallé
  */
 public class FileHelper
 {
@@ -247,6 +247,14 @@ public class FileHelper
 		return filename.substring(0, position);
 	}
 
+	/**
+	 * Gets a string from an internal file
+	 * @param c The class used as reference. The path is expressed relative to
+	 * the location of this class in the project.
+	 * @param path The path
+	 * @return The string, or {@code null} if the path does not correspond
+	 * to a resource
+	 */
 	public static String internalFileToString(Class<?> c, String path)
 	{
 		if (path == null || path.trim().isEmpty())
@@ -266,6 +274,14 @@ public class FileHelper
 		return out;
 	}
 
+	/**
+	 * Gets an array of bytes from an internal file
+	 * @param c The class used as reference. The path is expressed relative to
+	 * the location of this class in the project.
+	 * @param path The path
+	 * @return The array of bytes, or {@code null} if the path does not correspond
+	 * to a resource
+	 */
 	public static byte[] internalFileToBytes(Class<?> c, String path)
 	{
 		InputStream in = internalFileToStream(c, path);
@@ -277,6 +293,14 @@ public class FileHelper
 		return file_contents;
 	}
 
+	/**
+	 * Gets an input stream on an internal file
+	 * @param c The class used as reference. The path is expressed relative to
+	 * the location of this class in the project.
+	 * @param path The path
+	 * @return An input stream, or {@code null} if the path does not correspond
+	 * to a resource
+	 */
 	public static InputStream internalFileToStream(Class<?> c, String path)
 	{
 		if (path == null || path.trim().isEmpty())
@@ -494,6 +518,23 @@ public class FileHelper
 			return names;
 		}
 		return names;
+	}
+	
+	/**
+	 * Gets a string from an internal file
+	 * @param o The object used as reference. The path is expressed relative to
+	 * the location of the object's declaring class in the project.
+	 * @param filename The path
+	 * @return The string, or {@code null} if the path does not correspond
+	 * to a resource or if {@code o} is null
+	 */
+	public static String internalFileToString(Object o, String filename)
+	{
+		if (o == null)
+		{
+			return null;
+		}
+		return internalFileToString(o.getClass(), filename);
 	}
 
 }

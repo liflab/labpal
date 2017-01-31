@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2017 Sylvain Hallé
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -15,32 +15,39 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.labpal.macro;
+package sorting;
 
 import ca.uqac.lif.json.JsonElement;
-import ca.uqac.lif.json.JsonNumber;
+import ca.uqac.lif.json.JsonString;
+import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.macro.MacroScalar;
 
-public class NumberMacro extends MacroScalar
+/**
+ * This macro finds the name of the sorting algorithm with the slowest
+ * sorting time
+ */
+public  class SlowestMacro extends MacroScalar
 {
-	public NumberMacro(Laboratory lab, String name, String description) 
+	public SlowestMacro(Laboratory lab)
 	{
-		super(lab, name, description);
-	}
-
-	@Override
-	public final JsonElement getValue()
-	{
-		Number n = getNumber();
-		return new JsonNumber(n);
+		super(lab, "slowestAlgo", "The name of the slowest sorting algorithm");
 	}
 	
-	/**
-	 * Gets the numerical value associated to this macro
-	 * @return The value
-	 */
-	public Number getNumber()
+	@Override
+	public JsonElement getValue()
 	{
-		return 0;
+		float longest_time = 0f;
+		String algo_name = "None";
+		for (Experiment e : m_lab.getExperiments())
+		{
+			float time = e.readFloat("time");
+			if (time > longest_time)
+			{
+				longest_time = time;
+				algo_name = e.readString("name");
+			}
+		}
+		return new JsonString(algo_name);
 	}
 }

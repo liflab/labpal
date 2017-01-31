@@ -20,6 +20,7 @@ package ca.uqac.lif.labpal.macro;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.provenance.NodeFunction;
 import ca.uqac.lif.labpal.provenance.UndefinedDependency;
 
@@ -44,12 +45,18 @@ public abstract class Macro
 	 */
 	private static Lock s_counterLock = new ReentrantLock();
 	
-	protected Macro()
+	/**
+	 * The lab associated to the macro
+	 */
+	protected final Laboratory m_lab;
+	
+	protected Macro(Laboratory lab)
 	{
 		super();
 		s_counterLock.lock();
 		m_id = s_idCounter++;
 		s_counterLock.unlock();
+		m_lab = lab;
 	}
 
 	/**
@@ -59,6 +66,15 @@ public abstract class Macro
 	public int getId()
 	{
 		return m_id;
+	}
+	
+	/**
+	 * Gets the laboratory associated to the macro
+	 * @return The lab
+	 */
+	public Laboratory getLaboratory()
+	{
+		return m_lab;
 	}
 	
 	/**

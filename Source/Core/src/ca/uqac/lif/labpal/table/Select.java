@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2017 Sylvain Hallé
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -15,32 +15,35 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.labpal.macro;
+package ca.uqac.lif.labpal.table;
 
-import ca.uqac.lif.json.JsonElement;
-import ca.uqac.lif.json.JsonNumber;
-import ca.uqac.lif.labpal.Laboratory;
-
-public class NumberMacro extends MacroScalar
+/**
+ * Selects columns from another table
+ * @author Sylvain Hallé
+ */
+public class Select implements TableTransformation 
 {
-	public NumberMacro(Laboratory lab, String name, String description) 
+	/**
+	 * The column names to select
+	 */
+	protected String[] m_columnNames;
+	
+	public Select(String ... column_names)
 	{
-		super(lab, name, description);
+		super();
+		m_columnNames = column_names;
+	}
+	
+	public static Select get(String ... column_names)
+	{
+		return new Select(column_names);
 	}
 
 	@Override
-	public final JsonElement getValue()
+	public TempTable transform(TempTable... tables)
 	{
-		Number n = getNumber();
-		return new JsonNumber(n);
+		TempTable table = tables[0];
+		return table.getDataTable(m_columnNames);
 	}
-	
-	/**
-	 * Gets the numerical value associated to this macro
-	 * @return The value
-	 */
-	public Number getNumber()
-	{
-		return 0;
-	}
+
 }

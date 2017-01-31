@@ -21,6 +21,7 @@ import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
+import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.table.rendering.LatexTableRenderer;
 
 /**
@@ -44,9 +45,9 @@ public class MacroScalar extends Macro
 	 * Creates a new macro of given name
 	 * @param name The name
 	 */
-	public MacroScalar(String name)
+	public MacroScalar(Laboratory lab, String name)
 	{
-		this(name, "");
+		this(lab, name, "");
 	}
 	
 	/**
@@ -54,9 +55,9 @@ public class MacroScalar extends Macro
 	 * @param name The name
 	 * @param description The description
 	 */
-	public MacroScalar(String name, String description)
+	public MacroScalar(Laboratory lab, String name, String description)
 	{
-		super();
+		super(lab);
 		m_name = name;
 		m_description = description;
 	}

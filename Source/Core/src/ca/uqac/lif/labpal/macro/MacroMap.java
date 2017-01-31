@@ -26,6 +26,7 @@ import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
+import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.table.rendering.LatexTableRenderer;
 
 /**
@@ -48,9 +49,9 @@ public abstract class MacroMap extends Macro
 	 * Creates a new macro map with given data point names
 	 * @param names The names
 	 */
-	public MacroMap(String ... names)
+	public MacroMap(Laboratory lab, String ... names)
 	{
-		super();
+		super(lab);
 		m_descriptions = new HashMap<String,String>();
 		m_names = new ArrayList<String>(names.length);
 		for (String name : names)

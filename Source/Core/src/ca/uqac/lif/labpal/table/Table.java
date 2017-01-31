@@ -176,9 +176,15 @@ public abstract class Table implements DataOwner
 		return this;
 	}
 
-	public final void setTitle(String title)
+	/**
+	 * Sets a title for the table
+	 * @param title The title
+	 * @return This table
+	 */
+	public final Table setTitle(String title)
 	{
 		m_title = title;
+		return this;
 	}
 
 	public final String getTitle()
@@ -201,7 +207,7 @@ public abstract class Table implements DataOwner
 	 * @param ordering The columns to use
 	 * @return The table
 	 */
-	public final DataTable getDataTable(String ... ordering)
+	public final TempTable getDataTable(String ... ordering)
 	{
 		return getDataTable(false, ordering);
 	}
@@ -214,7 +220,7 @@ public abstract class Table implements DataOwner
 	 * @param ordering The columns to use
 	 * @return The table
 	 */
-	protected abstract DataTable getDataTable(boolean link_to_experiments, String ... ordering);
+	protected abstract TempTable getDataTable(boolean link_to_experiments, String ... ordering);
 
 	/**
 	 * Gets an instance of {@link DataTable} from the table's

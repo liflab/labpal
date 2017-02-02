@@ -1,76 +1,41 @@
 <!DOCTYPE HTML>
-<html lang="en-us">
+<!DOCTYPE html><html lang="en-us">
 <head>
-  <link href="http://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-
-  <!-- Enable responsiveness on mobile devices-->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-  <meta name="author" content="Sylvain Hallé">
-  <title>Easily run experiments on a computer - LabPal</title>
-  
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/poole.css">
-  <link rel="stylesheet" href="css/syntax.css">
-  <link rel="stylesheet" href="css/lanyon.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
-  <link rel="stylesheet" href="css/custom.css">
-
-  <!-- Icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-precomposed.png">
-  <link rel="shortcut icon" href="favicon.ico">
-  
-  <!-- Syntax highlighting -->
-  <link rel="stylesheet" href="assets/js/styles/default.css">
-  <script src="assets/js/highlight.pack.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
-
-  <!-- RSS -->
-  <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> -->
-  
-  <!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  // tracker methods like "setCustomDimension" should be called before "trackPageView"
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//leduotang.ca/piwik/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '3']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->
+<link href="http://gmpg.org/xfn/11" rel="profile">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<!-- Enable responsiveness on mobile devices--><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="Sylvain Hall&eacute;">
+<title>Easily run experiments on a computer - LabPal</title>
+<!-- CSS --><link rel="stylesheet" href="css/poole.css">
+<link rel="stylesheet" href="css/syntax.css">
+<link rel="stylesheet" href="css/lanyon.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+<link rel="stylesheet" href="css/custom.css">
+<!-- Icons --><link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-precomposed.png">
+<link rel="shortcut icon" href="favicon.ico">
+<!-- Syntax highlighting --><link rel="stylesheet" href="assets/js/styles/default.css">
+<script src="assets/js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script><!-- RSS --><!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> -->
 </head>
-  <body class="layout-reverse theme-base-0e">
+<body class="layout-reverse theme-base-0e">
 
     <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
      styles, `#sidebar-checkbox` for behavior. -->
-<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
-
-<!-- Toggleable sidebar -->
-<div class="sidebar" id="sidebar">
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked><!-- Toggleable sidebar --><div class="sidebar" id="sidebar">
   <div class="sidebar-item">
-  <img src="images/labpal-175.png" alt="LabPal">
-  <p>LabPal is a library for running experiments on a computer and process their results.</p>
+  <img src="images/labpal-175.png" alt="LabPal"><p>LabPal is a library for running experiments on a computer and process their results.</p>
   </div>
 
-  <nav class="sidebar-nav">
-    <a class="sidebar-nav-item" href="">Home</a>
+  <nav class="sidebar-nav"><a class="sidebar-nav-item" href="">Home</a>
     <a class="sidebar-nav-item" href="manual/quick-tutorial.html">Quick tutorial</a>
     <a class="sidebar-nav-item" href="videos.html">Videos</a>
     <a class="sidebar-nav-item" href="manual/index.html">User manual</a>
     <a class="sidebar-nav-item" href="https://github.com/liflab/labpal/releases/latest">Download</a>
     <a class="sidebar-nav-item" href="https://github.com/liflab/labpal">GitHub project</a>
     <span class="sidebar-nav-item">Currently v2.7</span>
-  </nav>
-
-  <div class="sidebar-item">
+  </nav><div class="sidebar-item">
     <p>
-      © 2014-2017 Sylvain Hallé. All rights reserved.
+      &copy; 2014-2017 Sylvain Hall&eacute;. All rights reserved.
     </p>
   </div>
 </div>
@@ -94,26 +59,20 @@
 
 <h3>Features</h3>
 
-<ul>
-<li>All your experimental setup (including your code, its input files and library dependencies) can be bundled into a <strong>single, runnable JAR</strong> file, making it easy for anybody to download and re-run your experiments.</li>
+<ul><li>All your experimental setup (including your code, its input files and library dependencies) can be bundled into a <strong>single, runnable JAR</strong> file, making it easy for anybody to download and re-run your experiments.</li>
 <li>The runnable JAR acts as a <strong>web server</strong>; when launched, a user can see all the experiments and control their execution using a web browser.</li>
 <li>Automated generation of PDF and PNG <strong>plots</strong> (using <a href="http://trac.erichseifert.de/gral">GRAL</a> or <a href="http://gnuplot.info">Gnuplot</a>) and <strong>tables</strong> (in beautified LaTeX, HTML or CSV).</li>
 <li>Each running experiment can update a visual <strong>progress bar</strong>; LabPal can even estimate and show the time remaining before they complete.</li>
 <li>A set of partially executed experiments can be saved to disk, then <strong>reloaded and resumed</strong> at a later time (or even on a different machine).</li>
-</ul>
-
-<p>All these features are available in less than <strong>30 lines</strong> of Java code. See the example below!</p>
+</ul><p>All these features are available in less than <strong>30 lines</strong> of Java code. See the example below!</p>
 
 <h3>Why use LabPal?</h3>
 
 <p>To run experiments on a computer, you probably already write command-line scripts for various tasks: generating your data, saving it into text files, process and display them as plots or tables to include in a paper or a presentation. But soon enough, your handful of "quick and dirty" batch files becomes a bunch of arcane, poorly documented scripts that generate and pass around various kinds of obscure temporary files. This situation brings two important problems in terms of research methodology:</p>
 
-<ul>
-<li><p><strong>Problem 1: no one can reproduce your experiments.</strong> Too much cleaning up would be required to your setup before anybody else could understand how it works, so chances are you'll never make your scripts and data publicly available.</p></li>
+<ul><li><p><strong>Problem 1: no one can reproduce your experiments.</strong> Too much cleaning up would be required to your setup before anybody else could understand how it works, so chances are you'll never make your scripts and data publicly available.</p></li>
 <li><p><strong>Problem 2: you waste your time.</strong> Most of your batch and data files are so specific to your experiments that even yourself are unlikely to reuse them on your next project; you'll start from scratch instead. This is not a very productive use of your time.</p></li>
-</ul>
-
-<h3>Learn LabPal in five minutes</h3>
+</ul><h3>Learn LabPal in five minutes</h3>
 
 <p>LabPal is easy enough to use that you can get up and running in a couple of minutes. Below is a minimal, but <strong>complete</strong> set of experiments for LabPal in less than 30 lines of code:</p>
 
@@ -121,7 +80,8 @@
 
   public void setup() {
     ExperimentTable t = new ExperimentTable("Number", "Time");
-    for (long n : new long[]{22602052667l, 42602051897l, 63612552733l, 84612554431l})
+    for (long n : new long[]{22602052667l, 42602051897l,
+      63612552733l, 84612554431l})
       add(new MyExperiment(n), t);
     add(t).add(new Scatterplot(t));
   }
@@ -149,51 +109,43 @@
 
 <p>In a nutshell:</p>
 
-<ul>
-<li>Method <code>setup</code> creates a new <em>laboratory</em>, where we create a few <em>experiments</em> with different input parameters, assocaite them to a data <em>table</em>, and create a <em>plot</em> which will be drawn from the table.</li>
+<ul><li>Method <code>setup</code> creates a new <em>laboratory</em>, where we create a few <em>experiments</em> with different input parameters, assocaite them to a data <em>table</em>, and create a <em>plot</em> which will be drawn from the table.</li>
 <li>When instantiated, our experiments declare a number as an input parameter. When executed, the experiment reads this number, checks if it is prime, and writes as an output parameter the time it has taken to do that.</li>
-</ul>
-
-<p>What do we get in exchange for these 30 lines of code? Compile and run this file using the <code>--web</code> command-line argument. You should see a message telling you to visit <code>http://localhost:21212/index</code> in your browser.</p>
+</ul><p>What do we get in exchange for these 30 lines of code? Compile and run this file using the <code>--web</code> command-line argument. You should see a message telling you to visit <code>http://localhost:21212/index</code> in your browser.</p>
 
 <p>If you go there, you'll see something like this:</p>
 
 <p>
   <a href="index.png" title="Click to zoom">
-    <img src="index.png" alt="Home page" width="400">
-  </a>
+    <img src="index.png" alt="Home page" width="400"></a>
 </p>
 
 <p>The web interface contains a few pages, which you can access through the buttons at the top. Go to the <em>Experiments</em> page; there you see the list of the experiments that have been added to the lab, with the "Number" parameter that was assigned to each. The "thumbs up" icon indicates that they are ready to run.</p>
 
 <p>
   <a href="experiments-before.png" title="Click to zoom">
-    <img src="experiments-before-crop.png" alt="Experiments page">
-  </a>
+    <img src="experiments-before-crop.png" alt="Experiments page"></a>
 </p>
 
 <p>Select them all by clicking on the topmost checkbox, and then click on the <em>Add to queue</em> button at the bottom. You have now put these experiments in the queue, waiting to be executed. Now visit the <em>Lab assistant</em> page: this is where you manage this queue.</p>
 
 <p>
   <a href="assistant.png" title="Click to zoom">
-    <img src="assistant-crop.png" alt="Assistant page">
-  </a>
+    <img src="assistant-crop.png" alt="Assistant page"></a>
 </p>
 
 <p>Click on <em>Start the assistant</em> to launch the batch execution of all the experiments you selected. These experiments run very quickly; if you go to the to the <em>Status</em> page, you'll see that they are all done:</p>
 
 <p>
   <a href="status.png" title="Click to zoom">
-    <img src="status.png" alt="Status page" width="400">
-  </a>
+    <img src="status.png" alt="Status page" width="400"></a>
 </p>
 
 <p>The experiments have produced results, which we have put in a table. Go to the <em>Tables</em> page, and click on the (only) table you see there, called "Table 1". There you see the results of the experiments:</p>
 
 <p>
   <a href="table.png" title="Click to zoom">
-    <img src="table-crop.png" alt="Table page">
-  </a>
+    <img src="table-crop.png" alt="Table page"></a>
 </p>
 
 <p>In the tables page, note that you can also export the contents of that table in various formats (HTML, CSV, and LaTeX).</p>
@@ -202,8 +154,7 @@
 
 <p>
   <a href="plots.png" title="Click to zoom">
-    <img src="plots.png" alt="Plots page" width="400">
-  </a>
+    <img src="plots.png" alt="Plots page" width="400"></a>
 </p>
 
 <p>You see the plot that was created; click on it to view it full size. You can also export the plot as a PDF file; a button at the top also offers you the option to bundle all the available plots into a single, multi-page PDF.</p>
@@ -212,42 +163,43 @@
 
 <p>These are just some of the features you get for writing these 30 lines of code. Among other things you get for free:</p>
 
-<ul>
-<li>If you created your lab using our <a href="https://github.com/liflab/labpal-project">template project</a>, you can use Ant to compile and generate a <strong>stand-alone JAR</strong> file of your lab you can give to anybody so they can run these experiments by themselves (just type <code>ant</code> and you are done).</li>
+<ul><li>If you created your lab using our <a href="https://github.com/liflab/labpal-project">template project</a>, you can use Ant to compile and generate a <strong>stand-alone JAR</strong> file of your lab you can give to anybody so they can run these experiments by themselves (just type <code>ant</code> and you are done).</li>
 <li>For a few more lines of code, the input/output parameters can come with a small <strong>textual description</strong> that is displayed in the web interface, so that a user can understand the meaning of each data element. You can do the same with the lab itself, and each experiment it contains.</li>
 <li>You can perform transformations to the tables before plotting them, and also customize the display of your plots (scales, colors, labels) very easily.</li>
-</ul>
+</ul><h3>I want to use LabPal!</h3>
 
-<h3>I want to use LabPal!</h3>
-
-<ul>
-<li>Just <a href="https://github.com/liflab/labpal/releases/latest">download the latest release</a> and include it in your classpath.</li>
+<ul><li>Just <a href="https://github.com/liflab/labpal/releases/latest">download the latest release</a> and include it in your classpath.</li>
 <li>Or download our <a href="https://github.com/liflab/labpal-project">template project</a> that includes a few extra features (like a boilerplate Readme and Ant build script).</li>
-</ul>
+</ul><p>If you want to know more about LabPal's features:</p>
 
-<p>If you want to know more about LabPal's features:</p>
-
-<ul>
-<li>Read the short <a href="manual/quick-tutorial.html">tutorial</a>
-</li>
+<ul><li>Read the short <a href="manual/quick-tutorial.html">tutorial</a></li>
 <li>Look at our <a href="https://github.com/liflab/labpal/tree/master/Source/Examples/src">lab examples</a> to learn how to use various features</li>
-<li>Look at our slightly longer <a href="manual/">instructions</a>
-</li>
-<li>Consult the online <a href="doc/">API documentation</a>
-</li>
-</ul>
+<li>Look at our slightly longer <a href="manual/">instructions</a></li>
+<li>Consult the online <a href="doc/">API documentation</a></li>
+</ul><h3>About LabPal</h3>
 
-<h3>About LabPal</h3>
+<p>LabPal was developed by <a href="http://leduotang.ca/sylvain">Sylvain Hall&eacute;</a>, Associate Processor at <a href="http://www.uqac.ca">Universit&eacute; du Qu&eacute;bec &agrave; Chicoutimi</a>, Canada. Pr. Hall&eacute; is also the head of <a href="http://liflab.ca">LIF</a>, a research lab where LabPal is extensively used for the processing of experimental results.</p>
 
-<p>LabPal was developed by <a href="http://leduotang.ca/sylvain">Sylvain Hallé</a>, Associate Processor at <a href="http://www.uqac.ca">Université du Québec à Chicoutimi</a>, Canada. Pr. Hallé is also the head of <a href="http://liflab.ca">LIF</a>, a research lab where LabPal is extensively used for the processing of experimental results.</p>
-
-<!-- :wrap=soft:mode=markdown: -->
-      </div>
+<!-- :wrap=soft:mode=markdown: -->      </div>
     </div>
 
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
 
-  
 
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  // tracker methods like "setCustomDimension" should be called before "trackPageView"
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//leduotang.ca/piwik/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '3']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script><!-- End Piwik Code -->
 </body>
 </html>

@@ -1,76 +1,41 @@
 <!DOCTYPE HTML>
-<html lang="en-us">
+<!DOCTYPE html><html lang="en-us">
 <head>
-  <link href="http://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-
-  <!-- Enable responsiveness on mobile devices-->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-  <meta name="author" content="Sylvain Hallé">
-  <title>LabPal User Manual - LabPal</title>
-  
-  <!-- CSS -->
-  <link rel="stylesheet" href="../css/poole.css">
-  <link rel="stylesheet" href="../css/syntax.css">
-  <link rel="stylesheet" href="../css/lanyon.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
-  <link rel="stylesheet" href="../css/custom.css">
-
-  <!-- Icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../apple-touch-icon-precomposed.png">
-  <link rel="shortcut icon" href="../favicon.ico">
-  
-  <!-- Syntax highlighting -->
-  <link rel="stylesheet" href="../assets/js/styles/default.css">
-  <script src="../assets/js/highlight.pack.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
-
-  <!-- RSS -->
-  <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> -->
-  
-  <!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  // tracker methods like "setCustomDimension" should be called before "trackPageView"
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//leduotang.ca/piwik/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '3']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->
+<link href="http://gmpg.org/xfn/11" rel="profile">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<!-- Enable responsiveness on mobile devices--><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="Sylvain Hall&eacute;">
+<title>LabPal User Manual - LabPal</title>
+<!-- CSS --><link rel="stylesheet" href="../css/poole.css">
+<link rel="stylesheet" href="../css/syntax.css">
+<link rel="stylesheet" href="../css/lanyon.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+<link rel="stylesheet" href="../css/custom.css">
+<!-- Icons --><link rel="apple-touch-icon-precomposed" sizes="144x144" href="../apple-touch-icon-precomposed.png">
+<link rel="shortcut icon" href="../favicon.ico">
+<!-- Syntax highlighting --><link rel="stylesheet" href="../assets/js/styles/default.css">
+<script src="../assets/js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script><!-- RSS --><!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> -->
 </head>
-  <body class="layout-reverse theme-base-0e">
+<body class="layout-reverse theme-base-0e">
 
     <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
      styles, `#sidebar-checkbox` for behavior. -->
-<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
-
-<!-- Toggleable sidebar -->
-<div class="sidebar" id="sidebar">
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked><!-- Toggleable sidebar --><div class="sidebar" id="sidebar">
   <div class="sidebar-item">
-  <img src="../images/labpal-175.png" alt="LabPal">
-  <p>LabPal is a library for running experiments on a computer and process their results.</p>
+  <img src="../images/labpal-175.png" alt="LabPal"><p>LabPal is a library for running experiments on a computer and process their results.</p>
   </div>
 
-  <nav class="sidebar-nav">
-    <a class="sidebar-nav-item" href="../">Home</a>
+  <nav class="sidebar-nav"><a class="sidebar-nav-item" href="../">Home</a>
     <a class="sidebar-nav-item" href="../manual/quick-tutorial.html">Quick tutorial</a>
     <a class="sidebar-nav-item" href="../videos.html">Videos</a>
     <a class="sidebar-nav-item" href="../manual/index.html">User manual</a>
     <a class="sidebar-nav-item" href="https://github.com/liflab/labpal/releases/latest">Download</a>
     <a class="sidebar-nav-item" href="https://github.com/liflab/labpal">GitHub project</a>
     <span class="sidebar-nav-item">Currently v2.7</span>
-  </nav>
-
-  <div class="sidebar-item">
+  </nav><div class="sidebar-item">
     <p>
-      © 2014-2017 Sylvain Hallé. All rights reserved.
+      &copy; 2014-2017 Sylvain Hall&eacute;. All rights reserved.
     </p>
   </div>
 </div>
@@ -90,36 +55,33 @@
       <div class="container content">
         <h2>LabPal User Manual</h2>        
 
-<h3>Table of Contents</h3>
+<p>This is the table of contents of the LabPal user manual. In addition to this manual, you may want to consult other resources:</p>
 
-<ul>
-<li>
-<a href="quick-tutorial.html">A quick tutorial</a>
+<ul><li>The <a href="../doc">LabPal API documentation</a></li>
+<li>The <a href="https://github.com/liflab/labpal/tree/master/Source/Examples/src">code examples</a> used throughout this site</li>
+<li>The <a href="https://www.youtube.com/playlist?list=PL_hZ2Z4_Mqpin4Dd9Y9GRheLAlw23gGRf">YouTube playlist</a> showing various videos highlighting functionalities of LabPal</li>
+</ul><h3>Table of Contents</h3>
 
-<ul>
-<li><a href="quick-tutorial.html#experiment">Creating an experiment</a></li>
+<ul><li><a href="quick-tutorial.html">A quick tutorial</a>
+
+<ul><li><a href="quick-tutorial.html#experiment">Creating an experiment</a></li>
 <li><a href="quick-tutorial.html#lab">Creating a lab</a></li>
 <li><a href="quick-tutorial.html#table">Adding a table</a></li>
 <li><a href="quick-tutorial.html#plot">Adding a plot</a></li>
 <li><a href="quick-tutorial.html#done">Wrapping up</a></li>
-</ul>
-</li>
-<li>
-<a href="web-ui.html">Using the web console</a>
+</ul></li>
+<li><a href="web-ui.html">Using the web console</a>
 
-<ul>
+<ul><li><a href="web-ui.html#video">A video tutorial</a></li>
 <li><a href="web-ui.html#usage">Typical usage of the web console</a></li>
 <li><a href="web-ui.html#elements">The elements of the web console</a></li>
 <li><a href="web-ui.html#remote">Running a lab on a remote machine</a></li>
 <li><a href="web-ui.html#port">Changing the server port</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="text-ui.html">Using the text console</a></li>
-<li>
-<a href="experiments.html">Experiments: advanced features</a>
+<li><a href="experiments.html">Experiments: advanced features</a>
 
-<ul>
-<li><a href="experiments.html#multiple">Use multiple types of experiments in the same lab</a></li>
+<ul><li><a href="experiments.html#multiple">Use multiple types of experiments in the same lab</a></li>
 <li><a href="experiments.html#transformations">Use table transformations</a></li>
 <li><a href="experiments.html#prerequisites">Make experiments that depend on external resources</a></li>
 <li><a href="experiments.html#errors">Throw error messages during the execution of an experiment</a></li>
@@ -127,70 +89,61 @@
 <li><a href="experiments.html#time">Guess the execution time of an experiment</a></li>
 <li><a href="experiments.html#multipoint">Generate multiple data points in a single experiment</a></li>
 <li><a href="experiments.html#groups">Group experiments</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="tables.html">Creating and transforming tables</a></li>
-<li>
-<a href="plots.html">Creating plots</a>
+<li><a href="plots.html">Creating plots</a>
 
-<ul>
-<li><a href="plots.html#types">Plot types</a></li>
+<ul><li><a href="plots.html#types">Plot types</a></li>
 <li><a href="plots.html#libraries">Plot libraries</a></li>
 <li><a href="plots.html#gral-custom">Customizing GRAL plots</a></li>
 <li><a href="plots.html#palettes">Palettes</a></li>
-</ul>
-</li>
-<li>
-<a href="files.html">Managing files</a>
+</ul></li>
+<li><a href="files.html">Managing files</a>
 
-<ul>
-<li><a href="files.html#filehelper">Using the FileHelper</a></li>
+<ul><li><a href="files.html#filehelper">Using the FileHelper</a></li>
 <li><a href="files.html#bundle">Bundling external resources</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="saving.html">Saving, loading, merging labs</a></li>
-<li>
-<a href="metadata.html">Adding metadata</a>
+<li><a href="metadata.html">Adding metadata</a>
 
-<ul>
-<li><a href="#lab">To the lab</a></li>
+<ul><li><a href="#lab">To the lab</a></li>
 <li><a href="#group">To each experiment group</a></li>
 <li><a href="#experiment">To each experiment</a></li>
 <li><a href="#parameters">To each parameter</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="commands.html">Calling external commands</a></li>
-<li>
-<a href="builder.html">Including external results</a>
+<li><a href="builder.html">Including external results</a>
 
-<ul>
-<li><a href="builder.html#manual">By hand</a></li>
+<ul><li><a href="builder.html#manual">By hand</a></li>
 <li><a href="builder.html#class">Automatically from a file</a></li>
-</ul>
-</li>
-<li>
-<a href="other.html">Other features</a>
+</ul></li>
+<li><a href="provenance.html">Data Provenance and Traceability</a></li>
+<li><a href="other.html">Other features</a>
 
-<ul>
-<li><a href="other.html#cli">Passing command-line parameters</a></li>
+<ul><li><a href="other.html#cli">Passing command-line parameters</a></li>
 <li><a href="other.html#custom-ui">Customizing the web console</a></li>
 <li><a href="other.html#environment">Checking the environment</a></li>
-</ul>
-</li>
-</ul>
-
-<h3>Other resources</h3>
-
-<ul>
-<li><a href="../doc">LabPal API documentation</a></li>
-<li><a href="https://github.com/liflab/labpal/tree/master/Source/Examples/src">Code Examples</a></li>
-</ul>
-      </div>
+</ul></li>
+</ul></div>
     </div>
 
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
 
-  
 
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  // tracker methods like "setCustomDimension" should be called before "trackPageView"
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//leduotang.ca/piwik/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '3']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script><!-- End Piwik Code -->
 </body>
 </html>

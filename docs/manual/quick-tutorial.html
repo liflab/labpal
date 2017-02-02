@@ -1,76 +1,41 @@
 <!DOCTYPE HTML>
-<html lang="en-us">
+<!DOCTYPE html><html lang="en-us">
 <head>
-  <link href="http://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-
-  <!-- Enable responsiveness on mobile devices-->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-  <meta name="author" content="Sylvain Hallé">
-  <title>A quick tutorial - LabPal</title>
-  
-  <!-- CSS -->
-  <link rel="stylesheet" href="../css/poole.css">
-  <link rel="stylesheet" href="../css/syntax.css">
-  <link rel="stylesheet" href="../css/lanyon.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
-  <link rel="stylesheet" href="../css/custom.css">
-
-  <!-- Icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../apple-touch-icon-precomposed.png">
-  <link rel="shortcut icon" href="../favicon.ico">
-  
-  <!-- Syntax highlighting -->
-  <link rel="stylesheet" href="../assets/js/styles/default.css">
-  <script src="../assets/js/highlight.pack.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
-
-  <!-- RSS -->
-  <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> -->
-  
-  <!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  // tracker methods like "setCustomDimension" should be called before "trackPageView"
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//leduotang.ca/piwik/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '3']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->
+<link href="http://gmpg.org/xfn/11" rel="profile">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<!-- Enable responsiveness on mobile devices--><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="Sylvain Hall&eacute;">
+<title>A quick tutorial - LabPal</title>
+<!-- CSS --><link rel="stylesheet" href="../css/poole.css">
+<link rel="stylesheet" href="../css/syntax.css">
+<link rel="stylesheet" href="../css/lanyon.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+<link rel="stylesheet" href="../css/custom.css">
+<!-- Icons --><link rel="apple-touch-icon-precomposed" sizes="144x144" href="../apple-touch-icon-precomposed.png">
+<link rel="shortcut icon" href="../favicon.ico">
+<!-- Syntax highlighting --><link rel="stylesheet" href="../assets/js/styles/default.css">
+<script src="../assets/js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script><!-- RSS --><!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> -->
 </head>
-  <body class="layout-reverse theme-base-0e">
+<body class="layout-reverse theme-base-0e">
 
     <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
      styles, `#sidebar-checkbox` for behavior. -->
-<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
-
-<!-- Toggleable sidebar -->
-<div class="sidebar" id="sidebar">
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked><!-- Toggleable sidebar --><div class="sidebar" id="sidebar">
   <div class="sidebar-item">
-  <img src="../images/labpal-175.png" alt="LabPal">
-  <p>LabPal is a library for running experiments on a computer and process their results.</p>
+  <img src="../images/labpal-175.png" alt="LabPal"><p>LabPal is a library for running experiments on a computer and process their results.</p>
   </div>
 
-  <nav class="sidebar-nav">
-    <a class="sidebar-nav-item" href="../">Home</a>
+  <nav class="sidebar-nav"><a class="sidebar-nav-item" href="../">Home</a>
     <a class="sidebar-nav-item" href="../manual/quick-tutorial.html">Quick tutorial</a>
     <a class="sidebar-nav-item" href="../videos.html">Videos</a>
     <a class="sidebar-nav-item" href="../manual/index.html">User manual</a>
     <a class="sidebar-nav-item" href="https://github.com/liflab/labpal/releases/latest">Download</a>
     <a class="sidebar-nav-item" href="https://github.com/liflab/labpal">GitHub project</a>
     <span class="sidebar-nav-item">Currently v2.7</span>
-  </nav>
-
-  <div class="sidebar-item">
+  </nav><div class="sidebar-item">
     <p>
-      © 2014-2017 Sylvain Hallé. All rights reserved.
+      &copy; 2014-2017 Sylvain Hall&eacute;. All rights reserved.
     </p>
   </div>
 </div>
@@ -98,31 +63,28 @@
 
 <p>In a folder of your choice, simply download and unzip the <a href="https://github.com/liflab/labpal-project">project template</a> that is available online. In order to compile the project, make sure that <a href="https://ant.apache.org">Ant</a> is also installed. At the root of the project folder, type</p>
 
-<pre>  <code>$ ant download-deps
+<pre>
+  <code>$ ant download-deps
 </code>
 </pre>
 
 <p>This will make sure that your project includes the latest version of the LabPal library (which will be placed in the <code>dep</code> subfolder).</p>
 
 <p>
-  <a name="experiment">
-</a></p>
-<a name="experiment">
+  <a name="experiment"></a>
+</p>
 
 <h3>Creating an experiment</h3>
 
-</a><p><a name="experiment">We first need to create an <strong>experiment</strong>. An experiment is an object that can take input <em>parameters</em>, can be <em>run</em>, and produces one or more output <em>values</em>. In LabPal, experiments all descend from the class </a><a href="../doc/ca/uqac/lif/labpal/Experiment.html">Experiment</a>. In our example:</p>
+<p>We first need to create an <strong>experiment</strong>. An experiment is an object that can take input <em>parameters</em>, can be <em>run</em>, and produces one or more output <em>values</em>. In LabPal, experiments all descend from the class <a href="../doc/ca/uqac/lif/labpal/Experiment.html">Experiment</a>. In our example:</p>
 
-<ul>
-<li>Our experiment will take a single input parameter, which is the size of the array we wish to sort. Setting an input parameter is done by calling the method <code>setInput</code>, which associates to a parameter <em>name</em> a particular <em>value</em>.</li>
+<ul><li>Our experiment will take a single input parameter, which is the size of the array we wish to sort. Setting an input parameter is done by calling the method <code>setInput</code>, which associates to a parameter <em>name</em> a particular <em>value</em>.</li>
 <li>When being run, the experiment will generate an array of given size and then sort it. This will be done in method <code>execute</code>, which all experiments must implement.</li>
 <li>Our experiment produces a single output value, which corresponds to the time it takes to sort that particular array. Writing an output value is done by calling the method <code>write</code>, which associates to a <em>name</em> a particular <em>value</em>.</li>
-</ul>
+</ul><p>Therefore, a sensible way to create our experiment would be to write this:</p>
 
-<p>Therefore, a sensible way to create our experiment would be to write this:</p>
-
-<pre>  <code>
-class GnomeSort extends Experiment {
+<pre>
+  <code>class GnomeSort extends Experiment {
 
   public GnomeSort(int n) {
     setInput("Size", n);
@@ -133,35 +95,21 @@ class GnomeSort extends Experiment {
     Random rand = new Random();
     int n = readInt("Size");
     int[] array = new int[n];
-    for (int i = 0; i &lt; n; i++)
-      array[i] = rand.nextInt();
-    // Sort using Gnome sort
-    long start = System.currentTimeMillis();
-    int i = 0;
-    while (i &lt; array.length) {
-      if (i == 0 || array[i-1] &lt;= array[i]) i++;
-      else {int tmp = array[i]; array[i] = array[i-1]; array[--i] = tmp;}
-    }
-    long end = System.currentTimeMillis();
-    write("Time", end - start);
-  }
-}
+    for (int i = 0; i 
 </code>
 </pre>
 
 <p>The constructor receives a number, and sets its as an input parameter of the experiment with name "Array size". Method <code>execute</code> first reads the input parameter (the number), generates an array of random values of desired size, and then sorts this array using Gnome sort. This last bit of code is surrounded by two calls to get the current system time. Finally, the duration of the sort operation is written as an output data and is given the name "Time".</p>
 
 <p>
-  <a name="lab">
-</a></p>
-<a name="lab">
+  <a name="lab"></a>
+</p>
 
 <h3>Creating a lab</h3>
 
-</a><p><a name="lab">We are now ready to create a <strong>laboratory</strong> ("lab" for short), which will be the environment in which many of these <strong>experiments</strong> will be run. In LabPal, a lab is a descendent of the </a><a href="../doc/ca/uqac/lif/labpal/Laboratory.html">Laboratory</a> class. The template project already contains an empty laboratory called <code>MyLaboratory</code> (for the moment, don't change its name). Experiments can be created in a method called <code>setup</code>, and are added to the lab by a call to method <code>add</code>. Our lab could hence look like this:</p>
+<p>We are now ready to create a <strong>laboratory</strong> ("lab" for short), which will be the environment in which many of these <strong>experiments</strong> will be run. In LabPal, a lab is a descendent of the <a href="../doc/ca/uqac/lif/labpal/Laboratory.html">Laboratory</a> class. The template project already contains an empty laboratory called <code>MyLaboratory</code> (for the moment, don't change its name). Experiments can be created in a method called <code>setup</code>, and are added to the lab by a call to method <code>add</code>. Our lab could hence look like this:</p>
 
-<pre>  <code>
-class MyLaboratory extends Laboratory {
+<pre><code>class MyLaboratory extends Laboratory {
 
   public void setup() {
     add(new GnomeSort(10));
@@ -179,9 +127,8 @@ class MyLaboratory extends Laboratory {
 <p>This lab creates three instance of our GnomeSort experiment with three different array sizes, and adds them to the lab. The <code>main</code> method is only there so that our lab can be executable from the command line. Normally, all it requires is to call <code>initialize</code> with the command line arguments and the class of the current lab. You do not need to write anything else there.</p>
 
 <p>
-  <a name="run">
-</a></p>
-<a name="run">
+  <a name="run"></a>
+</p>
 
 <h3>Running the lab</h3>
 
@@ -189,49 +136,46 @@ class MyLaboratory extends Laboratory {
 
 <p>This JAR is runnable and stand-alone: you can move it around without needing to worry about installed libraries and other dependencies. You can then start the lab by simply running the JAR file:</p>
 
-<pre>  <code>$ java -jar my-lab.jar
+<pre>
+  <code>$ java -jar my-lab.jar
 </code>
 </pre>
 
 <p>You should see something like this:</p>
 
-<pre>  <code>LabPal v2.5
+<pre>
+  <code>LabPal v2.7
 (C) 2014-2017 Laboratoire d'informatique formelle
-Université du Québec à Chicoutimi, Canada
+Universit&eacute; du Qu&eacute;bec &agrave; Chicoutimi, Canada
 Visit http://localhost:21212/index in your browser
+Hit Ctrl+C in this window to stop
 </code>
 </pre>
 
-</a><p><a name="run">This tells you that LabPal is started, and that you can use its web console by typing the URL <code>http://localhost:21212/index</code> in your web browser. From then on, you can use this console to control the execution of your experiments and see the results they produce. For more information, see </a><a href="web-ui.html">Using the web console</a>.</p>
+<p>This tells you that LabPal is started, and that you can use its web console by typing the URL <code>http://localhost:21212/index</code> in your web browser. From then on, you can use this console to control the execution of your experiments and see the results they produce. For more information, see <a href="web-ui.html">Using the web console</a>.</p>
 
 <p>
-  <a name="table">
-</a></p>
-<a name="table">
+  <a name="table"></a>
+</p>
 
 <h3>Adding a table</h3>
 
 <p>So far, our lab contains three experiments, each of which computes and generates a single output data element, namely the duration of the sorting operation. These can be viewed by clicking on each of the experiments in the web console. Let us now collect these results and display them.</p>
 
-</a><p><a name="table">To do so, we need to create a </a><a href="../doc/ca/uqac/lif/labpal/table/Table.html">Table</a>. A table is a collection of <em>table entries</em>, each of which is a set of key-value pairs. We would like to create a table from the results produced by our experiments: each entry should contain the <em>Size</em> of the array and the <em>Time</em> it took to sort it. This is done by creating a new <a href="../doc/ca/uqac/lif/labpal/table/ExperimentTable.html">ExperimentTable</a> --that is, a table whose content is fetched from the data produced by one or more experiments. (In contrast, a <a href="../doc/ca/uqac/lif/labpal/table/DataTable.html">DataTable</a> is a table made of hard values that you enter by yourself.) We create the table by telling it the names of the parameters we wish to fetch from the experiments:</p>
+<p>To do so, we need to create a <a href="../doc/ca/uqac/lif/labpal/table/Table.html">Table</a>. A table is a collection of <em>table entries</em>, each of which is a set of key-value pairs. We would like to create a table from the results produced by our experiments: each entry should contain the <em>Size</em> of the array and the <em>Time</em> it took to sort it. This is done by creating a new <a href="../doc/ca/uqac/lif/labpal/table/ExperimentTable.html">ExperimentTable</a> --that is, a table whose content is fetched from the data produced by one or more experiments. (In contrast, a <a href="../doc/ca/uqac/lif/labpal/table/DataTable.html">DataTable</a> is a table made of hard values that you enter by yourself.) We create the table by telling it the names of the parameters we wish to fetch from the experiments:</p>
 
-<pre>  <code>
-ExperimentTable t = new ExperimentTable("Size", "Duration");
+<pre><code>ExperimentTable t = new ExperimentTable("Size", "Duration");
 add(t);
 </code>
 </pre>
 
 <p>If we want the table to show up in the lab console, we must also add it to the lab by calling <code>add</code>. Once the table is created, experiments must be added to it. We can do this in two ways:</p>
 
-<ol>
-<li><p>By calling the <code>add</code> method on this table, and passing it the experiments we whish to add one by one.</p></li>
+<ol><li><p>By calling the <code>add</code> method on this table, and passing it the experiments we whish to add one by one.</p></li>
 <li><p>By passing the table to the <code>add</code> method we already used to add the experiments to the lab. The experiment will be added to the lab and to the table at the same time.</p></li>
-</ol>
+</ol><p>Let us use the second technique. Our <code>setup</code> method will now look like this:</p>
 
-<p>Let us use the second technique. Our <code>setup</code> method will now look like this:</p>
-
-<pre>  <code>
-public void setup() {
+<pre><code>public void setup() {
   ExperimentTable t = new ExperimentTable("Size", "Duration");
   add(t);
   add(new GnomeSort(10), t);
@@ -243,49 +187,31 @@ public void setup() {
 
 <p>If you recompile and run this new lab, you will now see that a table shows up in the <em>Tables</em> page in the web console, with the name "Table 1". Clicking on it will show something like this:</p>
 
-<table border="1">
-<tbody>
-<tr>
-<th>Size</th>
-<th>Duration</th>
-</tr>
-<tr>
-<td>10</td>
-<td></td>
-</tr>
-<tr>
-<td>100</td>
-<td></td>
-</tr>
-<tr>
-<td>1000</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-<p>Each line of the table corresponds to the values fetched from one experiment we added to it. The <em>Size</em> parameter is filled, but the <em>Duration</em> column shows nothing. This is normal: since we haven't run any experiment, these data elements have not yet been produced.</p>
+<table border="1"><tr><th>Size</th>
+    <th>Duration</th>
+  </tr><tr><td>10</td>
+    <td></td>
+  </tr><tr><td>100</td>
+    <td></td>
+  </tr><tr><td>1000</td>
+    <td></td>
+  </tr></table><p>Each line of the table corresponds to the values fetched from one experiment we added to it. The <em>Size</em> parameter is filled, but the <em>Duration</em> column shows nothing. This is normal: since we haven't run any experiment, these data elements have not yet been produced.</p>
 
 <p>A table is a dynamic structure. If you run one of the experiments and go back to the table, you will see that the corresponding cell now has a value. As a matter of fact, when you run a lot of experiments, you can periodically refresh a table's page and see the cells being filled with data progressively.</p>
 
 <p>The table can be exported in various ways:</p>
 
-<ul>
-<li>You can copy-paste its contents in your word processor; this should normally preserve its formatting.</li>
+<ul><li>You can copy-paste its contents in your word processor; this should normally preserve its formatting.</li>
 <li>In the <em>Tables</em> page, you can click on one of the icons to download the table as an HTML, plain-text (CSV) or LaTeX file you can include, for example, in a resarch paper you are writing.</li>
-</ul>
-
-<p>
-  <a name="plot">
-</a></p>
-<a name="plot">
+</ul><p>
+  <a name="plot"></a>
+</p>
 
 <h3>Adding a plot</h3>
 
-</a><p><a name="plot">It is sometimes better to display data graphically, so let's new add a </a><a href="../doc/ca/uqac/lif/labpal/plot/Plot.html">Plot</a> to our lab. A plot is always created with respect to an existing table. In our case, we would like to trace a line showing the sorting time with respect to the size of the array. The object we use for this is a <a href="../doc/ca/uqac/lif/labpal/plot/Scatterplot.html">Scatterplot</a>, to which we pass the table we created earlier:</p>
+<p>It is sometimes better to display data graphically, so let's new add a <a href="../doc/ca/uqac/lif/labpal/plot/Plot.html">Plot</a> to our lab. A plot is always created with respect to an existing table. In our case, we would like to trace a line showing the sorting time with respect to the size of the array. The object we use for this is a <a href="../doc/ca/uqac/lif/labpal/plot/Scatterplot.html">Scatterplot</a>, to which we pass the table we created earlier:</p>
 
-<pre>  <code>
-Scatterplot plot = new Scatterplot(t);
+<pre><code>Scatterplot plot = new Scatterplot(t);
 add(plot);
 </code>
 </pre>
@@ -299,9 +225,8 @@ add(plot);
 <p>As for tables, you can choose to save the plot as a PNG image (by clicking on it and using the <em>Save</em> menu in your browser), or to export it as a PDF file you can include e.g. in a paper you are writing.</p>
 
 <p>
-  <a name="done">
-</a></p>
-<a name="done">
+  <a name="done"></a>
+</p>
 
 <h3>Wrapping up</h3>
 
@@ -309,55 +234,54 @@ add(plot);
 
 <p>Let us look at our <code>setup</code> method one last time:</p>
 
-<pre>  <code>
-public void setup() {
+<pre>
+  <code>public void setup() {
   // Create table
   ExperimentTable t = new ExperimentTable("Size", "Duration");
   add(t);
   // Create experiments
-  for (int size = 100; size &lt;= 1000; size += 100) {
-    add(new GnomeSort(size), t);
-  }
-  // Create plot
-  Scatterplot plot = new Scatterplot(t);
-  add(plot);
-}
+  for (int size = 100; size 
 </code>
 </pre>
 
 <p>All done! We now have a basic running laboratory with:</p>
 
-<ul>
-<li>An auto-generated table (exportable in various formats)</li>
+<ul><li>An auto-generated table (exportable in various formats)</li>
 <li>An auto-generated line plot (exportable in various formats)</li>
 <li>A web interface to control the execution of the experiments, display the tables and show the plots</li>
 <li>An Ant script that can compile and bundle everything into a single, stand-alone, runnable JAR file</li>
-</ul>
-
-<p>All this for about 30 lines of code. Not bad, considering the alternative: writing your own command-line scripts to run the experiments, generate and process text files to be piped into Gnuplot or some other piece of software, etc. Plus, it is very unlikely you'd spend time to make these scripts user-friendly, let alone interactive like LabPal's interface.</p>
+</ul><p>All this for about 30 lines of code. Not bad, considering the alternative: writing your own command-line scripts to run the experiments, generate and process text files to be piped into Gnuplot or some other piece of software, etc. Plus, it is very unlikely you'd spend time to make these scripts user-friendly, let alone interactive like LabPal's interface.</p>
 
 <h3>Advanced functionalities</h3>
 
 <p>In this quick tutorial, we've barely scratched the surface of what you can do with LabPal. If you are interested in knowing more, here are a few pointers.</p>
 
-</a><ul>
-<a name="done">
-</a><li>
-<a name="done">Learn how to </a><a href="plots.html">create and customize plots</a>
-</li>
-<li>Create, process and manage <a href="tables.html">tables</a>
-</li>
+<ul><li>Learn how to <a href="plots.html">create and customize plots</a></li>
+<li>Create, process and manage <a href="tables.html">tables</a></li>
 <li>Document your lab for an external user by <a href="metadata.html">adding metadata</a> to your experiments and their parameters</li>
 <li>Create <a href="experiments.html">more complex experiments</a> that can generate auxiliary files, update a progress indicator, produce error messages, etc.</li>
-</ul>
-
-<!-- :wrap=soft:mode=markdown: -->
-      </div>
+<li>Learn about <a href="provenance.html">provenance</a> and traceability for your data</li>
+</ul><!-- :wrap=soft:mode=markdown: -->
+</div>
     </div>
 
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
 
-  
 
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  // tracker methods like "setCustomDimension" should be called before "trackPageView"
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//leduotang.ca/piwik/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '3']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script><!-- End Piwik Code -->
 </body>
 </html>

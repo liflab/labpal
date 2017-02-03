@@ -33,7 +33,7 @@
   <author>Sylvain Hallé</author>
   
   <!-- The project's main class -->
-  <mainclass>ca.uqac.lif.parkbench.Laboratory</mainclass>
+  <mainclass>ca.uqac.lif.labpal.Laboratory</mainclass>
   
   <!-- Output jar -->
   <jar>

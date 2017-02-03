@@ -122,14 +122,25 @@ public abstract class GnuPlot extends Plot
 				// This happens if the user cancels the command manually
 				runner.stopCommand();
 				runner.interrupt();
-				return s_blankImage;
+				if (term == ImageType.PDF)
+				{
+					return s_blankImagePdf;
+				}
+				return s_blankImagePng;
 			}
 		}
 		image = runner.getBytes();
 		if (runner.getErrorCode() != 0 || image == null || image.length == 0)
 		{
 			// Gnuplot could not produce a picture; return the blank image
-			image = s_blankImage;
+			if (term == ImageType.PDF)
+			{
+				image = s_blankImagePdf;
+			}
+			else
+			{
+				image = s_blankImagePng;
+			}
 		}
 		return image;		
 	}

@@ -11,7 +11,7 @@ public class GraphvizRenderer
 {
 	public static final boolean s_dotPresent = isDotPresent();
 
-	public static final byte[] s_blankImage = GnuPlot.s_blankImage;
+	public static final byte[] s_blankImage = GnuPlot.s_blankImagePng;
 
 	/**
 	 * The time to wait before polling DOT's result

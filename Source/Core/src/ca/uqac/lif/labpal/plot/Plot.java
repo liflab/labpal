@@ -156,10 +156,16 @@ public abstract class Plot
 	protected String m_nickname = "";
 	
 	/**
-	 * The bytes of a blank image, used as a placeholder when no plot can
+	 * The bytes of a blank PNG image, used as a placeholder when no plot can
 	 * be drawn
 	 */
-	public static final transient byte[] s_blankImage = FileHelper.internalFileToBytes(Plot.class, "blank.png");
+	public static final transient byte[] s_blankImagePng = FileHelper.internalFileToBytes(Plot.class, "blank.png");
+	
+	/**
+	 * The bytes of a blank PDF image, used as a placeholder when no plot can
+	 * be drawn
+	 */
+	public static final transient byte[] s_blankImagePdf = FileHelper.internalFileToBytes(Plot.class, "blank.pdf");
 
 	/**
 	 * Creates a new plot from a table

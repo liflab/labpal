@@ -74,7 +74,7 @@ public abstract class Laboratory
 	/**
 	 * The revision version number
 	 */
-	private static final int s_revisionVersionNumber = 0;
+	private static final int s_revisionVersionNumber = 1;
 
 	/**
 	 * The set of experiments this lab has access to

@@ -673,6 +673,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		try
 		{
 			execute();
+			m_status = Status.DONE;
 		}
 		catch (Exception e)
 		{
@@ -683,7 +684,6 @@ public abstract class Experiment implements Runnable, DataOwner
 			e.printStackTrace(pw);
 			setErrorMessage(sw.toString());
 		}
-		m_status = Status.DONE;
 		m_endTime = System.currentTimeMillis();
 		validate();
 		if (hasWarnings() && m_status == Status.DONE)

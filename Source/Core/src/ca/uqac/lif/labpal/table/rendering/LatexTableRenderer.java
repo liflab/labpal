@@ -232,7 +232,15 @@ public class LatexTableRenderer extends TableNodeRenderer
 			}
 			else
 			{
-				m_keyBuffer.append(escape(last.toString()));
+				if (last == null)
+				{
+					m_keyBuffer.append(escape(""));
+				}
+				else
+				{
+					m_keyBuffer.append(escape(last.toString()));
+				}
+				
 			}
 			if (coordinates.size() > 0)
 			{

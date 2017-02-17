@@ -72,6 +72,10 @@ public abstract class TableNodeRenderer
 	{
 		int width = sort_order.length;
 		StringBuilder out = new StringBuilder();
+		if (node == null || (node.m_children.isEmpty()))
+		{
+			return doEmptyTable();
+		}
 		startStructure(out);
 		startKeys(out);
 		for (String key : sort_order)
@@ -87,6 +91,17 @@ public abstract class TableNodeRenderer
 		endBody(out);
 		endStructure(out);
 		return out.toString();
+	}
+	
+	/**
+	 * Renders a table when no data is present. Depending on the output 
+	 * format, this method should return a syntactically valid "empty"
+	 * element.
+	 * @return An empty table
+	 */
+	public String doEmptyTable()
+	{
+		return "";
 	}
 	
 	/**

@@ -36,7 +36,7 @@ public class RelativizeRows implements TableTransformation
 	public TempTable transform(TempTable ... tables)
 	{
 		TempTable in_table = tables[0];
-		TempTable out_table = new TempTable(in_table.getId());
+		TempTable out_table = new TempTable(in_table.getId(), in_table.getColumnNames());
 		if (in_table.getRowCount() == 0)
 		{
 			return out_table;
@@ -62,11 +62,11 @@ public class RelativizeRows implements TableTransformation
 				Object o = map_entry.getValue();
 				if (o instanceof Number)
 				{
-					new_entry.put(key, ((Number) o).floatValue() / min);
+					new_entry.put(key, new JsonNumber(((Number) o).floatValue() / min));
 				}
 				else if (o instanceof JsonNumber)
 				{
-					new_entry.put(key, ((JsonNumber) o).numberValue().floatValue() / min);
+					new_entry.put(key, new JsonNumber(((JsonNumber) o).numberValue().floatValue() / min));
 				}
 				else
 				{

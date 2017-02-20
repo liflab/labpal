@@ -669,6 +669,7 @@ public abstract class Experiment implements Runnable, DataOwner
 				return;
 			}
 		}
+		m_status = Status.PREREQ_OK;
 		m_status = Status.RUNNING;
 		try
 		{

@@ -64,17 +64,17 @@ public abstract class Laboratory
 	/**
 	 * The major version number
 	 */
-	private static final int s_majorVersionNumber = 2;
+	private static final transient int s_majorVersionNumber = 2;
 
 	/**
 	 * The minor version number
 	 */
-	private static final int s_minorVersionNumber = 7;
+	private static final transient int s_minorVersionNumber = 7;
 
 	/**
 	 * The revision version number
 	 */
-	private static final int s_revisionVersionNumber = 2;
+	private static final transient int s_revisionVersionNumber = 2;
 
 	/**
 	 * The set of experiments this lab has access to

@@ -653,7 +653,6 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_startTime = System.currentTimeMillis();
 		if (!prerequisitesFulfilled())
 		{
-			m_status = Status.PREREQ_F;
 			try
 			{
 				fulfillPrerequisites();
@@ -661,7 +660,7 @@ public abstract class Experiment implements Runnable, DataOwner
 			catch (Exception e)
 			{
 				// If the call throws anything, we consider it a failure
-				m_status = Status.FAILED;
+				m_status = Status.PREREQ_F;
 				StringWriter sw = new StringWriter();
 				PrintWriter pw = new PrintWriter(sw);
 				e.printStackTrace(pw);

@@ -212,7 +212,6 @@ public class LabPalTui
 		{
 			m_printer.print("\nError: some of the environment requirements for this lab are not met");
 			m_printer.print("\nThis means you are missing something to run the experiments.");
-			return Laboratory.ERR_REQUIREMENTS;
 		}
 		m_printer.print("\n\n");
 		main_menu.render(m_printer);

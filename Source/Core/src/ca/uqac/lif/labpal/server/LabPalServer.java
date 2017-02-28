@@ -35,7 +35,7 @@ public class LabPalServer extends InnerFileServer
 	/**
 	 * The default port
 	 */
-	protected static final transient int s_defaultPort = 21212;
+	public static final transient int s_defaultPort = 21212;
 	
 	/**
 	 * The time (in seconds) during which the client is allowed to cache

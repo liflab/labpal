@@ -74,7 +74,7 @@ public abstract class Laboratory
 	/**
 	 * The revision version number
 	 */
-	private static final transient int s_revisionVersionNumber = 2;
+	private static final transient int s_revisionVersionNumber = 3;
 
 	/**
 	 * The set of experiments this lab has access to
@@ -624,6 +624,10 @@ public abstract class Laboratory
 		parser.addArgument(new Argument()
 				.withLongName("autostart")
 				.withDescription("Queues all experiments and starts the assistant"));
+		parser.addArgument(new Argument()
+				.withLongName("port")
+				.withArgument("x")
+				.withDescription("Starts server on port x"));
 		Laboratory new_lab = null;
 		try
 		{
@@ -657,7 +661,6 @@ public abstract class Laboratory
 				stdout.close();
 			}
 		}));
-
 		new_lab.m_cliArguments = parser.parse(args);
 		if (new_lab.m_cliArguments == null)
 		{

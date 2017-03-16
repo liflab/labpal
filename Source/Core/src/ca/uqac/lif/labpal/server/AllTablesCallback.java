@@ -25,9 +25,9 @@ import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.table.DataTable;
-import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.rendering.LatexTableRenderer;
+import ca.uqac.lif.mtnp.table.HardTable;
+import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.mtnp.table.rendering.LatexTableRenderer;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -71,7 +71,7 @@ public class AllTablesCallback extends WebCallback
 				box_name += id;
 			}
 			box_name = LatexTableRenderer.formatName(box_name);
-			DataTable d_tab = tab.getDataTable();
+			HardTable d_tab = tab.getDataTable();
 			String tab_contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
 			out.append("% ----------------------").append(FileHelper.CRLF).append("% Table: ").append(box_name).append(FileHelper.CRLF);
 			out.append("% ----------------------").append(FileHelper.CRLF);

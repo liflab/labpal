@@ -9,9 +9,9 @@ import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.labpal.plot.gral.Scatterplot;
-import ca.uqac.lif.labpal.table.ExpandAsColumns;
+import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
+import ca.uqac.lif.mtnp.plot.gral.Scatterplot;
+import ca.uqac.lif.mtnp.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
 /**

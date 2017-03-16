@@ -25,9 +25,15 @@ import java.util.Map;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNull;
+import ca.uqac.lif.json.JsonNumber;
+import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
-import ca.uqac.lif.labpal.provenance.NodeFunction;
+import ca.uqac.lif.petitpoucet.NodeFunction;
+import ca.uqac.lif.mtnp.table.PrimitiveValue;
+import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.mtnp.table.TableEntry;
+import ca.uqac.lif.mtnp.table.TempTable;
 
 /**
  * Table whose rows and columns are populated from the parameters of a set
@@ -83,7 +89,7 @@ public class ExperimentTable extends Table
 		if (temporary)
 		{
 			mt = new TempTable(getId(), ordering);
-			mt.m_id = getId();
+			mt.setId(getId());
 		}
 		else
 		{
@@ -163,11 +169,11 @@ public class ExperimentTable extends Table
 				JsonElement elem = readExperiment(e, col_name);
 				if (elem != null)
 				{
-					te.put(col_name, elem, new ExperimentValue(e, col_name));
+					te.put(col_name, jsonToPrimitive(elem), new ExperimentValue(e, col_name));
 				}
 				else
 				{
-					te.put(col_name, JsonNull.instance);
+					te.put(col_name, PrimitiveValue.getInstance(null));
 				}
 			}
 			// ...and the i-th value of each list column
@@ -180,7 +186,7 @@ public class ExperimentTable extends Table
 					JsonElement elem = list.get(i);
 					if (elem != null)
 					{
-						te.put(key, elem, new ExperimentValue(e, key, i));
+						te.put(key, jsonToPrimitive(elem), new ExperimentValue(e, key, i));
 					}
 					else
 					{
@@ -214,8 +220,22 @@ public class ExperimentTable extends Table
 	@Override
 	public NodeFunction getDependency(int row, int col)
 	{
-		DataTable dt = getDataTable(false);
+		TempTable dt = getDataTable(false);
 		return dt.getDependency(row, col);
+	}
+	
+	public static PrimitiveValue jsonToPrimitive(JsonElement e)
+	{
+		if (e instanceof JsonNumber)
+		{
+			return PrimitiveValue.getInstance(((JsonNumber) e).numberValue());
+		}
+		if (e instanceof JsonString)
+		{
+			return PrimitiveValue.getInstance(((JsonString) e).stringValue());
+		}
+		return null;
+		
 	}
 
 }

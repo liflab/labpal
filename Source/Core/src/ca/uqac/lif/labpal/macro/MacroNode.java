@@ -20,8 +20,8 @@ package ca.uqac.lif.labpal.macro;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.provenance.NodeFunction;
+import ca.uqac.lif.petitpoucet.NodeFunction;
+import ca.uqac.lif.petitpoucet.OwnershipManager;
 
 /**
  * Provenance function that links to a macro
@@ -130,13 +130,12 @@ public class MacroNode implements NodeFunction
 	 * @return The owner, or {@code null} if this object could not
 	 * find the owner
 	 */
-	public static Macro getOwner(Laboratory lab, String datapoint_id)
+	public static Macro getOwner(OwnershipManager lab, String datapoint_id)
 	{
 		if (!datapoint_id.startsWith("M"))
 			return null;
 		String[] parts = datapoint_id.split(Pattern.quote(NodeFunction.s_separator));
-		int id = Integer.parseInt(parts[0].substring(1).trim());
-		return lab.getMacro(id);
+		return (Macro) lab.getObjectWithId(parts[0]);
 	}
 
 	public Macro getOwner()

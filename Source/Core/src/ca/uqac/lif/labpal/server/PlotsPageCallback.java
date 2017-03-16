@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
-import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.mtnp.plot.Plot;
+import ca.uqac.lif.mtnp.plot.gnuplot.GnuPlot;
+import ca.uqac.lif.mtnp.table.Table;
 
 /**
  * Callback showing a list of plots

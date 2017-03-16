@@ -23,7 +23,10 @@ import java.util.List;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
-import ca.uqac.lif.labpal.provenance.NodeFunction;
+import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.mtnp.table.TableEntry;
+import ca.uqac.lif.mtnp.table.TempTable;
+import ca.uqac.lif.petitpoucet.NodeFunction;
 
 /**
  * Table creating (x,y) points from the results of pairs of experiments.
@@ -100,7 +103,7 @@ public class VersusTable extends Table
 	public TempTable getDataTable(boolean temporary)
 	{
 		TempTable table = new TempTable(getId(), m_captionX, m_captionY);
-		table.m_id = getId();
+		table.setId(getId());
 		for (ExperimentPair pair : m_pairs)
 		{
 			Object x = pair.getExperimentX().read(m_parameter);

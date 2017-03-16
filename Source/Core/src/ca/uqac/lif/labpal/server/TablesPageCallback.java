@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.mtnp.table.Table;
 
 /**
  * Callback showing a list of tables

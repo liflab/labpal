@@ -24,14 +24,14 @@ import java.util.regex.Matcher;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.MacroNode;
-import ca.uqac.lif.labpal.plot.PlotNode;
-import ca.uqac.lif.labpal.provenance.AggregateFunction;
+import ca.uqac.lif.mtnp.plot.PlotNode;
+import ca.uqac.lif.petitpoucet.AggregateFunction;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
-import ca.uqac.lif.labpal.provenance.NodeFunction;
-import ca.uqac.lif.labpal.provenance.ProvenanceNode;
-import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.TableCellNode;
-import ca.uqac.lif.labpal.table.TableFunctionNode;
+import ca.uqac.lif.petitpoucet.NodeFunction;
+import ca.uqac.lif.petitpoucet.ProvenanceNode;
+import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.mtnp.table.TableCellNode;
+import ca.uqac.lif.mtnp.table.TableFunctionNode;
 
 /**
  * Callback producing a provenance tree from one of the lab's data points.

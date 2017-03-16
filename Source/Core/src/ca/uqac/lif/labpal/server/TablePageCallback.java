@@ -25,12 +25,12 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.table.DataTable;
-import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.Table.CellCoordinate;
-import ca.uqac.lif.labpal.table.TableCellNode;
-import ca.uqac.lif.labpal.table.rendering.HtmlTableNodeRenderer;
-import ca.uqac.lif.labpal.table.rendering.PlainTableRenderer;
+import ca.uqac.lif.mtnp.table.HardTable;
+import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.mtnp.table.Table.CellCoordinate;
+import ca.uqac.lif.mtnp.table.TableCellNode;
+import ca.uqac.lif.mtnp.table.rendering.HtmlTableNodeRenderer;
+import ca.uqac.lif.mtnp.table.rendering.PlainTableRenderer;
 
 /**
  * Callback producing an image from one of the lab's plots, in various
@@ -70,7 +70,7 @@ public class TablePageCallback extends TemplatePageCallback
 		{
 			return null;
 		}
-		DataTable tbl = tab.getDataTable();
+		HardTable tbl = tab.getDataTable();
 		String highlight = "";
 		String table_html = "";
 		if (params.containsKey("highlight"))

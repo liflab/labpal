@@ -3,8 +3,13 @@ package ca.uqac.lif.labpal.provenance;
 import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.server.ExplainCallback;
 import ca.uqac.lif.labpal.server.WebCallback;
-import ca.uqac.lif.labpal.table.TableCellNode;
-import ca.uqac.lif.labpal.table.TableNode;
+import ca.uqac.lif.mtnp.table.TableCellNode;
+import ca.uqac.lif.mtnp.table.TableNode;
+import ca.uqac.lif.petitpoucet.AggregateFunction;
+import ca.uqac.lif.petitpoucet.BrokenChain;
+import ca.uqac.lif.petitpoucet.InfiniteLoop;
+import ca.uqac.lif.petitpoucet.NodeFunction;
+import ca.uqac.lif.petitpoucet.ProvenanceNode;
 
 /**
  * Renders a provenance node into a picture

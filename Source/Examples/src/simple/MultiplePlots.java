@@ -1,14 +1,14 @@
 package simple;
 
-import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.labpal.plot.gnuplot.ClusteredHistogram;
-import ca.uqac.lif.labpal.plot.gral.Scatterplot;
+import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
+import ca.uqac.lif.mtnp.plot.gnuplot.ClusteredHistogram;
+import ca.uqac.lif.mtnp.plot.gral.Scatterplot;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.labpal.table.Join;
-import ca.uqac.lif.labpal.table.RenameColumns;
-import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.mtnp.table.Join;
+import ca.uqac.lif.mtnp.table.RenameColumns;
+import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.mtnp.table.TransformedTable;
 
 /**
  * Create data series from multiple experiments and plot them in the same

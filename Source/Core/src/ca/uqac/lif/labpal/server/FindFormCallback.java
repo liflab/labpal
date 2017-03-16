@@ -27,7 +27,7 @@ import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+import ca.uqac.lif.petitpoucet.ProvenanceNode;
 
 /**
  * Callback for to find a data point by its LDI

@@ -21,8 +21,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.provenance.NodeFunction;
-import ca.uqac.lif.labpal.provenance.UndefinedDependency;
+import ca.uqac.lif.petitpoucet.NodeFunction;
+import ca.uqac.lif.petitpoucet.UndefinedDependency;
 
 /**
  * Basic class for representing macros

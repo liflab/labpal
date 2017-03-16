@@ -24,9 +24,9 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.plot.Plot.ImageType;
-import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
+import ca.uqac.lif.mtnp.plot.Plot;
+import ca.uqac.lif.mtnp.plot.Plot.ImageType;
+import ca.uqac.lif.mtnp.plot.gnuplot.GnuPlot;
 
 import com.sun.net.httpserver.HttpExchange;
 

@@ -3,7 +3,8 @@ package ca.uqac.lif.labpal.provenance;
 import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.Experiment;
-import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.petitpoucet.NodeFunction;
+import ca.uqac.lif.petitpoucet.OwnershipManager;
 
 public class ExperimentValue implements NodeFunction 
 {
@@ -90,13 +91,12 @@ public class ExperimentValue implements NodeFunction
 	 * @return The owner, or {@code null} if this object could not
 	 * find the owner
 	 */
-	public static Experiment getOwner(Laboratory lab, String datapoint_id)
+	public static Experiment getOwner(OwnershipManager lab, String datapoint_id)
 	{
 		if (!datapoint_id.startsWith("E"))
 			return null;
 		String[] parts = datapoint_id.split(Pattern.quote(NodeFunction.s_separator));
-		int id = Integer.parseInt(parts[0].substring(1).trim());
-		return lab.getExperiment(id);
+		return (Experiment) lab.getObjectWithId(parts[0]);
 	}
 
 	@Override

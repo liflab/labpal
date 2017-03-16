@@ -85,13 +85,12 @@
     </dependency>
     <dependency>
       <!--
-      GRAL. Stand-alone plotting library
+      MTNP. To manipulate plots n'tables
       -->
-      <name>GRAL</name>
-      <classname>de.erichseifert.gral.data.DataSource</classname>
+      <name>MTNP</name>
+      <classname>ca.uqac.lif.mtnp.table.Table</classname>
       <files>
-        <jar>http://www.erichseifert.de/dev/gral/0.11/gral-core-0.11.jar</jar>
-	<jar>http://www.erichseifert.de/dev/vectorgraphics2d/0.11/VectorGraphics2D-0.11.jar</jar>
+        <zip>https://github.com/liflab/mtnp/releases/download/v0.1-alpha/mtnp-0.1-alpha.zip</zip>
       </files>
     </dependency>
   </dependencies>

@@ -23,27 +23,32 @@ import java.util.List;
 import java.util.Set;
 
 import ca.uqac.lif.labpal.Experiment;
-import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.macro.MacroNode;
-import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.plot.PlotNode;
-import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.TableCellNode;
-import ca.uqac.lif.labpal.table.TableFunctionNode;
-import ca.uqac.lif.labpal.table.TableNode;
+import ca.uqac.lif.mtnp.plot.Plot;
+import ca.uqac.lif.mtnp.plot.PlotNode;
+import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.mtnp.table.TableCellNode;
+import ca.uqac.lif.mtnp.table.TableFunctionNode;
+import ca.uqac.lif.mtnp.table.TableNode;
+import ca.uqac.lif.petitpoucet.AggregateFunction;
+import ca.uqac.lif.petitpoucet.BrokenChain;
+import ca.uqac.lif.petitpoucet.InfiniteLoop;
+import ca.uqac.lif.petitpoucet.NodeFunction;
+import ca.uqac.lif.petitpoucet.OwnershipManager;
+import ca.uqac.lif.petitpoucet.ProvenanceNode;
 
 public class DataTracker
 {
 	/**
 	 * The lab
 	 */
-	protected Laboratory m_lab;
+	protected OwnershipManager m_lab;
 
 	/**
 	 * Creates a new data tracker
 	 */
-	public DataTracker(Laboratory lab)
+	public DataTracker(OwnershipManager lab)
 	{
 		super();
 		m_lab = lab;
@@ -202,7 +207,7 @@ public class DataTracker
 		{
 			ProvenanceNode pn = new ProvenanceNode(nf);
 			AggregateFunction af = (AggregateFunction) nf;
-			List<NodeFunction> dependencies = af.m_nodes;
+			List<NodeFunction> dependencies = af.getDependencyNodes();
 			List<ProvenanceNode> parents = new LinkedList<ProvenanceNode>();
 			for (NodeFunction par_nf : dependencies)
 			{

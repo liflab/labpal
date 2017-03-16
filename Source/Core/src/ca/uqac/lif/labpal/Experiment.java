@@ -32,9 +32,9 @@ import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonPath;
 import ca.uqac.lif.json.JsonString;
-import ca.uqac.lif.labpal.provenance.DataOwner;
+import ca.uqac.lif.petitpoucet.DataOwner;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
-import ca.uqac.lif.labpal.provenance.NodeFunction;
+import ca.uqac.lif.petitpoucet.NodeFunction;
 
 /**
  * An experiment is a runnable process that takes input parameters and

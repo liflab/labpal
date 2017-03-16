@@ -20,13 +20,13 @@ package sorting;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.ConstantNumberMacro;
-import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.labpal.plot.gnuplot.ClusteredHistogram;
-import ca.uqac.lif.labpal.plot.gnuplot.Scatterplot;
-import ca.uqac.lif.labpal.table.ColumnSum;
-import ca.uqac.lif.labpal.table.ExpandAsColumns;
+import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
+import ca.uqac.lif.mtnp.plot.gnuplot.ClusteredHistogram;
+import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
+import ca.uqac.lif.mtnp.table.ColumnSum;
+import ca.uqac.lif.mtnp.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.mtnp.table.TransformedTable;
 
 /**
  * This is an example of a lab that creates experiments to compare

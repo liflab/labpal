@@ -26,7 +26,7 @@ import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.provenance.DotProvenanceTreeRenderer;
-import ca.uqac.lif.labpal.provenance.ProvenanceNode;
+import ca.uqac.lif.petitpoucet.ProvenanceNode;
 
 import com.sun.net.httpserver.HttpExchange;
 

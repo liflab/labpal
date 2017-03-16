@@ -19,12 +19,12 @@ package browser;
 
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.labpal.plot.gnuplot.ClusteredHistogram;
-import ca.uqac.lif.labpal.plot.gral.PieChart;
-import ca.uqac.lif.labpal.table.ExpandAsColumns;
+import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
+import ca.uqac.lif.mtnp.plot.gnuplot.ClusteredHistogram;
+import ca.uqac.lif.mtnp.plot.gral.PieChart;
+import ca.uqac.lif.mtnp.table.ExpandAsColumns;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.mtnp.table.TransformedTable;
 
 /**
  * Perform a transformation on a table before plotting it.

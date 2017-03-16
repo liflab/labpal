@@ -25,10 +25,10 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.plot.PlotNode;
-import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.rendering.LatexTableRenderer;
+import ca.uqac.lif.mtnp.plot.Plot;
+import ca.uqac.lif.mtnp.plot.PlotNode;
+import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.mtnp.table.rendering.LatexTableRenderer;
 
 import com.sun.net.httpserver.HttpExchange;
 

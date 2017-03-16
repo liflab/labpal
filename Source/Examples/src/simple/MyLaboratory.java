@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.gral.Scatterplot;
+import ca.uqac.lif.mtnp.plot.gral.Scatterplot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
 public class MyLaboratory extends Laboratory {

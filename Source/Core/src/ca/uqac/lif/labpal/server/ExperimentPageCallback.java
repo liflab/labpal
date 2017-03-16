@@ -36,7 +36,7 @@ import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LabPalTui;
-import ca.uqac.lif.labpal.provenance.NodeFunction;
+import ca.uqac.lif.petitpoucet.NodeFunction;
 
 /**
  * Callback to display the details of one specific experiment.

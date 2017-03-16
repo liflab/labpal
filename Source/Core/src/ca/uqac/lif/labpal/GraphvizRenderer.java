@@ -1,6 +1,6 @@
 package ca.uqac.lif.labpal;
 
-import ca.uqac.lif.labpal.plot.gnuplot.GnuPlot;
+import ca.uqac.lif.mtnp.plot.gnuplot.GnuPlot;
 
 /**
  * Renders a string into an image using the Graphviz tool

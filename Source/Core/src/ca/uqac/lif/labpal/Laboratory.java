@@ -38,9 +38,10 @@ import ca.uqac.lif.labpal.server.HomePageCallback;
 import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.server.LabPalServer;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.TransformedTable;
-import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.mtnp.table.TransformedTable;
+import ca.uqac.lif.petitpoucet.OwnershipManager;
+import ca.uqac.lif.mtnp.plot.Plot;
 import ca.uqac.lif.labpal.provenance.DataTracker;
 import ca.uqac.lif.tui.AnsiPrinter;
 
@@ -51,7 +52,7 @@ import ca.uqac.lif.tui.AnsiPrinter;
  * 
  * @author Sylvain Hallé
  */
-public abstract class Laboratory
+public abstract class Laboratory implements OwnershipManager
 {
 	/* Return codes */
 	public static transient int ERR_OK = 0;
@@ -74,7 +75,7 @@ public abstract class Laboratory
 	/**
 	 * The revision version number
 	 */
-	private static final transient int s_revisionVersionNumber = 3;
+	private static final transient int s_revisionVersionNumber = 4;
 
 	/**
 	 * The set of experiments this lab has access to
@@ -297,19 +298,6 @@ public abstract class Laboratory
 	}
 
 	/**
-	 * Adds an experiment to the lab and queues it to the
-	 * assistant
-	 * @param e The experiment
-	 * @return This lab
-	 */
-	public Laboratory addAndQueue(Experiment e)
-	{
-		add(e);
-		m_assistant.queue(e);
-		return this;
-	}
-
-	/**
 	 * Assigns plots to this lab
 	 * @param plots The plots
 	 * @return This lab
@@ -516,16 +504,8 @@ public abstract class Laboratory
 	{
 		Laboratory lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
 		// Don't forget to transplant the plots
-		for (Plot p : m_plots)
-		{
-			p.assignTo(lab);
-		}
 		lab.m_plots = m_plots;
 		// Don't forget to transplant the tables
-		for (Table t : m_tables)
-		{
-			t.assignTo(lab);
-		}
 		lab.m_tables = m_tables;		
 		// Don't forget to transplant the RNG
 		for (Experiment e : lab.m_experiments)
@@ -1168,6 +1148,31 @@ public abstract class Laboratory
 			{
 				return m;
 			}
+		}
+		return null;
+	}
+	
+	@Override
+	public Object getObjectWithId(String id)
+	{
+		if (id == null || id.isEmpty())
+		{
+			return null;
+		}
+		if (id.startsWith("T"))
+		{
+			int nb = Integer.parseInt(id.substring(1));
+			return getTable(nb);
+		}
+		if (id.startsWith("P"))
+		{
+			int nb = Integer.parseInt(id.substring(1));
+			return getPlot(nb);
+		}
+		if (id.startsWith("M"))
+		{
+			int nb = Integer.parseInt(id.substring(1));
+			return getMacro(nb);
 		}
 		return null;
 	}

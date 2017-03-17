@@ -80,7 +80,7 @@
       <name>Azrael</name>
       <classname>ca.uqac.lif.azrael.Serializer</classname>
       <files>
-        <zip>https://github.com/sylvainhalle/Azrael/releases/download/v0.7.1-alpha/azrael-0.7.1-alpha.zip</zip>
+        <zip>https://github.com/sylvainhalle/Azrael/releases/download/v0.7.1/azrael-0.7.1-alpha.zip</zip>
       </files>
     </dependency>
     <dependency>

@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
@@ -65,10 +64,6 @@ public class TemplatePageCallback extends WebCallback
 		response.disableCaching();
 		response.setContentType(ContentType.HTML);
 		Map<String,String> params = getParameters(t);
-		//Give the right content-type to the browser by giving it what it's looking for
-		Headers headers = t.getRequestHeaders();
-		String accept_Header = headers.get("Accept").get(0);
-		response.setContentType(accept_Header.split(",")[0]);
 		// Read file and put into response
 		String file_contents = readTemplateFile();
 		if (file_contents == null)

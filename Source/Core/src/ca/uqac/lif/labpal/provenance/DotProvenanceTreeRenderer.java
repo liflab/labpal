@@ -52,7 +52,7 @@ public class DotProvenanceTreeRenderer
 		out.append("];\n");
 		if (parent >= 0)
 		{
-			out.append(parent).append(" -> ").append(id).append(";\n");
+			out.append(id).append(" -> ").append(parent).append(";\n");
 		}
 		for (ProvenanceNode pn : node.getParents())
 		{

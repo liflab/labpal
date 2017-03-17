@@ -59,7 +59,7 @@ public class TablesPageCallback extends TemplatePageCallback
 				out = out.replaceAll("\\{%TABLES%\\}", getTables(ids));			
 			}
 		}
-		out = out.replaceAll("\\{%ALL_TABLES%\\}", Matcher.quoteReplacement("<p><a title=\"Download all tables as a single LaTeX file\" href=\"all-tables\"><button class=\"btn btn-all-tables\">Download all tables</button></a></p>"));
+		out = out.replaceAll("\\{%ALL_TABLES%\\}", Matcher.quoteReplacement("<p><a class=\"btn-24 btn-all-tables\" title=\"Download all tables as a single LaTeX file\" href=\"all-tables\">Download all tables</a></p>"));
 		out = out.replaceAll("\\{%SEL_TABLES%\\}", "selected");
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return out;

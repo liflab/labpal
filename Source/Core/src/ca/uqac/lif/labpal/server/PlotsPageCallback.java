@@ -54,9 +54,9 @@ public class PlotsPageCallback extends TemplatePageCallback
 			out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
 			if (AllPlotsCallback.s_pdftkPresent)
 			{
-				out = out.replaceAll("\\{%ALL_PLOTS%\\}", "<a title=\"Download all plots as a single PDF file\" href=\"all-plots\"><button class=\"btn btn-all-plots\">Download all plots</button></a>");
+				out = out.replaceAll("\\{%ALL_PLOTS%\\}", "<a class=\"btn-24 btn-all-plots\" title=\"Download all plots as a single PDF file\" href=\"all-plots\">Download all plots</a>");
 			}
-			out = out.replaceAll("\\{%ALL_PLOTS_LATEX%\\}", "<a title=\"Download LaTeX macros for using the plots\" href=\"all-plots-latex\"><button class=\"btn btn-all-plots-latex\">Download LaTeX macros</button></a>");
+			out = out.replaceAll("\\{%ALL_PLOTS_LATEX%\\}", "<a class=\"btn-24 btn-all-plots-latex\" title=\"Download LaTeX macros for using the plots\" href=\"all-plots-latex\">Download LaTeX macros</a>");
 		}
 		else
 		{

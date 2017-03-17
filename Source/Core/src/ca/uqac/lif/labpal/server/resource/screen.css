@@ -191,6 +191,7 @@ h1 {
   display: inline-block;
   text-decoration: none;
   color: #222;
+  box-shadow: 2px 2px 0px 0px rgba(115,115,115,1);
 }
 
 #btn-download {

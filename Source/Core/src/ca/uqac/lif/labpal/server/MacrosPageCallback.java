@@ -67,7 +67,7 @@ public class MacrosPageCallback extends TemplatePageCallback
 		{
 			out = out.replaceAll("\\{%MACROS%\\}", Matcher.quoteReplacement(getMacros(macros, to_highlight)));			
 		}
-		out = out.replaceAll("\\{%ALL_MACROS%\\}", Matcher.quoteReplacement("<p><a title=\"Download all macros as a single LaTeX file\" href=\"all-macros-latex\"><button class=\"btn btn-all-tables\">Download all macros</button></a></p>"));
+		out = out.replaceAll("\\{%ALL_MACROS%\\}", Matcher.quoteReplacement("<p><a class=\"btn-24 btn-all-tables\" title=\"Download all macros as a single LaTeX file\" href=\"all-macros-latex\">Download all macros</a></p>"));
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TULIP));
 		return out;
 	}

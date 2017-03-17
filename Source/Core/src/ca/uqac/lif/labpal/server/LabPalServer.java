@@ -17,6 +17,11 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import ca.uqac.lif.jerrydog.CachedRequestCallback;
 import ca.uqac.lif.jerrydog.InnerFileServer;
 import ca.uqac.lif.jerrydog.RequestCallback;
 import ca.uqac.lif.labpal.CliParser;
@@ -44,6 +49,16 @@ public class LabPalServer extends InnerFileServer
 	protected static final transient int s_cacheInterval = 600;
 	
 	/**
+	 * A number identifying the color scheme used in the GUI
+	 */
+	protected int m_colorScheme = 0;
+	
+	/**
+	 * The predefined color schemes used for the GUI
+	 */
+	protected static final List<String[]> s_colorSchemes = loadSchemes();
+	
+	/**
 	 * Creates a new LabPal server
 	 * @param args
 	 * @param lab
@@ -62,6 +77,10 @@ public class LabPalServer extends InnerFileServer
 			setServerPort(s_defaultPort);
 		}
 		registerCallback(0, new HomePageCallback(lab, assistant));
+		CachedRequestCallback css_callback = new CachedRequestCallback(new CssCallback(this, lab, assistant));
+		css_callback.setCachingEnabled(true);
+		css_callback.setCachingInterval(s_cacheInterval);
+		registerCallback(0, css_callback);
 		registerCallback(0, new StatusPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentsPageCallback(lab, assistant));
@@ -85,6 +104,15 @@ public class LabPalServer extends InnerFileServer
 	}
 	
 	/**
+	 * Sets the the color scheme used in the GUI
+	 * @param c A number identifying the color scheme
+	 */
+	public void setColorScheme(int c)
+	{
+		m_colorScheme = c % s_colorSchemes.size();
+	}
+	
+	/**
 	 * Changes the laboratory associated with each registered callback.
 	 * This occurs when the user loads a new lab from a file.
 	 * @param lab The new laboratory
@@ -100,9 +128,38 @@ public class LabPalServer extends InnerFileServer
 		}
 	}
 	
+	/**
+	 * Loads the set of color schemes from an internal file
+	 * @return A list of arrays with hex colors
+	 */
+	protected static List<String[]> loadSchemes()
+	{
+		Scanner scanner = new Scanner(LabPalServer.class.getResourceAsStream("schemes.csv"));
+		List<String[]> lines = new ArrayList<String[]>();
+		while (scanner.hasNextLine())
+		{
+			String line = scanner.nextLine().trim();
+			if (line.isEmpty() || !line.startsWith("#"))
+				continue;
+			String[] parts = line.split(",");
+			lines.add(parts);
+		}
+		scanner.close();
+		return lines;
+	}
+	
+	/**
+	 * Gets the array of hex colors corresponding to the current color
+	 * scheme
+	 * @return The array
+	 */
+	public String[] getColorScheme()
+	{
+		return s_colorSchemes.get(m_colorScheme);
+	}
+	
 	public static void setupCli(CliParser parser)
 	{
 		
 	}
-	
 }

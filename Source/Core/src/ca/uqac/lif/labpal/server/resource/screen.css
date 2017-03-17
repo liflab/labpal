@@ -46,8 +46,8 @@ h1 {
   margin: 0px;
   width: 100%;
   height: 80px;
-  border-bottom: solid 4px #88a;
-  background: #eef;
+  border-bottom: solid 4px {%COLOR 1%};
+  background: {%COLOR 3%};
 }
 
 #top-menu ul {
@@ -134,11 +134,11 @@ h1 {
   position: fixed;
   height: 40px;
   line-height: 40px;
-  border-top: solid 4px #88a;
+  border-top: solid 4px {%COLOR 1%};
   bottom: 0px;
   width: 100%;
   font-size: 80%;
-  background: #eef url('images/lif-24.png') center right 8px no-repeat;
+  background: {%COLOR 3%} url('images/lif-24.png') center right 8px no-repeat;
 }
 
 #footer a {
@@ -169,7 +169,7 @@ h1 {
   border-radius: 4px;
   height: 32px;
   line-height: 20px;
-  background: #e0e0e0;
+  background: {%COLOR 4%};
   padding: 4px;
   display: inline-block;
   text-decoration: none;
@@ -186,7 +186,7 @@ h1 {
   border-radius: 4px;
   height: 24px;
   line-height: 24px;
-  background: #e0e0e0;
+  background: {%COLOR 4%};
   padding: 4px;
   display: inline-block;
   text-decoration: none;
@@ -194,58 +194,58 @@ h1 {
 }
 
 #btn-download {
-  background: #e0e0e0 url('images/download-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/download-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 #btn-upload {
-  background: #e0e0e0 url('images/upload-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/upload-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 #btn-start {
-  background: #e0e0e0 url('images/running-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/running-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 #btn-stop {
-  background: #e0e0e0 url('images/abort-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/abort-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-queue {
-  background: #e0e0e0 url('images/queue-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/queue-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-unqueue {
-  background: #e0e0e0 url('images/remove-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/remove-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-reset {
-  background: #e0e0e0 url('images/reset-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/reset-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-clean {
-  background: #e0e0e0 url('images/clean-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/clean-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 #btn-find {
-  background: #e0e0e0 url('images/find-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/find-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-picture {
-  background: #e0e0e0 url('images/image-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/image-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .json-table th {
   text-align: left;
-  background: #eef;
+  background: {%COLOR 3%};
   margin: 2px;
   padding: 2px;
   border-radius: 2px;
@@ -262,7 +262,7 @@ table th {
 
 table.exp-table th {
   font-weight: bold;
-  background: #eef;
+  background: {%COLOR 3%};
 }
 
 table.exp-table tr:hover td {
@@ -344,17 +344,17 @@ table.exp-table td {
 }
 
 .btn-pdf {
-  background: #e0e0e0 url('images/icon-pdf-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/icon-pdf-24.png') 4px 4px no-repeat;
   padding-left: 32px;
 }
 
 .btn-gp {
-  background: #e0e0e0 url('images/graph-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/graph-24.png') 4px 4px no-repeat;
   padding-left: 32px;
 }
 
 .btn-table {
-  background: #e0e0e0 url('images/table-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/table-24.png') 4px 4px no-repeat;
   padding-left: 32px;
 }
 
@@ -380,17 +380,17 @@ table.exp-table td {
 }
 
 .btn-all-plots {
-  background: #e0e0e0 url('images/pages-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/pages-24.png') 4px 4px no-repeat;
   padding-left: 28px;
 }
 
 .btn-all-plots-latex {
-  background: #e0e0e0 url('images/tex-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/tex-24.png') 4px 4px no-repeat;
   padding-left: 28px;
 }
 
 .btn-all-tables{
-  background: #e0e0e0 url('images/pages-24.png') 4px 4px no-repeat;
+  background: {%COLOR 4%} url('images/pages-24.png') 4px 4px no-repeat;
   padding-left: 28px;
 }
 
@@ -495,11 +495,11 @@ table.exp-table td {
 
 .tables a, .exp-table a {
   text-decoration: none;
-  color: #225;
+  color: {%COLOR 2%};
 }
 
 .tables a:hover, .exp-table a:hover {
-  color: #88a;
+  color: {%COLOR 1%};
 }
 
 table.results {
@@ -531,7 +531,7 @@ a.explanation:hover {
 }
 
 .status-table th {
-  background: #eef;
+  background: {%COLOR 3%};
 }
 
 .status-table td {
@@ -541,16 +541,16 @@ a.explanation:hover {
 .id-cell {
   font-weight: bold;
   font-style: italic;
-  color: #88a;
+  color: {%COLOR 1%};
 }
 
 #content a {
-  color: #225;
+  color: {%COLOR 2%};
   text-decoration: none;
 }
 
 #content a:hover {
-  color: #88a;
+  color: {%COLOR 1%};
   text-decoration: underline;
 }
 
@@ -563,7 +563,7 @@ dl.macros dt {
 dl.macros dt span.macro-name {
   font-weight: bold;
   font-style: italic;
-  color: #225;
+  color: {%COLOR 2%};
 }
 
 dl.macros dd {

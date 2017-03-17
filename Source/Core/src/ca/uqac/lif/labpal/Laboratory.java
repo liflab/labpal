@@ -644,6 +644,10 @@ public abstract class Laboratory implements OwnershipManager
 		parser.addArgument(new Argument()
 				.withLongName("version")
 				.withDescription("Shows version info"));
+		parser.addArgument(new Argument()
+				.withLongName("color-scheme")
+				.withArgument("c")
+				.withDescription("Use GUI color scheme c (0-3)"));
 		Laboratory new_lab = null;
 		try
 		{
@@ -732,6 +736,11 @@ public abstract class Laboratory implements OwnershipManager
 				System.err.println("Cannot start server on port " + server.getServerPort() +". Is another lab already running?");
 				stdout.close();
 				System.exit(ERR_SERVER);
+			}
+			if (new_lab.m_cliArguments.hasOption("color-scheme"))
+			{
+				int scheme = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("color-scheme"));
+				server.setColorScheme(scheme);
 			}
 			if (new_lab.m_cliArguments.hasOption("autostart"))
 			{

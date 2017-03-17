@@ -26,8 +26,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.uqac.lif.azrael.GenericSerializer;
 import ca.uqac.lif.azrael.SerializerException;
 import ca.uqac.lif.azrael.json.JsonSerializer;
+import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
@@ -41,6 +43,7 @@ import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.mtnp.table.Table;
 import ca.uqac.lif.mtnp.table.TransformedTable;
 import ca.uqac.lif.petitpoucet.OwnershipManager;
+import ca.uqac.lif.mtnp.DataFormatter;
 import ca.uqac.lif.mtnp.plot.Plot;
 import ca.uqac.lif.labpal.provenance.DataTracker;
 import ca.uqac.lif.tui.AnsiPrinter;
@@ -608,6 +611,9 @@ public abstract class Laboratory implements OwnershipManager
 				.withLongName("port")
 				.withArgument("x")
 				.withDescription("Starts server on port x"));
+		parser.addArgument(new Argument()
+				.withLongName("version")
+				.withDescription("Shows version info"));
 		Laboratory new_lab = null;
 		try
 		{
@@ -652,6 +658,12 @@ public abstract class Laboratory implements OwnershipManager
 		if (new_lab.m_cliArguments.hasOption("help"))
 		{
 			parser.printHelp(getCliHeader(), System.out);
+			stdout.close();
+			System.exit(ERR_OK);
+		}
+		if (new_lab.m_cliArguments.hasOption("version"))
+		{
+			showVersionInfo(stdout);
 			stdout.close();
 			System.exit(ERR_OK);
 		}
@@ -1175,6 +1187,14 @@ public abstract class Laboratory implements OwnershipManager
 			return getMacro(nb);
 		}
 		return null;
+	}
+	
+	protected static void showVersionInfo(AnsiPrinter out)
+	{
+		out.append(getCliHeader()).append("\n");
+		out.append("Azrael version:   ").append(GenericSerializer.getVersionString()).append("\n");
+		out.append("Jerrydog version: ").append(Server.getVersionString()).append("\n");
+		out.append("MTNP version:     ").append(DataFormatter.getVersionString()).append("\n");
 	}
 
 }

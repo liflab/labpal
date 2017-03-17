@@ -37,7 +37,6 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 	public AssistantPageCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/assistant", lab, assistant);
-		setMethod(Method.POST);
 		ignoreMethod();
 	}
 	

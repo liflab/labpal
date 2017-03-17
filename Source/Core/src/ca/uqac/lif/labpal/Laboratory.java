@@ -103,7 +103,7 @@ public abstract class Laboratory implements OwnershipManager
 	/**
 	 * The set of groups associated with this lab
 	 */
-	private transient HashSet<Group> m_groups;
+	private HashSet<Group> m_groups;
 
 	/**
 	 * The hostname of the machine running the lab
@@ -189,6 +189,11 @@ public abstract class Laboratory implements OwnershipManager
 	 * The arguments parsed from the command line
 	 */
 	private transient ArgumentMap m_cliArguments = null;
+	
+	/**
+	 * Whether the lab is currently being deserialized
+	 */
+	private transient boolean m_isDeserialized = false;
 
 	/**
 	 * Creates a new lab assistant
@@ -272,18 +277,31 @@ public abstract class Laboratory implements OwnershipManager
 	 */
 	public Laboratory add(Experiment e, Group group, ExperimentTable ... tables)
 	{
+		Experiment target_e = e;
 		int exp_id = s_idCounter++;
-		e.setId(exp_id);
-		m_experiments.add(e);
-		addClassToSerialize(e.getClass());
-		e.m_random = m_random;
+		target_e.setId(exp_id);
+		addClassToSerialize(target_e.getClass());
+		target_e.m_random = m_random;
+		if (!m_isDeserialized)
+		{
+			m_experiments.add(e);
+		}
+		else
+		{
+			target_e = getExperiment(exp_id);
+			if (target_e == null)
+			{
+				// Not supposed to happen!
+				throw new RuntimeException("Experiment #" + exp_id + " cannot be found in deserialized lab.");
+			}
+		}
 		for (ExperimentTable p : tables)
 		{
-			p.add(e);
+			p.add(target_e);
 		}
-		if (group != null)
+		if (group != null && !m_isDeserialized)
 		{
-			group.add(e);
+			group.add(target_e);
 		}
 		return this;
 	}
@@ -506,6 +524,14 @@ public abstract class Laboratory implements OwnershipManager
 	public Laboratory loadFromJson(JsonElement je) throws SerializerException
 	{
 		Laboratory lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
+		lab.m_isDeserialized = true;
+		Laboratory.s_idCounter = 1;
+		Table.resetCounter();
+		Macro.resetCounter();
+		Plot.resetCounter();
+		lab.setup();
+		lab.m_isDeserialized = false;
+		/*
 		// Don't forget to transplant the plots
 		lab.m_plots = m_plots;
 		// Don't forget to transplant the tables
@@ -515,6 +541,7 @@ public abstract class Laboratory implements OwnershipManager
 		{
 			e.m_random = lab.m_random;
 		}
+		*/
 		return lab;		
 	}
 
@@ -576,9 +603,12 @@ public abstract class Laboratory implements OwnershipManager
 	 */
 	public Laboratory add(Group ... groups)
 	{
-		for (Group g : groups)
+		if (!m_isDeserialized)
 		{
-			m_groups.add(g);
+			for (Group g : groups)
+			{
+				m_groups.add(g);
+			}			
 		}
 		return this;
 	}

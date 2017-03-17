@@ -55,7 +55,7 @@ public class Group
 	/**
 	 * A counter for auto-incrementing group IDs
 	 */
-	protected static int s_idCounter = 1;
+	protected static transient int s_idCounter = 1;
 
 	/**
 	 * Creates a new group

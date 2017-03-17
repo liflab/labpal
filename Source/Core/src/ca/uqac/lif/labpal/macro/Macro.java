@@ -98,4 +98,14 @@ public abstract class Macro
 	{
 		return UndefinedDependency.instance;
 	}
+	
+	/**
+	 * Resets the ID counter for macros
+	 */
+	public static void resetCounter()
+	{
+		s_counterLock.lock();
+		s_idCounter = 1;
+		s_counterLock.unlock();
+	}
 }

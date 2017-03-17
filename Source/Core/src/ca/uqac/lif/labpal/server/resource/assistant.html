@@ -16,14 +16,14 @@
 
 <h2>Experiments in queue</h2>
 
-<form name="experiments" method="post" action="unqueue">
+<form name="experiments" method="post" action="assistant">
 {%EXP_LIST%}
 
 <div>
 <p>With selected experiments&hellip;</p>
-<input class="btn btn-unqueue" type="submit" value="Remove from queue" />
-<input class="btn btn-reset" type="submit" value="Reset" />
-<input class="btn btn-clean" type="submit" value="Clean" />
+<input class="btn btn-unqueue" type="submit" name="unqueue" value="Remove from queue" />
+<input class="btn btn-reset" type="submit" name="reset" value="Reset" />
+<input class="btn btn-clean" type="submit" name="clean" value="Clean" />
 </div>
 </form>
 

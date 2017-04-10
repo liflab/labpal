@@ -93,5 +93,15 @@
         <zip>https://github.com/liflab/mtnp/releases/download/v0.1-alpha/mtnp-0.1-alpha.zip</zip>
       </files>
     </dependency>
+    <dependency>
+      <!--
+      Petit Poucet. For managing provenance chaining
+      -->
+      <name>Petit Poucet</name>
+      <classname>ca.uqac.lif.petitpoucet.DataOwner</classname>
+      <files>
+        <zip>https://github.com/liflab/petitpoucet/releases/download/v0.1-alpha/petitpoucet-0.1-alpha.zip</zip>
+      </files>
+    </dependency>
   </dependencies>
 </build>

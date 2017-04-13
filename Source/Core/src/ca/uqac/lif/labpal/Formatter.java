@@ -226,4 +226,49 @@ public class Formatter
 		}
 		return value;
 	}
+	
+	/**
+	 * Converts a number into a float, and converts a {@code null} object
+	 * into the value 0.
+	 * @param n The number (or null)
+	 * @return A float
+	 */
+	public static float getFloat(Number n)
+	{
+		if (n == null)
+		{
+			return 0f;
+		}
+		return n.floatValue();
+	}
+	
+	/**
+	 * Converts a number into an integer, and converts a {@code null} object
+	 * into the value 0.
+	 * @param n The number (or null)
+	 * @return An integer
+	 */
+	public static int getInt(Number n)
+	{
+		if (n == null)
+		{
+			return 0;
+		}
+		return n.intValue();
+	}
+	
+	/**
+	 * Converts a number into a double, and converts a {@code null} object
+	 * into the value 0.
+	 * @param n The number (or null)
+	 * @return A double
+	 */
+	public static double getDouble(Number n)
+	{
+		if (n == null)
+		{
+			return 0d;
+		}
+		return n.doubleValue();
+	}
 }

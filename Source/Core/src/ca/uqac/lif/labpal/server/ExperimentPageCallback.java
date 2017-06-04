@@ -155,7 +155,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		StringBuilder out = new StringBuilder();
 		if (e instanceof JsonString)
 		{
-			out.append(((JsonString) e).stringValue());
+			out.append("<pre>").append(((JsonString) e).stringValue()).append("</pre>");
 		}
 		else if (e instanceof JsonNumber)
 		{

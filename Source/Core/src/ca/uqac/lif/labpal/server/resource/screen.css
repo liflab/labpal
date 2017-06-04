@@ -257,6 +257,11 @@ h1 {
   padding: 2px;
 }
 
+.json-table pre {
+  padding: 0px;
+  margin: 0px;
+}
+
 table th {
   text-align: left;
 }
@@ -421,6 +426,10 @@ table.exp-table td {
 
 .message.error {
   background: #fcc url('images/error-32.png') left center no-repeat;
+}
+
+.message.warning {
+  background: #ffc url('images/error-32.png') left center no-repeat;
 }
 
 #progress-bar {

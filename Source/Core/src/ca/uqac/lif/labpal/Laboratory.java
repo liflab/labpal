@@ -771,13 +771,20 @@ public abstract class Laboratory implements OwnershipManager
 	 * lab must be fixed before running the experiments; hence ParkBench will
 	 * simply quit. If your experiments
 	 * have prerequisites they can generate, don't use this method.
-	 *  
-	 * @return null if the tests <em>can</em> be run, a String with an
-	 *   explanation otherwise.
+	 * 
+	 * @param messages An empty list. The method can add new instances of
+	 * {@link EnvironmentMessage}s to indicate problems with the environment.
+	 * The method may put elements inside {@code messages} even if it returns
+	 * {@code true}. This would indicate non fatal problems that do not prevent
+	 * the lab from running.
+	 * @return {@code true} if if the tests can be run, {@code false} otherwise.
+	 * It is recommended that if the method returns {@code false}, some message
+	 * has been added to the {@code messages} list to give proper feedback to
+	 * the user.
 	 */
-	public String isEnvironmentOk()
+	public boolean isEnvironmentOk(List<EnvironmentMessage> messages)
 	{
-		return null;
+		return true;
 	}
 
 	/**

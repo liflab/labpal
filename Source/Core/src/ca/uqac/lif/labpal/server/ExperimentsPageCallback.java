@@ -67,21 +67,27 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%SEL_EXPERIMENTS%\\}", "selected");
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ERLENMEYER));
 		String message = "";
-		if (params.containsKey("queue"))
+		if (params.containsKey("fsubmit"))
 		{
-			message = queue(params);
-		}
-		if (params.containsKey("reset"))
-		{
-			message = reset(params);
-		}
-		if (params.containsKey("clean"))
-		{
-			message = clean(params);
-		}
-		if (params.containsKey("unqueue"))
-		{
-			message = unqueue(params);
+			// Don't forget that spaces may be replaced by "+" by the browser
+			// So instead of checking the exact caption, we look for a single word
+			// that distinguishes between buttons
+			if (params.get("fsubmit").contains("Add"))
+			{
+				message = queue(params);
+			}
+			if (params.get("fsubmit").contains("Reset"))
+			{
+				message = reset(params);
+			}
+			if (params.get("fsubmit").contains("Clean"))
+			{
+				message = clean(params);
+			}
+			if (params.get("fsubmit").contains("Remove"))
+			{
+				message = unqueue(params);
+			}			
 		}
 		out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
 		StringBuilder list_of_lists = new StringBuilder();

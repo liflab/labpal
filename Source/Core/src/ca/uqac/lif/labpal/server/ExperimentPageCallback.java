@@ -155,7 +155,17 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		StringBuilder out = new StringBuilder();
 		if (e instanceof JsonString)
 		{
-			out.append("<pre>").append(((JsonString) e).stringValue()).append("</pre>");
+			String s = ((JsonString) e).stringValue();
+			if (s.contains("\n") || s.contains("\r"))
+			{
+				// This parameter seems to contain multi-line text;
+				// better display it as is
+				out.append("<pre class=\"multiline\" title=\"Click to expand/collapse this item\">").append(s).append("</pre>");
+			}
+			else
+			{
+				out.append(s);
+			}
 		}
 		else if (e instanceof JsonNumber)
 		{

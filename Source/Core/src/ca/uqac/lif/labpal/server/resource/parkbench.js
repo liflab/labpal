@@ -9,4 +9,7 @@ $(document).ready(function() {
       $(this).toggleClass("closed");
       $(this).closest("div.around-pulldown").find(".pulldown-contents").toggle();
     });
+    $("pre.multiline").click(function() {
+      $(this).toggleClass("open");
+    });
 });

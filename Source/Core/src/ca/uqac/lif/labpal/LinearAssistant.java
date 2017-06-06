@@ -86,6 +86,7 @@ public class LinearAssistant extends LabAssistant
 		if (m_experimentThread != null && m_experimentThread.isAlive())
 		{
 			// If for some reason another thread is still running, interrupt it
+			System.out.println("INTERRUPT HERE");
 			m_experimentThread.interrupt();
 		}
 		m_stop = false;
@@ -110,7 +111,7 @@ public class LinearAssistant extends LabAssistant
 			if (s != Status.RUNNING && s != Status.DONE && s != Status.DONE_WARNING && s != Status.FAILED)
 			{
 				// Experiment not started: start
-				m_experimentThread = new Thread(e);
+				m_experimentThread = new ExperimentThread(e);
 				e.setWhoRan(m_name);
 				m_experimentThread.start();					
 				while (m_experimentThread.isAlive() && !m_stop)
@@ -156,7 +157,7 @@ public class LinearAssistant extends LabAssistant
 		{
 			m_experimentThread.interrupt();
 		}
-		m_queueLock.lock();
+		/*m_queueLock.lock();
 		boolean empty = m_queue.isEmpty();
 		m_queueLock.unlock();
 		if (!empty)
@@ -165,7 +166,7 @@ public class LinearAssistant extends LabAssistant
 			Experiment e = m_queue.get(0);
 			m_queueLock.unlock();
 			e.interrupt();
-		}
+		}*/
 	}
 
 	@Override

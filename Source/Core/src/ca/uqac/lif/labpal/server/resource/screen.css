@@ -311,6 +311,14 @@ table.exp-table td {
   background: url('images/status-fail-24.png') left center no-repeat;
 }
 
+.status-icon.status-timeout {
+  background: url('images/status-timeout-24.png') left center no-repeat;
+}
+
+.status-icon.status-interrupted {
+  background: url('images/status-interrupted-24.png') left center no-repeat;
+}
+
 .status-icon.status-queued {
   background: url('images/status-queued-24.png') left center no-repeat;
 }

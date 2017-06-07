@@ -48,12 +48,25 @@ public class StatusPageCallback extends TemplatePageCallback
 	 * The description associated to the lab
 	 */
 	protected final transient String m_labDescription;
+	
+	/**
+	 * Whether to skip the check of the environment parameters at startup
+	 */
+	protected boolean m_skipEnvironmentCheck = false;
 
-	public StatusPageCallback(Laboratory lab, LabAssistant assistant)
+	public StatusPageCallback(Laboratory lab, LabAssistant assistant, boolean skip_environment_check)
 	{
 		super("/status", lab, assistant);
+		m_skipEnvironmentCheck = skip_environment_check;
 		m_environmentMessage = new LinkedList<EnvironmentMessage>();
-		lab.isEnvironmentOk(m_environmentMessage);
+		if (!m_skipEnvironmentCheck)
+		{
+			lab.isEnvironmentOk(m_environmentMessage);
+		}
+		else
+		{
+			m_environmentMessage.add(new EnvironmentMessage("The check of environment parameters has been manually bypassed by a command-line parameter.", EnvironmentMessage.Severity.WARNING));
+		}
 		m_labDescription = lab.getDescription();
 	}
 

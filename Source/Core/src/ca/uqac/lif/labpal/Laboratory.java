@@ -638,6 +638,9 @@ public abstract class Laboratory implements OwnershipManager
 				.withLongName("autostart")
 				.withDescription("Queues all experiments and starts the assistant"));
 		parser.addArgument(new Argument()
+				.withLongName("no-env-check")
+				.withDescription("Skips the environment check"));
+		parser.addArgument(new Argument()
 				.withLongName("port")
 				.withArgument("x")
 				.withDescription("Starts server on port x"));

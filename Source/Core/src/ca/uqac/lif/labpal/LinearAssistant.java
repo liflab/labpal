@@ -36,7 +36,7 @@ public class LinearAssistant extends LabAssistant
 	/**
 	 * Internal flag used to stop the execution of the queue
 	 */
-	private transient boolean m_stop;
+	private transient volatile boolean m_stop;
 
 	/**
 	 * The thread that runs the experiments
@@ -129,7 +129,10 @@ public class LinearAssistant extends LabAssistant
 					}
 					Status s1  = e.getStatus();
 					if (s1 == Status.DONE || s == Status.FAILED || s1 == Status.DONE_WARNING)
+					{
+						m_experimentThread = null;
 						break; // Move on to next experiment
+					}
 					long duration = System.currentTimeMillis() - e.getStartTime();
 					long max_duration = e.getMaxDuration();
 					if (max_duration > 0 && duration > max_duration)

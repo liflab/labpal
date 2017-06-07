@@ -158,7 +158,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		for (String p_name : param_list)
 		{
 			
-			out.append("<th>").append(p_name).append("</th>");
+			out.append("<th>").append(beautifyParameterName(p_name)).append("</th>");
 		}
 		out.append("<th>Status</th></tr></thead>\n<tbody>\n");
 		for (int id : ids)

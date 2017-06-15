@@ -47,7 +47,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	/**
 	 * The status of the experiment
 	 */
-	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, DONE, DONE_WARNING, FAILED, TIMEOUT, INTERRUPTED};
+	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, DONE, DONE_WARNING, FAILED, KILLED};
 
 	/**
 	 * The input parameters given to this experiment
@@ -296,7 +296,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	 *   of the experiment. If this method ends without throwing an exception,
 	 *   it is assumed it has completed successfully.
 	 */
-	public abstract void execute() throws ExperimentException, InterruptedException;
+	public abstract void execute() throws ExperimentException;
 	
 	/**
 	 * Reads an output parameter for this experiment
@@ -673,13 +673,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		try
 		{
 			execute();
-			if (m_status != Status.INTERRUPTED)
-			{
-				// The interrupt() method may have already changed the
-				// experiment's status. If so, we don't overwrite it with
-				// DONE
-				m_status = Status.DONE;
-			}
+			m_status = Status.DONE;
 		}
 		catch (Exception e)
 		{
@@ -877,21 +871,10 @@ public abstract class Experiment implements Runnable, DataOwner
 	 */
 	public final Experiment interrupt()
 	{
-		m_status = Status.INTERRUPTED;
+		m_status = Status.FAILED;
 		m_errorMessage = "The experiment was manually interrupted";
 		m_endTime = System.currentTimeMillis();
-		prepareToInterrupt();
 		return this;
-	}
-	
-	/**
-	 * Manages the unexpected interruption of an experiment. For
-	 * example, if the experiment runs an external application, this
-	 * method should be responsible for terminating this application.
-	 */
-	public void prepareToInterrupt()
-	{
-		
 	}
 	
 	/**
@@ -965,7 +948,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	 */
 	public final Experiment kill()
 	{
-		m_status = Status.TIMEOUT;
+		m_status = Status.KILLED;
 		m_errorMessage = "The experiment was interrupted by the lab assistant because it was taking too long";
 		m_endTime = System.currentTimeMillis();
 		return this;

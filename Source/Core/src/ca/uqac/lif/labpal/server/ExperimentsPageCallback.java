@@ -67,27 +67,21 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%SEL_EXPERIMENTS%\\}", "selected");
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ERLENMEYER));
 		String message = "";
-		if (params.containsKey("fsubmit"))
+		if (params.containsKey("queue"))
 		{
-			// Don't forget that spaces may be replaced by "+" by the browser
-			// So instead of checking the exact caption, we look for a single word
-			// that distinguishes between buttons
-			if (params.get("fsubmit").contains("Add"))
-			{
-				message = queue(params);
-			}
-			if (params.get("fsubmit").contains("Reset"))
-			{
-				message = reset(params);
-			}
-			if (params.get("fsubmit").contains("Clean"))
-			{
-				message = clean(params);
-			}
-			if (params.get("fsubmit").contains("Remove"))
-			{
-				message = unqueue(params);
-			}			
+			message = queue(params);
+		}
+		if (params.containsKey("reset"))
+		{
+			message = reset(params);
+		}
+		if (params.containsKey("clean"))
+		{
+			message = clean(params);
+		}
+		if (params.containsKey("unqueue"))
+		{
+			message = unqueue(params);
 		}
 		out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
 		StringBuilder list_of_lists = new StringBuilder();
@@ -158,13 +152,13 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		for (String p_name : param_list)
 		{
 			
-			out.append("<th>").append(beautifyParameterName(p_name)).append("</th>");
+			out.append("<th>").append(p_name).append("</th>");
 		}
-		out.append("<th>Status</th></tr></thead>\n<tbody>\n");
+		out.append("<th>Status</th><th><input type=\"text\" class=\"top-filter\" /></th></tr></thead>\n<tbody>\n");
 		for (int id : ids)
 		{
 			Experiment e = lab.getExperiment(id);
-			out.append("<tr>");
+			out.append("<tr class=\"tr tr_").append(id).append("\">");
 			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
 			out.append("<td class=\"id-cell\"><a href=\"experiment?id=").append(id).append("\">").append(id).append("</a></td>");
 			for (String p_name : param_list)
@@ -211,10 +205,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			break;
 		case FAILED:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
-		case TIMEOUT:
-			return "<div class=\"status-icon status-timeout\" title=\"Timed out\"><span class=\"text-only\">K</span></div>";
-		case INTERRUPTED:
-			return "<div class=\"status-icon status-interrupted\" title=\"Interrupted\"><span class=\"text-only\">K</span></div>";
+		case KILLED:
+			return "<div class=\"status-icon status-failed\" title=\"Timed out\"><span class=\"text-only\">K</span></div>";
 		case PREREQ_F:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
 		case PREREQ_NOK:
@@ -264,10 +256,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			break;
 		case FAILED:
 			return "Failed";
-		case TIMEOUT:
+		case KILLED:
 			return "Timed out";
-		case INTERRUPTED:
-			return "Interrupted";
 		case PREREQ_F:
 			return "Failed when generating prerequisites";
 		case PREREQ_NOK:

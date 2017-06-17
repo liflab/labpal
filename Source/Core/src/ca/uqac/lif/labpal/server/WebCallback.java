@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.util.regex.Pattern;
+
 import ca.uqac.lif.jerrydog.RestCallback;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -38,6 +40,11 @@ public abstract class WebCallback extends RestCallback
 	 * The lab assistant associated to the laboratory
 	 */
 	protected LabAssistant m_assistant;
+	
+	/**
+	 * A regex pattern to identify parameter names with subscripts
+	 */
+	protected static final Pattern s_subscriptPattern = Pattern.compile("(\\w+)_(\\w+)");
 	
 	/**
 	 * Creates a new callback
@@ -75,4 +82,18 @@ public abstract class WebCallback extends RestCallback
 		s = s.replaceAll(">", "&gt;");
 		return s;
 	}
+	
+	/**
+	 * Renders the name of a parameter, attempting to "beautify" it in some
+	 * cases.
+	 * @param key The parameter to render
+	 * @return
+	 */
+	public static String beautifyParameterName(String key)
+	{
+		String out = htmlEscape(key);
+		out = out.replaceAll("(\\w+)_(\\w+)", "$1<sub>$2</sub>");
+		return out;
+	}
+
 }

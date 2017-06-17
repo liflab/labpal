@@ -17,9 +17,12 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import ca.uqac.lif.labpal.EnvironmentMessage;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -34,22 +37,36 @@ import ca.uqac.lif.labpal.Laboratory;
 public class StatusPageCallback extends TemplatePageCallback
 {
 	/**
-	 * If the lab's environment requirements are not met, the error message
-	 * is stored here. Since environment checks can be long, this check is
+	 * If the lab's environment requirements are not met, the error messages
+	 * are stored here. Since environment checks can be long, this check is
 	 * done only once, and the result is cached for future calls to this
 	 * class. 
 	 */
-	protected final transient String m_environmentMessage;
+	protected final transient List<EnvironmentMessage> m_environmentMessage;
 
 	/**
 	 * The description associated to the lab
 	 */
 	protected final transient String m_labDescription;
+	
+	/**
+	 * Whether to skip the check of the environment parameters at startup
+	 */
+	protected boolean m_skipEnvironmentCheck = false;
 
-	public StatusPageCallback(Laboratory lab, LabAssistant assistant)
+	public StatusPageCallback(Laboratory lab, LabAssistant assistant, boolean skip_environment_check)
 	{
 		super("/status", lab, assistant);
-		m_environmentMessage = lab.isEnvironmentOk();
+		m_skipEnvironmentCheck = skip_environment_check;
+		m_environmentMessage = new LinkedList<EnvironmentMessage>();
+		if (!m_skipEnvironmentCheck)
+		{
+			lab.isEnvironmentOk(m_environmentMessage);
+		}
+		else
+		{
+			m_environmentMessage.add(new EnvironmentMessage("The check of environment parameters has been manually bypassed by a command-line parameter.", EnvironmentMessage.Severity.WARNING));
+		}
 		m_labDescription = lab.getDescription();
 	}
 
@@ -75,12 +92,21 @@ public class StatusPageCallback extends TemplatePageCallback
 			out = out.replaceAll("\\{%DOI%\\}", "<tr><th title=\"The Digital Object Identifier assigned to this lab\">DOI</th><td>" + Matcher.quoteReplacement(htmlEscape(doi)) + "</td></tr>\n");
 		}
 		out = out.replaceAll("\\{%PROGRESS_BAR%\\}", getBar());
-		if (m_environmentMessage != null)
+		if (!m_environmentMessage.isEmpty())
 		{
-			out = out.replaceAll("\\{%ENVIRONMENT_MESSAGE%\\}", "<p class=\"message error\">" 
-					+ "<span>The lab's environment requirements are not met. " 
-					+ m_environmentMessage 
-					+ " This means you may not be able to run the experiments propertly.</span></p>");
+			StringBuilder messages = new StringBuilder();
+			for (EnvironmentMessage msg : m_environmentMessage)
+			{
+				String css_class = "error";
+				if (msg.getSeverity() == EnvironmentMessage.Severity.WARNING)
+				{
+					css_class = "warning";
+				}
+				messages.append("<p class=\"message ").append(css_class).append("\"><span>");
+				messages.append(msg.getMessage());
+				messages.append("</span></p>\n");
+			}
+			out = out.replaceAll("\\{%ENVIRONMENT_MESSAGE%\\}", messages.toString());
 		}
 		return out;
 	}

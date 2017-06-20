@@ -9,6 +9,9 @@
 *.bak
 *.old
 
+# MacOS !#@$ files
+.DS_Store
+
 # Auto-generated folders
 /doc/
 /lib/

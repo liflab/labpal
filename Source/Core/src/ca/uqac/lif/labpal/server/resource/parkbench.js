@@ -30,14 +30,14 @@ $(document).ready(function() {
 	    else $("table.exp-table .tr_"+hideLigne).show();
 	    }
     });
- /*
+ 
     $("table.exp-table").tablesorter();
     $(".pulldown-contents").hide();
     $(".pulldown").addClass("closed");
     $(".pulldown").click(function() {
       $(this).toggleClass("closed");
       $(this).closest("div.around-pulldown").find(".pulldown-contents").toggle();
-    });*/
+    });
 
     $("pre.multiline").click(function() {
       $(this).toggleClass("open");

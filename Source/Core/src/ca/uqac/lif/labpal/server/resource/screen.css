@@ -84,6 +84,20 @@ h1 {
   background: white;
 }
 
+#top-menu ul li.small-screen {
+	background-position-x: center;
+	width: 56px;
+}
+
+#top-menu ul li.small-screen a {
+	background-position-x: center;
+	padding-left: 10px;
+	width: 48px;
+}
+
+#top-menu ul li.small-screen .menu-text {
+	display: none;
+}
 
 #top-menu-home {
   background: url('images/home-48.png') left center no-repeat;

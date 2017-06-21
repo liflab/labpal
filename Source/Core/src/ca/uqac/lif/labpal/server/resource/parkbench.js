@@ -12,4 +12,23 @@ $(document).ready(function() {
     $("pre.multiline").click(function() {
       $(this).toggleClass("open");
     });
+    resize_top_menu();
 });
+
+/**
+ * Toggle the captions on the top menu
+ * depending on the width of the viewport
+ */
+function resize_top_menu() {
+	if ($(window).width() < 1175) {
+		$("#top-menu li").addClass("small-screen");
+	}
+	else {
+		$("#top-menu li").removeClass("small-screen");
+	}
+};
+
+/**
+ * Resize menu on window resize
+ */
+$(window).resize(resize_top_menu);

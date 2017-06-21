@@ -37,12 +37,9 @@ $(document).ready(function() {
     $(".pulldown").click(function() {
       $(this).toggleClass("closed");
       $(this).closest("div.around-pulldown").find(".pulldown-contents").toggle();
-<<<<<<< HEAD
     });*/
-=======
-    });
+
     $("pre.multiline").click(function() {
       $(this).toggleClass("open");
     });
->>>>>>> 110d570a6f3079b490ab76f389728f48a4f24c0d
 });

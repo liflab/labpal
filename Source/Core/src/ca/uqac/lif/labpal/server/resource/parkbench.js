@@ -56,5 +56,8 @@ $(document).ready(function() {
     $("pre.multiline").click(function() {
       $(this).toggleClass("open");
     });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5c05dad6273d5af0ff457fe3273e6f2efd08ee9e
 });

@@ -229,6 +229,11 @@ h1 {
   padding-left: 40px;
 }
 
+.btn-filter {
+  background: {%COLOR 4%} url('images/find-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
 .btn-clean {
   background: {%COLOR 4%} url('images/clean-24.png') 4px 4px no-repeat;
   padding-left: 40px;
@@ -268,6 +273,10 @@ table th {
 
 table.exp-table th {
   font-weight: bold;
+  background: {%COLOR 3%};
+}
+
+.top-td {
   background: {%COLOR 3%};
 }
 

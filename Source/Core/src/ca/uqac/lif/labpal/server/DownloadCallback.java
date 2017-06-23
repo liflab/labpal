@@ -61,7 +61,9 @@ public class DownloadCallback extends WebCallback
 			// zip contents of JSON
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ZipOutputStream zos = new ZipOutputStream(bos);
-			ZipEntry ze = new ZipEntry("Status.json");
+			String ZE = filename + "." + Laboratory.s_fileExtension;
+			ZipEntry ze = new ZipEntry(ZE);
+			//ZipEntry ze = new ZipEntry("Status.json");
 			try
 			{
 				zos.putNextEntry(ze);
@@ -74,6 +76,8 @@ public class DownloadCallback extends WebCallback
 				Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
 			}
 			response.setContents(bos.toByteArray());
+			
+			/*m*///response.setContents(lab_contents);
 			response.setContentType(CallbackResponse.ContentType.ZIP);
 			filename += ".zip";
 		}

@@ -154,18 +154,18 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		param_list.addAll(param_set);
 		Collections.sort(param_list);
 		// Step 2: create the table
-		out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><th><input type=\"checkbox\" class=\"top-checkbox\" /></th><th>#</th>");
+		out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><td class=\"top-td\" ><input type=\"checkbox\" class=\"top-checkbox\" /></td><th>#</th>");
 		for (String p_name : param_list)
 		{
 			
 			out.append("<th>").append(beautifyParameterName(p_name)).append("</th>");
 		}
-		out.append("<th>Status</th><th><input type=\"text\" class=\"top-filter\" /></th></tr></thead>\n<tbody>\n");
+		out.append("<th>Status</th><td class=\"top-td\" ><input type=\"text\" class=\"top-filter\" /><button type=\"button\" class=\"btn btn-filter\">Filter</button></td></tr></thead>\n<tbody>\n");
 		for (int id : ids)
 		{
 			Experiment e = lab.getExperiment(id);
-			out.append("<tr class=\"tr tr_").append(id).append("\">");
-			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
+			out.append("<tr class=\"tr tr-").append(id).append("\">");
+			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
 			out.append("<td class=\"id-cell\"><a href=\"experiment?id=").append(id).append("\">").append(id).append("</a></td>");
 			for (String p_name : param_list)
 			{

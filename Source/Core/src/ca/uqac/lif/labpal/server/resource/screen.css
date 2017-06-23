@@ -262,11 +262,6 @@ h1 {
   padding: 2px;
 }
 
-.json-table pre {
-  padding: 0px;
-  margin: 0px;
-}
-
 table th {
   text-align: left;
 }
@@ -318,14 +313,6 @@ table.exp-table td {
 
 .status-icon.status-failed {
   background: url('images/status-fail-24.png') left center no-repeat;
-}
-
-.status-icon.status-timeout {
-  background: url('images/status-timeout-24.png') left center no-repeat;
-}
-
-.status-icon.status-interrupted {
-  background: url('images/status-interrupted-24.png') left center no-repeat;
 }
 
 .status-icon.status-queued {
@@ -445,10 +432,6 @@ table.exp-table td {
   background: #fcc url('images/error-32.png') left center no-repeat;
 }
 
-.message.warning {
-  background: #ffc url('images/error-32.png') left center no-repeat;
-}
-
 #progress-bar {
   border: solid 1px darkgrey;
   height: 16px;
@@ -508,12 +491,10 @@ table.exp-table td {
 .pulldown {
   padding-left: 24px;
   background: url('images/expanded-24.png') top left no-repeat;
-  cursor: zoom-out;
 }
 
 .pulldown.closed {
   background: url('images/collapsed-24.png') top left no-repeat;
-  cursor: zoom-in;
 }
 
 .tables .table-icon {
@@ -606,15 +587,4 @@ a.anchor {
 
 .explanation a {
   text-decoration: none;
-}
-
-pre.multiline {
-  height: 1em;
-  overflow: hidden;
-  cursor: zoom-in;
-}
-
-pre.multiline.open {
-  height: auto;
-  cursor: zoom-out;
 }

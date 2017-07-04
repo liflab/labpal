@@ -11,10 +11,15 @@
 <tr><th title="The total number of discrete data points contained in this lab">Number of data points:</th><td>{%DATA_POINTS%}</td></tr>
 </table>
 
-<a href="download"><button class="btn" id="btn-download">Save lab data</button></a>
+<form style="display:inline-block" id ="download" name="download" method="post" enctype="multipart/form-data" action="download">
+<button class="btn btn-download" id="btn-download">Save lab data</button>
+<input type="hidden" name="filename-type" size="40" class="input-download"/>
+</form>
+<!--<a href="download"><button class="btn" id="btn-download">Save lab data</button></a>-->
 <form style="display:inline-block" name="upload" method="post" enctype="multipart/form-data" action="upload">
-<input class="btn" id="btn-upload" type="submit" value="Upload lab data"/>
-<input type="file" name="filename" size="40"/>
+<input class="btn btn-upload" id="btn-upload" type="submit" value="Upload lab data"/>
+<input type="file" name="filename" size="40" class="input-upload"/>
+<input type="hidden" name="filename-clone" size="40" class="input-upload-clone"/>
 </form>
 
 <h2>Progress</h2>

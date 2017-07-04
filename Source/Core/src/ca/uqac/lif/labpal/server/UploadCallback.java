@@ -17,8 +17,9 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -71,23 +72,40 @@ public class UploadCallback extends WebCallback
 		CallbackResponse cbr = new CallbackResponse(t);
 		Map<String,byte[]> parts = getParts(t);
 		if (parts == null || !parts.containsKey("filename"))
-		{
-			// Baaaad request
+		{ 
+			// Baaaad requestn
 			doBadRequest(cbr, "No file was uploaded");
 			return cbr;
 		}
 		byte[] part = parts.get("filename");
+		//upload file name 
+		String filenameClone = new String (parts.get("filename-clone")).trim();
 		String json = null;
-		if (DownloadCallback.s_zip)
+		//if (DownloadCallback.s_zip)
+		if (filenameClone.indexOf(".zip")>-1)
 		{
-			ByteArrayInputStream bis = new ByteArrayInputStream(part);
-			System.out.println(FileHelper.readToString(bis));
-			ZipInputStream zis = new ZipInputStream(bis);
+			ZipInputStream zis = null;
+			StringBuilder downloadsUrl = new StringBuilder();
+			downloadsUrl.append(m_lab.getDownloadsUrl()).append("/");
+			downloadsUrl.append(filenameClone);
+			//ByteArrayInputStream bis = new ByteArrayInputStream(part);
+			//System.out.println(FileHelper.readToString(bis));
+			try {
+				zis = new ZipInputStream(new FileInputStream(downloadsUrl.toString()));
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			//ZipInputStream zis = new ZipInputStream(bis);
 			ZipEntry entry;
 			byte[] contents = null;
 			try
 			{
-				while((entry = zis.getNextEntry()) != null)
+				
+				//while((entry = zis.getNextEntry()) != null)
+				entry = zis.getNextEntry();
+				while(entry != null)
 				{
 					//String name = entry.getName();
 					contents = extractFile(zis);

@@ -238,24 +238,6 @@ public class CommandRunner extends Thread
 	}
 	
 	/**
-	 * Gets the contents of stderr sent by the command as a string
-	 * @return The contents of stderr
-	 */
-	synchronized public String getErrorString()
-	{
-		if (m_stderrGobbler == null)
-		{
-			return "";
-		}
-		byte[] out = m_stderrGobbler.getBytes();
-		if (out == null || out.length == 0)
-		{
-			return "";
-		}
-		return new String(out);
-	}
-	
-	/**
 	 * Gets the return code of the command. Generally 0 indicates that
 	 * everything was OK; a non-zero value indicates an error. 
 	 * @return The return code

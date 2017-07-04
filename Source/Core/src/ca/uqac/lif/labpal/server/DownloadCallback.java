@@ -19,6 +19,7 @@ package ca.uqac.lif.labpal.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -42,26 +43,35 @@ public class DownloadCallback extends WebCallback
 	public DownloadCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/download", lab, assistant);
+		//setMethod(Method.GET);
+		setMethod(Method.POST);
 	}
 
 	/**
 	 * Whether to zip the response. Currently, downloading as a zip
 	 * works OK, but uploading as a zip does not work.
 	 */
-	public static final boolean s_zip = false;
+	public static final boolean s_zip = true;
 
 	@Override
 	public CallbackResponse process(HttpExchange t)
 	{
+		Map<String,byte[]> parts = UploadCallback.getParts(t);
+		String filenameType = new String (parts.get("filename-type")).trim();
+		
 		String lab_contents = m_lab.saveToString();
 		CallbackResponse response = new CallbackResponse(t);
 		String filename = Server.urlEncode(m_lab.getTitle());
-		if (s_zip)
+		//if (s_zip)
+		if (filenameType.equals("zip"))
 		{
 			// zip contents of JSON
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ZipOutputStream zos = new ZipOutputStream(bos);
-			ZipEntry ze = new ZipEntry("Status.json");
+			//String ZE = filename + "." + Laboratory.s_fileExtension;
+			String ZE = filename + ".json";
+			ZipEntry ze = new ZipEntry(ZE);
+			//ZipEntry ze = new ZipEntry("Status.json");
 			try
 			{
 				zos.putNextEntry(ze);
@@ -74,6 +84,8 @@ public class DownloadCallback extends WebCallback
 				Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
 			}
 			response.setContents(bos.toByteArray());
+			
+			/*m*///response.setContents(lab_contents);
 			response.setContentType(CallbackResponse.ContentType.ZIP);
 			filename += ".zip";
 		}

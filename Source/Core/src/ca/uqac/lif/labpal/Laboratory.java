@@ -194,7 +194,23 @@ public abstract class Laboratory implements OwnershipManager
 	 * Whether the lab is currently being deserialized
 	 */
 	private transient boolean m_isDeserialized = false;
+	
+	/**
+	 * Download directory URL
+	 */
+	private transient String DownloadsUrl;
+	
+	/**
+	 * Download directory URL getter and setter
+	 */
+	public String getDownloadsUrl() {
+		return DownloadsUrl;
+	}
 
+	public void setDownloadsUrl(String downloadsUrl) {
+		DownloadsUrl = downloadsUrl;
+	}
+	
 	/**
 	 * Creates a new lab assistant
 	 */
@@ -638,9 +654,6 @@ public abstract class Laboratory implements OwnershipManager
 				.withLongName("autostart")
 				.withDescription("Queues all experiments and starts the assistant"));
 		parser.addArgument(new Argument()
-				.withLongName("no-env-check")
-				.withDescription("Skips the environment check"));
-		parser.addArgument(new Argument()
 				.withLongName("port")
 				.withArgument("x")
 				.withDescription("Starts server on port x"));
@@ -774,20 +787,13 @@ public abstract class Laboratory implements OwnershipManager
 	 * lab must be fixed before running the experiments; hence ParkBench will
 	 * simply quit. If your experiments
 	 * have prerequisites they can generate, don't use this method.
-	 * 
-	 * @param messages An empty list. The method can add new instances of
-	 * {@link EnvironmentMessage}s to indicate problems with the environment.
-	 * The method may put elements inside {@code messages} even if it returns
-	 * {@code true}. This would indicate non fatal problems that do not prevent
-	 * the lab from running.
-	 * @return {@code true} if if the tests can be run, {@code false} otherwise.
-	 * It is recommended that if the method returns {@code false}, some message
-	 * has been added to the {@code messages} list to give proper feedback to
-	 * the user.
+	 *  
+	 * @return null if the tests <em>can</em> be run, a String with an
+	 *   explanation otherwise.
 	 */
-	public boolean isEnvironmentOk(List<EnvironmentMessage> messages)
+	public String isEnvironmentOk()
 	{
-		return true;
+		return null;
 	}
 
 	/**

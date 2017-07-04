@@ -155,17 +155,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		StringBuilder out = new StringBuilder();
 		if (e instanceof JsonString)
 		{
-			String s = ((JsonString) e).stringValue();
-			if (s.contains("\n") || s.contains("\r"))
-			{
-				// This parameter seems to contain multi-line text;
-				// better display it as is
-				out.append("<pre class=\"multiline\" title=\"Click to expand/collapse this item\">").append(s).append("</pre>");
-			}
-			else
-			{
-				out.append(s);
-			}
+			out.append(((JsonString) e).stringValue());
 		}
 		else if (e instanceof JsonNumber)
 		{
@@ -222,11 +212,11 @@ public class ExperimentPageCallback extends TemplatePageCallback
 				String p_desc = exp.getDescription(path_append);
 				if (p_desc.isEmpty())
 				{
-					out.append("<th class=\"" + css_class_key + "\">").append(beautifyParameterName(k)).append("</th>");
+					out.append("<th class=\"" + css_class_key + "\">").append(htmlEscape(k)).append("</th>");
 				}
 				else
 				{
-					out.append("<th class=\"with-desc").append(css_class_key).append("\" title=\"").append(htmlEscape(p_desc)).append("\">").append(beautifyParameterName(k)).append("</th>");					
+					out.append("<th class=\"with-desc").append(css_class_key).append("\" title=\"").append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");					
 				}
 				out.append("<td " + css_class_value + ">");
 				JsonElement v = m.get(k);
@@ -266,5 +256,4 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		return false;
 	}
-	
 }

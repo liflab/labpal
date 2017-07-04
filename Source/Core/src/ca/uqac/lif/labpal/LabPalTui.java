@@ -19,7 +19,6 @@ package ca.uqac.lif.labpal;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -209,8 +208,7 @@ public class LabPalTui
 		{
 			m_printer.print("\nWarning: Gnuplot was not found on your system");
 		}
-		List<EnvironmentMessage> messages = new LinkedList<EnvironmentMessage>();
-		if (!m_lab.isEnvironmentOk(messages))
+		if (m_lab.isEnvironmentOk() != null)
 		{
 			m_printer.print("\nError: some of the environment requirements for this lab are not met");
 			m_printer.print("\nThis means you are missing something to run the experiments.");

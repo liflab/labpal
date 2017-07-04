@@ -27,7 +27,6 @@ import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
-import ca.uqac.lif.jerrydog.RequestCallback.Method;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 
@@ -44,7 +43,8 @@ public class DownloadCallback extends WebCallback
 	public DownloadCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/download", lab, assistant);
-		setMethod(Method.GET);
+		//setMethod(Method.GET);
+		setMethod(Method.POST);
 	}
 
 	/**
@@ -56,15 +56,14 @@ public class DownloadCallback extends WebCallback
 	@Override
 	public CallbackResponse process(HttpExchange t)
 	{
-		//CallbackResponse cbr = new CallbackResponse(t);
 		Map<String,byte[]> parts = UploadCallback.getParts(t);
-		//String getY = new String (parts.get("lol")).trim();
-		//System.out.println("lol y= "+getY);
+		String filenameType = new String (parts.get("filename-type")).trim();
 		
 		String lab_contents = m_lab.saveToString();
 		CallbackResponse response = new CallbackResponse(t);
 		String filename = Server.urlEncode(m_lab.getTitle());
-		if (s_zip)
+		//if (s_zip)
+		if (filenameType.equals("zip"))
 		{
 			// zip contents of JSON
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

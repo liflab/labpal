@@ -66,7 +66,6 @@ $(document).ready(function() {
         if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
         filename = filename.substring(1);
         }
-      //alert(filename);
       $(" .input-upload-clone").val(filename);
       //expires.setTime(today.getTime() + (5000));
       //document.cookie = "ck-filename=" + encodeURIComponent(filename) + ";expires=" + expires.toGMTString();
@@ -88,7 +87,9 @@ $(document).ready(function() {
                 text: ".ZIP",
                 class: "ui-state-question",
                 click: function () {
-                  
+                    $(" .input-download").val("zip");
+                    $('#download').submit();//window.location="download";
+                    $(this).dialog("close");
                     $("#popupconfirmation").remove();
  
                 }
@@ -97,6 +98,8 @@ $(document).ready(function() {
                 text: ".JSON",
                 class: "ui-state-question",
                 click: function () {
+                    $(" .input-download").val("json");
+                    $('#download').submit();
                     $(this).dialog("close");
                     $("#popupconfirmation").remove();
                 }

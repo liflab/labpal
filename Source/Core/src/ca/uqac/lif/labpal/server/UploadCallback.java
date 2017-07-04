@@ -17,7 +17,6 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -82,13 +81,14 @@ public class UploadCallback extends WebCallback
 		//upload file name 
 		String filenameClone = new String (parts.get("filename-clone")).trim();
 		String json = null;
-		if (DownloadCallback.s_zip)
+		//if (DownloadCallback.s_zip)
+		if (filenameClone.indexOf(".zip")>-1)
 		{
 			ZipInputStream zis = null;
 			StringBuilder downloadsUrl = new StringBuilder();
 			downloadsUrl.append(m_lab.getDownloadsUrl()).append("/");
 			downloadsUrl.append(filenameClone);
-			ByteArrayInputStream bis = new ByteArrayInputStream(part);
+			//ByteArrayInputStream bis = new ByteArrayInputStream(part);
 			//System.out.println(FileHelper.readToString(bis));
 			try {
 				zis = new ZipInputStream(new FileInputStream(downloadsUrl.toString()));
@@ -103,9 +103,9 @@ public class UploadCallback extends WebCallback
 			try
 			{
 				
-				//while((entry = zis.getNextEntry()) != null)//il le fait pas
+				//while((entry = zis.getNextEntry()) != null)
 				entry = zis.getNextEntry();
-				while(entry != null)//il le fait pas
+				while(entry != null)
 				{
 					//String name = entry.getName();
 					contents = extractFile(zis);

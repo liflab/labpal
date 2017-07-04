@@ -1,0 +1,44 @@
+ .popup
+ {
+    line-height:5em;
+ }
+
+.dialogstyleperso
+ {
+    border: 1px solid darkgrey;
+    background: rgba(224, 224, 236, 0.5);  
+    box-shadow: 2px 2px 1px 1px rgba(115,115,115,1);
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+
+.ui-state-question {
+    border: 1px solid darkgrey;
+    border-radius: 5px;
+    height: 32px;
+    margin: 0px 5px 2px 0px;
+    box-shadow: 2px 2px 0px 0px rgba(115,115,115,1); /* ombre */
+}
+
+.ui-state-question:hover {
+  background-color: #e8e8e8;
+}
+
+.ui-state-question-title {
+    border: 1px solid darkgrey;
+    background: #BDBDBD;
+    padding: 2px 1px 2px 2px;
+    border-radius: 5px;
+}
+ 
+.dialogstyleperso .ui-dialog-titlebar-close {
+    top: 10px;
+    font-weight: bold;
+    margin-left: 170px;
+}
+ 
+.dialogstyleperso .ui-dialog-titlebar-close::before {
+    content: "\274c";
+    font-weight: bold;
+    font-size: 0.8em;
+}

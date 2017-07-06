@@ -1,7 +1,11 @@
 $(document).ready(function() {
-    //slect all
+    //select all
     $("table.exp-table .top-checkbox").click(function() {
-      $(this).closest("table.exp-table").find(".side-checkbox").not(this).prop("checked", this.checked);
+      for(var j= 1; j <= $(" .side-checkbox").length; j++){
+        //top-checkbox check only all enabled side-checkbox
+        $("table.exp-table .side-checkbox-"+j).prop("checked", (this.checked && !($(" .side-checkbox-"+j).prop("disabled"))));
+      }
+      //$(this).closest("table.exp-table").find(".side-checkbox").not(this).prop("checked", this.checked);
     });
     
     //authorized inputs
@@ -19,6 +23,7 @@ $(document).ready(function() {
     if (hideLigne ==""){
      $("table.exp-table .tr").show();
      $("table.exp-table .side-checkbox").prop("disabled", false);
+     //$("table.exp-table .side-checkbox").prop("checked", false);
     }
     //
     else {
@@ -33,12 +38,14 @@ $(document).ready(function() {
 		      for(var k= parseInt(hideLigneArray2[0]); k <= parseInt(hideLigneArray2[1]); k++){	      
 		    	$("table.exp-table .tr-"+k).show();
 		    	$("table.exp-table .side-checkbox-"+k).prop("disabled", false);
+		    	//$("table.exp-table .side-checkbox-"+k).prop("checked", true);
 		      }
 		     }//if (hideLigneArray2[0]!='' && hideLigneArray2[1]!='')  
 		     }
 		     else {
 		     $("table.exp-table .tr-"+hideLigneArray[i]).show();
 		     $("table.exp-table .side-checkbox-"+hideLigneArray[i]).prop("disabled", false);
+		     //$("table.exp-table .side-checkbox-"+hideLigneArray[i]).prop("checked", true);
 		     }
 		     }//if (hideLigneArray[i]!='')
 		    }

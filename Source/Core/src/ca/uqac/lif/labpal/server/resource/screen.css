@@ -588,3 +588,8 @@ a.anchor {
 .explanation a {
   text-decoration: none;
 }
+
+#experiment-filter {
+	margin-bottom: 10pt;
+}
+}

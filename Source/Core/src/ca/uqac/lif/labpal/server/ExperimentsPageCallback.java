@@ -154,7 +154,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			
 			out.append("<th>").append(p_name).append("</th>");
 		}
-		out.append("<th>Status</th><td class=\"top-td\" ><input type=\"text\" class=\"top-filter\" /><button type=\"button\" class=\"btn btn-filter\">Filter</button></td></tr></thead>\n<tbody>\n");
+		out.append("<th>Status</th></tr></thead>\n<tbody>\n");
 		for (int id : ids)
 		{
 			Experiment e = lab.getExperiment(id);

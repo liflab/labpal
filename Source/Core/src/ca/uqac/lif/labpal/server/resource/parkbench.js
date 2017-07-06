@@ -1,7 +1,11 @@
 $(document).ready(function() {
-    //slect all
+    //select all
     $("table.exp-table .top-checkbox").click(function() {
-      $(this).closest("table.exp-table").find(".side-checkbox").not(this).prop("checked", this.checked);
+      for(var j= 1; j <= $(" .side-checkbox").length; j++){
+        //top-checkbox check only all enabled side-checkbox
+        $("table.exp-table .side-checkbox-"+j).prop("checked", (this.checked && !($(" .side-checkbox-"+j).prop("disabled"))));
+      }
+      //$(this).closest("table.exp-table").find(".side-checkbox").not(this).prop("checked", this.checked);
     });
    
    //filter by enumeration or/and interval

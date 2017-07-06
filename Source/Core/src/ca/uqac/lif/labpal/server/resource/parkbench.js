@@ -17,68 +17,7 @@ $(document).ready(function() {
 
     $("pre.multiline").click(function() {
       $(this).toggleClass("open");
-    });
-    
-    //get upload file name
-    $(" .btn-upload").click(function() {
-    var fullPath = $(" .input-upload").val(), expires = new Date(), today = new Date();
-    if (fullPath) {
-      var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
-      var filename = fullPath.substring(startIndex);
-        if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
-        filename = filename.substring(1);
-        }
-      $(" .input-upload-clone").val(filename);
-      //expires.setTime(today.getTime() + (5000));
-      //document.cookie = "ck-filename=" + encodeURIComponent(filename) + ";expires=" + expires.toGMTString();
-    }
-    });
-    
-    //confirmation popup
-    function afficherPopupConfirmationLien(question) {
-    $('body').append('<div id="popupconfirmation" class="popup" title="Save lab data"></div>');
-    $("#popupconfirmation").html(question);
-
-    var popup = $("#popupconfirmation").dialog({
-        autoOpen: true,
-        width: 300,
-        dialogClass: 'dialogstyleperso',
-        hide: "fade",
-        buttons: [
-            {
-                text: ".ZIP",
-                class: "ui-state-question",
-                click: function () {
-                    $(" .input-download").val("zip");
-                    $('#download').submit();//window.location="download";
-                    $(this).dialog("close");
-                    $("#popupconfirmation").remove();
- 
-                }
-            },
-            {
-                text: ".JSON",
-                class: "ui-state-question",
-                click: function () {
-                    $(" .input-download").val("json");
-                    $('#download').submit();
-                    $(this).dialog("close");
-                    $("#popupconfirmation").remove();
-                }
-            }
-        ]
-    });
- 
-    $("#popupconfirmation").prev().addClass('ui-state-question-title');
- 
-    return popup;
-  }
-  
-  //open popup on click of save button
-  $(" .btn-download").click(function(event) {
-       event.preventDefault();
-       afficherPopupConfirmationLien('Select the type of file to download ');
-     });  
+    });    
 });
 
 /**

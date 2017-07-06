@@ -71,7 +71,7 @@ public class UploadCallback extends WebCallback
 	public CallbackResponse process(HttpExchange t)
 	{
 		CallbackResponse cbr = new CallbackResponse(t);
-		List<byte[]> parts = getParts(t);
+		Map<String,byte[]> parts = getParts(t);
 		
 		if (parts == null || parts.isEmpty())
 		{ 
@@ -79,31 +79,28 @@ public class UploadCallback extends WebCallback
 			doBadRequest(cbr, "No file was uploaded");
 			return cbr;
 		}
-		byte[] lab_file_contents = getPartContent(parts.get(0));
-		String filenameClone = getPartName(parts.get(0));
-		//upload file name 
+		String filename = "";
+		for (String fn : parts.keySet())
+		{
+			filename = fn;
+			break;
+		}
+		byte[] lab_file_contents = parts.get(filename); 
 		String json = null;
-		//if (DownloadCallback.s_zip)
-		if (filenameClone.endsWith(".zip") || filenameClone.endsWith(".labo"))
+		if (filename.endsWith(".zip") || filename.endsWith(".labo"))
 		{
 			// This is a zipped file
-			StringBuilder downloadsUrl = new StringBuilder();
-			downloadsUrl.append(m_lab.getDownloadsUrl()).append("/");
-			downloadsUrl.append(filenameClone);
-			//ByteArrayInputStream bis = new ByteArrayInputStream(part);
-			//System.out.println(FileHelper.readToString(bis));
 			ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(lab_file_contents));
 			ZipEntry entry;
 			byte[] contents = null;
 			try
 			{
-
-				//while((entry = zis.getNextEntry()) != null)
 				entry = zis.getNextEntry();
 				while (entry != null)
 				{
 					//String name = entry.getName();
 					contents = extractFile(zis);
+					// We assume the zip to contain a single file 
 					break;
 				}
 			} 
@@ -120,7 +117,8 @@ public class UploadCallback extends WebCallback
 		}
 		else
 		{
-			json = new String(lab_file_contents).trim();
+			json = new String(lab_file_contents);
+			System.out.println(json);
 		}
 		if (json == null)
 		{
@@ -202,13 +200,31 @@ public class UploadCallback extends WebCallback
 		bos.close();
 		return bos.toByteArray();
 	}
+	
+	/**
+	 * Gets the parts of a multipart message.
+	 * @param t The exchange
+	 * @return The parts
+	 */
+	protected static Map<String,byte[]> getParts(HttpExchange t)
+	{
+		Map<String,byte[]> parts_map = new HashMap<String,byte[]>();
+		List<byte[]> bin_parts = getBinaryParts(t);
+		for (byte[] part : bin_parts)
+		{
+			String name = getPartName(part);
+			byte[] content = trimByteArray(getPartContent(part));
+			parts_map.put(name, content);
+		}
+		return parts_map;
+	}
 
 	/**
 	 * Gets the parts of a multipart message.
 	 * @param t The exchange
 	 * @return The parts
 	 */
-	protected static List<byte[]> getParts(HttpExchange t)
+	protected static List<byte[]> getBinaryParts(HttpExchange t)
 	{
 		InputStream is = t.getRequestBody();
 		List<byte[]> byte_parts = null;
@@ -235,16 +251,25 @@ public class UploadCallback extends WebCallback
 	protected static byte[] getPartContent(byte[] part)
 	{
 		int num_cr = 0;
+		byte last = 0;
 		for (int i = 0; i < part.length; i++)
 		{
 			if (part[i] == 13)
 			{
 				num_cr++;
 			}
+			else if (part[i] == 10)
+			{
+				if (last != 13)
+				{
+					num_cr++;
+				}
+			}
 			else
 			{
 				num_cr = 0;
 			}
+			last = part[i];
 			if (num_cr == 2)
 			{
 				byte[] content = new byte[part.length - i - 1];
@@ -299,6 +324,34 @@ public class UploadCallback extends WebCallback
 		return parts;
 	}
 	
+	/**
+	 * Gets the filename corresponding to this part of a
+	 * multi-part request
+	 * @param part The part
+	 * @return The filename
+	 */
+	protected static String getPartName(byte[] part)
+	{
+		ByteArrayInputStream bais = new ByteArrayInputStream(part);
+		Scanner sc = new Scanner(bais);
+		while (sc.hasNextLine())
+		{
+			String line = sc.nextLine();
+			if (line.startsWith("Content-Disposition"))
+			{
+				Pattern pat = Pattern.compile("\\bfilename=\"(.*?)\"");
+				Matcher mat = pat.matcher(line);
+				if (mat.find())
+				{
+					sc.close();
+					return mat.group(1);
+				}
+			}
+		}
+		sc.close();
+		return "";
+	}
+	
 	protected static boolean isDelimiter(byte[] array, byte[] boundary, int position)
 	{
 		for (int i = 0; i < boundary.length; i++)
@@ -331,77 +384,42 @@ public class UploadCallback extends WebCallback
 	}
 
 	/**
-	 * Gets the parts of a multipart message.
-	 * <strong>Caveat emptor:</strong> this method works correctly with
-	 * text, but not with binary files.
-	 * @param t The exchange
-	 * @return The parts
-	 */
-	protected static Map<String,byte[]> getPartsOld(HttpExchange t)
-	{
-		InputStream is = t.getRequestBody();
-		Scanner sc = new Scanner(is, "ASCII");
-		Map<String,byte[]> out = new HashMap<String,byte[]>();
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		String filename = "";
-		String boundary = "";
-		sc.useDelimiter("\\n");
-		try
-		{
-			while (sc.hasNextLine())
-			{
-				String line = sc.nextLine();
-				if (boundary.isEmpty())
-				{
-					boundary = line;
-					continue;
-				}
-				if (line.startsWith("Content-Disposition"))
-				{
-					Pattern pat = Pattern.compile("\\bname=\"(.*?)\"");
-					Matcher mat = pat.matcher(line);
-					if (mat.find())
-					{
-						filename = mat.group(1);
-					}
-					continue;
-				}
-				if (line.startsWith("Content-Type"))
-				{
-					continue;
-				}
-				if (line.startsWith(boundary))
-				{
-					out.put(filename, bos.toByteArray());
-					bos.reset();
-					filename = "";
-					continue;
-				}
-				byte[] line_bytes = line.getBytes("ASCII");
-				bos.write(line_bytes);
-				bos.write((char) 13); // The scanner trimmed this byte when reading
-			}
-		}
-		catch (IOException ioe)
-		{
-			// Do nothing
-		}
-		sc.close();
-		return out;
-	}
-
-	/**
-	 * Trims an array of bytes from its first and last byte. This is used to
+	 * Trims an array of bytes from any bytes in the beginning and the end that
+	 * are either {@code CR} or {@code LF}. This is used to
 	 * remove carriage returns from a field in an HTTP request
 	 * @param in_array The array of bytes
-	 * @return The new array of bytes without the first and last bytes
+	 * @return The new array of bytes without the first and last two bytes
 	 */
 	protected static byte[] trimByteArray(byte[] in_array)
 	{
-		byte[] file_contents = new byte[in_array.length - 2];
-		for (int i = 1; i < in_array.length - 1; i++)
+		
+		int left = 0, right = in_array.length;
+		for (int i = 0; i < in_array.length; i++)
 		{
-			file_contents[i - 1] = in_array[i];
+			if (in_array[i] == 10 || in_array[i] == 13)
+			{
+				left++;
+			}
+			else
+			{
+				break;
+			}
+		}
+		for (int i = in_array.length - 1; i >= 0; i--)
+		{
+			if (in_array[i] == 10 || in_array[i] == 13)
+			{
+				right = i;
+			}
+			else
+			{
+				break;
+			}
+		}
+		byte[] file_contents = new byte[right - left];
+		for (int i = left; i < right; i++)
+		{
+			file_contents[i - left] = in_array[i];
 		}
 		return file_contents;
 	}

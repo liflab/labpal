@@ -111,6 +111,11 @@ public abstract class Laboratory implements OwnershipManager
 	 * The set of groups associated with this lab
 	 */
 	private HashSet<Group> m_groups;
+	
+	/**
+	 * The set of classes that are serialized with the lab
+	 */
+	private transient Set<Class<?>> m_serializableClasses;
 
 	/**
 	 * The hostname of the machine running the lab
@@ -236,6 +241,7 @@ public abstract class Laboratory implements OwnershipManager
 		m_groups = new HashSet<Group>();
 		m_macros = new HashSet<Macro>();
 		m_assistant = null;
+		m_serializableClasses = new HashSet<Class<?>>();
 		m_serializer = new JsonSerializer();
 		m_serializer.addClassLoader(ca.uqac.lif.labpal.Laboratory.class.getClassLoader());
 	}
@@ -603,16 +609,30 @@ public abstract class Laboratory implements OwnershipManager
 	 * Adds a class that must be serialized with the benchmark
 	 * @param clazz The class
 	 * @return This lab
+	 * @throws NoEmptyConstructorException If the class to be added
+	 *   does not have a no-args constructor
 	 */
 	public Laboratory addClassToSerialize(Class<?> clazz)
 	{
 		if (clazz != null)
 		{
+			m_serializableClasses.add(clazz);
 			m_serializer.addClassLoader(clazz.getClassLoader());
 		}
 		return this;
 	}
-
+	
+	/**
+	 * Gets the set of all classes that are serialized with this lab.
+	 * This method is used by the web interface to display a warning to
+	 * the user if one of the classes does not have a no-args constructor.
+	 * @return The set of classes
+	 */
+	public final Set<Class<?>> getSerializableClasses()
+	{
+		return m_serializableClasses;
+	}
+	
 	/**
 	 * Adds groups to this lab
 	 * @param groups The groups

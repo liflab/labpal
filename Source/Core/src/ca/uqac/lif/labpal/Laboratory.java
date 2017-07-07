@@ -754,6 +754,9 @@ public abstract class Laboratory implements OwnershipManager
 				.withLongName("autostart")
 				.withDescription("Queues all experiments and starts the assistant"));
 		parser.addArgument(new Argument()
+				.withLongName("preload")
+				.withDescription("Loads an internal lab file on startup"));
+		parser.addArgument(new Argument()
 				.withLongName("port")
 				.withArgument("x")
 				.withDescription("Starts server on port x"));
@@ -787,7 +790,13 @@ public abstract class Laboratory implements OwnershipManager
 		final AnsiPrinter stdout = new AnsiPrinter(System.out);
 		stdout.resetColors();
 		stdout.print(getCliHeader());
-		// Are we loading a lab file?
+		// Are we loading a lab from an internal file?
+		if (argument_map.hasOption("preload"))
+		{
+			new_lab = preloadLab(new_lab, stdout);
+		}
+		// Are we loading a lab file? If so, this overrides the
+		// lab loaded from an internal file (if any)
 		String filename = "";
 		List<String> names = argument_map.getOthers();
 		if (!names.isEmpty())
@@ -1088,7 +1097,8 @@ public abstract class Laboratory implements OwnershipManager
 	}
 
 	/**
-	 * Fetches the groups an experiment belongs to
+	 * Fetches the groups an experiment belongs to. Note that this is a set,
+	 * since an experiment may belong to multiple groups.
 	 * @param id The experiment's ID
 	 * @return The groups this experiment belongs to
 	 */
@@ -1105,6 +1115,10 @@ public abstract class Laboratory implements OwnershipManager
 		return groups;
 	}
 
+	/**
+	 * Gets the IDs of all groups within the lab
+	 * @return A set of group IDs
+	 */
 	public final Set<Integer> getGroupIds()
 	{
 		HashSet<Integer> ids = new HashSet<Integer>();
@@ -1228,6 +1242,10 @@ public abstract class Laboratory implements OwnershipManager
 		return s_revisionVersionNumber;
 	}
 
+	/**
+	 * Formats the version number into a string
+	 * @return The version string
+	 */
 	protected static String formatVersion()
 	{
 		if (getRevision() == 0)
@@ -1363,6 +1381,55 @@ public abstract class Laboratory implements OwnershipManager
 		out.append("Azrael version:   ").append(GenericSerializer.getVersionString()).append("\n");
 		out.append("Jerrydog version: ").append(Server.getVersionString()).append("\n");
 		out.append("MTNP version:     ").append(DataFormatter.getVersionString()).append("\n");
+	}
+	
+	/**
+	 * Attempts to load a lab from an file saved internally. The method
+	 * will attempt to load the first {@code .labo} or {@code .json} file
+	 * it finds in the root folder of the lab's JAR file.
+	 * @param new_lab The lab used to load the file
+	 * @param stdout A print stream to write information messages about the
+	 *   process
+	 * @return A new lab, or {@code new_lab} if no loadable lab could be
+	 *   found
+	 */
+	protected static Laboratory preloadLab(Laboratory new_lab, AnsiPrinter stdout)
+	{
+		String class_path = getClassPath(new_lab);
+		List<String> lab_files = FileHelper.getResourceListing(new_lab.getClass(), class_path, ".*\\.labo$");
+		if (!lab_files.isEmpty())
+		{
+			String filename = lab_files.get(0);
+			stdout.println("Loading lab data from internal file " + filename);
+			try 
+			{
+				return new_lab.loadFromZip(new_lab.getClass().getResourceAsStream(filename));
+			} 
+			catch (IOException e)
+			{
+				System.err.println("WARNING: lab data could not be loaded from internal file.\nAn empty lab will be started instead.");
+			} catch (SerializerException e)
+			{
+				System.err.println("WARNING: lab data could not be loaded from internal file.\nAn empty lab will be started instead.");
+			} 
+			catch (JsonParseException e)
+			{
+				System.err.println("WARNING: lab data could not be loaded from internal file.\nAn empty lab will be started instead.");
+			}
+		}
+		System.err.println("WARNING: lab data could not be loaded from an internal file.\nAn empty lab will be started instead.");
+		return new_lab;
+	}
+	
+	protected static String getClassPath(Laboratory lab)
+	{
+		String[] parts = lab.getClass().getName().split("\\.");
+		StringBuilder out = new StringBuilder();
+		for (int i = 0; i < parts.length - 1; i++)
+		{
+			out.append(parts[i]).append("/");
+		}
+		return out.toString();
 	}
 
 }

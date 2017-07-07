@@ -213,22 +213,6 @@ public abstract class Laboratory implements OwnershipManager
 	private transient boolean m_isDeserialized = false;
 	
 	/**
-	 * Download directory URL
-	 */
-	private transient String DownloadsUrl;
-	
-	/**
-	 * Download directory URL getter and setter
-	 */
-	public String getDownloadsUrl() {
-		return DownloadsUrl;
-	}
-
-	public void setDownloadsUrl(String downloadsUrl) {
-		DownloadsUrl = downloadsUrl;
-	}
-	
-	/**
 	 * Creates a new lab assistant
 	 */
 	public Laboratory()

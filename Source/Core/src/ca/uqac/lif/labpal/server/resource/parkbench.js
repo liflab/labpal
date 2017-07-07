@@ -68,8 +68,6 @@ function filter_experiments()
 };
 
 
-});
-
 /**
  * Toggle the captions on the top menu
  * depending on the width of the viewport
@@ -87,4 +85,3 @@ function resize_top_menu() {
  * Resize menu on window resize
  */
 $(window).resize(resize_top_menu);
->>>>>>> 7juin

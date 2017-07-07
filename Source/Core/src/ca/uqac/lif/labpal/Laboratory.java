@@ -139,6 +139,11 @@ public abstract class Laboratory implements OwnershipManager
 	 * The default file extension to save experiment results
 	 */
 	public static final transient String s_fileExtension = "labo";
+	
+	/**
+	 * The MIME type for LabPal files
+	 */
+	public static final transient String s_mimeType = "application/labpal";
 
 	/**
 	 * The dispatcher that currently executes an experiment (if any)

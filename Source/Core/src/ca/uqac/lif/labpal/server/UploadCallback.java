@@ -61,7 +61,7 @@ public class UploadCallback extends WebCallback
 			doBadRequest(cbr, "No file was uploaded");
 			return cbr;
 		}
-		String filename = "";
+		String filename = null;
 		for (String fn : parts.keySet())
 		{
 			filename = fn;
@@ -69,7 +69,7 @@ public class UploadCallback extends WebCallback
 		}
 		byte[] lab_file_contents = parts.get(filename); 
 		String json = null;
-		if (filename.endsWith(".zip") || filename.endsWith(".labo"))
+		if (filename.endsWith(".zip") || filename.endsWith("." + Laboratory.s_fileExtension))
 		{
 			// This is a zipped file
 			ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(lab_file_contents));
@@ -92,21 +92,18 @@ public class UploadCallback extends WebCallback
 				doBadRequest(cbr, "Could not extract a lab from the file. The message is: <pre>" + e.getMessage() + "</pre>");
 				return cbr;
 			}
-			if (contents != null)
+			if (contents == null)
 			{
-				json = new String(contents);
+				doBadRequest(cbr, "Could not extract a lab from the file.");
+				return cbr;
 			}
+			assert contents != null;
+			json = new String(contents);
 		}
 		else
 		{
+			// JSON sent in clear in the request
 			json = new String(lab_file_contents);
-			System.out.println(json);
-		}
-		if (json == null)
-		{
-			// Baaaad request
-			doBadRequest(cbr, "No JSON was found in the uploaded file");
-			return cbr;
 		}
 		if (json.isEmpty())
 		{

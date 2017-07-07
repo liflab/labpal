@@ -77,15 +77,15 @@ public class DownloadCallback extends WebCallback
 				Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
 			}
 			response.setContents(bos.toByteArray());
-			response.setContentType(CallbackResponse.ContentType.ZIP);
-			filename += ".zip";
+			response.setContentType(Laboratory.s_mimeType);
+			filename += "." + Laboratory.s_fileExtension;
 		}
 		else
 		{
 			// Send in clear text
 			response.setContents(lab_contents);
 			response.setContentType(CallbackResponse.ContentType.JSON);
-			filename += "." + Laboratory.s_fileExtension;
+			filename += ".json";
 		}
 		// Tell the browser to download the document rather than display it
 		response.setAttachment(filename);

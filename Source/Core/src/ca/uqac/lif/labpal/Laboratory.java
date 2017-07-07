@@ -17,7 +17,11 @@
  */
 package ca.uqac.lif.labpal;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import ca.uqac.lif.azrael.GenericSerializer;
 import ca.uqac.lif.azrael.SerializerException;
@@ -37,6 +43,7 @@ import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.server.HomePageCallback;
+import ca.uqac.lif.labpal.server.HttpUtilities;
 import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.server.LabPalServer;
 import ca.uqac.lif.labpal.table.ExperimentTable;
@@ -542,7 +549,7 @@ public abstract class Laboratory implements OwnershipManager
 	 * @return The lab, or null if some error occurred
 	 * @throws SerializerException If the deserialization could not be done
 	 */
-	public Laboratory loadFromJson(JsonElement je) throws SerializerException
+	public synchronized Laboratory loadFromJson(JsonElement je) throws SerializerException
 	{
 		Laboratory lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
 		lab.m_isDeserialized = true;
@@ -552,17 +559,6 @@ public abstract class Laboratory implements OwnershipManager
 		Plot.resetCounter();
 		lab.setup();
 		lab.m_isDeserialized = false;
-		/*
-		// Don't forget to transplant the plots
-		lab.m_plots = m_plots;
-		// Don't forget to transplant the tables
-		lab.m_tables = m_tables;		
-		// Don't forget to transplant the RNG
-		for (Experiment e : lab.m_experiments)
-		{
-			e.m_random = lab.m_random;
-		}
-		*/
 		return lab;		
 	}
 
@@ -633,6 +629,101 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return this;
 	}
+	
+	/**
+	 * Loads a laboratory from an input stream containing a zip file
+	 * @param is The input stream
+	 * @return A new lab instance
+	 * @throws IOException
+	 * @throws SerializerException
+	 * @throws JsonParseException
+	 */
+	public final Laboratory loadFromZip(InputStream is) throws IOException, SerializerException, JsonParseException
+	{
+		ZipInputStream zis = new ZipInputStream(is);
+		ZipEntry entry;
+		entry = zis.getNextEntry();
+		byte[] contents = null;
+		while (entry != null)
+		{
+			//String name = entry.getName();
+			contents = HttpUtilities.extractFile(zis);
+			// We assume the zip to contain a single file 
+			break;
+		}
+		String json = new String(contents);
+		return loadFromString(json);
+	}
+	
+	/**
+	 * Loads a laboratory from an input stream containing a JSON text document
+	 * @param is The input stream
+	 * @return A new lab instance
+	 * @throws SerializerException
+	 * @throws JsonParseException
+	 */
+	public final Laboratory loadFromJson(InputStream is) throws SerializerException, JsonParseException
+	{
+		String json = FileHelper.readToString(is);
+		return loadFromString(json);
+	}
+	
+	/**
+	 * Attempts to load a laboratory from a local file, specified by a filename.
+	 * This method prints error messages to the standard error if something goes
+	 * wrong
+	 * @param new_lab An instance of lab for the deserialization
+	 * @param filename The name of the file to look for
+	 * @return The deserialized lab
+	 */
+	protected static final Laboratory loadFromFilename(Laboratory new_lab, String filename)
+	{
+		if (filename.endsWith(".zip") || filename.endsWith("." + s_fileExtension))
+		{
+			try
+			{
+				// Substitute current lab for one loaded from the file
+				new_lab = new_lab.loadFromZip(new FileInputStream(new File(filename)));
+			}
+			catch (FileNotFoundException e)
+			{
+				System.err.println("WARNING: file " + filename + " not found. An empty lab will be started instead.");
+			}
+			catch (IOException e)
+			{
+				System.err.println("WARNING: file " + filename + " could not be read. An empty lab will be started instead.");
+			}
+			catch (SerializerException e)
+			{
+				System.err.println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
+			}
+			catch (JsonParseException e)
+			{
+				System.err.println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
+			}
+		}
+		else
+		{
+		// Substitute current lab for one loaded from the file
+			try
+			{
+				new_lab = new_lab.loadFromJson(new FileInputStream(new File(filename)));
+			} 
+			catch (FileNotFoundException e)
+			{
+				System.err.println("WARNING: file " + filename + " not found. An empty lab will be started instead.");
+			}
+			catch (SerializerException e)
+			{
+				System.err.println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
+			}
+			catch (JsonParseException e)
+			{
+				System.err.println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
+			}
+		}
+		return new_lab;
+	}
 
 	public static final void initialize(String[] args, Class<? extends Laboratory> clazz)
 	{
@@ -670,6 +761,7 @@ public abstract class Laboratory implements OwnershipManager
 				.withArgument("c")
 				.withDescription("Use GUI color scheme c (0-3)"));
 		Laboratory new_lab = null;
+		ArgumentMap argument_map = parser.parse(args);
 		try
 		{
 			new_lab = clazz.newInstance();
@@ -688,7 +780,17 @@ public abstract class Laboratory implements OwnershipManager
 		{
 			System.exit(ERR_LAB);
 		}
-		final AnsiPrinter stdout = new AnsiPrinter(System.out);		
+		final AnsiPrinter stdout = new AnsiPrinter(System.out);
+		stdout.resetColors();
+		stdout.print(getCliHeader());
+		// Are we loading a lab file?
+		String filename = "";
+		List<String> names = argument_map.getOthers();
+		if (!names.isEmpty())
+		{
+			filename = names.get(0);
+			new_lab = loadFromFilename(new_lab, filename);
+		}
 		new_lab.setAssistant(assistant);
 		new_lab.setupCli(parser);
 		// Properly close print streams when closing the program
@@ -702,7 +804,7 @@ public abstract class Laboratory implements OwnershipManager
 				stdout.close();
 			}
 		}));
-		new_lab.m_cliArguments = parser.parse(args);
+		new_lab.m_cliArguments = argument_map;
 		if (new_lab.m_cliArguments == null)
 		{
 			// Could not parse command line arguments
@@ -730,9 +832,11 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		List<WebCallback> callbacks = new ArrayList<WebCallback>();
 		new_lab.setupCallbacks(callbacks);
-		stdout.resetColors();
-		stdout.print(getCliHeader());
 		int code = ERR_OK;
+		if (!filename.isEmpty())
+		{
+			stdout.println("Loading lab from " + filename);
+		}
 		new_lab.setup();
 		if (!new_lab.m_cliArguments.hasOption("console"))
 		{

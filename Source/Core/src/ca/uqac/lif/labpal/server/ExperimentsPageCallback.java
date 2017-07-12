@@ -211,29 +211,31 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		case PREREQ_F:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
 		case PREREQ_NOK:
-			if (assistant.isQueued(e.getId()))
+			switch (e.getQueueStatus())
 			{
-				return "<div class=\"status-icon status-queued\" title=\"Queued\"><span class=\"text-only\">Q</span></div>";
-			}
-			else
-			{
+			case NOT_QUEUED:
 				return "<div class=\"status-icon status-prereq\" title=\"Prerequisites not fulfilled\"><span class=\"text-only\">P</span></div>";
+			case QUEUED:
+				return "<div class=\"status-icon status-queued\" title=\"Queued\"><span class=\"text-only\">Q</span></div>";
+			case QUEUED_REMOTELY:
+				return "<div class=\"status-icon status-queued\" title=\"Queued remotely\"><span class=\"text-only\">Q</span></div>R";
 			}
 		case PREREQ_OK:
-			if (assistant.isQueued(e.getId()))
+			switch (e.getQueueStatus())
 			{
-				return "<div class=\"status-icon status-queued\" title=\"Queued\"><span class=\"text-only\">Q</span></div>";
-			}
-			else
-			{
+			case NOT_QUEUED:
 				return "<div class=\"status-icon status-ready\" title=\"Ready\"><span class=\"text-only\">r</span></div>";
+			case QUEUED:
+				return "<div class=\"status-icon status-queued\" title=\"Queued\"><span class=\"text-only\">Q</span></div>";
+			case QUEUED_REMOTELY:
+				return "<div class=\"status-icon status-queued\" title=\"Queued remotely\"><span class=\"text-only\">Q</span></div>R";
 			}
 		case RUNNING:
 			out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span></div>";
 			out += getProgressionBar(e.getProgression());
 			return out;
 		case RUNNING_REMOTELY:
-			out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span>R</div>";
+			out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span></div>R";
 			out += getProgressionBar(e.getProgression());
 			return out;
 		default:
@@ -266,22 +268,24 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		case PREREQ_F:
 			return "Failed when generating prerequisites";
 		case PREREQ_NOK:
-			if (assistant.isQueued(e.getId()))
+			switch (e.getQueueStatus())
 			{
-				return "Queued";
-			}
-			else
-			{
+			case NOT_QUEUED:
 				return "Prerequisites not fulfilled";
+			case QUEUED:
+				return "Queued";
+			case QUEUED_REMOTELY:
+				return "Queued remotely";
 			}
 		case PREREQ_OK:
-			if (assistant.isQueued(e.getId()))
+			switch (e.getQueueStatus())
 			{
-				return "Queued";
-			}
-			else
-			{
+			case NOT_QUEUED:
 				return "Ready";
+			case QUEUED:
+				return "Queued";
+			case QUEUED_REMOTELY:
+				return "Queued remotely";
 			}
 		case RUNNING:
 			return "Running " + getProgressionBar(e.getProgression());

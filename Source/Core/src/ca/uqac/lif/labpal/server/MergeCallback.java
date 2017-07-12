@@ -70,7 +70,6 @@ public class MergeCallback extends WebCallback
 			return cbr;
 		}
 		cbr.setCode(CallbackResponse.HTTP_OK);
-		System.out.println("Merged OK");
 		return cbr;
 	}
 

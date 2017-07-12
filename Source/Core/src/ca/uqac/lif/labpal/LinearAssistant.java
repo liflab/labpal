@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ca.uqac.lif.labpal.Experiment.QueueStatus;
 import ca.uqac.lif.labpal.Experiment.Status;
 
 /**
@@ -205,6 +206,7 @@ public class LinearAssistant extends LabAssistant
 		{
 			if (m_queue.get(i).getId() == id)
 			{
+				m_queue.get(i).setQueueStatus(QueueStatus.NOT_QUEUED);
 				m_queue.remove(i);
 				break;
 			}
@@ -219,6 +221,7 @@ public class LinearAssistant extends LabAssistant
 		m_queueLock.lock();
 		m_queue.add(e);
 		m_queueLock.unlock();
+		e.setQueueStatus(QueueStatus.QUEUED);
 		return this;
 	}
 	

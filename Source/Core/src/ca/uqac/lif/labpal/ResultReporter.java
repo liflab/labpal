@@ -175,7 +175,6 @@ public class ResultReporter implements Runnable
 			connection.setRequestProperty("Content-Length", Integer.toString(zip_lab.length));
 			connection.setUseCaches(false);
 			connection.setDoOutput(true);
-			System.out.println("Sending");
 			InputStream is = null;
 
 			//Send request
@@ -184,7 +183,6 @@ public class ResultReporter implements Runnable
 			os.close();
 			// Get Response
 			is = connection.getInputStream();
-			System.out.println("Sent");
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
 
 			String line;

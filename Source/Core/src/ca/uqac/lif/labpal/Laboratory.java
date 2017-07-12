@@ -44,6 +44,7 @@ import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
+import ca.uqac.lif.labpal.Experiment.QueueStatus;
 import ca.uqac.lif.labpal.Experiment.Status;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.server.HomePageCallback;
@@ -1517,8 +1518,9 @@ public abstract class Laboratory implements OwnershipManager
 			return false;
 		}
 		Experiment.Status s2 = e2.getStatus();
+		Experiment.QueueStatus q2 = e2.getQueueStatus();
 		// We only overwrite if the source experiment is running
-		return s2 == Status.RUNNING || s2 == Status.DONE || s2 == Status.DONE_WARNING || s2 == Status.FAILED || s2 == Status.KILLED;
+		return s2 == Status.RUNNING || s2 == Status.DONE || s2 == Status.DONE_WARNING || s2 == Status.FAILED || s2 == Status.KILLED || q2 != QueueStatus.NOT_QUEUED;
 	}
 
 	/**

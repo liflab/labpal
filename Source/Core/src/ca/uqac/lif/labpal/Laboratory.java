@@ -842,10 +842,18 @@ public abstract class Laboratory implements OwnershipManager
 		// lab loaded from an internal file (if any)
 		String filename = "";
 		List<String> names = argument_map.getOthers();
-		if (!names.isEmpty())
+		for (int i = 0; i < names.size(); i++)
 		{
-			filename = names.get(0);
-			new_lab = loadFromFilename(new_lab, filename);
+			filename = names.get(i);
+			if (i == 0)
+			{
+				new_lab = loadFromFilename(new_lab, filename);
+			}
+			else
+			{
+				Laboratory lab_to_merge = loadFromFilename(new_lab, filename);
+				new_lab.mergeWith(lab_to_merge);
+			}
 		}
 		new_lab.setAssistant(assistant);
 		new_lab.setupCli(parser);

@@ -233,10 +233,10 @@ public abstract class LabAssistant implements Runnable
 		try
 		{
 			reporter.reportResults();
-		} catch (ReporterException e)
+		} 
+		catch (ReporterException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Do nothing
 		}
 	}
 }

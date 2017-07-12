@@ -121,7 +121,6 @@ public class LinearAssistant extends LabAssistant
 			{
 				// Experiment not started: start
 				m_experimentThread = new Thread(e);
-				e.setWhoRan(m_name);
 				m_experimentThread.start();					
 				while (m_experimentThread.isAlive() && !m_stop)
 				{
@@ -212,6 +211,7 @@ public class LinearAssistant extends LabAssistant
 			}
 		}
 		m_queueLock.unlock();
+		reportResults();
 		return this;
 	}
 	
@@ -221,7 +221,9 @@ public class LinearAssistant extends LabAssistant
 		m_queueLock.lock();
 		m_queue.add(e);
 		m_queueLock.unlock();
+		e.setWhoRan(m_name);
 		e.setQueueStatus(QueueStatus.QUEUED);
+		reportResults();
 		return this;
 	}
 	

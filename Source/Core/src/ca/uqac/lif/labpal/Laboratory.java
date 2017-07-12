@@ -795,6 +795,10 @@ public abstract class Laboratory implements OwnershipManager
 		.withLongName("name")
 		.withArgument("x")
 		.withDescription("Set assistant name to x"));
+		parser.addArgument(new Argument()
+		.withLongName("interval")
+		.withArgument("x")
+		.withDescription("Report results every x sec (works with report-to)"));
 		return parser;
 	}
 
@@ -895,6 +899,10 @@ public abstract class Laboratory implements OwnershipManager
 			String host = argument_map.getOptionValue("report-to").trim();
 			new_lab.getReporter().reportTo(host);
 			stdout.println("Results will be reported to " + host);
+			if (argument_map.hasOption("interval"))
+			{
+				new_lab.getReporter().setInterval(Integer.parseInt(argument_map.getOptionValue("interval")) * 1000);
+			}
 		}
 		if (argument_map.hasOption("name"))
 		{
@@ -1511,6 +1519,14 @@ public abstract class Laboratory implements OwnershipManager
 		return success;
 	}
 	
+	/**
+	 * Determines if an experiment {@code e2} can be merged to the
+	 * results of another experiment {@code e1}
+	 * @param e1 The experiment to be merged <em>to</em>
+	 * @param e2 The experiment whose contents are to be merged
+	 * @return {@code true} if the experiments can be merged,
+	 *   {@code false} otherwise
+	 */
 	protected static boolean canMerge(Experiment e1, Experiment e2)
 	{
 		if (e1 == null || e2 == null)

@@ -241,4 +241,13 @@ public class ResultReporter implements Runnable
 	{
 		return m_reportHost;
 	}
+
+	/**
+	 * Sets the interval at which results will be reported
+	 * @param interval The time interval (in ms)
+	 */
+	public void setInterval(int interval)
+	{
+		m_reportInterval = interval;
+	}
 }

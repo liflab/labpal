@@ -228,6 +228,12 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		return out;
 	}
 	
+	/**
+	 * Gets the set of keys that should be highlighted in the table of
+	 * experiment results
+	 * @param highlight The key to highlight
+	 * @return
+	 */
 	protected Set<String> getKeysToHighlight(String highlight)
 	{
 		Set<String> to_highlight = new HashSet<String>();
@@ -240,11 +246,23 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		return to_highlight;
 	}
 	
+	/**
+	 * Checks if a set of strings contains exactly one specific string
+	 * @param set The set
+	 * @param key The string
+	 * @return
+	 */
 	protected static boolean containsExactly(Set<String> set, String key)
 	{
 		return set.contains(key);
 	}
 	
+	/**
+	 * Checks if string is the prefix of a string in some set 
+	 * @param set The set
+	 * @param key The string
+	 * @return
+	 */
 	protected static boolean containsPrefix(Set<String> set, String key)
 	{
 		for (String s : set)

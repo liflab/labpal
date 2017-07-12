@@ -142,7 +142,10 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		for (int id : ids)
 		{
 			Experiment e = lab.getExperiment(id);
-			param_set.addAll(e.getInputKeys(true));
+			if (lab.getFilter().include(e))
+			{
+				param_set.addAll(e.getInputKeys(true));
+			}
 		}
 		List<String> param_list = new ArrayList<String>(param_set.size());
 		param_list.addAll(param_set);
@@ -158,6 +161,11 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		for (int id : ids)
 		{
 			Experiment e = lab.getExperiment(id);
+			if (!lab.getFilter().include(e))
+			{
+				// Exclude
+				continue;
+			}
 			out.append("<tr class=\"tr tr-").append(id).append("\">");
 			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
 			out.append("<td class=\"id-cell\"><a href=\"experiment?id=").append(id).append("\">").append(id).append("</a></td>");

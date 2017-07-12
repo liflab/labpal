@@ -146,6 +146,11 @@ public abstract class Laboratory implements OwnershipManager
 	 * The lab's author
 	 */
 	private String m_author = "Fred Filntstone";
+	
+	/**
+	 * A filter for experiments
+	 */
+	private transient ExperimentFilter m_filter;
 
 	/**
 	 * The version string of this lab
@@ -799,6 +804,10 @@ public abstract class Laboratory implements OwnershipManager
 		.withLongName("interval")
 		.withArgument("x")
 		.withDescription("Report results every x sec (works with report-to)"));
+		parser.addArgument(new Argument()
+		.withLongName("filter")
+		.withArgument("exp")
+		.withDescription("Filter experiments according to expression exp"));
 		return parser;
 	}
 
@@ -917,6 +926,13 @@ public abstract class Laboratory implements OwnershipManager
 			String assistant_name = argument_map.getOptionValue("name").trim();
 			assistant.setName(assistant_name);
 		}
+		// Sets an experiment filter
+		String filter_params = "";
+		if (argument_map.hasOption("filter"))
+		{
+			filter_params = argument_map.getOptionValue("filter");
+		}
+		new_lab.m_filter = new_lab.createFilter(filter_params);
 		if (!new_lab.m_cliArguments.hasOption("console"))
 		{
 			// Start ParkBench's web interface
@@ -1376,7 +1392,10 @@ public abstract class Laboratory implements OwnershipManager
 	{
 		for (Experiment e : m_experiments)
 		{
-			m_assistant.queue(e);
+			if (m_filter.include(e))
+			{
+				m_assistant.queue(e);
+			}
 		}
 		start();
 	}
@@ -1592,6 +1611,27 @@ public abstract class Laboratory implements OwnershipManager
 		assert contents != null;
 		String json = new String(contents);
 		return loadFromString(json);
+	}
+	
+	/**
+	 * Creates a filter for the experiments in this lab. You should override
+	 * this method if you want to actually filter experiments in a specific way
+	 * @param parameters A string of parameters that can be used to instantiate
+	 * the filter
+	 * @return A filter
+	 */
+	public ExperimentFilter createFilter(String parameters)
+	{
+		return new ExperimentFilter.IdFilter(parameters);
+	}
+
+	/**
+	 * Gets the experiment filter associated to this laboratory 
+	 * @return The filter
+	 */
+	public final ExperimentFilter getFilter()
+	{
+		return m_filter;
 	}
 
 }

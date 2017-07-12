@@ -130,7 +130,7 @@ public class FileHelper
 		}
 		return bFile;
 	}
-
+	
 	/**
 	 * Writes the content of a string to a file
 	 * @param f The file to write to. If the file does not exist, it will be

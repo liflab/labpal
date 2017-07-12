@@ -195,6 +195,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	 */
 	public static String getStatusIcon(Experiment e, LabAssistant assistant)
 	{
+		String out = "";
 		switch (e.getStatus())
 		{
 		case DONE:
@@ -228,7 +229,11 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				return "<div class=\"status-icon status-ready\" title=\"Ready\"><span class=\"text-only\">r</span></div>";
 			}
 		case RUNNING:
-			String out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span></div>";
+			out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span></div>";
+			out += getProgressionBar(e.getProgression());
+			return out;
+		case RUNNING_REMOTELY:
+			out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span>R</div>";
 			out += getProgressionBar(e.getProgression());
 			return out;
 		default:
@@ -280,6 +285,8 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			}
 		case RUNNING:
 			return "Running " + getProgressionBar(e.getProgression());
+		case RUNNING_REMOTELY:
+			return "Running remotely " + getProgressionBar(e.getProgression());
 		default:
 			return "";		
 		}

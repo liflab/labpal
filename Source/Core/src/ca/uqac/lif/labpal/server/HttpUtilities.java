@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipInputStream;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -50,7 +49,7 @@ public class HttpUtilities
 	 * @return Byte array
 	 * @throws IOException
 	 */
-	public static byte[] extractFile(ZipInputStream zipIn) throws IOException
+	public static byte[] extractFile(InputStream zipIn) throws IOException
 	{
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		byte[] bytesIn = new byte[4096];

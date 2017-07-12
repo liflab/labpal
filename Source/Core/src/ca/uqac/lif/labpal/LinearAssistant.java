@@ -60,13 +60,21 @@ public class LinearAssistant extends LabAssistant
 	private transient int m_sleepInterval = 100;
 
 	/**
-	 * Creates a new dispatcher
+	 * Creates a new assistant
+	 */
+	public LinearAssistant(Laboratory lab)
+	{
+		super(lab);
+		m_stop = true;
+		m_queue = new ArrayList<Experiment>();
+	}
+	
+	/**
+	 * Creates a new assistant
 	 */
 	public LinearAssistant()
 	{
-		super();
-		m_stop = true;
-		m_queue = new ArrayList<Experiment>();
+		this(null);
 	}
 	
 	/**
@@ -89,6 +97,7 @@ public class LinearAssistant extends LabAssistant
 			m_experimentThread.interrupt();
 		}
 		m_stop = false;
+		m_lab.getReporter().start();
 		while (!m_stop)
 		{
 			m_queueLock.lock();
@@ -166,6 +175,7 @@ public class LinearAssistant extends LabAssistant
 			m_queueLock.unlock();
 			e.interrupt();
 		}
+		m_lab.getReporter().stop();
 	}
 
 	@Override

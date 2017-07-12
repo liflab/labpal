@@ -17,11 +17,8 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -54,7 +51,7 @@ public class UploadCallback extends WebCallback
 	{
 		CallbackResponse cbr = new CallbackResponse(t);
 		Map<String,byte[]> parts = HttpUtilities.getParts(t);
-		
+		Laboratory new_lab = null;
 		if (parts == null || parts.isEmpty())
 		{ 
 			// Baaaad request
@@ -71,67 +68,66 @@ public class UploadCallback extends WebCallback
 		String json = null;
 		if (filename.endsWith(".zip") || filename.endsWith("." + Laboratory.s_fileExtension))
 		{
-			// This is a zipped file
-			ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(lab_file_contents));
-			ZipEntry entry;
-			byte[] contents = null;
 			try
 			{
-				entry = zis.getNextEntry();
-				while (entry != null)
-				{
-					//String name = entry.getName();
-					contents = HttpUtilities.extractFile(zis);
-					// We assume the zip to contain a single file 
-					break;
-				}
-			} 
+				new_lab = m_lab.getFromZip(lab_file_contents);
+			}
+			catch (SerializerException e) 
+			{
+				// Baaaad request
+				doBadRequest(cbr, "The file's contents could not be loaded into the "
+						+ "current laboratory. This can occur when you try loading the data from a different "
+						+ "lab. " + e.getMessage());
+				return cbr;
+			}
+			catch (JsonParseException e) 
+			{
+				// Baaaad request
+				doBadRequest(cbr, "The file's contents could not be loaded into the "
+						+ "current laboratory. This can occur when you try loading the data from a different "
+						+ "lab. " + e.getMessage());
+				return cbr;
+			}
 			catch (IOException e) 
 			{
 				// Baaaad request
-				doBadRequest(cbr, "Could not extract a lab from the file. The message is: <pre>" + e.getMessage() + "</pre>");
+				doBadRequest(cbr, "The file's contents could not be loaded into the "
+						+ "current laboratory. This can occur when you try loading the data from a different "
+						+ "lab. " + e.getMessage());
 				return cbr;
 			}
-			if (contents == null)
-			{
-				doBadRequest(cbr, "Could not extract a lab from the file.");
-				return cbr;
-			}
-			assert contents != null;
-			json = new String(contents);
 		}
 		else
 		{
 			// JSON sent in clear in the request
 			json = new String(lab_file_contents);
-		}
-		if (json.isEmpty())
-		{
-			// Baaaad request
-			doBadRequest(cbr, "No file was uploaded");
-			return cbr;
-		}
-		Laboratory new_lab = null;
-		try 
-		{
-			new_lab = m_lab.loadFromString(json);
-		} 
-		catch (SerializerException e) 
-		{
-			// Baaaad request
-			doBadRequest(cbr, "The file's contents could not be loaded into the "
-					+ "current laboratory. This can occur when you try loading the data from a different "
-					+ "lab. " + e.getMessage());
-			return cbr;
-		}
-		catch (JsonParseException e) 
-		{
-			// Baaaad request
-			doBadRequest(cbr, "The file's contents could not be loaded into the "
-					+ "current laboratory. This can occur when you try loading the data from a different "
-					+ "lab. " + e.getMessage());
-			return cbr;
-		}
+			if (json.isEmpty())
+			{
+				// Baaaad request
+				doBadRequest(cbr, "No file was uploaded");
+				return cbr;
+			}
+			try
+			{
+				new_lab = m_lab.loadFromString(json);
+			}
+			catch (SerializerException e) 
+			{
+				// Baaaad request
+				doBadRequest(cbr, "The file's contents could not be loaded into the "
+						+ "current laboratory. This can occur when you try loading the data from a different "
+						+ "lab. " + e.getMessage());
+				return cbr;
+			}
+			catch (JsonParseException e) 
+			{
+				// Baaaad request
+				doBadRequest(cbr, "The file's contents could not be loaded into the "
+						+ "current laboratory. This can occur when you try loading the data from a different "
+						+ "lab. " + e.getMessage());
+				return cbr;
+			}
+		}		
 		if (new_lab == null)
 		{
 			// Baaaad request
@@ -159,5 +155,5 @@ public class UploadCallback extends WebCallback
 		file_contents = file_contents.replaceAll("\\{%MESSAGE%\\}", message);
 		file_contents = file_contents.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
 		cbr.setContents(file_contents);
-	}
+	}	
 }

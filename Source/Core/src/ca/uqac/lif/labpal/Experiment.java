@@ -47,7 +47,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	/**
 	 * The status of the experiment
 	 */
-	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, DONE, DONE_WARNING, FAILED, KILLED};
+	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, RUNNING_REMOTELY, DONE, DONE_WARNING, FAILED, KILLED};
 
 	/**
 	 * The input parameters given to this experiment
@@ -1006,5 +1006,53 @@ public abstract class Experiment implements Runnable, DataOwner
 	public Experiment getOwner()
 	{
 		return this;
-	}	
+	}
+	
+	/**
+	 * Merges the output parameters and status of an experiment into the
+	 * current one. This is only possible if the current experiment is not
+	 * currently running.
+	 * <p>
+	 * The following things in the current experiment will be overwritten
+	 * by the same things in the experiment passed as an argument:
+	 * <ul>
+	 * <li>The experiment's status</li>
+	 * <li>All the output parameters</li>
+	 * <li>Any warnings generated during the execution</li>
+	 * <li>The progression indicator</li>
+	 * <li>The error message, if any</li>
+	 * <li>The start and end time</li>
+	 * <li>The "run by" string</li>
+	 * </ul> 
+	 * @param e The experiment to merge with
+	 * @param is_remote Set to {@code true} to indicate that {@code e} comes
+	 *   from a different instance of the lab. This will have for effect that if
+	 *   {@code e} is in state {@code RUNNING}, the current experiment will be
+	 *   set in state {@code RUNNING_REMOTELY}. 
+	 * @return {@code true} if the merge was done successfully, {@code false}
+	 *   if the merging was not done
+	 */
+	public synchronized boolean mergeWith(Experiment e, boolean is_remote)
+	{
+		if (m_status == Status.RUNNING)
+		{
+			return false;
+		}
+		m_outputParameters = e.m_outputParameters;
+		if (is_remote && e.getStatus() == Status.RUNNING || e.getStatus() == Status.RUNNING_REMOTELY)
+		{
+			m_status = Status.RUNNING_REMOTELY;
+		}
+		else
+		{
+			m_status = e.getStatus();
+		}
+		m_warnings = e.m_warnings;
+		m_progression = e.m_progression;
+		m_errorMessage = e.m_errorMessage;
+		m_startTime = e.m_startTime;
+		m_endTime = e.m_endTime;
+		m_runBy = e.m_runBy;
+		return true;
+	}
 }

@@ -81,6 +81,8 @@ public class LabPalServer extends InnerFileServer
 		css_callback.setCachingEnabled(true);
 		css_callback.setCachingInterval(s_cacheInterval);
 		registerCallback(0, css_callback);
+		registerCallback(0, new MergeCallback(lab, assistant));
+		registerCallback(0, new ReportResultsCallback(lab, assistant));
 		registerCallback(0, new StatusPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentsPageCallback(lab, assistant));

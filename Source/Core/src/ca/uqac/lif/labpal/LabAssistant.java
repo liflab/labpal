@@ -55,12 +55,27 @@ public abstract class LabAssistant implements Runnable
 	protected long m_runningTime = 0;
 	
 	/**
+	 * The laboratory this assistant is managing
+	 */
+	protected transient Laboratory m_lab;
+	
+	/**
+	 * Creates a new lab assistant
+	 * @param lab The laboratory this assistant is managing
+	 */
+	public LabAssistant(Laboratory lab)
+	{
+		super();
+		m_lab = lab;
+		m_name = "George Jetson";
+	}
+	
+	/**
 	 * Creates a new lab assistant
 	 */
 	public LabAssistant()
 	{
-		super();
-		m_name = "George Jetson";
+		this(null);
 	}
 	
 	/**
@@ -188,4 +203,13 @@ public abstract class LabAssistant implements Runnable
 	 * @return true if the assistant is running, false otherwise
 	 */
 	public abstract boolean isRunning();
+
+	/**
+	 * Sets the laboratory this assistant is managing
+	 * @param lab The laboratory
+	 */
+	public void setLaboratory(Laboratory lab)
+	{
+		m_lab = lab;
+	}
 }

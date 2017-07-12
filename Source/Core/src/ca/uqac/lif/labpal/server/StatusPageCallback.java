@@ -26,6 +26,8 @@ import java.util.regex.Matcher;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.ResultReporter;
+import ca.uqac.lif.labpal.ResultReporter.ReporterException;
 
 /**
  * Callback for the home page, showing various statistics and basic
@@ -92,7 +94,35 @@ public class StatusPageCallback extends TemplatePageCallback
 			out = out.replaceAll("\\{%SERIALIZATION_MESSAGE%\\}", "<p class=\"message info\">" 
 					+ "<span>" + serialization_message + "</span></p>");
 		}
+		out = out.replaceAll("\\{%REPORTING_DIV%\\}", getReportingDiv());
 		return out;
+	}
+
+	protected String getReportingDiv()
+	{
+		ResultReporter rep = m_lab.getReporter();
+		StringBuilder rep_out = new StringBuilder();
+		if (rep != null && rep.getUrl() != null && !rep.getUrl().isEmpty())
+		{
+			rep_out.append("<div>\n");
+			rep_out.append("<h2>Reporting results</h2>\n");
+			rep_out.append("<p>This lab is instructed to periodically report its results to <a href=\"http://").append(rep.getUrl()).append("/index\">").append(rep.getUrl()).append("</a></p>\n");
+			rep_out.append("<a id=\"btn-report-results\" class=\"btn-24\" href=\"/report-results\"><span>Send an update now</span></a>\n");
+			List<ReporterException> exceptions = rep.getExceptions();
+			if (!exceptions.isEmpty())
+			{
+
+				rep_out.append("<p class=\"message info\"><span>The lab has problems reporting its results:");
+				rep_out.append("<ul>\n");
+				for (ReporterException re : exceptions)
+				{
+					rep_out.append("<li>").append(re.getMessage()).append("</li>\n");
+				}
+				rep_out.append("</ul></p>\n");
+			}
+			rep_out.append("</div>\n");
+		}
+		return rep_out.toString();
 	}
 
 	/**
@@ -142,7 +172,7 @@ public class StatusPageCallback extends TemplatePageCallback
 		out.append("<div style=\"clear:both\"></div>");
 		return out.toString();
 	}
-	
+
 	/**
 	 * Produces an error message if the lab contains a class without
 	 * a no-args constructor
@@ -190,7 +220,7 @@ public class StatusPageCallback extends TemplatePageCallback
 		out.append("It is possible to save the lab's state to a file, but loading will produce an error message and will not be possible.");
 		return out.toString();
 	}
-	
+
 	/**
 	 * Checks if a class has a constructor with no arguments
 	 * @param clazz The class
@@ -201,10 +231,10 @@ public class StatusPageCallback extends TemplatePageCallback
 	{
 		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) 
 		{
-      if (constructor.getParameterTypes().length == 0) 
-      { 
-          return true;
-      }
+			if (constructor.getParameterTypes().length == 0) 
+			{ 
+				return true;
+			}
 		}
 		return false;
 	}

@@ -65,6 +65,7 @@ public class ExperimentTable extends Table
 		super();
 		m_experiments = new ArrayList<Experiment>();
 		m_dimensions = dimensions;
+		setColumn_nbr(m_dimensions.length-1);
 	}	
 
 	/**

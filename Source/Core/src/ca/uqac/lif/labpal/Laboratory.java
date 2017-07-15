@@ -226,6 +226,11 @@ public abstract class Laboratory implements OwnershipManager
 	 * A result reporter
 	 */
 	private transient ResultReporter m_reporter;
+	
+	/**
+	 * The default filename assumed for the HTML description
+	 */
+	private static transient final String s_descriptionDefaultFilename = "description.html"; 
 
 	/**
 	 * Creates a new lab assistant
@@ -244,6 +249,10 @@ public abstract class Laboratory implements OwnershipManager
 		m_serializer = new JsonSerializer();
 		m_serializer.addClassLoader(ca.uqac.lif.labpal.Laboratory.class.getClassLoader());
 		m_reporter = new ResultReporter(this);
+		if (FileHelper.internalFileExists(getClass(), s_descriptionDefaultFilename))
+		{
+			setDescription(FileHelper.internalFileToString(getClass(), "description.html"));
+		}
 	}
 
 	/**

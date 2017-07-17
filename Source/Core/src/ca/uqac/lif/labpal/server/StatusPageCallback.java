@@ -96,12 +96,17 @@ public class StatusPageCallback extends TemplatePageCallback
 		// Width of the bar, in pixels
 		final float bar_width_px = 400;
 		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0, num_warn = 0;
+		StringBuilder out = new StringBuilder();
 		for (int id : m_lab.getExperimentIds())
 		{
 			num_ex++;
 			Experiment ex = m_lab.getExperiment(id);
 			switch (ex.getStatus())
 			{
+			case RUNNING:
+				out.delete(0,out.length()+1);
+				out.append("<div> Running experiment : #").append(ex.getId()).append("</div>\n");
+				break;
 			case DONE:
 				num_done++;
 				break;
@@ -119,9 +124,11 @@ public class StatusPageCallback extends TemplatePageCallback
 				break;
 			}
 		}
-		StringBuilder out = new StringBuilder();
+		
+		//StringBuilder out = new StringBuilder();
 		float scale = bar_width_px / num_ex;
 		int num_remaining = num_ex - num_done - num_q - num_failed;
+		
 		out.append("<ul id=\"progress-bar\" style=\"float:left;margin-bottom:20px;width:").append(((float) num_ex) * scale).append("px;\">");
 		out.append("<li class=\"done\" title=\"Done: ").append(num_done).append("\" style=\"width:").append(((float) num_done) * scale).append("px\"><span class=\"text-only\">Done: ").append(num_done).append("</span></li>");
 		out.append("<li class=\"queued\" title=\"Queued: ").append(num_q).append("\" style=\"width:").append(((float) num_q) * scale).append("px\"><span class=\"text-only\">Queued: ").append(num_q).append("</span></li>");

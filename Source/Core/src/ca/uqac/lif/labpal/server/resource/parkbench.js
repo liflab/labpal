@@ -1,10 +1,9 @@
 $(document).ready(function() {
     //select all
     $("table.exp-table .top-checkbox").click(function() {
-      for(var j= 1; j <= $(" .side-checkbox").length; j++){
-        //top-checkbox check only all enabled side-checkbox
-        $("table.exp-table .side-checkbox-"+j).prop("checked", (this.checked && !($(" .side-checkbox-"+j).prop("disabled"))));
-      }
+      $(".side-checkbox").each(function(){ 
+	    $(this).prop("checked",(!($(this).prop("disabled")) && $(" .top-checkbox").prop("checked")));
+	  });
       //$(this).closest("table.exp-table").find(".side-checkbox").not(this).prop("checked", this.checked);
     });
     

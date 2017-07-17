@@ -1,7 +1,7 @@
 $(document).ready(function() {
     //select all
     $("table.exp-table .top-checkbox").click(function() {
-      $(".side-checkbox").each(function(){ 
+      $(".side-checkbox").each(function() { 
 	    $(this).prop("checked",(!($(this).prop("disabled")) && $(" .top-checkbox").prop("checked")));
 	  });
       //$(this).closest("table.exp-table").find(".side-checkbox").not(this).prop("checked", this.checked);

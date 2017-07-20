@@ -432,7 +432,7 @@ public class FileHelper
 		}
 		return listing;
 	}
-
+	
 	/**
 	 * List directory contents for a resource folder. Not recursive.
 	 * This is basically a brute-force implementation.
@@ -446,7 +446,27 @@ public class FileHelper
 	 * @throws URISyntaxException 
 	 * @throws IOException 
 	 */
-	public static List<String> getResourceListing(Class<?> clazz, String path, String glob) 
+	public static List<String> getResourceListing(Class<?> clazz, String path, String glob)
+	{
+		return getResourceListing(clazz, path, glob, "");
+	}
+
+	/**
+	 * List directory contents for a resource folder. Not recursive.
+	 * This is basically a brute-force implementation.
+	 * Works for regular files and also JARs.
+	 * 
+	 * @author Greg Briggs
+	 * @param clazz Any java class that lives in the same place as the resources you want.
+	 * @param path Should end with "/", but not start with one.
+	 * @param glob The pattern to match
+	 * @param exclude_glob The pattern to exclude files
+	 * @param exclude_dirs Set to {@code true} to ignore entries that are directories
+	 * @return Just the name of each member item, not the full paths.
+	 * @throws URISyntaxException 
+	 * @throws IOException 
+	 */
+	public static List<String> getResourceListing(Class<?> clazz, String path, String glob, String exclude_glob) 
 	{
 		List<String> names = new ArrayList<String>();
 		try
@@ -460,7 +480,10 @@ public class FileHelper
 				{
 					if (filename.matches(glob))
 					{
-						names.add(filename);
+						if (!filename.matches(exclude_glob))
+						{
+							names.add(filename);
+						}
 					}
 				}
 				return names;

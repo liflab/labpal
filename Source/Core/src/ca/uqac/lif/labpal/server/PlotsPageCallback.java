@@ -81,24 +81,36 @@ public class PlotsPageCallback extends TemplatePageCallback
 			Plot plot = m_lab.getPlot(id);
 			Table t = plot.getTable();
 			out.append("<div class=\"plot\">\n");
-			out.append("<a href=\"plot?id=").append(id).append("&amp;format=png\" target=\"_blank\" title=\"Click on plot to view in new window\">");
-			out.append("<img src=\"plot?id=").append(id).append("&amp;format=png\" alt=\"Plot\" /></a>\n");
+			out.append("<a href=\"plot/").append(id).append("\" target=\"_blank\" title=\"Click on plot to view in new window\">");
+			out.append("<img src=\"plot/").append(id).append("\" alt=\"Plot\" /></a>\n");
 			out.append("<div><ul>");
 			if (plot instanceof GnuPlot)
 			{
-				out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot?id=").append(id).append("&amp;format=gp&amp;dl=1\" title=\"Download as GnuPlot source file\">GP</a></li>");
-				out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot?id=").append(id).append("&amp;format=dumb\" title=\"View as ASCII art\" target=\"_blank\">ASCII</a></li>");
+				out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot/").append(id).append("?format=gp&amp;dl=1\" title=\"Download as GnuPlot source file\">GP</a></li>");
+				out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot/").append(id).append("?format=dumb\" title=\"View as ASCII art\" target=\"_blank\">ASCII</a></li>");
 			}
-			out.append("<li><a class=\"btn-24 btn-pdf\" href=\"plot?id=").append(id).append("&amp;format=pdf&amp;dl=1\" title=\"Download as PDF\">PDF</a></li>");
+			out.append("<li><a class=\"btn-24 btn-pdf\" href=\"plot/").append(id).append("?format=pdf&amp;dl=1\" title=\"Download as PDF\">PDF</a></li>");
 			if (t != null)
 			{
-				out.append("<li><a class=\"btn-24 btn-table\" href=\"table?id=").append(t.getId()).append("\" title=\"Show the data for this plot\">Table</a></li>");
+				out.append("<li><a class=\"btn-24 btn-table\" href=\"table/").append(t.getId()).append("\" title=\"Show the data for this plot\">Table</a></li>");
 			}
 			out.append("</ul></div>\n");
 			out.append("</div>\n");			
 		}
 		out.append("<div style=\"clear:both\"></div>\n");
 		return out.toString();
+	}
+	
+	@Override
+	public String exportToStaticHtml(String path_to_root)
+	{
+		String contents = super.exportToStaticHtml(path_to_root);
+		// Transform URLs for individual plot buttons
+		contents = contents.replaceAll("src=\"(.*?)\"", "src=\"$1.png\"");
+		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=gp.*?\"", "href=\"plot/$1.gp\"");
+		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=dumb.*?\"", "href=\"plot/$1.txt\"");
+		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=pdf.*?\"", "href=\"plot/$1.pdf\"");
+		return contents;
 	}
 
 }

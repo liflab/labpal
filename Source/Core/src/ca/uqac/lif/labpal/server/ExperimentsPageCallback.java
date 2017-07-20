@@ -168,7 +168,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			}
 			out.append("<tr class=\"tr tr-").append(id).append("\">");
 			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
-			out.append("<td class=\"id-cell\"><a href=\"experiment?id=").append(id).append("\">").append(id).append("</a></td>");
+			out.append("<td class=\"id-cell\"><a href=\"experiment/").append(id).append("\">").append(id).append("</a></td>");
 			for (String p_name : param_list)
 			{
 				out.append("<td>");

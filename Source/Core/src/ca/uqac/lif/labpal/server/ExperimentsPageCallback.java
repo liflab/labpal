@@ -187,7 +187,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 				}
 				out.append("</td>");
 			}
-			out.append("<td>").append(getStatusIcon(e, assistant)).append("</td>");
+			out.append("<td>").append(getStatusIcon(e, assistant)).append("</td><td></td>");
 			out.append("</tr>\n");
 		}
 		out.append("</tbody>\n</table>\n");

@@ -19,6 +19,8 @@ package ca.uqac.lif.labpal;
 
 import java.util.List;
 
+import ca.uqac.lif.labpal.ResultReporter.ReporterException;
+
 /**
  * A lab assistant is in charge of running a set of experiments according
  * to a queue.
@@ -55,12 +57,27 @@ public abstract class LabAssistant implements Runnable
 	protected long m_runningTime = 0;
 	
 	/**
+	 * The laboratory this assistant is managing
+	 */
+	protected transient Laboratory m_lab;
+	
+	/**
+	 * Creates a new lab assistant
+	 * @param lab The laboratory this assistant is managing
+	 */
+	public LabAssistant(Laboratory lab)
+	{
+		super();
+		m_lab = lab;
+		m_name = "George Jetson";
+	}
+	
+	/**
 	 * Creates a new lab assistant
 	 */
 	public LabAssistant()
 	{
-		super();
-		m_name = "George Jetson";
+		this(null);
 	}
 	
 	/**
@@ -188,4 +205,38 @@ public abstract class LabAssistant implements Runnable
 	 * @return true if the assistant is running, false otherwise
 	 */
 	public abstract boolean isRunning();
+
+	/**
+	 * Sets the laboratory this assistant is managing
+	 * @param lab The laboratory
+	 */
+	public void setLaboratory(Laboratory lab)
+	{
+		m_lab = lab;
+	}
+	
+	/**
+	 * Triggers the reporting of results by the lab's result
+	 * reporter
+	 */
+	protected void reportResults()
+	{
+		if (m_lab == null)
+		{
+			return;
+		}
+		ResultReporter reporter = m_lab.getReporter();
+		if (reporter == null)
+		{
+			return;
+		}
+		try
+		{
+			reporter.reportResults();
+		} 
+		catch (ReporterException e)
+		{
+			// Do nothing
+		}
+	}
 }

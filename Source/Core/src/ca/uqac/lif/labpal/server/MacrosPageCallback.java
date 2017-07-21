@@ -67,7 +67,7 @@ public class MacrosPageCallback extends TemplatePageCallback
 		{
 			out = out.replaceAll("\\{%MACROS%\\}", Matcher.quoteReplacement(getMacros(macros, to_highlight)));			
 		}
-		out = out.replaceAll("\\{%ALL_MACROS%\\}", Matcher.quoteReplacement("<p><a class=\"btn-24 btn-all-tables\" title=\"Download all macros as a single LaTeX file\" href=\"all-macros-latex\">Download all macros</a></p>"));
+		out = out.replaceAll("\\{%ALL_MACROS%\\}", Matcher.quoteReplacement("<p><a class=\"btn-24 btn-all-tables\" title=\"Download all macros as a single LaTeX file\" href=\"/all-macros-latex\">Download all macros</a></p>"));
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TULIP));
 		return out;
 	}
@@ -116,6 +116,14 @@ public class MacrosPageCallback extends TemplatePageCallback
 		}
 		out.append("</dl>\n");
 		return out.toString();
+	}
+	
+	@Override
+	public String exportToStaticHtml(String path_to_root)
+	{
+		String contents = super.exportToStaticHtml(path_to_root);
+		contents = contents.replaceAll("all-macros-latex", "labpal-macros.tex");
+		return contents;
 	}
 
 }

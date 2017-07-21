@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.labpal;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.azrael.GenericSerializer;
 import ca.uqac.lif.azrael.SerializerException;
@@ -41,6 +44,8 @@ import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
+import ca.uqac.lif.labpal.Experiment.QueueStatus;
+import ca.uqac.lif.labpal.Experiment.Status;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.server.HomePageCallback;
 import ca.uqac.lif.labpal.server.HttpUtilities;
@@ -80,7 +85,7 @@ public abstract class Laboratory implements OwnershipManager
 	/**
 	 * The minor version number
 	 */
-	private static final transient int s_minorVersionNumber = 8;
+	private static final transient int s_minorVersionNumber = 9;
 
 	/**
 	 * The revision version number
@@ -101,7 +106,7 @@ public abstract class Laboratory implements OwnershipManager
 	 * The set of tables associated to this lab
 	 */
 	private transient HashSet<Table> m_tables;
-	
+
 	/**
 	 * The set of macros associated to this lab
 	 */
@@ -111,7 +116,7 @@ public abstract class Laboratory implements OwnershipManager
 	 * The set of groups associated with this lab
 	 */
 	private HashSet<Group> m_groups;
-	
+
 	/**
 	 * The set of classes that are serialized with the lab
 	 */
@@ -126,7 +131,7 @@ public abstract class Laboratory implements OwnershipManager
 	 * A data tracker for generating provenance info
 	 */
 	private transient DataTracker m_dataTracker;
-	
+
 	/**
 	 * A DOI assigned to this lab artifact, if any
 	 */
@@ -141,6 +146,11 @@ public abstract class Laboratory implements OwnershipManager
 	 * The lab's author
 	 */
 	private String m_author = "Fred Filntstone";
+	
+	/**
+	 * A filter for experiments
+	 */
+	private transient ExperimentFilter m_filter;
 
 	/**
 	 * The version string of this lab
@@ -151,7 +161,7 @@ public abstract class Laboratory implements OwnershipManager
 	 * The default file extension to save experiment results
 	 */
 	public static final transient String s_fileExtension = "labo";
-	
+
 	/**
 	 * The MIME type for LabPal files
 	 */
@@ -195,7 +205,7 @@ public abstract class Laboratory implements OwnershipManager
 	/**
 	 * A counter for auto-incrementing experiment IDs
 	 */
-	private static transient int s_idCounter = 1;
+	private transient int m_idCounter = 1;
 
 	/**
 	 * The serializer used to save/load the assistant's status
@@ -206,12 +216,22 @@ public abstract class Laboratory implements OwnershipManager
 	 * The arguments parsed from the command line
 	 */
 	private transient ArgumentMap m_cliArguments = null;
-	
+
 	/**
 	 * Whether the lab is currently being deserialized
 	 */
 	private transient boolean m_isDeserialized = false;
+
+	/**
+	 * A result reporter
+	 */
+	private transient ResultReporter m_reporter;
 	
+	/**
+	 * The default filename assumed for the HTML description
+	 */
+	private static transient final String s_descriptionDefaultFilename = "description.html"; 
+
 	/**
 	 * Creates a new lab assistant
 	 */
@@ -228,6 +248,11 @@ public abstract class Laboratory implements OwnershipManager
 		m_serializableClasses = new HashSet<Class<?>>();
 		m_serializer = new JsonSerializer();
 		m_serializer.addClassLoader(ca.uqac.lif.labpal.Laboratory.class.getClassLoader());
+		m_reporter = new ResultReporter(this);
+		if (FileHelper.internalFileExists(getClass(), s_descriptionDefaultFilename))
+		{
+			setDescription(FileHelper.internalFileToString(getClass(), "description.html"));
+		}
 	}
 
 	/**
@@ -238,6 +263,7 @@ public abstract class Laboratory implements OwnershipManager
 	public Laboratory setAssistant(LabAssistant a)
 	{
 		m_assistant = a;
+		a.setLaboratory(this);
 		return this;
 	}
 
@@ -253,6 +279,16 @@ public abstract class Laboratory implements OwnershipManager
 	}
 
 	/**
+	 * Gets the results reporter responsible for reporting the
+	 * experimental results
+	 * @return The reporter
+	 */
+	public final ResultReporter getReporter()
+	{
+		return m_reporter;
+	}
+
+	/**
 	 * Gets the lab's author
 	 * @return The author's name
 	 */
@@ -260,7 +296,7 @@ public abstract class Laboratory implements OwnershipManager
 	{
 		return m_author;
 	}
-	
+
 	/**
 	 * Assigns a DOI to this laboratory
 	 * @param doi The DOI. If this is the null string, the argument is
@@ -275,7 +311,7 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Gets the DOI associated to this lab, if any
 	 * @return The DOI or an empty string
@@ -296,7 +332,7 @@ public abstract class Laboratory implements OwnershipManager
 	public Laboratory add(Experiment e, Group group, ExperimentTable ... tables)
 	{
 		Experiment target_e = e;
-		int exp_id = s_idCounter++;
+		int exp_id = m_idCounter++;
 		target_e.setId(exp_id);
 		addClassToSerialize(target_e.getClass());
 		target_e.m_random = m_random;
@@ -367,7 +403,7 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Adds one or more macros to this lab
 	 * @param macros The macros
@@ -543,7 +579,6 @@ public abstract class Laboratory implements OwnershipManager
 	{
 		Laboratory lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
 		lab.m_isDeserialized = true;
-		Laboratory.s_idCounter = 1;
 		Table.resetCounter();
 		Macro.resetCounter();
 		Plot.resetCounter();
@@ -605,7 +640,7 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Gets the set of all classes that are serialized with this lab.
 	 * This method is used by the web interface to display a warning to
@@ -616,7 +651,7 @@ public abstract class Laboratory implements OwnershipManager
 	{
 		return m_serializableClasses;
 	}
-	
+
 	/**
 	 * Adds groups to this lab
 	 * @param groups The groups
@@ -633,7 +668,7 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Loads a laboratory from an input stream containing a zip file
 	 * @param is The input stream
@@ -658,7 +693,7 @@ public abstract class Laboratory implements OwnershipManager
 		String json = new String(contents);
 		return loadFromString(json);
 	}
-	
+
 	/**
 	 * Loads a laboratory from an input stream containing a JSON text document
 	 * @param is The input stream
@@ -671,7 +706,7 @@ public abstract class Laboratory implements OwnershipManager
 		String json = FileHelper.readToString(is);
 		return loadFromString(json);
 	}
-	
+
 	/**
 	 * Attempts to load a laboratory from a local file, specified by a filename.
 	 * This method prints error messages to the standard error if something goes
@@ -708,7 +743,7 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		else
 		{
-		// Substitute current lab for one loaded from the file
+			// Substitute current lab for one loaded from the file
 			try
 			{
 				new_lab = new_lab.loadFromJson(new FileInputStream(new File(filename)));
@@ -728,6 +763,62 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return new_lab;
 	}
+	
+	/**
+	 * Sets up a command line parser
+	 * @return A parser
+	 */
+	protected static CliParser setupParser()
+	{
+		CliParser parser = new CliParser();
+		parser.addArgument(new Argument()
+		.withLongName("color")
+		.withDescription("Enables color and Unicode in text interface"));
+		parser.addArgument(new Argument()
+		.withLongName("console")
+		.withDescription("Start LabPal in console mode"));
+		parser.addArgument(new Argument()
+		.withLongName("seed")
+		.withArgument("x")
+		.withDescription("Sets the seed for the random number generator to x"));
+		parser.addArgument(new Argument()
+		.withLongName("help")
+		.withDescription("Prints command line usage"));
+		parser.addArgument(new Argument()
+		.withLongName("autostart")
+		.withDescription("Queues all experiments and starts the assistant"));
+		parser.addArgument(new Argument()
+		.withLongName("preload")
+		.withDescription("Loads an internal lab file on startup"));
+		parser.addArgument(new Argument()
+		.withLongName("port")
+		.withArgument("x")
+		.withDescription("Starts server on port x"));
+		parser.addArgument(new Argument()
+		.withLongName("version")
+		.withDescription("Shows version info"));
+		parser.addArgument(new Argument()
+		.withLongName("color-scheme")
+		.withArgument("c")
+		.withDescription("Use GUI color scheme c (0-3)"));
+		parser.addArgument(new Argument()
+		.withLongName("report-to")
+		.withArgument("host:port")
+		.withDescription("Report results to host:port"));
+		parser.addArgument(new Argument()
+		.withLongName("name")
+		.withArgument("x")
+		.withDescription("Set assistant name to x"));
+		parser.addArgument(new Argument()
+		.withLongName("interval")
+		.withArgument("x")
+		.withDescription("Report results every x sec (works with report-to)"));
+		parser.addArgument(new Argument()
+		.withLongName("filter")
+		.withArgument("exp")
+		.withDescription("Filter experiments according to expression exp"));
+		return parser;
+	}
 
 	public static final void initialize(String[] args, Class<? extends Laboratory> clazz)
 	{
@@ -736,39 +827,9 @@ public abstract class Laboratory implements OwnershipManager
 
 	public static final void initialize(String[] args, Class<? extends Laboratory> clazz, final LabAssistant assistant)
 	{
-		CliParser parser = new CliParser();
-		parser.addArgument(new Argument()
-				.withLongName("color")
-				.withDescription("Enables color and Unicode in text interface"));
-		parser.addArgument(new Argument()
-				.withLongName("console")
-				.withDescription("Start LabPal in console mode"));
-		parser.addArgument(new Argument()
-				.withLongName("seed")
-				.withArgument("x")
-				.withDescription("Sets the seed for the random number generator to x"));
-		parser.addArgument(new Argument()
-				.withLongName("help")
-				.withDescription("Prints command line usage"));
-		parser.addArgument(new Argument()
-				.withLongName("autostart")
-				.withDescription("Queues all experiments and starts the assistant"));
-		parser.addArgument(new Argument()
-				.withLongName("preload")
-				.withDescription("Loads an internal lab file on startup"));
-		parser.addArgument(new Argument()
-				.withLongName("port")
-				.withArgument("x")
-				.withDescription("Starts server on port x"));
-		parser.addArgument(new Argument()
-				.withLongName("version")
-				.withDescription("Shows version info"));
-		parser.addArgument(new Argument()
-				.withLongName("color-scheme")
-				.withArgument("c")
-				.withDescription("Use GUI color scheme c (0-3)"));
-		Laboratory new_lab = null;
+		CliParser parser = setupParser();
 		ArgumentMap argument_map = parser.parse(args);
+		Laboratory new_lab = null;
 		try
 		{
 			new_lab = clazz.newInstance();
@@ -799,10 +860,18 @@ public abstract class Laboratory implements OwnershipManager
 		// lab loaded from an internal file (if any)
 		String filename = "";
 		List<String> names = argument_map.getOthers();
-		if (!names.isEmpty())
+		for (int i = 0; i < names.size(); i++)
 		{
-			filename = names.get(0);
-			new_lab = loadFromFilename(new_lab, filename);
+			filename = names.get(i);
+			if (i == 0)
+			{
+				new_lab = loadFromFilename(new_lab, filename);
+			}
+			else
+			{
+				Laboratory lab_to_merge = loadFromFilename(new_lab, filename);
+				new_lab.mergeWith(lab_to_merge);
+			}
 		}
 		new_lab.setAssistant(assistant);
 		new_lab.setupCli(parser);
@@ -851,6 +920,28 @@ public abstract class Laboratory implements OwnershipManager
 			stdout.println("Loading lab from " + filename);
 		}
 		new_lab.setup();
+		if (argument_map.hasOption("report-to"))
+		{
+			String host = argument_map.getOptionValue("report-to").trim();
+			new_lab.getReporter().reportTo(host);
+			stdout.println("Results will be reported to " + host);
+			if (argument_map.hasOption("interval"))
+			{
+				new_lab.getReporter().setInterval(Integer.parseInt(argument_map.getOptionValue("interval")) * 1000);
+			}
+		}
+		if (argument_map.hasOption("name"))
+		{
+			String assistant_name = argument_map.getOptionValue("name").trim();
+			assistant.setName(assistant_name);
+		}
+		// Sets an experiment filter
+		String filter_params = "";
+		if (argument_map.hasOption("filter"))
+		{
+			filter_params = argument_map.getOptionValue("filter");
+		}
+		new_lab.m_filter = new_lab.createFilter(filter_params);
 		if (!new_lab.m_cliArguments.hasOption("console"))
 		{
 			// Start ParkBench's web interface
@@ -1310,7 +1401,10 @@ public abstract class Laboratory implements OwnershipManager
 	{
 		for (Experiment e : m_experiments)
 		{
-			m_assistant.queue(e);
+			if (m_filter.include(e))
+			{
+				m_assistant.queue(e);
+			}
 		}
 		start();
 	}
@@ -1323,7 +1417,7 @@ public abstract class Laboratory implements OwnershipManager
 	{
 		return m_macros;
 	}
-	
+
 	/**
 	 * Gets the set of all experiments in this lab
 	 * @return The experiments
@@ -1349,7 +1443,7 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Object getObjectWithId(String id)
 	{
@@ -1374,7 +1468,7 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return null;
 	}
-	
+
 	protected static void showVersionInfo(AnsiPrinter out)
 	{
 		out.append(getCliHeader()).append("\n");
@@ -1382,7 +1476,7 @@ public abstract class Laboratory implements OwnershipManager
 		out.append("Jerrydog version: ").append(Server.getVersionString()).append("\n");
 		out.append("MTNP version:     ").append(DataFormatter.getVersionString()).append("\n");
 	}
-	
+
 	/**
 	 * Attempts to load a lab from an file saved internally. The method
 	 * will attempt to load the first {@code .labo} or {@code .json} file
@@ -1420,7 +1514,13 @@ public abstract class Laboratory implements OwnershipManager
 		System.err.println("WARNING: lab data could not be loaded from an internal file.\nAn empty lab will be started instead.");
 		return new_lab;
 	}
-	
+
+	/**
+	 * Gets the absolute path within the directory structure of the current
+	 * instance of the lab
+	 * @param lab The current lab
+	 * @return The path
+	 */
 	protected static String getClassPath(Laboratory lab)
 	{
 		String[] parts = lab.getClass().getName().split("\\.");
@@ -1430,6 +1530,117 @@ public abstract class Laboratory implements OwnershipManager
 			out.append(parts[i]).append("/");
 		}
 		return out.toString();
+	}
+
+	/**
+	 * Attempts to merge the results of a laboratory with the current lab. This
+	 * is done by calling the {@link Experiment#mergeWith(Experiment) mergeWith()}
+	 * method on experiments with matching IDs in both labs.
+	 * 
+	 * @param lab The lab to merge with the current lab
+	 * @return {@code true} if the merger was done fully without error,
+	 *   {@code false} otherwise.
+	 */
+	public boolean mergeWith(Laboratory lab)
+	{
+		boolean success = true;
+		for (Experiment e : getExperiments())
+		{
+			Experiment e_to_merge = lab.getExperiment(e.getId());
+			if (canMerge(e, e_to_merge))
+			{
+				success &= e.mergeWith(e_to_merge, true);
+			}
+		}
+		return success;
+	}
+	
+	/**
+	 * Determines if an experiment {@code e2} can be merged to the
+	 * results of another experiment {@code e1}
+	 * @param e1 The experiment to be merged <em>to</em>
+	 * @param e2 The experiment whose contents are to be merged
+	 * @return {@code true} if the experiments can be merged,
+	 *   {@code false} otherwise
+	 */
+	protected static boolean canMerge(Experiment e1, Experiment e2)
+	{
+		if (e1 == null || e2 == null)
+		{
+			return false;
+		}
+		Experiment.Status s2 = e2.getStatus();
+		Experiment.QueueStatus q2 = e2.getQueueStatus();
+		// We only overwrite if the source experiment is running
+		return s2 == Status.RUNNING || s2 == Status.DONE || s2 == Status.DONE_WARNING || s2 == Status.FAILED || s2 == Status.KILLED || q2 != QueueStatus.NOT_QUEUED;
+	}
+
+	/**
+	 * Saves the content of a lab as a zip file
+	 * @return The byte array with the contents of the zip file
+	 * @throws IOException Thrown if the creation of the zip failed
+	 *   for some reason
+	 */
+	public byte[] saveToZip() throws IOException
+	{
+		String filename = Server.urlEncode(getTitle());
+		String lab_contents = saveToString();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ZipOutputStream zos = new ZipOutputStream(bos);
+		String ZE = filename + ".json";
+		ZipEntry ze = new ZipEntry(ZE);
+		zos.putNextEntry(ze);
+		zos.write(lab_contents.getBytes());
+		zos.closeEntry();
+		zos.close();
+		return bos.toByteArray();
+	}
+
+	/**
+	 * Creates a new lab instance from the contents of a zip file
+	 * @param lab_file_contents
+	 * @return The lab
+	 * @throws IOException
+	 * @throws SerializerException
+	 * @throws JsonParseException
+	 */
+	public Laboratory getFromZip(byte[] lab_file_contents) throws IOException, SerializerException, JsonParseException
+	{
+		ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(lab_file_contents));
+		ZipEntry entry;
+		byte[] contents = null;
+		entry = zis.getNextEntry();
+		while (entry != null)
+		{
+			//String name = entry.getName();
+			contents = HttpUtilities.extractFile(zis);
+			// We assume the zip to contain a single file 
+			break;
+		}
+		assert contents != null;
+		String json = new String(contents);
+		return loadFromString(json);
+	}
+	
+	/**
+	 * Creates a filter for the experiments in this lab. You should override
+	 * this method if you want to actually filter experiments in a specific way
+	 * @param parameters A string of parameters that can be used to instantiate
+	 * the filter
+	 * @return A filter
+	 */
+	public ExperimentFilter createFilter(String parameters)
+	{
+		return new ExperimentFilter.IdFilter(parameters);
+	}
+
+	/**
+	 * Gets the experiment filter associated to this laboratory 
+	 * @return The filter
+	 */
+	public final ExperimentFilter getFilter()
+	{
+		return m_filter;
 	}
 
 }

@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -84,6 +85,10 @@ public class TemplatePageCallback extends WebCallback
 		return response;
 	}
 	
+	/**
+	 * Reads the template file associated to this page
+	 * @return The contents of the template file
+	 */
 	protected String readTemplateFile()
 	{
 		String file_contents = FileHelper.internalFileToString(LabPalServer.class, m_filename);
@@ -156,5 +161,18 @@ public class TemplatePageCallback extends WebCallback
 		
 		}
 	}
-
+	
+	/**
+	 * Exports the page as a static HTML page
+	 * @param path_to_root The relative path to the root of the lab
+	 * @return The contents of the page
+	 */
+	public String exportToStaticHtml(String path_to_root)
+	{
+		String file = readTemplateFile();
+		String contents = render(file, new HashMap<String,String>());
+		contents = createStaticLinks(contents);
+		contents = relativizeUrls(contents, path_to_root);
+		return contents;
+	}
 }

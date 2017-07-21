@@ -19,6 +19,13 @@ $(document).ready(function()
 		$(this).toggleClass("closed");
 		$(this).closest("div.around-pulldown").find(".pulldown-contents").toggle();
 	});
+	
+	/* The "report results" button in the status page is overridden
+	   to send an Ajax request instead of reloading the page */
+	$("#btn-report-results").click(function() {
+	  $.ajax("/report-results");
+	  return false;
+	});
 
 	$("pre.multiline").click(function() {
 		$(this).toggleClass("open");

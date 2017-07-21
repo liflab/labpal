@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ca.uqac.lif.labpal.Experiment.QueueStatus;
 import ca.uqac.lif.labpal.Experiment.Status;
 
 /**
@@ -60,13 +61,21 @@ public class LinearAssistant extends LabAssistant
 	private transient int m_sleepInterval = 100;
 
 	/**
-	 * Creates a new dispatcher
+	 * Creates a new assistant
+	 */
+	public LinearAssistant(Laboratory lab)
+	{
+		super(lab);
+		m_stop = true;
+		m_queue = new ArrayList<Experiment>();
+	}
+	
+	/**
+	 * Creates a new assistant
 	 */
 	public LinearAssistant()
 	{
-		super();
-		m_stop = true;
-		m_queue = new ArrayList<Experiment>();
+		this(null);
 	}
 	
 	/**
@@ -89,6 +98,7 @@ public class LinearAssistant extends LabAssistant
 			m_experimentThread.interrupt();
 		}
 		m_stop = false;
+		m_lab.getReporter().start();
 		while (!m_stop)
 		{
 			m_queueLock.lock();
@@ -111,7 +121,6 @@ public class LinearAssistant extends LabAssistant
 			{
 				// Experiment not started: start
 				m_experimentThread = new Thread(e);
-				e.setWhoRan(m_name);
 				m_experimentThread.start();					
 				while (m_experimentThread.isAlive() && !m_stop)
 				{
@@ -166,6 +175,7 @@ public class LinearAssistant extends LabAssistant
 			m_queueLock.unlock();
 			e.interrupt();
 		}
+		m_lab.getReporter().stop();
 	}
 
 	@Override
@@ -195,11 +205,13 @@ public class LinearAssistant extends LabAssistant
 		{
 			if (m_queue.get(i).getId() == id)
 			{
+				m_queue.get(i).setQueueStatus(QueueStatus.NOT_QUEUED);
 				m_queue.remove(i);
 				break;
 			}
 		}
 		m_queueLock.unlock();
+		reportResults();
 		return this;
 	}
 	
@@ -209,6 +221,9 @@ public class LinearAssistant extends LabAssistant
 		m_queueLock.lock();
 		m_queue.add(e);
 		m_queueLock.unlock();
+		e.setWhoRan(m_name);
+		e.setQueueStatus(QueueStatus.QUEUED);
+		reportResults();
 		return this;
 	}
 	

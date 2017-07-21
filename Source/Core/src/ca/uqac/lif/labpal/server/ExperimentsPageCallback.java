@@ -142,7 +142,10 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		for (int id : ids)
 		{
 			Experiment e = lab.getExperiment(id);
-			param_set.addAll(e.getInputKeys(true));
+			if (lab.getFilter().include(e))
+			{
+				param_set.addAll(e.getInputKeys(true));
+			}
 		}
 		List<String> param_list = new ArrayList<String>(param_set.size());
 		param_list.addAll(param_set);
@@ -158,9 +161,14 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		for (int id : ids)
 		{
 			Experiment e = lab.getExperiment(id);
+			if (!lab.getFilter().include(e))
+			{
+				// Exclude
+				continue;
+			}
 			out.append("<tr class=\"tr tr-").append(id).append("\">");
 			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
-			out.append("<td class=\"id-cell\"><a href=\"experiment?id=").append(id).append("\">").append(id).append("</a></td>");
+			out.append("<td class=\"id-cell\"><a href=\"experiment/").append(id).append("\">").append(id).append("</a></td>");
 			for (String p_name : param_list)
 			{
 				out.append("<td>");
@@ -195,6 +203,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	 */
 	public static String getStatusIcon(Experiment e, LabAssistant assistant)
 	{
+		String out = "";
 		switch (e.getStatus())
 		{
 		case DONE:
@@ -210,25 +219,31 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		case PREREQ_F:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
 		case PREREQ_NOK:
-			if (assistant.isQueued(e.getId()))
+			switch (e.getQueueStatus())
 			{
-				return "<div class=\"status-icon status-queued\" title=\"Queued\"><span class=\"text-only\">Q</span></div>";
-			}
-			else
-			{
+			case NOT_QUEUED:
 				return "<div class=\"status-icon status-prereq\" title=\"Prerequisites not fulfilled\"><span class=\"text-only\">P</span></div>";
+			case QUEUED:
+				return "<div class=\"status-icon status-queued\" title=\"Queued\"><span class=\"text-only\">Q</span></div>";
+			case QUEUED_REMOTELY:
+				return "<div class=\"status-icon status-queued\" title=\"Queued remotely\"><span class=\"text-only\">Q</span></div>R";
 			}
 		case PREREQ_OK:
-			if (assistant.isQueued(e.getId()))
+			switch (e.getQueueStatus())
 			{
-				return "<div class=\"status-icon status-queued\" title=\"Queued\"><span class=\"text-only\">Q</span></div>";
-			}
-			else
-			{
+			case NOT_QUEUED:
 				return "<div class=\"status-icon status-ready\" title=\"Ready\"><span class=\"text-only\">r</span></div>";
+			case QUEUED:
+				return "<div class=\"status-icon status-queued\" title=\"Queued\"><span class=\"text-only\">Q</span></div>";
+			case QUEUED_REMOTELY:
+				return "<div class=\"status-icon status-queued\" title=\"Queued remotely\"><span class=\"text-only\">Q</span></div>R";
 			}
 		case RUNNING:
-			String out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span></div>";
+			out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span></div>";
+			out += getProgressionBar(e.getProgression());
+			return out;
+		case RUNNING_REMOTELY:
+			out = "<div class=\"status-icon status-running\" title=\"Running\"><span class=\"text-only\">R</span></div>R";
 			out += getProgressionBar(e.getProgression());
 			return out;
 		default:
@@ -261,25 +276,29 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		case PREREQ_F:
 			return "Failed when generating prerequisites";
 		case PREREQ_NOK:
-			if (assistant.isQueued(e.getId()))
+			switch (e.getQueueStatus())
 			{
-				return "Queued";
-			}
-			else
-			{
+			case NOT_QUEUED:
 				return "Prerequisites not fulfilled";
+			case QUEUED:
+				return "Queued";
+			case QUEUED_REMOTELY:
+				return "Queued remotely";
 			}
 		case PREREQ_OK:
-			if (assistant.isQueued(e.getId()))
+			switch (e.getQueueStatus())
 			{
-				return "Queued";
-			}
-			else
-			{
+			case NOT_QUEUED:
 				return "Ready";
+			case QUEUED:
+				return "Queued";
+			case QUEUED_REMOTELY:
+				return "Queued remotely";
 			}
 		case RUNNING:
 			return "Running " + getProgressionBar(e.getProgression());
+		case RUNNING_REMOTELY:
+			return "Running remotely " + getProgressionBar(e.getProgression());
 		default:
 			return "";		
 		}

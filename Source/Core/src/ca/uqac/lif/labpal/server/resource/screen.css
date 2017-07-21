@@ -258,6 +258,12 @@ h1 {
   padding-left: 40px;
 }
 
+#btn-report-results {
+  background: {%COLOR 4%} url('images/wifi-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
+
 .btn-picture {
   background: {%COLOR 4%} url('images/image-24.png') 4px 4px no-repeat;
   padding-left: 40px;
@@ -606,4 +612,4 @@ a.anchor {
 #experiment-filter {
 	margin-bottom: 10pt;
 }
-}
+

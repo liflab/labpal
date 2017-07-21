@@ -17,7 +17,6 @@
  */
 package sorting;
 
-import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.ConstantNumberMacro;
 import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
@@ -47,7 +46,6 @@ public class SortingLab extends Laboratory
 		// Give a name to the lab
 		setTitle("Sorting Algorithms");
 		setAuthor("Fred Flintstone");
-		setDescription(FileHelper.internalFileToString(this, "description.html"));
 		
 		// Prepare a table
 		ExperimentTable table = new ExperimentTable("size", "time", "name");

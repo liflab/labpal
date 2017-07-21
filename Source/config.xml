@@ -26,7 +26,7 @@
   <name>LabPal</name>
   
   <!-- The project's version number -->
-  <version>2.8</version>
+  <version>2.9-pre1</version>
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
@@ -70,7 +70,7 @@
       <name>Jerrydog</name>
       <classname>ca.uqac.lif.jerrydog.Server</classname>
       <files>
-        <zip>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.2.1/jerrydog-0.2.1.zip</zip>
+        <zip>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.3/jerrydog-0.3.zip</zip>
       </files>
     </dependency>
     <dependency>

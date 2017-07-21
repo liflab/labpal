@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.util.List;
 import java.util.Map;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
@@ -58,7 +59,16 @@ public class PlotImageCallback extends WebCallback
 	{
 		CallbackResponse response = new CallbackResponse(t);
 		Map<String,String> params = getParameters(t);
-		int plot_id = Integer.parseInt(params.get("id"));
+		List<String> path_parts = getParametersFromPath(params);
+		int plot_id = -1;
+		if (!path_parts.isEmpty())
+		{
+			plot_id = Integer.parseInt(path_parts.get(0));
+		}
+		else if (params.containsKey("id"))
+		{
+			plot_id = Integer.parseInt(params.get("id"));
+		}
 		Plot p = m_lab.getPlot(plot_id);
 		if (p == null)
 		{
@@ -105,4 +115,32 @@ public class PlotImageCallback extends WebCallback
 		return response;
 	}
 
+	/**
+	 * Gets the image file corresponding to a plot in the given format
+	 * @param plot_id
+	 * @param terminal
+	 * @return
+	 */
+	public byte[] exportTo(int plot_id, String format)
+	{
+		Plot p = m_lab.getPlot(plot_id);
+		byte[] image = null;
+		if (format.compareToIgnoreCase("png") == 0)
+		{
+			image = p.getImage(ImageType.PNG);
+		}
+		else if (format.compareToIgnoreCase("pdf") == 0)
+		{
+			image = p.getImage(ImageType.PDF);
+		}
+		else if (format.compareToIgnoreCase("dumb") == 0)
+		{
+			image = p.getImage(ImageType.DUMB);
+		}
+		else if (format.compareToIgnoreCase("gp") == 0 && p instanceof GnuPlot)
+		{
+			image = ((GnuPlot)p).toGnuplot(ImageType.PDF, m_lab.getTitle(), true).getBytes();
+		}
+		return image;
+	}
 }

@@ -19,7 +19,9 @@ package ca.uqac.lif.labpal.server;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -56,10 +58,20 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	@Override
 	public String fill(String page, Map<String,String> params)
 	{
-		if (!params.containsKey("id"))
+		List<String> path_parts = getParametersFromPath(params);
+		int experiment_nb = -1;
+		if (!path_parts.isEmpty())
+		{
+			experiment_nb = Integer.parseInt(path_parts.get(0));
+		}
+		else if (params.containsKey("id"))
+		{
+			experiment_nb = Integer.parseInt(params.get("id"));
+		}
+		else
+		{
 			return "";
-		
-		int experiment_nb = Integer.parseInt(params.get("id"));
+		}
 		Experiment e = m_lab.getExperiment(experiment_nb);
 		if (e == null)
 		{
@@ -228,6 +240,12 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		return out;
 	}
 	
+	/**
+	 * Gets the set of keys that should be highlighted in the table of
+	 * experiment results
+	 * @param highlight The key to highlight
+	 * @return
+	 */
 	protected Set<String> getKeysToHighlight(String highlight)
 	{
 		Set<String> to_highlight = new HashSet<String>();
@@ -240,11 +258,23 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		return to_highlight;
 	}
 	
+	/**
+	 * Checks if a set of strings contains exactly one specific string
+	 * @param set The set
+	 * @param key The string
+	 * @return
+	 */
 	protected static boolean containsExactly(Set<String> set, String key)
 	{
 		return set.contains(key);
 	}
 	
+	/**
+	 * Checks if string is the prefix of a string in some set 
+	 * @param set The set
+	 * @param key The string
+	 * @return
+	 */
 	protected static boolean containsPrefix(Set<String> set, String key)
 	{
 		for (String s : set)
@@ -255,5 +285,22 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Exports the page for an experiment
+	 * @param experiment_id The ID of the experiement whose page is 
+	 *   to be rendered
+	 * @return The HTML contents of the page 
+	 */
+	public String exportToStaticHtml(int experiment_id)
+	{
+		String file = readTemplateFile();
+		Map<String,String> params = new HashMap<String,String>();
+		params.put("id", Integer.toString(experiment_id));
+		String contents = render(file, params);
+		contents = createStaticLinks(contents);
+		contents = relativizeUrls(contents, "../");
+		return contents;
 	}
 }

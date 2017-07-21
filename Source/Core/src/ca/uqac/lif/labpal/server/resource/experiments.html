@@ -2,9 +2,11 @@
 
 {%MESSAGE%}
 
-<!--<h2>Filter</h2>
-
-<p>The filter</p>-->
+<div id="experiment-filter">
+<h2 class="text-only">Filter</h2>
+<p>Enter experiment numbers or ranges of numbers to filter the list of experiments.</p>
+<input type="text" class="top-filter" /><button type="button" class="btn btn-filter">Filter</button>
+</div>
 
 <form name="experiments" method="post" action="experiments">
 {%EXP_LIST%}

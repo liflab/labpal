@@ -35,6 +35,8 @@ jacoco.exec
 # ----------------------------------------------------
 
 # Eclipse-specific
+.project
+.classpath
 Source/.metadata/
 Source/**/*.pydevproject
 Source/**/.project

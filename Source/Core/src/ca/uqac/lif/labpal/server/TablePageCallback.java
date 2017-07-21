@@ -18,6 +18,7 @@
 package ca.uqac.lif.labpal.server;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -64,11 +65,20 @@ public class TablePageCallback extends TemplatePageCallback
 	@Override
 	public String fill(String s, Map<String,String> params)
 	{
-		int tab_id = Integer.parseInt(params.get("id"));
+		List<String> path_parts = getParametersFromPath(params);
+		int tab_id = -1;
+		if (!path_parts.isEmpty())
+		{
+			tab_id = Integer.parseInt(path_parts.get(0));
+		}
+		else if (params.containsKey("id"))
+		{
+			tab_id = Integer.parseInt(params.get("id"));
+		}
 		Table tab = m_lab.getTable(tab_id);
 		if (tab == null)
 		{
-			return null;
+			return "";
 		}
 		HardTable tbl = tab.getDataTable();
 		String highlight = "";

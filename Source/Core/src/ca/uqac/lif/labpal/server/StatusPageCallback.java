@@ -17,12 +17,17 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.lang.reflect.Constructor;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.ResultReporter;
+import ca.uqac.lif.labpal.ResultReporter.ReporterException;
 
 /**
  * Callback for the home page, showing various statistics and basic
@@ -83,7 +88,41 @@ public class StatusPageCallback extends TemplatePageCallback
 					+ m_environmentMessage 
 					+ " This means you may not be able to run the experiments propertly.</span></p>");
 		}
+		String serialization_message = getSerializationMessage();
+		if (serialization_message != null)
+		{
+			out = out.replaceAll("\\{%SERIALIZATION_MESSAGE%\\}", "<p class=\"message info\">" 
+					+ "<span>" + serialization_message + "</span></p>");
+		}
+		out = out.replaceAll("\\{%REPORTING_DIV%\\}", getReportingDiv());
 		return out;
+	}
+
+	protected String getReportingDiv()
+	{
+		ResultReporter rep = m_lab.getReporter();
+		StringBuilder rep_out = new StringBuilder();
+		if (rep != null && rep.getUrl() != null && !rep.getUrl().isEmpty())
+		{
+			rep_out.append("<div>\n");
+			rep_out.append("<h2>Reporting results</h2>\n");
+			rep_out.append("<p>This lab is instructed to periodically report its results to <a href=\"http://").append(rep.getUrl()).append("/index\">").append(rep.getUrl()).append("</a></p>\n");
+			rep_out.append("<a id=\"btn-report-results\" class=\"btn-24\" href=\"/report-results\"><span>Send an update now</span></a>\n");
+			List<ReporterException> exceptions = rep.getExceptions();
+			if (!exceptions.isEmpty())
+			{
+
+				rep_out.append("<p class=\"message info\"><span>The lab has problems reporting its results:");
+				rep_out.append("<ul>\n");
+				for (ReporterException re : exceptions)
+				{
+					rep_out.append("<li>").append(re.getMessage()).append("</li>\n");
+				}
+				rep_out.append("</ul></p>\n");
+			}
+			rep_out.append("</div>\n");
+		}
+		return rep_out.toString();
 	}
 
 	/**
@@ -140,4 +179,71 @@ public class StatusPageCallback extends TemplatePageCallback
 		out.append("<div style=\"clear:both\"></div>");
 		return out.toString();
 	}
+
+	/**
+	 * Produces an error message if the lab contains a class without
+	 * a no-args constructor
+	 * 
+	 * @return An error message explaining the fact, or {@code null} if
+	 * everything is OK
+	 */
+	public String getSerializationMessage()
+	{
+		List<Class<?>> warning_classes = new LinkedList<Class<?>>();
+		for (Class<?> c : m_lab.getSerializableClasses())
+		{
+			if (!hasEmptyConstructor(c))
+			{
+				warning_classes.add(c);
+			}
+		}
+		if (warning_classes.isEmpty())
+		{
+			return null;
+		}
+		StringBuilder out = new StringBuilder();
+		if (warning_classes.size() == 1)
+		{
+			out.append("The class ").append(warning_classes.get(0).getSimpleName()).append(", which was defined by the lab's author, does not have an empty constructor. ");
+		}
+		else
+		{
+			out.append("The following classes, which were defined by the lab's author, do not have an empty constructor: ");
+			boolean first = true;
+			for (Class<?> c : warning_classes)
+			{
+				if (first)
+				{
+					first = false;
+				}
+				else
+				{
+					out.append(", ");
+				}
+				out.append(c.getSimpleName());
+			}
+			out.append(". ");
+		}
+		out.append("It is possible to save the lab's state to a file, but loading will produce an error message and will not be possible.");
+		return out.toString();
+	}
+
+	/**
+	 * Checks if a class has a constructor with no arguments
+	 * @param clazz The class
+	 * @return {@code true} if the class has a no-args constructor,
+	 *   {@code false} otherwise
+	 */
+	protected static boolean hasEmptyConstructor(Class<?> clazz)
+	{
+		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) 
+		{
+			if (constructor.getParameterTypes().length == 0) 
+			{ 
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

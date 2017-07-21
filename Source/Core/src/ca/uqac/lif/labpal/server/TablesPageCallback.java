@@ -80,7 +80,7 @@ public class TablesPageCallback extends TemplatePageCallback
 			out.append("<td class=\"id-cell\"><a href=\"table?id=").append(id).append("\" title=\"Click on table to view in new window\">");
 			out.append(id).append("</a></td>");
 			out.append("<td class=\"table-icon\"></td>");
-			out.append("<td><a href=\"table?id=").append(id).append("\">").append(htmlEscape(table.getTitle())).append("</a></td>");
+			out.append("<td><a href=\"table/").append(id).append("\">").append(htmlEscape(table.getTitle())).append("</a></td>");
 			out.append("<td><a class=\"btn-csv\" href=\"table-export?id=").append(id).append("&amp;format=csv&amp;dl=1\" title=\"Download as CSV\"><span class=\"text-only\">CSV</span></a></td>");
 			out.append("<td><a class=\"btn-tex\" href=\"table-export?id=").append(id).append("&amp;format=tex&amp;dl=1\" title=\"Download as LaTeX\"><span class=\"text-only\">TeX</span></a></td>");
 			out.append("<td><a class=\"btn-html\" href=\"table-export?id=").append(id).append("&amp;format=html&amp;dl=1\" title=\"Download as HTML\"><span class=\"text-only\">HTML</span></a></td>");

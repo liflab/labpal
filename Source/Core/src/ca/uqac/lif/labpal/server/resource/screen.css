@@ -84,6 +84,20 @@ h1 {
   background: white;
 }
 
+#top-menu ul li.small-screen {
+	background-position-x: center;
+	width: 56px;
+}
+
+#top-menu ul li.small-screen a {
+	background-position-x: center;
+	padding-left: 10px;
+	width: 48px;
+}
+
+#top-menu ul li.small-screen .menu-text {
+	display: none;
+}
 
 #top-menu-home {
   background: url('images/home-48.png') left center no-repeat;
@@ -243,6 +257,12 @@ h1 {
   background: {%COLOR 4%} url('images/find-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
+
+#btn-report-results {
+  background: {%COLOR 4%} url('images/wifi-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
 
 .btn-picture {
   background: {%COLOR 4%} url('images/image-24.png') 4px 4px no-repeat;
@@ -588,3 +608,8 @@ a.anchor {
 .explanation a {
   text-decoration: none;
 }
+
+#experiment-filter {
+	margin-bottom: 10pt;
+}
+

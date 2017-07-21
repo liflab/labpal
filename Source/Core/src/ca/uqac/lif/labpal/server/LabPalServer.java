@@ -161,6 +161,7 @@ public class LabPalServer extends InnerFileServer
 		registerCallback(0, new ReportResultsCallback(lab, assistant));
 		m_statusPageCallback = new StatusPageCallback(lab, assistant);
 		registerCallback(0, m_statusPageCallback);
+		registerCallback(0, new EditParametersCallback(lab, assistant));
 		m_experimentPageCallback = new ExperimentPageCallback(lab, assistant);
 		registerCallback(0, m_experimentPageCallback);
 		m_experimentsPageCallback = new ExperimentsPageCallback(lab, assistant);
@@ -190,6 +191,7 @@ public class LabPalServer extends InnerFileServer
 		m_allMacrosLatexCallback = new AllMacrosLatexCallback(lab, assistant);
 		registerCallback(0, m_allMacrosLatexCallback);
 		registerCallback(0, new ExportStaticCallback(lab, assistant, this));
+		registerCallback(0, new EditParametersFormCallback(lab, assistant));
 	}
 	
 	/**

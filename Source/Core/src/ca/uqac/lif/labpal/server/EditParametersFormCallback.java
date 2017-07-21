@@ -17,8 +17,6 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,8 +31,6 @@ import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.Experiment;
-import ca.uqac.lif.labpal.Experiment.Status;
-import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -42,18 +38,18 @@ import ca.uqac.lif.labpal.LabPalTui;
 import ca.uqac.lif.petitpoucet.NodeFunction;
 
 /**
- * Callback to display the details of one specific experiment.
+ * Callback showing a form to edit the parameters of one specific experiment.
  * 
  * @author Sylvain Hallé
  *
  */
-public class ExperimentPageCallback extends TemplatePageCallback
+public class EditParametersFormCallback extends TemplatePageCallback
 {
-	protected static final SimpleDateFormat s_dateFormat = new SimpleDateFormat();
-	
-	public ExperimentPageCallback(Laboratory lab, LabAssistant assistant)
+	public EditParametersFormCallback(Laboratory lab, LabAssistant assistant)
 	{
-		super("/experiment", lab, assistant);
+		super("/experiment/edit", lab, assistant);
+		// Override default filename
+		m_filename = s_path + "/edit-parameters.html";
 	}
 	
 	@Override
@@ -78,14 +74,6 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		{
 			return "";
 		}
-		if (params.containsKey("reset"))
-		{
-			e.reset();
-		}
-		if (params.containsKey("clean"))
-		{
-			e.clean();
-		}
 		Set<String> to_highlight = new HashSet<String>();
 		if (params.containsKey("highlight"))
 		{
@@ -94,8 +82,6 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		String out = page.replaceAll("\\{%TITLE%\\}", "Experiment #" + experiment_nb);
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ERLENMEYER));
 		out = out.replaceAll("\\{%EXP_NB%\\}", Integer.toString(experiment_nb));
-		out = out.replaceAll("\\{%EXP_START%\\}", formatDate(e.getStartTime()));
-		out = out.replaceAll("\\{%EXP_END%\\}", formatDate(e.getEndTime()));
 		out = out.replaceAll("\\{%EXP_STATUS%\\}", ExperimentsPageCallback.getStatusLabel(e, m_assistant));
 		out = out.replaceAll("\\{%EXP_ESTIMATE%\\}", LabPalTui.formatEta(e.getDurationEstimate(Laboratory.s_parkMips)));
 		if (e.getEndTime() > 0)
@@ -106,32 +92,9 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%EXP_DATA%\\}", Matcher.quoteReplacement(renderHtml(e.getAllParameters(), "", e, to_highlight).toString()));
 		String description = e.getDescription();
 		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", Matcher.quoteReplacement("<div class=\"description\">" + description + "</div>"));
-		Status st = e.getStatus();
-		if (e.isEditable() && st != Status.RUNNING && st != Status.RUNNING_REMOTELY)
+		if (e.isEditable())
 		{
-			out = out.replaceAll("\\{%EXP_EDIT_BUTTON%\\}", Matcher.quoteReplacement("<a class=\"btn-24 btn-edit\" href=\"experiment/edit/" + e.getId() + "\" title=\"Modify the input parameters of this experiment\">Edit parameters</a>"));
-		}
-		String timeout_string = "No timeout";
-		if (e.getMaxDuration() > 0)
-		{
-			timeout_string = (e.getMaxDuration() / 1000) + " s";
-		}
-		out = out.replaceAll("\\{%EXP_TIMEOUT%\\}", timeout_string);
-		String error_msg = e.getErrorMessage();
-		if (!error_msg.isEmpty())
-		{
-			out = out.replaceAll("\\{%FAIL_MSG%\\}", Matcher.quoteReplacement("<h2>Error message</h2><pre>" + error_msg + "</pre>"));
-		}
-		if (e.hasWarnings())
-		{
-			StringBuilder warning_msg_build = new StringBuilder();
-			for (ExperimentException ex : e.getWarnings())
-			{
-				warning_msg_build.append("<div>");
-				warning_msg_build.append(ex.getMessage());
-				warning_msg_build.append("</div>\n");
-			}
-			out = out.replaceAll("\\{%WARNINGS%\\}", Matcher.quoteReplacement("<h2>Warnings</h2>" + warning_msg_build.toString() + ""));
+			out = out.replaceAll("\\{%EXP_EDIT_BUTTON%\\}", Matcher.quoteReplacement("<a class=\"btn-24 btn-edit\" href=\"experiment/edit/" + e.getId() + " title=\"Modify the input parameters of this experiment\">Edit parameters</a>"));
 		}
 		Set<Group> groups = m_lab.getGroups(experiment_nb);
 		String group_description = "";
@@ -145,23 +108,10 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		return out;
 	}
-	
+		
 	/**
-	 * Formats the date
-	 * @param timestamp A Unix timestamp 
-	 * @return A formatted date
-	 */
-	protected static String formatDate(long timestamp)
-	{
-		if (timestamp < 0)
-		{
-			return "";
-		}
-		return s_dateFormat.format(new Date(timestamp));
-	}
-	
-	/**
-	 * Creates HTML code displaying (recursively) the experiment's parameters
+	 * Creates HTML code displaying (recursively) the experiment's input
+	 * parameters as editable fields
 	 * @param e The current JSON element in the parameters
 	 * @param path The path in the experiment's parameters from the root
 	 * @param exp The experiment
@@ -171,13 +121,32 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	public static StringBuilder renderHtml(JsonElement e, String path, Experiment exp, Set<String> to_highlight)
 	{
 		StringBuilder out = new StringBuilder();
+		boolean is_editable_field = exp.isEditable(path);
 		if (e instanceof JsonString)
 		{
-			out.append(((JsonString) e).stringValue());
+			String s = ((JsonString) e).stringValue();
+			if (is_editable_field)
+			{
+				out.append("<input type=\"text\" name=\"fld-").append(path).append("\" value=\"").append(s).append("\" />");
+			}
+			else
+			{
+				out.append("<input type=\"hidden\" name=\"fld-").append(path).append("\" value=\"").append(s).append("\" />");
+				out.append(s);
+			}
 		}
 		else if (e instanceof JsonNumber)
 		{
-			out.append(((JsonNumber) e).numberValue());
+			Number num = ((JsonNumber) e).numberValue();
+			if (is_editable_field)
+			{
+				out.append("<input type=\"text\" name=\"fld-").append(path).append("\" value=\"").append(num).append("\" />");
+			}
+			else
+			{
+				out.append("<input type=\"hidden\" name=\"fld-").append(path).append("\" value=\"").append(num).append("\" />");
+				out.append(num);
+			}
 		}
 		else if (e instanceof JsonList)
 		{

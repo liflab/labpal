@@ -40,6 +40,7 @@ import ca.uqac.lif.azrael.SerializerException;
 import ca.uqac.lif.azrael.json.JsonSerializer;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.Argument;
@@ -1641,6 +1642,17 @@ public abstract class Laboratory implements OwnershipManager
 	public final ExperimentFilter getFilter()
 	{
 		return m_filter;
+	}
+
+	/**
+	 * Edit the parameters of an experiment
+	 * @param exp_id
+	 * @param new_parameters
+	 */
+	public void editParameters(int exp_id, JsonMap new_parameters)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

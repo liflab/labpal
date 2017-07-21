@@ -70,6 +70,11 @@ public abstract class Experiment implements Runnable, DataOwner
 	private transient Set<String> m_keysToHide;
 	
 	/**
+	 * The set of parameter names that are editable
+	 */
+	private transient Set<String> m_editableKeys;
+	
+	/**
 	 * The current status of the experiment
 	 */
 	private Status m_status;
@@ -145,6 +150,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_outputParameters = new JsonMap();
 		m_parameterDescriptions = new HashMap<String,String>();
 		m_keysToHide = new HashSet<String>();
+		m_editableKeys = new HashSet<String>();
 		m_warnings = new ArrayList<ExperimentException>();
 		m_runBy = "";
 		m_status = status;
@@ -576,6 +582,43 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		m_inputParameters.put(key, value);
 		return this;
+	}
+	
+	/**
+	 * Sets the names of the parameters that are editable by the user
+	 * @param parameters The names of the parameters
+	 * @return This experiment
+	 */
+	public final Experiment setEditableParameters(String ... parameters)
+	{
+		for (String k : parameters)
+		{
+			m_editableKeys.add(k);
+		}
+		return this;
+	}
+	
+	/**
+	 * Checks if an experiment is editable. This is the case when at least
+	 * one input parameter has been declared editable.
+	 * @see #setEditableParameters(String...)
+	 * @return {@code true} if the experiment can be edited by the user,
+	 *   {@code false} otherwise
+	 */
+	public final boolean isEditable()
+	{
+		return !m_editableKeys.isEmpty();
+	}
+	
+	/**
+	 * Checks if an input parameter is editable
+	 * @param parameter The name of the input parameter
+	 * @return {@code true} if the parameter is editable, {@code false}
+	 *   otherwise
+	 */
+	public final boolean isEditable(String parameter)
+	{
+		return m_editableKeys.contains(parameter);
 	}
 	
 	/**
@@ -1095,5 +1138,35 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_endTime = e.m_endTime;
 		m_runBy = e.m_runBy;
 		return true;
+	}
+	
+	/**
+	 * Callback called by the lab when an experiment has been edited by the user
+	 * @param new_parameters The new parameters entered by the user
+	 * @throws ExperimentException Thrown if an error was raised when
+	 * modifying the parameters
+	 */
+	public final void editCallback(JsonMap new_parameters) throws ExperimentException
+	{
+		edit(new_parameters);
+		m_inputParameters = new_parameters;
+		m_outputParameters.clear();
+		// We override whatever status the experiment currently has
+		m_status = Status.DUNNO;
+		getStatus();
+	}
+	
+	/**
+	 * Method that is called whenever the input parameters of an experiment
+	 * have been modified by the user. By default, this method does nothing;
+	 * you should override it if you need to change the experiment's state
+	 * according to these changes.
+	 * @param new_parameters The new parameters entered by the user
+	 * @throws ExperimentException Throw this exception if the experiment
+	 * cannot reconfigure itself with the 
+	 */
+	protected void edit(JsonMap new_parameters) throws ExperimentException
+	{
+		// Do nothing
 	}
 }

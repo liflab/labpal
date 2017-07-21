@@ -253,6 +253,11 @@ h1 {
   padding-left: 40px;
 }
 
+.btn-edit {
+  background: {%COLOR 4%} url('images/pencil-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
 #btn-find {
   background: {%COLOR 4%} url('images/find-24.png') 4px 4px no-repeat;
   padding-left: 40px;

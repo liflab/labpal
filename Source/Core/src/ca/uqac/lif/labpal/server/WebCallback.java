@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.RestCleanCallback;
+import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 
@@ -172,5 +174,21 @@ public abstract class WebCallback extends RestCleanCallback
 		mat = s_srcPattern.matcher(contents);
 		contents = mat.replaceAll("src=\"" + path_to_root + "$1\"");
 		return contents;
+	}
+	
+	/**
+	 * Creates an HTTP "bad request" response
+	 * @param cbr The callback response to fill with data
+	 * @param message The error message to return to the browser
+	 */
+	protected static void doBadRequest(CallbackResponse cbr, String message)
+	{
+		cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
+		String file_contents = FileHelper.internalFileToString(LabPalServer.class, TemplatePageCallback.s_path + "/error-message.html");
+		file_contents = TemplatePageCallback.resolveInclude(file_contents);
+		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Error uploading file");
+		file_contents = file_contents.replaceAll("\\{%MESSAGE%\\}", message);
+		file_contents = file_contents.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
+		cbr.setContents(file_contents);
 	}
 }

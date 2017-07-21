@@ -145,15 +145,4 @@ public class UploadCallback extends WebCallback
 		cbr.setContents(file_contents);
 		return cbr;
 	}
-
-	protected void doBadRequest(CallbackResponse cbr, String message)
-	{
-		cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-		String file_contents = FileHelper.internalFileToString(LabPalServer.class, TemplatePageCallback.s_path + "/upload-nok.html");
-		file_contents = TemplatePageCallback.resolveInclude(file_contents);
-		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Error uploading file");
-		file_contents = file_contents.replaceAll("\\{%MESSAGE%\\}", message);
-		file_contents = file_contents.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
-		cbr.setContents(file_contents);
-	}	
 }

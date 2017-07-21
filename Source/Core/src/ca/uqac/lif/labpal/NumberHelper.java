@@ -63,4 +63,41 @@ public class NumberHelper
 			return false;
 		}
 	}
+	
+	/**
+	 * Converts a string into its "closest" primitive type. If the
+	 * string parses as an integer, the number returned will be an
+	 * {@code int}. Otherwise, if it parses as a float, the number
+	 * returned will be a {@code float}. In all other cases, the
+	 * returned value is {@code null}.
+	 * @param s The string to convert into a number
+	 * @return The number
+	 */
+	public static Number toPrimitiveNumber(String s)
+	{
+		if (s == null)
+		{
+			return null;
+		}
+		s = s.trim();
+		try
+		{
+			int i = Integer.parseInt(s);
+			return i;
+		}
+		catch (NumberFormatException nfe)
+		{
+			// Do nothing
+		}
+		try
+		{
+			float f = Float.parseFloat(s);
+			return f;
+		}
+		catch (NumberFormatException nfe)
+		{
+			// Do nothing
+		}
+		return null;
+	}
 }

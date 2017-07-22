@@ -17,7 +17,10 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
@@ -74,6 +77,17 @@ public class AllMacrosLatexCallback extends WebCallback
 	public String exportToStaticHtml(String path_to_root)
 	{
 		return getLatexFileContents();
+	}
+	
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		String file_contents = exportToStaticHtml("");
+		String filename = "labpal-macros.tex";
+		ZipEntry ze = new ZipEntry(filename);
+		zos.putNextEntry(ze);
+		zos.write(file_contents.getBytes());
+		zos.closeEntry();
 	}
 
 }

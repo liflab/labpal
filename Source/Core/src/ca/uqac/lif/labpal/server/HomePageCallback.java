@@ -17,12 +17,15 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
@@ -37,17 +40,17 @@ import ca.uqac.lif.labpal.Laboratory;
 public class HomePageCallback extends TemplatePageCallback
 {
 	protected static final transient Pattern s_patternExecute = Pattern.compile("\\{J(.*?)J\\}");
-	
+
 	/**
 	 * The relative URL of the home page
 	 */
 	public static final String URL = "/index";
-	
+
 	/**
 	 * The description associated to the lab
 	 */
 	protected final transient String m_labDescription;
-	
+
 	public HomePageCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super(URL, lab, assistant);
@@ -61,7 +64,7 @@ public class HomePageCallback extends TemplatePageCallback
 		}
 		m_labDescription = description;
 	}
-	
+
 	@Override
 	public String fill(String page, Map<String,String> params)
 	{
@@ -73,7 +76,7 @@ public class HomePageCallback extends TemplatePageCallback
 		out = resolveClassText(out);
 		return out;
 	}	
-	
+
 	/**
 	 * Replaces all the bits of text of the form <tt>{J xyz J}</tt> by
 	 * a call to the static method <tt>xyz.getClassText()</tt>. If class
@@ -136,4 +139,12 @@ public class HomePageCallback extends TemplatePageCallback
 		return s;
 	}
 
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		ZipEntry ze = new ZipEntry("index.html");
+		zos.putNextEntry(ze);
+		zos.write(exportToStaticHtml("").getBytes());
+		zos.closeEntry();
+	}
 }

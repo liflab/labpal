@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -77,59 +76,9 @@ public class LabPalServer extends InnerFileServer
 	protected ExperimentPageCallback m_experimentPageCallback;
 
 	/**
-	 * The callback for the macros page
-	 */
-	private MacrosPageCallback m_macrosPageCallback;
-
-	/**
-	 * The callback for the experiments page
-	 */
-	private ExperimentsPageCallback m_experimentsPageCallback;
-	
-	/**
-	 * The callback for the plots page
-	 */
-	private PlotsPageCallback m_plotsPageCallback;
-
-	/**
-	 * The callback for the tables page
-	 */
-	private TablesPageCallback m_tablesPageCallback;
-	
-	/**
-	 * The callback for the table page
-	 */
-	private TablePageCallback m_tablePageCallback;
-	
-	/**
-	 * The callback for the index page
-	 */
-	private HomePageCallback m_indexPageCallback;
-	
-	/**
-	 * The callback for the status page
-	 */
-	private StatusPageCallback m_statusPageCallback;
-	
-	/**
-	 * The callback for the help page
-	 */
-	private HelpPageCallback m_helpPageCallback;
-
-	/**
 	 * The callback for the dynamic CSS file
 	 */
 	private CssCallback m_cssCallback;
-	
-	/**
-	 * The callback for an individual plot image
-	 */
-	private PlotImageCallback m_plotImageCallback;
-
-	/**
-	 * The callback for the LaTeX macros
-	 */
-	private AllMacrosLatexCallback m_allMacrosLatexCallback;
 	
 	/**
 	 * Creates a new LabPal server
@@ -150,8 +99,7 @@ public class LabPalServer extends InnerFileServer
 		{
 			setServerPort(s_defaultPort);
 		}
-		m_indexPageCallback = new HomePageCallback(lab, assistant);
-		registerCallback(0, m_indexPageCallback);
+		registerCallback(0, new HomePageCallback(lab, assistant));
 		m_cssCallback = new CssCallback(this, lab, assistant);
 		CachedRequestCallback css_callback = new CachedRequestCallback(m_cssCallback);
 		css_callback.setCachingEnabled(true);
@@ -159,37 +107,27 @@ public class LabPalServer extends InnerFileServer
 		registerCallback(0, css_callback);
 		registerCallback(0, new MergeCallback(lab, assistant));
 		registerCallback(0, new ReportResultsCallback(lab, assistant));
-		m_statusPageCallback = new StatusPageCallback(lab, assistant);
-		registerCallback(0, m_statusPageCallback);
+		registerCallback(0, new StatusPageCallback(lab, assistant));
 		registerCallback(0, new EditParametersCallback(lab, assistant));
-		m_experimentPageCallback = new ExperimentPageCallback(lab, assistant);
-		registerCallback(0, m_experimentPageCallback);
-		m_experimentsPageCallback = new ExperimentsPageCallback(lab, assistant);
-		registerCallback(0, m_experimentsPageCallback);
+		registerCallback(0, new ExperimentPageCallback(lab, assistant));
+		registerCallback(0, new ExperimentsPageCallback(lab, assistant));
 		registerCallback(0, new AssistantPageCallback(lab, assistant));
-		m_plotsPageCallback = new PlotsPageCallback(lab, assistant);
-		registerCallback(0, m_plotsPageCallback);
-		m_plotImageCallback = new PlotImageCallback(lab, assistant);
-		registerCallback(0, m_plotImageCallback);
+		registerCallback(0, new PlotsPageCallback(lab, assistant));
+		registerCallback(0, new PlotImageCallback(lab, assistant));
 		registerCallback(0, new DownloadCallback(lab, assistant));
 		registerCallback(0, new UploadCallback(this, lab, assistant));
-		m_helpPageCallback = new HelpPageCallback(lab, assistant);
-		registerCallback(0, m_helpPageCallback);
+		registerCallback(0, new HelpPageCallback(lab, assistant));
 		registerCallback(0, new AllPlotsCallback(lab, assistant));
 		registerCallback(0, new AllPlotsLatexCallback(lab, assistant));
-		m_tablesPageCallback = new TablesPageCallback(lab, assistant);
-		registerCallback(0, m_tablesPageCallback);
-		m_tablePageCallback = new TablePageCallback(lab, assistant);
-		registerCallback(0, m_tablePageCallback);
+		registerCallback(0, new TablesPageCallback(lab, assistant));
+		registerCallback(0, new TablePageCallback(lab, assistant));
 		registerCallback(0, new TableExportCallback(lab, assistant));
 		registerCallback(0, new AllTablesCallback(lab, assistant));
 		registerCallback(0, new ExplainCallback(lab, assistant));
 		registerCallback(0, new ExplainImageCallback(lab, assistant));
 		registerCallback(0, new FindFormCallback(lab, assistant));
-		m_macrosPageCallback = new MacrosPageCallback(lab, assistant);
-		registerCallback(0, m_macrosPageCallback);
-		m_allMacrosLatexCallback = new AllMacrosLatexCallback(lab, assistant);
-		registerCallback(0, m_allMacrosLatexCallback);
+		registerCallback(0, new MacrosPageCallback(lab, assistant));
+		registerCallback(0, new AllMacrosLatexCallback(lab, assistant));
 		registerCallback(0, new ExportStaticCallback(lab, assistant, this));
 		registerCallback(0, new EditParametersFormCallback(lab, assistant));
 	}
@@ -310,138 +248,31 @@ public class LabPalServer extends InnerFileServer
 					zos.closeEntry();
 				}
 			}
+			// Then all the callbacks
+			for (RequestCallback wc : m_callbacks)
 			{
-				// Index page
-				file_contents = m_indexPageCallback.exportToStaticHtml("");
-				filename = "index.html";
-				ZipEntry ze = new ZipEntry(filename);
-				zos.putNextEntry(ze);
-				zos.write(file_contents.getBytes());
-				zos.closeEntry();
-			}
-			{
-				// Status page
-				file_contents = m_statusPageCallback.exportToStaticHtml("");
-				filename = "status.html";
-				ZipEntry ze = new ZipEntry(filename);
-				zos.putNextEntry(ze);
-				zos.write(file_contents.getBytes());
-				zos.closeEntry();
-			}
-			{
-				// Help page
-				file_contents = m_helpPageCallback.exportToStaticHtml("");
-				filename = "help.html";
-				ZipEntry ze = new ZipEntry(filename);
-				zos.putNextEntry(ze);
-				zos.write(file_contents.getBytes());
-				zos.closeEntry();
-			}
-			{
-				// Experiments page
-				file_contents = m_experimentsPageCallback.exportToStaticHtml("");
-				filename = "experiments.html";
-				ZipEntry ze = new ZipEntry(filename);
-				zos.putNextEntry(ze);
-				zos.write(file_contents.getBytes());
-				zos.closeEntry();
-			}
-			{
-				// Tables page
-				file_contents = m_tablesPageCallback.exportToStaticHtml("");
-				filename = "tables.html";
-				ZipEntry ze = new ZipEntry(filename);
-				zos.putNextEntry(ze);
-				zos.write(file_contents.getBytes());
-				zos.closeEntry();
-			}
-			{
-				// Plots page
-				file_contents = m_plotsPageCallback.exportToStaticHtml("");
-				filename = "plots.html";
-				ZipEntry 	ze = new ZipEntry(filename);
-				zos.putNextEntry(ze);
-				zos.write(file_contents.getBytes());
-				zos.closeEntry();
-			}
-			{
-				// Macros page
-				file_contents = m_macrosPageCallback.exportToStaticHtml("");
-				filename = "macros.html";
-				ZipEntry ze = new ZipEntry(filename);
-				zos.putNextEntry(ze);
-				zos.write(file_contents.getBytes());
-				zos.closeEntry();
-			}
-			{
-				// LaTeX macros page
-				file_contents = m_allMacrosLatexCallback.exportToStaticHtml("");
-				filename = "labpal-macros.tex";
-				ZipEntry ze = new ZipEntry(filename);
-				zos.putNextEntry(ze);
-				zos.write(file_contents.getBytes());
-				zos.closeEntry();
-			}
-			{
-				// Experiments
-				Set<Integer> exp_ids = m_lab.getExperimentIds();
-				for (int exp_id : exp_ids)
+				if (wc instanceof WebCallback)
 				{
-					file_contents = m_experimentPageCallback.exportToStaticHtml(exp_id);
-					filename = "experiment/" + exp_id + ".html";
-					ZipEntry ze = new ZipEntry(filename);
-					zos.putNextEntry(ze);
-					zos.write(file_contents.getBytes());
-					zos.closeEntry();
+					((WebCallback) wc).bundle(zos);
 				}
 			}
-			{
-				// Plots in various formats
-				Set<Integer> ids = m_lab.getPlotIds();
-				byte[] byte_contents;
-				for (int id : ids) // PNG
-				{
-					byte_contents = m_plotImageCallback.exportTo(id, "png");
-					filename = "plot/" + id + ".png";
-					ZipEntry ze = new ZipEntry(filename);
-					zos.putNextEntry(ze);
-					zos.write(byte_contents);
-					zos.closeEntry();
-				}
-				for (int id : ids) // PDF
-				{
-					byte_contents = m_plotImageCallback.exportTo(id, "pdf");
-					filename = "plot/" + id + ".pdf";
-					ZipEntry ze = new ZipEntry(filename);
-					zos.putNextEntry(ze);
-					zos.write(byte_contents);
-					zos.closeEntry();
-				}
-				for (int id : ids) // DUMB
-				{
-					byte_contents = m_plotImageCallback.exportTo(id, "dumb");
-					filename = "plot/" + id + ".txt";
-					ZipEntry ze = new ZipEntry(filename);
-					zos.putNextEntry(ze);
-					zos.write(byte_contents);
-					zos.closeEntry();
-				}
-				for (int id : ids) // GP
-				{
-					byte_contents = m_plotImageCallback.exportTo(id, "gp");
-					filename = "plot/" + id + ".gp";
-					ZipEntry ze = new ZipEntry(filename);
-					zos.putNextEntry(ze);
-					zos.write(byte_contents);
-					zos.closeEntry();
-				}
-			}
-			zos.close();
 		}
 		catch (IOException e)
 		{
 			Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				zos.close();
+			}
+			catch (IOException e)
+			{
+				Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
+			}
 		}
 		return bos.toByteArray();
-	}	
+	}
 }

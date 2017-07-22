@@ -17,12 +17,15 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.labpal.LabAssistant;
@@ -124,6 +127,15 @@ public class MacrosPageCallback extends TemplatePageCallback
 		String contents = super.exportToStaticHtml(path_to_root);
 		contents = contents.replaceAll("all-macros-latex", "labpal-macros.tex");
 		return contents;
+	}
+	
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		ZipEntry ze = new ZipEntry("macros.html");
+		zos.putNextEntry(ze);
+		zos.write(exportToStaticHtml("").getBytes());
+		zos.closeEntry();
 	}
 
 }

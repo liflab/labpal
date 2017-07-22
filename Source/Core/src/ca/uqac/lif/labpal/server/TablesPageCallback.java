@@ -17,11 +17,14 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -77,17 +80,37 @@ public class TablesPageCallback extends TemplatePageCallback
 		{
 			Table table = m_lab.getTable(id);
 			out.append("<tr>");
-			out.append("<td class=\"id-cell\"><a href=\"table?id=").append(id).append("\" title=\"Click on table to view in new window\">");
+			out.append("<td class=\"id-cell\"><a href=\"/table/").append(id).append("\" title=\"Click on table to view in new window\">");
 			out.append(id).append("</a></td>");
 			out.append("<td class=\"table-icon\"></td>");
 			out.append("<td><a href=\"table/").append(id).append("\">").append(htmlEscape(table.getTitle())).append("</a></td>");
-			out.append("<td><a class=\"btn-csv\" href=\"table-export?id=").append(id).append("&amp;format=csv&amp;dl=1\" title=\"Download as CSV\"><span class=\"text-only\">CSV</span></a></td>");
-			out.append("<td><a class=\"btn-tex\" href=\"table-export?id=").append(id).append("&amp;format=tex&amp;dl=1\" title=\"Download as LaTeX\"><span class=\"text-only\">TeX</span></a></td>");
-			out.append("<td><a class=\"btn-html\" href=\"table-export?id=").append(id).append("&amp;format=html&amp;dl=1\" title=\"Download as HTML\"><span class=\"text-only\">HTML</span></a></td>");
+			out.append("<td><a class=\"btn-csv\" href=\"/table/export/").append(id).append("?format=csv&amp;dl=1\" title=\"Download as CSV\"><span class=\"text-only\">CSV</span></a></td>");
+			out.append("<td><a class=\"btn-tex\" href=\"/table/export/").append(id).append("?format=tex&amp;dl=1\" title=\"Download as LaTeX\"><span class=\"text-only\">TeX</span></a></td>");
+			out.append("<td><a class=\"btn-html\" href=\"/table/export/").append(id).append("?format=html&amp;dl=1\" title=\"Download as HTML\"><span class=\"text-only\">HTML</span></a></td>");
 			out.append("</tr>\n");
 		}
 		out.append("</table>\n");
 		return out.toString();
 	}
+	
+	@Override
+	public String exportToStaticHtml(String path_to_root)
+	{
+		String contents = super.exportToStaticHtml(path_to_root);
+		// Transform URLs for individual plot buttons
+		contents = contents.replaceAll("src=\"(.*?)\\.html\"", "src=\"$1.png\"");
+		contents = contents.replaceAll("href=\"table/export/(.*?)\\?format=csv.*?\"", "href=\"table/$1.csv\"");
+		contents = contents.replaceAll("href=\"table/export/(.*?)\\?format=tex.*?\"", "href=\"table/$1.tex\"");
+		contents = contents.replaceAll("href=\"table/export/(.*?)\\?format=html.*?\"", "href=\"table/$1.html\"");
+		return contents;
+	}
 
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		ZipEntry ze = new ZipEntry("tables.html");
+		zos.putNextEntry(ze);
+		zos.write(exportToStaticHtml("").getBytes());
+		zos.closeEntry();
+	}
 }

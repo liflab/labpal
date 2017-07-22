@@ -17,8 +17,12 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
@@ -143,4 +147,50 @@ public class PlotImageCallback extends WebCallback
 		}
 		return image;
 	}
+	
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		String filename;
+		// Plots in various formats
+		Set<Integer> ids = m_lab.getPlotIds();
+		byte[] byte_contents;
+		for (int id : ids) // PNG
+		{
+			byte_contents = exportTo(id, "png");
+			filename = "plot/" + id + ".png";
+			ZipEntry ze = new ZipEntry(filename);
+			zos.putNextEntry(ze);
+			zos.write(byte_contents);
+			zos.closeEntry();
+		}
+		for (int id : ids) // PDF
+		{
+			byte_contents = exportTo(id, "pdf");
+			filename = "plot/" + id + ".pdf";
+			ZipEntry ze = new ZipEntry(filename);
+			zos.putNextEntry(ze);
+			zos.write(byte_contents);
+			zos.closeEntry();
+		}
+		for (int id : ids) // DUMB
+		{
+			byte_contents = exportTo(id, "dumb");
+			filename = "plot/" + id + ".txt";
+			ZipEntry ze = new ZipEntry(filename);
+			zos.putNextEntry(ze);
+			zos.write(byte_contents);
+			zos.closeEntry();
+		}
+		for (int id : ids) // GP
+		{
+			byte_contents = exportTo(id, "gp");
+			filename = "plot/" + id + ".gp";
+			ZipEntry ze = new ZipEntry(filename);
+			zos.putNextEntry(ze);
+			zos.write(byte_contents);
+			zos.closeEntry();
+		}
+	}
+
 }

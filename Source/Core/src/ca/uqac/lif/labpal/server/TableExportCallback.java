@@ -17,7 +17,11 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
@@ -99,5 +103,31 @@ public class TableExportCallback extends WebCallback
 		}
 		return response;
 	}
-
+	
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		Set<Integer> ids = m_lab.getTableIds();
+		for (int id : ids)
+		{
+			Table tab = m_lab.getTable(id);
+			TempTable d_tab = tab.getDataTable();
+			{
+				// Latex
+				LatexTableRenderer renderer = new LatexTableRenderer(tab);
+				String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
+				ZipEntry ze = new ZipEntry("/table/" + id + ".tex");
+				zos.putNextEntry(ze);
+				zos.write(contents.getBytes());
+				zos.closeEntry();
+			}
+			{
+				// CSV
+				ZipEntry ze = new ZipEntry("/table/" + id + ".csv");
+				zos.putNextEntry(ze);
+				zos.write(d_tab.toCsv().getBytes());
+				zos.closeEntry();
+			}
+		}
+	}
 }

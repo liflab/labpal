@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,9 +17,11 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -101,6 +103,14 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 		out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ASSISTANT));
 		return out;
+	}
+	
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		// Do nothing; this method must stay here to override
+		// ExperimentsPageCallback. Otherwise, will create a duplicate
+		// "experiments.html" page.
 	}
 
 }

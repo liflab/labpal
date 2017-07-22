@@ -17,11 +17,13 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.RestCleanCallback;
@@ -152,6 +154,7 @@ public abstract class WebCallback extends RestCleanCallback
 		contents = contents.replaceAll("href=\"/experiments\"", "href=\"/experiments.html\"");
 		contents = contents.replaceAll("href=\"/tables\"", "href=\"/tables.html\"");
 		contents = contents.replaceAll("href=\"/plots\"", "href=\"/plots.html\"");
+		contents = contents.replaceAll("href=\"/status\"", "href=\"/status.html\"");
 		contents = contents.replaceAll("href=\"/assistant\"", "href=\"/assistant.html\"");
 		contents = contents.replaceAll("href=\"/macros\"", "href=\"/macros.html\"");
 		contents = contents.replaceAll("href=\"/find\"", "href=\"/find.html\"");
@@ -190,5 +193,18 @@ public abstract class WebCallback extends RestCleanCallback
 		file_contents = file_contents.replaceAll("\\{%MESSAGE%\\}", message);
 		file_contents = file_contents.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
 		cbr.setContents(file_contents);
+	}
+	
+	/**
+	 * Adds contents to a zip archive of a bundle of all the server's
+	 * pages. This is used by the "export to static HTML" feature.
+	 * @param zos An output stream to add content to
+	 * @throws IOException Thrown if writing to the output stream
+	 * cannot be done
+	 */
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		// Do nothing
+		return;
 	}
 }

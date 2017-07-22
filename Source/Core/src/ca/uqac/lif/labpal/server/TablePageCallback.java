@@ -17,12 +17,16 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -34,16 +38,14 @@ import ca.uqac.lif.mtnp.table.rendering.HtmlTableNodeRenderer;
 import ca.uqac.lif.mtnp.table.rendering.PlainTableRenderer;
 
 /**
- * Callback producing an image from one of the lab's plots, in various
+ * Callback producing a file from one of the lab's tables, in various
  * formats.
  * <p>
  * The HTTP request accepts the following parameters:
  * <ul>
- * <li><tt>dl=1</tt>: to download the image instead of displaying it. This
- *   will prompt the user to save the file in its browser</li>
- * <li><tt>id=x</tt>: mandatory; the ID of the plot to display</li>
+ * <li><tt>id=x</tt>: mandatory; the ID of the table to display</li>
  * <li><tt>format=x</tt>: the requested image format. Currenly supports
- *   pdf, dumb (text), png and gp (raw data file for Gnuplot).
+ *   tex, csv and html.
  * </ul>
  * 
  * @author Sylvain Hallé
@@ -125,5 +127,29 @@ public class TablePageCallback extends TemplatePageCallback
 			to_highlight.add(new Table.CellCoordinate(row, col));
 		}
 		return to_highlight;
+	}
+	
+	public String exportToStaticHtml(int id)
+	{
+		String file = readTemplateFile();
+		Map<String,String> params = new HashMap<String,String>();
+		params.put("id", Integer.toString(id));
+		String contents = render(file, params);
+		contents = createStaticLinks(contents);
+		contents = relativizeUrls(contents, "../");
+		return contents;
+	}
+	
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		Set<Integer> ids = m_lab.getTableIds();
+		for (int id : ids)
+		{
+			ZipEntry ze = new ZipEntry("table/" + id + ".html");
+			zos.putNextEntry(ze);
+			zos.write(exportToStaticHtml(id).getBytes());
+			zos.closeEntry();
+		}
 	}
 }

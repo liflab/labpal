@@ -17,11 +17,14 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
@@ -244,6 +247,15 @@ public class StatusPageCallback extends TemplatePageCallback
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		ZipEntry ze = new ZipEntry("status.html");
+		zos.putNextEntry(ze);
+		zos.write(exportToStaticHtml("").getBytes());
+		zos.closeEntry();
 	}
 
 }

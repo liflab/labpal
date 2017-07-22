@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonString;
@@ -427,5 +430,14 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		out.append("<li class=\"done\" style=\"width:").append((int)(f * width)).append("px\"><span class=\"text-only\">").append(f*100).append("% completed</span></li>");
 		out.append("</ul>");
 		return out.toString();
+	}
+	
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		ZipEntry ze = new ZipEntry("experiments.html");
+		zos.putNextEntry(ze);
+		zos.write(exportToStaticHtml("").getBytes());
+		zos.closeEntry();
 	}
 }

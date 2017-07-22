@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
@@ -50,12 +53,12 @@ import ca.uqac.lif.petitpoucet.NodeFunction;
 public class ExperimentPageCallback extends TemplatePageCallback
 {
 	protected static final SimpleDateFormat s_dateFormat = new SimpleDateFormat();
-	
+
 	public ExperimentPageCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/experiment", lab, assistant);
 	}
-	
+
 	@Override
 	public String fill(String page, Map<String,String> params)
 	{
@@ -145,7 +148,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		return out;
 	}
-	
+
 	/**
 	 * Formats the date
 	 * @param timestamp A Unix timestamp 
@@ -159,7 +162,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		return s_dateFormat.format(new Date(timestamp));
 	}
-	
+
 	/**
 	 * Creates HTML code displaying (recursively) the experiment's parameters
 	 * @param e The current JSON element in the parameters
@@ -245,7 +248,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		return out;
 	}
-	
+
 	/**
 	 * Gets the set of keys that should be highlighted in the table of
 	 * experiment results
@@ -263,7 +266,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		return to_highlight;
 	}
-	
+
 	/**
 	 * Checks if a set of strings contains exactly one specific string
 	 * @param set The set
@@ -274,7 +277,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	{
 		return set.contains(key);
 	}
-	
+
 	/**
 	 * Checks if string is the prefix of a string in some set 
 	 * @param set The set
@@ -292,7 +295,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Exports the page for an experiment
 	 * @param experiment_id The ID of the experiement whose page is 
@@ -308,5 +311,20 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		contents = createStaticLinks(contents);
 		contents = relativizeUrls(contents, "../");
 		return contents;
+	}
+
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		Set<Integer> exp_ids = m_lab.getExperimentIds();
+		for (int exp_id : exp_ids)
+		{
+			String file_contents = exportToStaticHtml(exp_id);
+			String filename = "experiment/" + exp_id + ".html";
+			ZipEntry ze = new ZipEntry(filename);
+			zos.putNextEntry(ze);
+			zos.write(file_contents.getBytes());
+			zos.closeEntry();
+		}		
 	}
 }

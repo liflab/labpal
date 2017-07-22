@@ -17,10 +17,13 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -106,11 +109,20 @@ public class PlotsPageCallback extends TemplatePageCallback
 	{
 		String contents = super.exportToStaticHtml(path_to_root);
 		// Transform URLs for individual plot buttons
-		contents = contents.replaceAll("src=\"(.*?)\"", "src=\"$1.png\"");
+		contents = contents.replaceAll("src=\"(.*?)\\.html\"", "src=\"$1.png\"");
 		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=gp.*?\"", "href=\"plot/$1.gp\"");
 		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=dumb.*?\"", "href=\"plot/$1.txt\"");
 		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=pdf.*?\"", "href=\"plot/$1.pdf\"");
 		return contents;
+	}
+	
+	@Override
+	public void bundle(ZipOutputStream zos) throws IOException
+	{
+		ZipEntry 	ze = new ZipEntry("plots.html");
+		zos.putNextEntry(ze);
+		zos.write(exportToStaticHtml("").getBytes());
+		zos.closeEntry();
 	}
 
 }

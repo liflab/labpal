@@ -56,7 +56,7 @@ public class ExplainCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public String fill(String s, Map<String,String> params)
+	public String fill(String s, Map<String,String> params, boolean is_offline)
 	{
 		String datapoint_id = params.get("id");
 		s = s.replaceAll("\\{%TITLE%\\}", "Explanation");

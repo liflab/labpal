@@ -64,7 +64,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	}
 	
 	@Override
-	public String fill(String page, Map<String,String> params)
+	public String fill(String page, Map<String,String> params, boolean is_offline)
 	{
 		String out = page.replaceAll("\\{%TITLE%\\}", "Experiments");
 		out = out.replaceAll("\\{%SEL_EXPERIMENTS%\\}", "selected");

@@ -53,7 +53,7 @@ public class EditParametersFormCallback extends TemplatePageCallback
 	}
 	
 	@Override
-	public String fill(String page, Map<String,String> params)
+	public String fill(String page, Map<String,String> params, boolean is_offline)
 	{
 		List<String> path_parts = getParametersFromPath(params);
 		int experiment_nb = -1;
@@ -273,7 +273,7 @@ public class EditParametersFormCallback extends TemplatePageCallback
 		String file = readTemplateFile();
 		Map<String,String> params = new HashMap<String,String>();
 		params.put("id", Integer.toString(experiment_id));
-		String contents = render(file, params);
+		String contents = render(file, params, true);
 		contents = createStaticLinks(contents);
 		contents = relativizeUrls(contents, "../");
 		return contents;

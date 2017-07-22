@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2014-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 package ca.uqac.lif.labpal.server;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -26,36 +25,26 @@ import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 
 /**
- * Callback for the help page
+ * Callback for a special page, used only in the static export of a lab,
+ * saying that some feature is not available.
  * 
  * @author Sylvain Hallé
  *
  */
-public class HelpPageCallback extends TemplatePageCallback
+public class UnavailableCallback extends TemplatePageCallback
 {
-	
-	public HelpPageCallback(Laboratory lab, LabAssistant assistant)
+
+	public UnavailableCallback(Laboratory lab, LabAssistant assistant)
 	{
-		super("/help", lab, assistant);
+		super("/unavailable", lab, assistant);
 	}
-	
-	@Override
-	public String fill(String page, Map<String,String> params, boolean is_offline)
-	{
-		String out = page.replaceAll("\\{%TITLE%\\}", "Help");
-		out = out.replaceAll("\\{%SEL_HELP%\\}", "selected");
-		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.HELP));
-		return out;
-	}
-	
+
 	@Override
 	public void bundle(ZipOutputStream zos) throws IOException
 	{
-		String file_contents = exportToStaticHtml("");
-		String filename = "help.html";
-		ZipEntry ze = new ZipEntry(filename);
+		ZipEntry ze = new ZipEntry("unavailable.html");
 		zos.putNextEntry(ze);
-		zos.write(file_contents.getBytes());
+		zos.write(exportToStaticHtml("").getBytes());
 		zos.closeEntry();
 	}
 }

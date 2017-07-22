@@ -112,11 +112,16 @@ public class TemplatePageCallback extends WebCallback
 		}
 		return s;
 	}
-		
+	
 	public final String render(String s, Map<String,String> params)
 	{
+		return render(s, params, false);
+	}
+		
+	public final String render(String s, Map<String,String> params, boolean is_offline)
+	{
 		s = resolveInclude(s);
-		s = fill(s, params);
+		s = fill(s, params, is_offline);
 		if (s == null)
 		{
 			return null;
@@ -126,10 +131,23 @@ public class TemplatePageCallback extends WebCallback
 		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ERLENMEYER));
 		s = s.replaceAll("\\{%.*?%\\}", "");
 		s = s.replaceAll("\\{J.*?J\\}", "");
+		if (is_offline)
+		{
+			s = disableDynamicLinks(s);
+		}
 		return s;
 	}
 	
-	protected String fill(String s, Map<String,String> params)
+	protected static String disableDynamicLinks(String s)
+	{
+		String unavailable = "href=\"/unavailable.html\"";
+		s = s.replaceAll("href=\"/assistant\"", unavailable);
+		s = s.replaceAll("href=\"/find\"", unavailable);
+		s = s.replaceAll("href=\"explain.*?\"", unavailable);
+		return s;
+	}
+	
+	public String fill(String s, Map<String,String> params, boolean is_offline)
 	{
 		return s;
 	}
@@ -170,7 +188,7 @@ public class TemplatePageCallback extends WebCallback
 	public String exportToStaticHtml(String path_to_root)
 	{
 		String file = readTemplateFile();
-		String contents = render(file, new HashMap<String,String>());
+		String contents = render(file, new HashMap<String,String>(), true);
 		contents = createStaticLinks(contents);
 		contents = relativizeUrls(contents, path_to_root);
 		return contents;

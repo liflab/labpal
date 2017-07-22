@@ -143,5 +143,11 @@ public abstract class SortExperiment extends Experiment
 		out += " " + (readInt("size") / 1000) + "k";
 		return out;
 	}
+	
+	@Override
+	public String getDescription()
+	{
+		return "Sorts an array of size " + readInt("size") + " using " + readString("name");
+	}
 
 }

@@ -322,11 +322,6 @@ public abstract class Experiment implements Runnable, DataOwner
 		return m_description;
 	}
 	
-	public static String getClassText()
-	{
-		return "A generic experiment";
-	}
-	
 	/**
 	 * Executes the experiment.
 	 * @throws ExperimentException Used to signal the abnormal termination
@@ -1141,6 +1136,17 @@ public abstract class Experiment implements Runnable, DataOwner
 	}
 	
 	/**
+	 * Checks if a parameter is an input parameter
+	 * @param name The name of the parameter
+	 * @return {@code true} if it is an input parameter, {@code false}
+	 * otherwise
+	 */
+	public final boolean isInputParameter(String name)
+	{
+		return m_inputParameters.containsKey(name);
+	}
+	
+	/**
 	 * Callback called by the lab when an experiment has been edited by the user
 	 * @param new_parameters The new parameters entered by the user
 	 * @throws ExperimentException Thrown if an error was raised when
@@ -1150,10 +1156,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		edit(new_parameters);
 		m_inputParameters = new_parameters;
-		m_outputParameters.clear();
-		// We override whatever status the experiment currently has
-		m_status = Status.DUNNO;
-		getStatus();
+		reset();
 	}
 	
 	/**
@@ -1168,5 +1171,14 @@ public abstract class Experiment implements Runnable, DataOwner
 	protected void edit(JsonMap new_parameters) throws ExperimentException
 	{
 		// Do nothing
+	}
+
+	/**
+	 * Gets the map of input parameters for this experiment
+	 * @return A JsonMap of input parameters
+	 */
+	public final JsonMap getInputParameters()
+	{
+		return m_inputParameters;
 	}
 }

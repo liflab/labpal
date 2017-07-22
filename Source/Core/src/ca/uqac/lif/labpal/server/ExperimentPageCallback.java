@@ -109,7 +109,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		Status st = e.getStatus();
 		if (e.isEditable() && st != Status.RUNNING && st != Status.RUNNING_REMOTELY)
 		{
-			out = out.replaceAll("\\{%EXP_EDIT_BUTTON%\\}", Matcher.quoteReplacement("<a class=\"btn-24 btn-edit\" href=\"experiment/edit/" + e.getId() + "\" title=\"Modify the input parameters of this experiment\">Edit parameters</a>"));
+			out = out.replaceAll("\\{%EXP_EDIT_BUTTON%\\}", Matcher.quoteReplacement("<a class=\"btn-24 btn-edit\" href=\"/experiment/edit/" + e.getId() + "\" title=\"Modify the input parameters of this experiment\">Edit parameters</a>"));
 		}
 		String timeout_string = "No timeout";
 		if (e.getMaxDuration() > 0)

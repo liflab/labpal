@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Map;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
@@ -35,6 +37,7 @@ public class EditParametersCallback extends WebCallback
 	public EditParametersCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/edit-parameters", lab, assistant);
+		setMethod(Method.POST);
 	}
 
 	@Override
@@ -60,7 +63,17 @@ public class EditParametersCallback extends WebCallback
 			if (!key.startsWith("fld-"))
 				continue;
 			String param_name = key.substring(4);
-			String value = params.get(key);
+			String value = null;
+			try
+			{
+				value = URLDecoder.decode(params.get(key), "UTF-8");
+			} 
+			catch (UnsupportedEncodingException e1)
+			{
+				// Not supposed to happen
+				doBadRequest(cbr, e1.getMessage());
+				return cbr;
+			}
 			if (NumberHelper.isNumeric(value))
 			{
 				Number num = NumberHelper.toPrimitiveNumber(value);
@@ -80,7 +93,7 @@ public class EditParametersCallback extends WebCallback
 			doBadRequest(cbr, ex.getMessage());
 			return cbr;
 		}
-		cbr.setCode(CallbackResponse.HTTP_OK);
+		cbr.setCode(CallbackResponse.HTTP_REDIRECT);
 		cbr.setHeader("Location", "/experiment/" + exp_id);
 		return cbr;
 	}

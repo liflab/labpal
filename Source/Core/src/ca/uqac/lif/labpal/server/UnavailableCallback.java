@@ -40,7 +40,7 @@ public class UnavailableCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		ZipEntry ze = new ZipEntry("unavailable.html");
 		zos.putNextEntry(ze);

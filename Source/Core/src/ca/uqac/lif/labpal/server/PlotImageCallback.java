@@ -149,7 +149,7 @@ public class PlotImageCallback extends WebCallback
 	}
 	
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		String filename;
 		// Plots in various formats

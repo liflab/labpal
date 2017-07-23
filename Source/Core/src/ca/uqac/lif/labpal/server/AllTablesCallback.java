@@ -101,7 +101,7 @@ public class AllTablesCallback extends WebCallback
 	}
 	
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		ZipEntry ze = new ZipEntry("labpal-tables.tex");
 		zos.putNextEntry(ze);

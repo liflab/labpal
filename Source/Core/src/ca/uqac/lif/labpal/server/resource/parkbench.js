@@ -1,14 +1,18 @@
 $(document).ready(function() {
-    //select all
+
+    /* Checkbox: select all experiments */
     $("table.exp-table .top-checkbox").click(function() {
       $(".side-checkbox").each(function() { 
 	    $(this).prop("checked",(!($(this).prop("disabled")) && $(" .top-checkbox").prop("checked")));
 	  });
   
-	//filter by enumeration or/and interval
+	/* Filter by enumeration or/and interval */
 	$("#experiment-filter .btn-filter").click(filter_experiments); 
 
+	/* Sort an experiment table by clicking on its headers */
 	$("table.exp-table").tablesorter();
+	
+	/* Pull-down divs */
 	$(".pulldown-contents").hide();
 	$(".pulldown").addClass("closed");
 	$(".pulldown").click(function() {
@@ -23,6 +27,7 @@ $(document).ready(function() {
 	  return false;
 	});
 
+	/* Button to toggle multi-line display of output parameter */
 	$("pre.multiline").click(function() {
 		$(this).toggleClass("open");
 	});   

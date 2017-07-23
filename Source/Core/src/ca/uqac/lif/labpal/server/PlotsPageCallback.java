@@ -57,9 +57,9 @@ public class PlotsPageCallback extends TemplatePageCallback
 			out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
 			if (AllPlotsCallback.s_pdftkPresent)
 			{
-				out = out.replaceAll("\\{%ALL_PLOTS%\\}", "<a class=\"btn-24 btn-all-plots\" title=\"Download all plots as a single PDF file\" href=\"all-plots\">Download all plots</a>");
+				out = out.replaceAll("\\{%ALL_PLOTS%\\}", "<a class=\"btn-24 btn-all-plots\" title=\"Download all plots as a single PDF file\" href=\"/all-plots\">Download all plots</a>");
 			}
-			out = out.replaceAll("\\{%ALL_PLOTS_LATEX%\\}", "<a class=\"btn-24 btn-all-plots-latex\" title=\"Download LaTeX macros for using the plots\" href=\"all-plots-latex\">Download LaTeX macros</a>");
+			out = out.replaceAll("\\{%ALL_PLOTS_LATEX%\\}", "<a class=\"btn-24 btn-all-plots-latex\" title=\"Download LaTeX macros for using the plots\" href=\"/all-plots-latex\">Download LaTeX macros</a>");
 		}
 		else
 		{
@@ -113,11 +113,13 @@ public class PlotsPageCallback extends TemplatePageCallback
 		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=gp.*?\"", "href=\"plot/$1.gp\"");
 		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=dumb.*?\"", "href=\"plot/$1.txt\"");
 		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=pdf.*?\"", "href=\"plot/$1.pdf\"");
+		contents = contents.replaceAll("href=\"/all-plots\"", "href=\"labpal-plots.pdf\"");
+		contents = contents.replaceAll("href=\"/all-plots-latex\"", "href=\"labpal-plots.tex\"");
 		return contents;
 	}
 	
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		ZipEntry 	ze = new ZipEntry("plots.html");
 		zos.putNextEntry(ze);

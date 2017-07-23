@@ -105,7 +105,7 @@ public class TableExportCallback extends WebCallback
 	}
 	
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		Set<Integer> ids = m_lab.getTableIds();
 		for (int id : ids)

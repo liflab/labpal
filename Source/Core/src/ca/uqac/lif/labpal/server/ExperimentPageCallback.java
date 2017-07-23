@@ -314,7 +314,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		Set<Integer> exp_ids = m_lab.getExperimentIds();
 		for (int exp_id : exp_ids)

@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
@@ -47,32 +45,7 @@ public abstract class WebCallback extends RestCleanCallback
 	/**
 	 * The lab assistant associated to the laboratory
 	 */
-	protected LabAssistant m_assistant;
-	
-	/**
-	 * The pattern to create static URLs for experiments
-	 */
-	protected static final Pattern s_experimentPattern = Pattern.compile("\"experiment/(\\d+).*?\"");
-	
-	/**
-	 * The pattern to create static URLs for plots
-	 */
-	protected static final Pattern s_plotPattern = Pattern.compile("\"plot/(\\d+)\"");
-	
-	/**
-	 * The pattern to create static URLs for tables
-	 */
-	protected static final Pattern s_tablePattern = Pattern.compile("\"table/(\\d+).*?\"");
-	
-	/**
-	 * The pattern for HREF links
-	 */
-	protected static final Pattern s_hrefPattern = Pattern.compile("href=\"/(.*?)\"");
-	
-	/**
-	 * The pattern for SRC links
-	 */
-	protected static final Pattern s_srcPattern = Pattern.compile("src=\"/(.*?)\"");
+	protected LabAssistant m_assistant;	
 	
 	/**
 	 * Creates a new callback
@@ -134,52 +107,6 @@ public abstract class WebCallback extends RestCleanCallback
 	}
 	
 	/**
-	 * Replaces dynamic links in a page by static links. For example,
-	 * the line <code>experiment/2?reset</code> will be replaced by
-	 * <code>experiment/2.html</code>.
-	 * @param contents The original contents of the page
-	 * @return The page with static links
-	 */
-	protected static String createStaticLinks(String contents)
-	{
-		Matcher mat;
-		mat = s_experimentPattern.matcher(contents);
-		contents = mat.replaceAll("\"experiment/$1.html\"");
-		mat = s_plotPattern.matcher(contents);
-		contents = mat.replaceAll("\"plot/$1.html\"");
-		mat = s_tablePattern.matcher(contents);
-		contents = mat.replaceAll("\"table/$1.html\"");
-		// Top menu
-		contents = contents.replaceAll("href=\"/index\"", "href=\"/index.html\"");
-		contents = contents.replaceAll("href=\"/experiments\"", "href=\"/experiments.html\"");
-		contents = contents.replaceAll("href=\"/tables\"", "href=\"/tables.html\"");
-		contents = contents.replaceAll("href=\"/plots\"", "href=\"/plots.html\"");
-		contents = contents.replaceAll("href=\"/status\"", "href=\"/status.html\"");
-		contents = contents.replaceAll("href=\"/assistant\"", "href=\"/assistant.html\"");
-		contents = contents.replaceAll("href=\"/macros\"", "href=\"/macros.html\"");
-		contents = contents.replaceAll("href=\"/find\"", "href=\"/find.html\"");
-		contents = contents.replaceAll("href=\"/help\"", "href=\"/help.html\"");
-		return contents;
-	}
-	
-	/**
-	 * Converts absolute URLs into relative URLs
-	 * @param contents The original contents of the page
-	 * @param path_to_root The relative path to the root from the
-	 * page to be converted
-	 * @return The page with static links
-	 */
-	protected static String relativizeUrls(String contents, String path_to_root)
-	{
-		Matcher mat;
-		mat = s_hrefPattern.matcher(contents);
-		contents = mat.replaceAll("href=\"" + path_to_root + "$1\"");
-		mat = s_srcPattern.matcher(contents);
-		contents = mat.replaceAll("src=\"" + path_to_root + "$1\"");
-		return contents;
-	}
-	
-	/**
 	 * Creates an HTTP "bad request" response
 	 * @param cbr The callback response to fill with data
 	 * @param message The error message to return to the browser
@@ -202,7 +129,7 @@ public abstract class WebCallback extends RestCleanCallback
 	 * @throws IOException Thrown if writing to the output stream
 	 * cannot be done
 	 */
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		// Do nothing
 		return;

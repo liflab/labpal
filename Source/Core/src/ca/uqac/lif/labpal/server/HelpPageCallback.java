@@ -49,7 +49,7 @@ public class HelpPageCallback extends TemplatePageCallback
 	}
 	
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		String file_contents = exportToStaticHtml("");
 		String filename = "help.html";

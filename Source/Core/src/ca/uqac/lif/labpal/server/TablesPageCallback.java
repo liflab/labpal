@@ -106,7 +106,7 @@ public class TablesPageCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		ZipEntry ze = new ZipEntry("tables.html");
 		zos.putNextEntry(ze);

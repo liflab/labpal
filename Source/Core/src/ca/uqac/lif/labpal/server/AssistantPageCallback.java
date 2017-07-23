@@ -106,7 +106,7 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 	}
 	
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		// Do nothing; this method must stay here to override
 		// ExperimentsPageCallback. Otherwise, will create a duplicate

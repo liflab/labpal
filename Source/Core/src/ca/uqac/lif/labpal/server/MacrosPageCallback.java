@@ -130,7 +130,7 @@ public class MacrosPageCallback extends TemplatePageCallback
 	}
 	
 	@Override
-	public void bundle(ZipOutputStream zos) throws IOException
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
 		ZipEntry ze = new ZipEntry("macros.html");
 		zos.putNextEntry(ze);

@@ -254,7 +254,7 @@ public class LabPalServer extends InnerFileServer
 			{
 				if (wc instanceof WebCallback)
 				{
-					((WebCallback) wc).bundle(zos);
+					((WebCallback) wc).addToZipBundle(zos);
 				}
 			}
 		}

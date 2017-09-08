@@ -863,15 +863,20 @@ public abstract class Laboratory implements OwnershipManager
 		List<String> names = argument_map.getOthers();
 		for (int i = 0; i < names.size(); i++)
 		{
-			filename = names.get(i);
-			if (i == 0)
+			int ii = 0;
+			if (names.get(i).endsWith(".labo"))
 			{
-				new_lab = loadFromFilename(new_lab, filename);
-			}
-			else
-			{
-				Laboratory lab_to_merge = loadFromFilename(new_lab, filename);
-				new_lab.mergeWith(lab_to_merge);
+				filename = names.get(i);
+				if (ii == 0)
+				{
+					new_lab = loadFromFilename(new_lab, filename);
+				}
+				else
+				{
+					Laboratory lab_to_merge = loadFromFilename(new_lab, filename);
+					new_lab.mergeWith(lab_to_merge);
+				}
+				ii++;
 			}
 		}
 		new_lab.setAssistant(assistant);

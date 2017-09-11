@@ -864,7 +864,7 @@ public abstract class Laboratory implements OwnershipManager
 		for (int i = 0; i < names.size(); i++)
 		{
 			int ii = 0;
-			if (names.get(i).endsWith(".labo"))
+			if (names.get(i).toUpperCase().endsWith(".LABO"))
 			{
 				filename = names.get(i);
 				if (ii == 0)

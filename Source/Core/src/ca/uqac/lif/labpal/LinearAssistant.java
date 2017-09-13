@@ -119,9 +119,11 @@ public class LinearAssistant extends LabAssistant
 			Status s = e.getStatus();
 			if (s != Status.RUNNING && s != Status.DONE && s != Status.DONE_WARNING && s != Status.FAILED)
 			{
+				// get Experiment max duration
+				long max_duration = e.getMaxDuration();
 				// Experiment not started: start
 				m_experimentThread = new Thread(e);
-				m_experimentThread.start();					
+				m_experimentThread.start();	
 				while (m_experimentThread.isAlive() && !m_stop)
 				{
 					try
@@ -139,7 +141,6 @@ public class LinearAssistant extends LabAssistant
 					if (s1 == Status.DONE || s == Status.FAILED || s1 == Status.DONE_WARNING)
 						break; // Move on to next experiment
 					long duration = System.currentTimeMillis() - e.getStartTime();
-					long max_duration = e.getMaxDuration();
 					if (max_duration > 0 && duration > max_duration)
 					{
 						// Experiment takes too long: kill it

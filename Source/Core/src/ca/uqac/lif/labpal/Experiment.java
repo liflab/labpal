@@ -47,7 +47,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	/**
 	 * The status of the experiment
 	 */
-	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, RUNNING_REMOTELY, DONE, DONE_WARNING, FAILED, KILLED};
+	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_RUNNING, PREREQ_OK, PREREQ_F, RUNNING, RUNNING_REMOTELY, DONE, DONE_WARNING, FAILED, KILLED};
 	
 	/**
 	 * The queuing status of the experiment
@@ -98,6 +98,14 @@ public abstract class Experiment implements Runnable, DataOwner
 	private long m_maxDuration = -1;
 	
 	/**
+	 * The maximum duration for this experiment requirements (in milliseconds).
+	 * If the requirements lasts longer than this duration, the lab assistant
+	 * can interrupt experiment. A negative value indicates that no timeout
+	 * applies.
+	 */
+	private long m_maxPrereqDuration = -1;
+	
+	/**
 	 * A list of exceptions that the experiment does not throw, but
 	 * rather adds to a list
 	 */
@@ -117,6 +125,16 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * The end time of the experiment
 	 */
 	private long m_endTime = -1;
+	
+	/**
+	 * The start time of requirements
+	 */
+	private long m_startPrereqTime = -1;
+
+	/**
+	 * The end time of requirements
+	 */
+	private long m_endPrereqTime = -1;
 	
 	/**
 	 * An approximate measurement of the experiment's progression
@@ -212,7 +230,15 @@ public abstract class Experiment implements Runnable, DataOwner
 	 */
 	public boolean prerequisitesFulfilled()
 	{
-		return true;
+		if (m_status == Status.PREREQ_F || m_status == Status.PREREQ_NOK || m_status == Status.PREREQ_OK)
+		{
+			return true;
+		}
+		else 
+		{
+			return false;
+		}
+		
 	}
 	
 	/**
@@ -227,6 +253,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	 */
 	public void fulfillPrerequisites() throws ExperimentException
 	{
+		m_status = Status.PREREQ_OK;
 		return;
 	}
 	
@@ -650,6 +677,29 @@ public abstract class Experiment implements Runnable, DataOwner
 	}
 	
 	/**
+	 * Gets the start time of requirement
+	 * @return The difference, measured in milliseconds,
+	 *   between the start time and midnight, January 1, 1970 UTC. The
+	 *   value is -1 if requirement has not started yet.
+	 */
+	public final long getStartPrereqTime()
+	{
+		return m_startPrereqTime;
+	}
+
+	/**
+	 * Gets the end time of requirement
+	 * @return The difference, measured in milliseconds,
+	 *   between the end time and midnight, January 1, 1970 UTC. The
+	 *   value is -1 if requirement has not started yet or is still
+	 *   running.
+	 */
+	public final long getEndPrereqTime()
+	{
+		return m_endPrereqTime;
+	}
+	
+	/**
 	 * Gets the name of the lab assistant that ran the experiment
 	 * @return The name, or the empty string if the experiment has not run yet
 	 */
@@ -679,6 +729,8 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_outputParameters.clear();
 		m_startTime = -1;
 		m_endTime = -1;
+		m_startPrereqTime = -1;
+		m_endPrereqTime = -1;
 		m_runBy = "";
 		m_status = Status.DUNNO;
 		m_errorMessage = "";
@@ -702,7 +754,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	 */
 	public synchronized final Status getStatus()
 	{
-		if (m_status == Status.DUNNO || m_status == Status.PREREQ_NOK || m_status == Status.PREREQ_OK)
+		/*if (m_status == Status.DUNNO || m_status == Status.PREREQ_NOK || m_status == Status.PREREQ_OK)
 		{
 			if (prerequisitesFulfilled())
 			{
@@ -712,19 +764,24 @@ public abstract class Experiment implements Runnable, DataOwner
 			{
 				m_status = Status.PREREQ_NOK;
 			}
-		}
+		}*/
 		return m_status;
 	}
 
 	@Override
 	public final void run()
 	{
-		m_startTime = System.currentTimeMillis();
+		
 		if (!prerequisitesFulfilled())
 		{
+			m_startPrereqTime = System.currentTimeMillis();
 			try
 			{
-				fulfillPrerequisites();
+				//if (m_status != Status.PREREQ_RUNNING)
+				//{
+					m_status = Status.PREREQ_RUNNING;
+					fulfillPrerequisites();
+				//}
 			}
 			catch (Exception e)
 			{
@@ -736,9 +793,11 @@ public abstract class Experiment implements Runnable, DataOwner
 				setErrorMessage(sw.toString());
 				return;
 			}
+			m_endPrereqTime = System.currentTimeMillis();
 		}
-		m_status = Status.PREREQ_OK;
+		//m_status = Status.PREREQ_OK;
 		m_status = Status.RUNNING;
+		m_startTime = System.currentTimeMillis();
 		try
 		{
 			execute();
@@ -943,6 +1002,10 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_status = Status.FAILED;
 		m_errorMessage = "The experiment was manually interrupted";
 		m_endTime = System.currentTimeMillis();
+		if (m_endPrereqTime == -1)
+		{
+			m_endPrereqTime = System.currentTimeMillis();
+		}
 		return this;
 	}
 	
@@ -1003,11 +1066,33 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * If the experiment lasts longer than this duration, the lab assistant
 	 * can interrupt it.
 	 * @return The duration, in milliseconds. A negative value indicates
-	 * that no timeout applies.
+	 * that no timeout applies. 
 	 */
 	public final Experiment setMaxDuration(long duration)
 	{
 		m_maxDuration = duration;
+		return this;
+	}
+	
+	/**
+	 * Gets the maximum duration for this experiment requirement
+	 * @return The duration
+	 */
+	public final long getMaxPrereqDuration()
+	{
+		return m_maxPrereqDuration;
+	}
+	
+	/**
+	 * Sets the maximum duration for this experiment requirement.
+	 * If the experiment lasts longer than this duration, the lab assistant
+	 * can interrupt it.
+	 * @return The duration, in milliseconds. A negative value indicates
+	 * that no timeout applies. m_maxPrereqDuration
+	 */
+	public final Experiment setMaxPrereqDuration(long duration)
+	{
+		m_maxPrereqDuration = duration;
 		return this;
 	}
 	
@@ -1020,6 +1105,10 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_status = Status.KILLED;
 		m_errorMessage = "The experiment was interrupted by the lab assistant because it was taking too long";
 		m_endTime = System.currentTimeMillis();
+		if (m_endPrereqTime == -1)
+		{
+			m_endPrereqTime = System.currentTimeMillis();
+		}
 		return this;
 	}
 	
@@ -1104,7 +1193,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	 */
 	public synchronized boolean mergeWith(Experiment e, boolean is_remote)
 	{
-		if (m_status == Status.RUNNING)
+		if (m_status == Status.RUNNING || m_status == Status.PREREQ_RUNNING)
 		{
 			return false;
 		}
@@ -1131,6 +1220,8 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_errorMessage = e.m_errorMessage;
 		m_startTime = e.m_startTime;
 		m_endTime = e.m_endTime;
+		m_startPrereqTime = e.m_startPrereqTime;
+		m_endPrereqTime = e.m_endPrereqTime;
 		m_runBy = e.m_runBy;
 		return true;
 	}

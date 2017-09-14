@@ -189,6 +189,19 @@ public abstract class Experiment implements Runnable, DataOwner
 	}
 	
 	/**
+	 * create experiment with maximum duration (in milliseconds)
+	 * @param max_duration The experiment running maximum duration
+	 * @param max_prereq_duration The prerequisites running maximum duration
+	 */
+	/*public Experiment(JsonMap params, long max_duration, long max_prereq_duration)
+	{
+		this();
+		m_inputParameters = params;
+		setMaxDuration(max_duration);
+		setMaxPrereqDuration(max_prereq_duration);
+	}*/
+	
+	/**
 	 * Sets the experiment's ID
 	 * @param id The ID
 	 * @return This experiment
@@ -1001,7 +1014,10 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		m_status = Status.FAILED;
 		m_errorMessage = "The experiment was manually interrupted";
-		m_endTime = System.currentTimeMillis();
+		if (m_startTime > -1) 
+		{
+			m_endTime = System.currentTimeMillis();
+		}
 		if (m_endPrereqTime == -1)
 		{
 			m_endPrereqTime = System.currentTimeMillis();
@@ -1104,7 +1120,10 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		m_status = Status.KILLED;
 		m_errorMessage = "The experiment was interrupted by the lab assistant because it was taking too long";
-		m_endTime = System.currentTimeMillis();
+		if (m_startTime > -1) 
+		{
+			m_endTime = System.currentTimeMillis();
+		}
 		if (m_endPrereqTime == -1)
 		{
 			m_endPrereqTime = System.currentTimeMillis();

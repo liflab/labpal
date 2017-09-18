@@ -189,19 +189,6 @@ public abstract class Experiment implements Runnable, DataOwner
 	}
 	
 	/**
-	 * create experiment with maximum duration (in milliseconds)
-	 * @param max_duration The experiment running maximum duration
-	 * @param max_prereq_duration The prerequisites running maximum duration
-	 */
-	/*public Experiment(JsonMap params, long max_duration, long max_prereq_duration)
-	{
-		this();
-		m_inputParameters = params;
-		setMaxDuration(max_duration);
-		setMaxPrereqDuration(max_prereq_duration);
-	}*/
-	
-	/**
 	 * Sets the experiment's ID
 	 * @param id The ID
 	 * @return This experiment

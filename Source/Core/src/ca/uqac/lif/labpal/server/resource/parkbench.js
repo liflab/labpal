@@ -96,3 +96,5 @@ function resize_top_menu() {
  * Resize menu on window resize
  */
 $(window).resize(resize_top_menu);
+
+});

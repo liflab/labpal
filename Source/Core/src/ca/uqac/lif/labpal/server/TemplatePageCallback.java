@@ -268,4 +268,5 @@ public class TemplatePageCallback extends WebCallback
 		contents = relativizeUrls(contents, path_to_root);
 		return contents;
 	}
+	
 }

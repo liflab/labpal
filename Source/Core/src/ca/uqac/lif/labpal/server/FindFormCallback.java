@@ -95,6 +95,7 @@ public class FindFormCallback extends WebCallback
 			file_contents = file_contents.replaceAll("\\{%DOI%\\}", "");
 		}
 		file_contents = file_contents.replaceAll("\\{%FAVICON%\\}", TemplatePageCallback.getFavicon(TemplatePageCallback.IconType.BINOCULARS));
+		file_contents = file_contents.replaceAll("\\{%HEADER_PROGRESS_BAR%\\}", getHeaderBar());
 		response.setContents(file_contents);
 		response.setCode(CallbackResponse.HTTP_OK);
 		return response;

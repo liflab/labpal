@@ -113,6 +113,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			list_of_lists.append(getExperimentList(m_lab, m_assistant, orphan_ids));
 		}
 		out = out.replaceAll("\\{%EXP_LIST%\\}", Matcher.quoteReplacement(list_of_lists.toString()));
+		out = out.replaceAll("\\{%HEADER_PROGRESS_BAR%\\}", getHeaderBar());
 		return out;
 	}
 	

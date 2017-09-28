@@ -102,6 +102,7 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 		}
 		out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ASSISTANT));
+		out = out.replaceAll("\\{%HEADER_PROGRESS_BAR%\\}", getHeaderBar());
 		return out;
 	}
 	

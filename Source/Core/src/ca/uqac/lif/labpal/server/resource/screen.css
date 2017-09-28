@@ -208,6 +208,34 @@ h1 {
   box-shadow: 2px 2px 0px 0px rgba(115,115,115,1);
 }
 
+.input-upload {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.input-upload + label {
+  border: solid 1px darkgrey;
+  border-radius: 4px;
+  height: 22px;
+  line-height: 20px;
+  background: {%COLOR 4%};
+  padding: 4px;
+  display: inline-block;
+  text-decoration: none;
+  color: #222;
+  box-shadow: 2px 2px 0px 0px rgba(115,115,115,1);
+  font-size:13px;
+  font-family:arial, sans-serif;
+}
+
+.input-upload:hover + label {
+    background-color: #e8e8e8;
+}
+
 #btn-download {
   background: {%COLOR 4%} url('images/download-24.png') 4px 4px no-repeat;
   padding-left: 40px;

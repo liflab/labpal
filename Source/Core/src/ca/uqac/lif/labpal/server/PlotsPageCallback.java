@@ -66,6 +66,7 @@ public class PlotsPageCallback extends TemplatePageCallback
 			out = out.replaceAll("\\{%PLOTS%\\}", "<p>Gnuplot was not detected on this system. The plot functionality is disabled.</p>");
 		}
 		out = out.replaceAll("\\{%SEL_PLOTS%\\}", "selected");
+		out = out.replaceAll("\\{%HEADER_PROGRESS_BAR%\\}", getHeaderBar());
 		return out;
 	}
 

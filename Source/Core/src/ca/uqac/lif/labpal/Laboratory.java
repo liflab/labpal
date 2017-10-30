@@ -231,7 +231,12 @@ public abstract class Laboratory implements OwnershipManager
 	/**
 	 * The default filename assumed for the HTML description
 	 */
-	private static transient final String s_descriptionDefaultFilename = "description.html"; 
+	private static transient final String s_descriptionDefaultFilename = "description.html";
+	
+	/**
+	 * shadow laboratory
+	 */
+	private static transient Laboratory shadow_laboratory = null;
 
 	/**
 	 * Creates a new lab assistant
@@ -478,6 +483,7 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return ids;
 	}
+
 
 	/**
 	 * Gets the plot with given ID
@@ -856,6 +862,29 @@ public abstract class Laboratory implements OwnershipManager
 		if (argument_map.hasOption("preload"))
 		{
 			new_lab = preloadLab(new_lab, stdout);
+		}
+		// are we a shadow lab
+		if (argument_map.hasOption("shadow"))
+		{
+			String shadowLabFile = argument_map.getOptionValue("shadow");
+			try
+			{
+				shadow_laboratory = clazz.newInstance();
+			} 
+			catch (InstantiationException e)
+			{
+				e.printStackTrace();
+				//System.exit(ERR_LAB);
+			} 
+			catch (IllegalAccessException e)
+			{
+				e.printStackTrace();
+				//System.exit(ERR_LAB);
+			}
+			shadow_laboratory = loadFromFilename(shadow_laboratory, shadowLabFile);
+			shadow_laboratory.setAssistant(assistant);
+			shadow_laboratory.setupCli(parser);
+			shadow_laboratory.setup();
 		}
 		// Are we loading a lab file? If so, this overrides the
 		// lab loaded from an internal file (if any)

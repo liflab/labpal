@@ -28,7 +28,7 @@
   
   <!-- The project's main class. This is used for the generation of the
        runable JAR file in the "jar" target -->
-  <property name="build.mainclass" value="sorting.SortingLab"/>
+  <property name="build.mainclass" value="simple.SortingLab"/>
   
   <!-- Target jar file -->
   <property name="build.jar.filename" value="MyLab.jar"/>

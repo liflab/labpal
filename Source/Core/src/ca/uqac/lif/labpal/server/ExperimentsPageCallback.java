@@ -143,56 +143,147 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		StringBuilder out = new StringBuilder();
 		// Step 1: fetch all parameters
 		Set<String> param_set = new HashSet<String>();
-		for (int id : ids)
+		
+		if (lab.getShadowLaboratory() == null)
 		{
-			Experiment e = lab.getExperiment(id);
-			if (lab.getFilter().include(e))
+			for (int id : ids)
 			{
-				param_set.addAll(e.getInputKeys(true));
+				Experiment e = lab.getExperiment(id);
+				if (lab.getFilter().include(e))
+				{
+					param_set.addAll(e.getInputKeys(true));
+				}
 			}
-		}
-		List<String> param_list = new ArrayList<String>(param_set.size());
-		param_list.addAll(param_set);
-		Collections.sort(param_list);
-		// Step 2: create the table
-		out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><td class=\"top-td\" ><input type=\"checkbox\" class=\"top-checkbox\" /></td><th>#</th>");
-		for (String p_name : param_list)
-		{
-			
-			out.append("<th>").append(p_name).append("</th>");
-		}
-		out.append("<th>Status</th></tr></thead>\n<tbody>\n");
-		for (int id : ids)
-		{
-			Experiment e = lab.getExperiment(id);
-			if (!lab.getFilter().include(e))
-			{
-				// Exclude
-				continue;
-			}
-			out.append("<tr class=\"tr tr-").append(id).append("\">");
-			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
-			out.append("<td class=\"id-cell\"><a href=\"experiment/").append(id).append("\">").append(id).append("</a></td>");
+			List<String> param_list = new ArrayList<String>(param_set.size());
+			param_list.addAll(param_set);
+			Collections.sort(param_list);
+			// Step 2: create the table
+			out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><td class=\"top-td\" ><input type=\"checkbox\" class=\"top-checkbox\" /></td><th>#</th>");
 			for (String p_name : param_list)
 			{
-				out.append("<td>");
-				JsonElement val = e.read(p_name);
-				if (val == null)
-				{
-					out.append("");
-				}
-				else if (val instanceof JsonString)
-				{
-					out.append(htmlEscape(((JsonString) val).stringValue()));
-				}
-				else
-				{
-					out.append(htmlEscape(val.toString()));
-				}
-				out.append("</td>");
+				
+				out.append("<th>").append(p_name).append("</th>");
 			}
-			out.append("<td>").append(getStatusIcon(e, assistant)).append("</td>");
-			out.append("</tr>\n");
+			//dupluquer le code ci dessus si shadow
+			out.append("<th>Status</th></tr></thead>\n<tbody>\n");
+			for (int id : ids)
+			{
+				Experiment e = lab.getExperiment(id);
+				if (!lab.getFilter().include(e))
+				{
+					// Exclude
+					continue;
+				}
+				out.append("<tr class=\"tr tr-").append(id).append("\">");
+				out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
+				out.append("<td class=\"id-cell\"><a href=\"experiment/").append(id).append("\">").append(id).append("</a></td>");
+				for (String p_name : param_list)
+				{
+					out.append("<td>");
+					JsonElement val = e.read(p_name);
+					if (val == null)
+					{
+						out.append("");
+					}
+					else if (val instanceof JsonString)
+					{
+						out.append(htmlEscape(((JsonString) val).stringValue()));
+					}
+					else
+					{
+						out.append(htmlEscape(val.toString()));
+					}
+					out.append("</td>");
+				}
+				out.append("<td>").append(getStatusIcon(e, assistant)).append("</td>");
+				out.append("</tr>\n");
+			}
+		}
+		// we have an shadow laboratory
+		else 
+		{
+			for (int id : ids)
+			{
+				Experiment e = lab.getExperiment(id);
+				if (lab.getFilter().include(e))
+				{
+					param_set.addAll(e.getInputKeys(true));
+				}
+			}
+			List<String> param_list = new ArrayList<String>(param_set.size());
+			param_list.addAll(param_set);
+			Collections.sort(param_list);
+			// Step 2: create the table
+			out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><td class=\"top-td\" ><input type=\"checkbox\" class=\"top-checkbox\" /></td><th>#</th>");
+			for (String p_name : param_list)
+			{
+				
+				out.append("<th>").append(p_name).append("</th>");
+			}
+			out.append("<th>Status</th>");
+			
+			out.append("<td class=\"top-td\">#</td>");
+			for (String shadow_p_name : param_list)
+			{
+				
+				out.append("<td class=\"top-td\">").append(shadow_p_name).append("</td>");
+			}
+			out.append("<td class=\"top-td\">Status</td></tr></thead>\n<tbody>\n");
+			
+			for (int id : ids)
+			{
+				Experiment e = lab.getExperiment(id);
+				Experiment se = lab.getShadowLaboratory().getExperiment(id);
+				if (!lab.getFilter().include(e))
+				{
+					// Exclude
+					continue;
+				}
+				out.append("<tr class=\"tr tr-").append(id).append("\">");
+				out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
+				out.append("<td class=\"id-cell\"><a href=\"experiment/").append(id).append("\">").append(id).append("</a></td>");
+				for (String p_name : param_list)
+				{
+					out.append("<td>");
+					JsonElement val = e.read(p_name);
+					if (val == null)
+					{
+						out.append("");
+					}
+					else if (val instanceof JsonString)
+					{
+						out.append(htmlEscape(((JsonString) val).stringValue()));
+					}
+					else
+					{
+						out.append(htmlEscape(val.toString()));
+					}
+					out.append("</td>");
+				}
+				out.append("<td>").append(getStatusIcon(e, assistant)).append("</td>");
+				out.append("<td class=\"id-cell\"><a href=\"experiment/").append(se.getId()).append("\">").append(se.getId()).append("</a></td>");
+				
+				for (String shadow_p_name : param_list)
+				{
+					out.append("<td>");
+					JsonElement val = se.read(shadow_p_name);
+					if (val == null)
+					{
+						out.append("");
+					}
+					else if (val instanceof JsonString)
+					{
+						out.append(htmlEscape(((JsonString) val).stringValue()));
+					}
+					else
+					{
+						out.append(htmlEscape(val.toString()));
+					}
+					out.append("</td>");
+				}
+				out.append("<td>").append(getStatusIcon(se, assistant)).append("</td>");
+				out.append("</tr>\n");
+			}
 		}
 		out.append("</tbody>\n</table>\n");
 		return out.toString();

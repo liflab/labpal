@@ -486,6 +486,15 @@ public abstract class Laboratory implements OwnershipManager
 
 
 	/**
+	 * Gets the title given to this assistant
+	 * @return The 
+	 */
+	public String getTitle()
+	{
+		return m_title;
+	}
+	
+	/**
 	 * Gets the plot with given ID
 	 * @param id The ID
 	 * @return The plot, null if not found
@@ -504,12 +513,12 @@ public abstract class Laboratory implements OwnershipManager
 
 
 	/**
-	 * Gets the title given to this assistant
-	 * @return The title
+	 * Gets the shadow_laboratory if the current lab has one
+	 * @return The shadow_laboratory
 	 */
-	public String getTitle()
+	public Laboratory getShadowLaboratory()
 	{
-		return m_title;
+		return shadow_laboratory;
 	}
 
 	/**
@@ -824,6 +833,10 @@ public abstract class Laboratory implements OwnershipManager
 		.withLongName("filter")
 		.withArgument("exp")
 		.withDescription("Filter experiments according to expression exp"));
+		parser.addArgument(new Argument()
+		.withLongName("shadow")
+		.withArgument("x")
+		.withDescription("Set shadow laboratory  to x"));
 		return parser;
 	}
 
@@ -863,7 +876,7 @@ public abstract class Laboratory implements OwnershipManager
 		{
 			new_lab = preloadLab(new_lab, stdout);
 		}
-		// are we a shadow lab
+		// are we a shadow lab?
 		if (argument_map.hasOption("shadow"))
 		{
 			String shadowLabFile = argument_map.getOptionValue("shadow");
@@ -970,6 +983,7 @@ public abstract class Laboratory implements OwnershipManager
 			String assistant_name = argument_map.getOptionValue("name").trim();
 			assistant.setName(assistant_name);
 		}
+
 		// Sets an experiment filter
 		String filter_params = "";
 		if (argument_map.hasOption("filter"))

@@ -70,7 +70,7 @@
       <name>Jerrydog</name>
       <classname>ca.uqac.lif.jerrydog.Server</classname>
       <files>
-        <zip>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.3/jerrydog-0.3.zip</zip>
+        <zip>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.3.1/jerrydog-0.3.1.zip</zip>
       </files>
     </dependency>
     <dependency>
@@ -90,7 +90,7 @@
       <name>MTNP</name>
       <classname>ca.uqac.lif.mtnp.table.Table</classname>
       <files>
-        <zip>https://github.com/liflab/mtnp/releases/download/v0.1.3-alpha/mtnp-0.1.3-alpha.zip</zip>
+        <zip>https://github.com/liflab/mtnp/releases/download/v0.1.4-alpha/mtnp-0.1.4-alpha.zip</zip>
       </files>
     </dependency>
     <dependency>
@@ -100,7 +100,7 @@
       <name>Petit Poucet</name>
       <classname>ca.uqac.lif.petitpoucet.DataOwner</classname>
       <files>
-        <zip>https://github.com/liflab/petitpoucet/releases/download/v0.1-alpha/petitpoucet-0.1-alpha.zip</zip>
+        <zip>https://github.com/liflab/petitpoucet/releases/download/v0.2-alpha/petitpoucet-0.2-alpha.zip</zip>
       </files>
     </dependency>
   </dependencies>

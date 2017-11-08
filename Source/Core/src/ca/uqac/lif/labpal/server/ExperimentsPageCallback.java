@@ -335,7 +335,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		String out = "<p class=\"message info\"><span>" + queued + " experiment(s) added to the queue";
 		if (!m_assistant.isRunning())
 		{
-			out += " <a href=\"assistant?start\">Start the assistant</a>"; 
+			out += " <a href=\"assistant/start\">Start the assistant</a>"; 
 		}
 		out += "</span></p>";
 		return out;

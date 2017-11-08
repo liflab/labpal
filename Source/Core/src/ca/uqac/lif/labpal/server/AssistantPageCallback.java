@@ -46,7 +46,7 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 	public String fill(String page, Map<String,String> params, boolean is_offline)
 	{
 		String message = "";
-		if (params.containsKey("start"))
+		if (params.containsValue("start"))
 		{
 			if (!m_assistant.isRunning())
 			{

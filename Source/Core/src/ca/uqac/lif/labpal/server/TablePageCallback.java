@@ -99,6 +99,7 @@ public class TablePageCallback extends TemplatePageCallback
 		else
 		{
 			HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer(tab, getCellsToHighlight(highlight));
+			renderer.setExplainUrlPrefix("../explain");
 			table_html = renderer.render(tbl.getTree(), tbl.getColumnNames());
 		}
 		s = s.replaceAll("\\{%TITLE%\\}", Matcher.quoteReplacement(tab.getTitle()));

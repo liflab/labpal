@@ -325,10 +325,15 @@ table.exp-table th {
 }
 
 .top-td {
+  font-weight: bold;
   background: {%COLOR 3%};
 }
 
-table.exp-table tr:hover td {
+.top-td-center {
+   text-align: center;
+}
+
+table.exp-table tr:hover {
   background-color: rgba(224, 224, 236, 0.5);
 }
 

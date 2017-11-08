@@ -141,6 +141,7 @@ public class UploadCallback extends WebCallback
 		String file_contents = FileHelper.internalFileToString(LabPalServer.class, TemplatePageCallback.s_path + "/upload-ok.html");
 		file_contents = TemplatePageCallback.resolveInclude(file_contents);
 		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "File uploaded");
+		file_contents = file_contents.replaceAll("\\{%HEADER_PROGRESS_BAR%\\}", getHeaderBar());
 		cbr.setCode(CallbackResponse.HTTP_OK);
 		cbr.setContents(file_contents);
 		return cbr;

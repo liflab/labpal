@@ -193,7 +193,6 @@ public class ExperimentTable extends Table
 					{
 						te.put(key, JsonNull.instance);
 					}
-					te.put(key, elem);
 				}
 				else
 				{

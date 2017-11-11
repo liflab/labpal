@@ -91,7 +91,7 @@ public abstract class Laboratory implements OwnershipManager
 	/**
 	 * The revision version number
 	 */
-	private static final transient int s_revisionVersionNumber = 2;
+	private static final transient int s_revisionVersionNumber = 3;
 
 	/**
 	 * The set of experiments this lab has access to
@@ -828,8 +828,8 @@ public abstract class Laboratory implements OwnershipManager
 
 	public static final void initialize(String[] args, Class<? extends Laboratory> clazz, final LabAssistant assistant)
 	{
+		final AnsiPrinter stdout = new AnsiPrinter(System.out);
 		CliParser parser = setupParser();
-		ArgumentMap argument_map = parser.parse(args);
 		Laboratory new_lab = null;
 		try
 		{
@@ -849,9 +849,18 @@ public abstract class Laboratory implements OwnershipManager
 		{
 			System.exit(ERR_LAB);
 		}
-		final AnsiPrinter stdout = new AnsiPrinter(System.out);
 		stdout.resetColors();
 		stdout.print(getCliHeader());
+		new_lab.setupCli(parser);
+		// Add lab-specific options and parse command line
+		ArgumentMap argument_map = parser.parse(args);
+		if (argument_map == null)
+		{
+			// Something went wrong when parsing
+			stdout.print(getCliHeader());
+			System.err.println("Error parsing command-line arguments. Run the lab with --help to see the syntax.");
+			System.exit(ERR_ARGUMENTS);
+		}
 		// Are we loading a lab from an internal file?
 		if (argument_map.hasOption("preload"))
 		{
@@ -875,7 +884,6 @@ public abstract class Laboratory implements OwnershipManager
 			}
 		}
 		new_lab.setAssistant(assistant);
-		new_lab.setupCli(parser);
 		// Properly close print streams when closing the program
 		// https://www.securecoding.cert.org/confluence/display/java/FIO14-J.+Perform+proper+cleanup+at+program+termination
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()

@@ -24,7 +24,6 @@ import java.util.Map;
 
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
-import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.Experiment;
@@ -71,10 +70,12 @@ public class ExperimentTable extends Table
 	/**
 	 * Adds a new experiment to the table
 	 * @param e The experiment to read from
+	 * @return This table
 	 */
-	public void add(Experiment e)
+	public ExperimentTable add(Experiment e)
 	{
 		m_experiments.add(e);
+		return this;
 	}
 
 	@Override
@@ -174,7 +175,8 @@ public class ExperimentTable extends Table
 				}
 				else
 				{
-					te.put(col_name, PrimitiveValue.getInstance(null));
+					//Don't write anything if the parameter is not there
+					//te.put(col_name, PrimitiveValue.getInstance(null));
 				}
 			}
 			// ...and the i-th value of each list column
@@ -191,13 +193,13 @@ public class ExperimentTable extends Table
 					}
 					else
 					{
-						te.put(key, JsonNull.instance);
+						//te.put(key, JsonNull.instance);
 					}
 				}
 				else
 				{
 					// Substitute with null if one of the lists is shorter
-					te.put(key, JsonNull.instance);
+					//te.put(key, JsonNull.instance);
 				}
 			}
 			entries.add(te);

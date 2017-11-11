@@ -77,7 +77,8 @@ public class MultipointLab extends Laboratory
 			for (int i = 0; i < 10; i++)
 			{
 				list_x.add(i);
-				list_y.add(2*i);
+				if (i < 7)
+					list_y.add(2*i);
 			}
 			write("a", list_x);
 			write("b", list_y);

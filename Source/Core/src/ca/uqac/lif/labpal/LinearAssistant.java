@@ -120,7 +120,8 @@ public class LinearAssistant extends LabAssistant
 			if (s != Status.RUNNING && s != Status.DONE && s != Status.DONE_WARNING && s != Status.FAILED)
 			{
 				// Experiment not started: start
-				m_experimentThread = new Thread(e);
+				m_experimentThread = new ExperimentThread(e);
+				e.setWhoRan(m_name);
 				m_experimentThread.start();					
 				while (m_experimentThread.isAlive() && !m_stop)
 				{
@@ -145,6 +146,7 @@ public class LinearAssistant extends LabAssistant
 						// Experiment takes too long: kill it
 						m_experimentThread.interrupt();
 						e.kill();
+						System.out.println("Timeouting experiment #" + e.getId());
 						m_queueLock.lock();
 						m_queue.remove(0);
 						m_queueLock.unlock();
@@ -165,7 +167,7 @@ public class LinearAssistant extends LabAssistant
 		{
 			m_experimentThread.interrupt();
 		}
-		m_queueLock.lock();
+		/*m_queueLock.lock();
 		boolean empty = m_queue.isEmpty();
 		m_queueLock.unlock();
 		if (!empty)
@@ -173,8 +175,9 @@ public class LinearAssistant extends LabAssistant
 			m_queueLock.lock();
 			Experiment e = m_queue.get(0);
 			m_queueLock.unlock();
+			System.out.println("Weird case");
 			e.interrupt();
-		}
+		}*/
 		m_lab.getReporter().stop();
 	}
 

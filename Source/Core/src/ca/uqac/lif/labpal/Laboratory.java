@@ -1581,7 +1581,7 @@ public abstract class Laboratory implements OwnershipManager
 		Experiment.Status s2 = e2.getStatus();
 		Experiment.QueueStatus q2 = e2.getQueueStatus();
 		// We only overwrite if the source experiment is running
-		return s2 == Status.RUNNING || s2 == Status.DONE || s2 == Status.DONE_WARNING || s2 == Status.FAILED || s2 == Status.KILLED || q2 != QueueStatus.NOT_QUEUED;
+		return s2 == Status.RUNNING || s2 == Status.DONE || s2 == Status.DONE_WARNING || s2 == Status.FAILED || s2 == Status.INTERRUPTED || s2 == Status.TIMEOUT || q2 != QueueStatus.NOT_QUEUED;
 	}
 
 	/**

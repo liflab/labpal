@@ -217,8 +217,10 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			break;
 		case FAILED:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
-		case KILLED:
-			return "<div class=\"status-icon status-killed\" title=\"Timed out\"><span class=\"text-only\">K</span></div>";
+		case INTERRUPTED:
+			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">K</span></div>";
+		case TIMEOUT:
+			return "<div class=\"status-icon status-killed\" title=\"Timed out\"><span class=\"text-only\">T</span></div>";
 		case PREREQ_F:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
 		case PREREQ_NOK:
@@ -274,7 +276,9 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			break;
 		case FAILED:
 			return "Failed";
-		case KILLED:
+		case INTERRUPTED:
+			return "Interrupted";
+		case TIMEOUT:
 			return "Timed out";
 		case PREREQ_F:
 			return "Failed when generating prerequisites";

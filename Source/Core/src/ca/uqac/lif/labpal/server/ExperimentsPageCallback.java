@@ -218,7 +218,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		case FAILED:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
 		case KILLED:
-			return "<div class=\"status-icon status-failed\" title=\"Timed out\"><span class=\"text-only\">K</span></div>";
+			return "<div class=\"status-icon status-killed\" title=\"Timed out\"><span class=\"text-only\">K</span></div>";
 		case PREREQ_F:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
 		case PREREQ_NOK:

@@ -42,7 +42,7 @@ public class LinearAssistant extends LabAssistant
 	/**
 	 * The thread that runs the experiments
 	 */
-	private transient Thread m_experimentThread;
+	private transient ExperimentThread m_experimentThread;
 	
 	/**
 	 * The queue of experiments to run
@@ -144,12 +144,11 @@ public class LinearAssistant extends LabAssistant
 					if (max_duration > 0 && duration > max_duration)
 					{
 						// Experiment takes too long: kill it
-						m_experimentThread.interrupt();
-						e.kill();
-						System.out.println("Timeouting experiment #" + e.getId());
+						m_experimentThread.kill();
 						m_queueLock.lock();
 						m_queue.remove(0);
 						m_queueLock.unlock();
+						m_experimentThread = null;
 						break;
 					}
 				}

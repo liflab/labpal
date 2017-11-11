@@ -42,7 +42,29 @@ public class ExperimentThread extends Thread
 	@Override
 	public void interrupt()
 	{
-		super.interrupt();
+		m_experiment.setRunning(false);
+		try 
+		{
+			join();
+		}
+		catch (InterruptedException e) 
+		{
+			// Do nothing
+		}
 		m_experiment.interrupt();
+	}
+	
+	public void kill()
+	{
+		m_experiment.setRunning(false);
+		try 
+		{
+			join();
+		}
+		catch (InterruptedException e) 
+		{
+			// Do nothing
+		}
+		m_experiment.kill();
 	}
 }

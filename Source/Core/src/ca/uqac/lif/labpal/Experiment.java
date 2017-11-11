@@ -142,6 +142,11 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * A random number generator associated with this experiment
 	 */
 	transient ca.uqac.lif.labpal.Random m_random;
+	
+	/**
+	 * A flag to signal the experiment to stop
+	 */
+	private transient volatile boolean m_running = false;
 
 	public Experiment(Status status)
 	{
@@ -719,6 +724,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	@Override
 	public final void run()
 	{
+		m_running = true;
 		m_startTime = System.currentTimeMillis();
 		if (!prerequisitesFulfilled())
 		{
@@ -766,6 +772,17 @@ public abstract class Experiment implements Runnable, DataOwner
 		{
 			m_status = Status.DONE_WARNING;
 		}
+		m_running = false;
+	}
+	
+	/**
+	 * Checks if the experiment is supposed to run
+	 * @return {@code true} if the experiment should keep running,
+	 * {@code false} if it should stop immediately 
+	 */
+	public final boolean isRunning()
+	{
+		return m_running;
 	}
 
 	/**
@@ -947,6 +964,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	 */
 	public final Experiment interrupt()
 	{
+		m_running = false;
 		m_status = Status.INTERRUPTED;
 		m_errorMessage = "The experiment was manually interrupted";
 		m_endTime = System.currentTimeMillis();
@@ -1035,6 +1053,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	 */
 	public final Experiment kill()
 	{
+		m_running = false;
 		m_status = Status.TIMEOUT;
 		m_errorMessage = "The experiment was interrupted by the lab assistant because it was taking too long";
 		m_endTime = System.currentTimeMillis();
@@ -1198,5 +1217,15 @@ public abstract class Experiment implements Runnable, DataOwner
 	public final JsonMap getInputParameters()
 	{
 		return m_inputParameters;
+	}
+
+	/**
+	 * Sets the running flag for this experiment
+	 * @param b The flag. Setting this to {@code false} should tell the
+	 * experiment to stop, if it is running. 
+	 */
+	public void setRunning(boolean b)
+	{
+		m_running = b;
 	}
 }

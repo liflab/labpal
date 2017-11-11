@@ -111,7 +111,7 @@ public class LabPalServer extends InnerFileServer
 		registerCallback(0, new EditParametersCallback(lab, assistant));
 		registerCallback(0, new ExperimentPageCallback(lab, assistant));
 		registerCallback(0, new ExperimentsPageCallback(lab, assistant));
-		registerCallback(0, new AssistantPageCallback(lab, assistant));
+		registerCallback(0, new AssistantPageCallback(lab, assistant, this));
 		registerCallback(0, new PlotsPageCallback(lab, assistant));
 		registerCallback(0, new PlotImageCallback(lab, assistant));
 		registerCallback(0, new DownloadCallback(lab, assistant));
@@ -132,7 +132,7 @@ public class LabPalServer extends InnerFileServer
 		registerCallback(0, new EditParametersFormCallback(lab, assistant));
 		registerCallback(0, new UnavailableCallback(lab, assistant));
 	}
-	
+		
 	/**
 	 * Sets the the color scheme used in the GUI
 	 * @param c A number identifying the color scheme

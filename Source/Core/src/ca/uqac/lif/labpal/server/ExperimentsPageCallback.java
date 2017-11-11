@@ -171,7 +171,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			}
 			out.append("<tr class=\"tr tr-").append(id).append("\">");
 			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
-			out.append("<td class=\"id-cell\"><a href=\"experiment/").append(id).append("\">").append(id).append("</a></td>");
+			out.append("<td class=\"id-cell\"><a href=\"/experiment/").append(id).append("\">").append(id).append("</a></td>");
 			for (String p_name : param_list)
 			{
 				out.append("<td>");
@@ -335,7 +335,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		String out = "<p class=\"message info\"><span>" + queued + " experiment(s) added to the queue";
 		if (!m_assistant.isRunning())
 		{
-			out += " <a href=\"assistant/start\">Start the assistant</a>"; 
+			out += " <a href=\"/assistant/start\">Start the assistant</a>"; 
 		}
 		out += "</span></p>";
 		return out;

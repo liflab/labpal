@@ -210,12 +210,18 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 					param_set.addAll(e.getInputKeys(true));
 				}
 			}
+<<<<<<< HEAD
 			List<String> param_list = new ArrayList<String>(param_set.size());
 			param_list.addAll(param_set);
 			Collections.sort(param_list);
 			// Step 2: create the table
 			out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><td class=\"top-td top-td-center\" colspan=\"5\" >Current</td> <td class=\"top-td top-td-center\" colspan=\"4\" >Shadow</td> </tr>");
 			out.append("<tr><td class=\"top-td\" ><input type=\"checkbox\" class=\"top-checkbox\" /></td><th>#</th>");
+=======
+			out.append("<tr class=\"tr tr-").append(id).append("\">");
+			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
+			out.append("<td class=\"id-cell\"><a href=\"/experiment/").append(id).append("\">").append(id).append("</a></td>");
+>>>>>>> original/master
 			for (String p_name : param_list)
 			{
 				
@@ -310,8 +316,10 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			break;
 		case FAILED:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
-		case KILLED:
-			return "<div class=\"status-icon status-failed\" title=\"Timed out\"><span class=\"text-only\">K</span></div>";
+		case INTERRUPTED:
+			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">K</span></div>";
+		case TIMEOUT:
+			return "<div class=\"status-icon status-killed\" title=\"Timed out\"><span class=\"text-only\">T</span></div>";
 		case PREREQ_F:
 			return "<div class=\"status-icon status-failed\" title=\"Failed\"><span class=\"text-only\">F</span></div>";
 		case PREREQ_NOK:
@@ -367,7 +375,9 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			break;
 		case FAILED:
 			return "Failed";
-		case KILLED:
+		case INTERRUPTED:
+			return "Interrupted";
+		case TIMEOUT:
 			return "Timed out";
 		case PREREQ_F:
 			return "Failed when generating prerequisites";
@@ -428,7 +438,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		String out = "<p class=\"message info\"><span>" + queued + " experiment(s) added to the queue";
 		if (!m_assistant.isRunning())
 		{
-			out += " <a href=\"assistant?start\">Start the assistant</a>"; 
+			out += " <a href=\"/assistant/start\">Start the assistant</a>"; 
 		}
 		out += "</span></p>";
 		return out;

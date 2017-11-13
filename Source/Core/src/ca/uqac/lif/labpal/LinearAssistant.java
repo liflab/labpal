@@ -42,7 +42,7 @@ public class LinearAssistant extends LabAssistant
 	/**
 	 * The thread that runs the experiments
 	 */
-	private transient Thread m_experimentThread;
+	private transient ExperimentThread m_experimentThread;
 	
 	/**
 	 * The queue of experiments to run
@@ -124,8 +124,14 @@ public class LinearAssistant extends LabAssistant
 				// get Experiment requisites max duration
 				long max_prereq_duration = e.getMaxPrereqDuration();
 				// Experiment not started: start
+<<<<<<< HEAD
 				m_experimentThread = new Thread(e);
 				m_experimentThread.start();	
+=======
+				m_experimentThread = new ExperimentThread(e);
+				e.setWhoRan(m_name);
+				m_experimentThread.start();					
+>>>>>>> original/master
 				while (m_experimentThread.isAlive() && !m_stop)
 				{
 					try
@@ -147,11 +153,11 @@ public class LinearAssistant extends LabAssistant
 					if ((max_duration > 0 && duration > max_duration) || (max_prereq_duration > 0 && prereq_duration > max_prereq_duration))
 					{
 						// Experiment takes too long: kill it
-						m_experimentThread.interrupt();
-						e.kill();
+						m_experimentThread.kill();
 						m_queueLock.lock();
 						m_queue.remove(0);
 						m_queueLock.unlock();
+						m_experimentThread = null;
 						break;
 					}
 				}
@@ -169,7 +175,7 @@ public class LinearAssistant extends LabAssistant
 		{
 			m_experimentThread.interrupt();
 		}
-		m_queueLock.lock();
+		/*m_queueLock.lock();
 		boolean empty = m_queue.isEmpty();
 		m_queueLock.unlock();
 		if (!empty)
@@ -177,8 +183,9 @@ public class LinearAssistant extends LabAssistant
 			m_queueLock.lock();
 			Experiment e = m_queue.get(0);
 			m_queueLock.unlock();
+			System.out.println("Weird case");
 			e.interrupt();
-		}
+		}*/
 		m_lab.getReporter().stop();
 	}
 

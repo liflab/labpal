@@ -32,7 +32,7 @@ public class SimpleLab extends Laboratory
 	public void setup()
 	{
 		// Sets the title of this lab
-		setTitle("A simple experiment");
+		setTitle("A simple laboratory");
 		setAuthor("Emmett Brown");
 		
 		// Setup a table to collate experiment results

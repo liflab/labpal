@@ -9,22 +9,17 @@
 <tr><th>Total running time so far:</th><td>{%ASSISTANT_TIME%}</td></tr>
 </table>
 
-<form name="assistant" method="post" action="assistant">
+<form name="assistant" method="post" action="/assistant">
 {%BTN_START%}
 {%BTN_STOP%}
 </form>
 
 <h2>Experiments in queue</h2>
 
-<form name="experiments" method="post" action="assistant">
+<form name="experiments" method="post" action="/assistant">
 {%EXP_LIST%}
 
-<div>
-<p>With selected experiments&hellip;</p>
-<input class="btn btn-unqueue" type="submit" name="unqueue" value="Remove from queue" />
-<input class="btn btn-reset" type="submit" name="reset" value="Reset" />
-<input class="btn btn-clean" type="submit" name="clean" value="Clean" />
-</div>
+{%EXP_OPTIONS%}
 </form>
 
 

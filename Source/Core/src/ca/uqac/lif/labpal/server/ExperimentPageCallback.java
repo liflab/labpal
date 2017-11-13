@@ -52,8 +52,23 @@ import ca.uqac.lif.petitpoucet.NodeFunction;
  */
 public class ExperimentPageCallback extends TemplatePageCallback
 {
+	/**
+	 * A date format object, used to format the start and end time of
+	 * an experiment in {@link #formatDate(long)}
+	 */
 	protected static final SimpleDateFormat s_dateFormat = new SimpleDateFormat();
+	
+	/**
+	 * A regex pattern object, used to split the "owner" part of the "path" in
+	 * a datapoint ID in {@link #getKeysToHighlight(String)}
+	 */
+	protected static final Pattern s_highlightKeyPattern = Pattern.compile("^.*?"+ Pattern.quote(NodeFunction.s_separator) + "(.*)$");
 
+	/**
+	 * Creates a new callback for the "Experiments" page.
+	 * @param lab The lab this page belongs to
+	 * @param assistant The assistant used to run this lab
+	 */
 	public ExperimentPageCallback(Laboratory lab, LabAssistant assistant)
 	{
 		super("/experiment", lab, assistant);
@@ -188,7 +203,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			int el_cnt = 0;
 			for (JsonElement v : (JsonList) e)
 			{
-				String path_append = path + "[" + el_cnt + "]";
+				String path_append = path + NodeFunction.s_separator + el_cnt;
 				String css_class_key = "";
 				String css_class_value = "";
 				if (containsExactly(to_highlight, path_append))
@@ -261,8 +276,11 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		String[] ids = highlight.split(",");
 		for (String id : ids)
 		{
-			String[] parts = id.split(Pattern.quote(NodeFunction.s_separator));
-			to_highlight.add(parts[1]);
+			Matcher matcher = s_highlightKeyPattern.matcher(id);
+			if (matcher.find())
+			{
+				to_highlight.add(matcher.group(1));
+			}
 		}
 		return to_highlight;
 	}

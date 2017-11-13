@@ -13,10 +13,10 @@
 
 {%SERIALIZATION_MESSAGE%}
 
-<form style="display:inline-block" id ="download" name="download" method="post" enctype="multipart/form-data" action="download">
-<a href="download"><button class="btn" id="btn-download">Save lab data</button></a>
+<form style="display:inline-block" id ="download" name="download" method="post" enctype="multipart/form-data" action="/download">
+<a href="/download"><button class="btn" id="btn-download">Save lab data</button></a>
 </form>
-<form style="display:inline-block" name="upload" method="post" enctype="multipart/form-data" action="upload">
+<form style="display:inline-block" name="upload" method="post" enctype="multipart/form-data" action="/upload">
 <input class="btn btn-upload" id="btn-upload" type="submit" value="Upload lab data"/>
 <input type="file" name="filename" id = "filename" class="input-upload"/>
 <label for="filename"> <span>Choose a file</span> </label>

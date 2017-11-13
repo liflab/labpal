@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.zip.ZipOutputStream;
 
+import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LabPalTui;
@@ -35,10 +36,15 @@ import ca.uqac.lif.labpal.LabPalTui;
  */
 public class AssistantPageCallback extends ExperimentsPageCallback
 {
-
-	public AssistantPageCallback(Laboratory lab, LabAssistant assistant)
+	/**
+	 * An instance of the server
+	 */
+	protected LabPalServer m_server;
+	
+	public AssistantPageCallback(Laboratory lab, LabAssistant assistant, LabPalServer server)
 	{
 		super("/assistant", lab, assistant);
+		m_server = server;
 		ignoreMethod();
 	}
 	
@@ -46,7 +52,7 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 	public String fill(String page, Map<String,String> params, boolean is_offline)
 	{
 		String message = "";
-		if (params.containsKey("start"))
+		if (params.containsValue("start"))
 		{
 			if (!m_assistant.isRunning())
 			{
@@ -99,6 +105,10 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 			{
 				out = out.replaceAll("\\{%BTN_START%\\}", "<input type=\"submit\" class=\"btn\" id=\"btn-start\" name=\"start\" value=\"Start the assistant\"/>");
 			}
+		}
+		if (!m_assistant.getCurrentQueue().isEmpty())
+		{
+			out = out.replaceAll("\\{%EXP_OPTIONS%\\}", FileHelper.internalFileToString(LabPalServer.class, m_server.getResourceFolderName() + "/assistant-exp-options.inc.html"));			
 		}
 		out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ASSISTANT));

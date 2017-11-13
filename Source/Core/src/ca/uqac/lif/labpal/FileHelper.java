@@ -475,9 +475,16 @@ public class FileHelper
 			if (dirURL != null && dirURL.getProtocol().equals("file")) 
 			{
 				/* A file path: easy enough */
-				File f = new File(dirURL.toURI());
+				URI uri = dirURL.toURI();
+				File f = new File(uri);
 				for (String filename : f.list())
 				{
+					String f_filename = uri.getRawPath() + filename;
+					File f2 = new File(f_filename);
+					if (f2 != null && f2.isDirectory())
+					{
+						filename += "/";
+					}
 					if (filename.matches(glob))
 					{
 						if (!filename.matches(exclude_glob))
@@ -495,7 +502,7 @@ public class FileHelper
 				 * In case of a jar file, we can't actually find a directory.
 				 * Have to assume the same jar as clazz.
 				 */
-				String me = clazz.getName().replace(".", "/")+".class";
+				String me = clazz.getName().replace(".", "/") + ".class";
 				dirURL = clazz.getClassLoader().getResource(me);
 			}
 
@@ -511,12 +518,12 @@ public class FileHelper
 					String name = entries.nextElement().getName();
 					if (name.startsWith(path)) { //filter according to the path
 						String entry = name.substring(path.length());
-						int checkSubdir = entry.indexOf("/");
+						/*int checkSubdir = entry.indexOf("/");
 						if (checkSubdir >= 0)
 						{
 							// if it is a subdirectory, we just return the directory name
 							entry = entry.substring(0, checkSubdir);
-						}
+						}*/
 						if (entry.matches(glob))
 						{
 							result.add(entry);

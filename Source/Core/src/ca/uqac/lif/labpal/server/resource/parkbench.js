@@ -5,6 +5,7 @@ $(document).ready(function() {
       $(".side-checkbox").each(function() { 
 	    $(this).prop("checked",(!($(this).prop("disabled")) && $(" .top-checkbox").prop("checked")));
 	  });
+    });
   
 	/* Filter by enumeration or/and interval */
 	$("#experiment-filter .btn-filter").click(filter_experiments); 

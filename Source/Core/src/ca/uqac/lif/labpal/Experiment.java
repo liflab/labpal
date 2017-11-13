@@ -47,8 +47,13 @@ public abstract class Experiment implements Runnable, DataOwner
 	/**
 	 * The status of the experiment
 	 */
+<<<<<<< HEAD
 	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_RUNNING, PREREQ_OK, PREREQ_F, RUNNING, RUNNING_REMOTELY, DONE, DONE_WARNING, FAILED, KILLED};
 	
+=======
+	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, DONE, DONE_WARNING, FAILED, TIMEOUT, INTERRUPTED, RUNNING_REMOTELY};
+
+>>>>>>> original/master
 	/**
 	 * The queuing status of the experiment
 	 */
@@ -58,37 +63,37 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * The input parameters given to this experiment
 	 */
 	private JsonMap m_inputParameters;
-	
+
 	/**
 	 * The output parameters that this experiment generates
 	 */
 	private JsonMap m_outputParameters;
-	
+
 	/**
 	 * The set of parameter names to show in the experiments table
 	 */
 	private transient Set<String> m_keysToHide;
-	
+
 	/**
 	 * The set of parameter names that are editable
 	 */
 	private transient Set<String> m_editableKeys;
-	
+
 	/**
 	 * The current status of the experiment
 	 */
 	private Status m_status;
-	
+
 	/**
 	 * The queuing status of the experiment
 	 */
 	private QueueStatus m_queueStatus;
-	
+
 	/**
 	 * A numerical value that uniquely identifies each experiment in a lab
 	 */
 	private int m_id;
-	
+
 	/**
 	 * The maximum duration for this experiment (in milliseconds).
 	 * If the experiment lasts longer than this duration, the lab assistant
@@ -96,7 +101,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * applies.
 	 */
 	private long m_maxDuration = -1;
-	
+
 	/**
 	 * The maximum duration for this experiment requirements (in milliseconds).
 	 * If the requirements lasts longer than this duration, the lab assistant
@@ -110,12 +115,12 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * rather adds to a list
 	 */
 	protected transient List<ExperimentException> m_warnings;
-	
+
 	/**
 	 * Association of experiment parameters with a short textual description 
 	 */
 	private transient Map<String,String> m_parameterDescriptions;
-	
+
 	/**
 	 * The start time of the experiment
 	 */
@@ -125,7 +130,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * The end time of the experiment
 	 */
 	private long m_endTime = -1;
-	
+
 	/**
 	 * The start time of requirements
 	 */
@@ -140,27 +145,32 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * An approximate measurement of the experiment's progression
 	 */
 	private transient float m_progression = 0;
-	
+
 	/**
 	 * If the experiment fails, the error message associated with the failure
 	 */
 	private String m_errorMessage;
-	
+
 	/**
 	 * A short description for this experiment
 	 */
 	private String m_description = "";
-	
+
 	/**
 	 * The name of the lab assistant that ran the experiment (if any)
 	 */
 	private String m_runBy;
-	
+
 	/**
 	 * A random number generator associated with this experiment
 	 */
 	transient ca.uqac.lif.labpal.Random m_random;
 	
+	/**
+	 * A flag to signal the experiment to stop
+	 */
+	private transient volatile boolean m_running = false;
+
 	public Experiment(Status status)
 	{
 		super();
@@ -176,18 +186,18 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_errorMessage = "";
 		m_random = null;
 	}
-	
+
 	public Experiment()
 	{
 		this(Status.DUNNO);
 	}
-	
+
 	public Experiment(JsonMap params)
 	{
 		this();
 		m_inputParameters = params;
 	}
-	
+
 	/**
 	 * Sets the experiment's ID
 	 * @param id The ID
@@ -198,7 +208,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_id = id;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the queuing status of this experiment
 	 * @param s The status
@@ -209,7 +219,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_queueStatus = s;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the queuing status of this experiment
 	 * @return  The status
@@ -218,7 +228,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_queueStatus;
 	}
-	
+
 	/**
 	 * Checks if the prerequisites for running this experiment are currently
 	 * fulfilled. Override this method if your experiment must do some form of
@@ -240,7 +250,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		
 	}
-	
+
 	/**
 	 * Generates the prerequisites for running this experiment.
 	 * Override this method if your experiment must do some form of
@@ -256,7 +266,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_status = Status.PREREQ_OK;
 		return;
 	}
-	
+
 	/**
 	 * Cleans any prerequisites this experiment may have generated.
 	 * For example: deleting files that were generated, etc.
@@ -265,7 +275,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return;
 	}
-	
+
 	/**
 	 * Adds the name of a key to hide from the experiment list
 	 * @param key The key
@@ -274,7 +284,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		m_keysToHide.add(key);
 	}
-	
+
 	/**
 	 * Adds a warning for this experiment
 	 * @param ex The warning
@@ -285,7 +295,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_warnings.add(ex);
 		return this;
 	}
-	
+
 	/**
 	 * Adds a warning for this experiment, enclosing it in a
 	 * generic {@link ExperimentException} object
@@ -297,7 +307,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_warnings.add(new ExperimentException(message));
 		return this;
 	}
-	
+
 	/**
 	 * Gets the warnings associated to this experiment
 	 * @return A list of warnings
@@ -306,7 +316,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_warnings;
 	}
-	
+
 	/**
 	 * Checks if this experiment has warnings associated to it
 	 * @return {@code true} if there are warnings, {@code false} otherwise
@@ -315,7 +325,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return !m_warnings.isEmpty();
 	}
-	
+
 	/**
 	 * Determines if this parameter should be hidden from the experiment list
 	 * @param key The key
@@ -325,7 +335,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_keysToHide.contains(key);
 	}
-	
+
 	/**
 	 * Sets the description for this experiment
 	 * @param d The description. It must be valid HTML.
@@ -337,7 +347,7 @@ public abstract class Experiment implements Runnable, DataOwner
 			m_description = d;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the description for this experiment
 	 * @return The description. If you override this method, make sure it
@@ -348,15 +358,15 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_description;
 	}
-	
+
 	/**
 	 * Executes the experiment.
 	 * @throws ExperimentException Used to signal the abnormal termination
 	 *   of the experiment. If this method ends without throwing an exception,
 	 *   it is assumed it has completed successfully.
 	 */
-	public abstract void execute() throws ExperimentException;
-	
+	public abstract void execute() throws ExperimentException, InterruptedException;
+
 	/**
 	 * Reads an output parameter for this experiment
 	 * @param key The path leading to the parameter
@@ -371,7 +381,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * Reads an output parameter for this experiment
 	 * @param key The path leading to the parameter
@@ -386,7 +396,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * Reads an output parameter for this experiment
 	 * @param key The path leading to the parameter
@@ -420,7 +430,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return e.toString();
 	}
-	
+
 	/**
 	 * Reads an output parameter for this experiment
 	 * @param key The path leading to the parameter
@@ -435,7 +445,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Reads an output parameter for this experiment
 	 * @param key The path leading to the parameter
@@ -482,7 +492,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return write(key, (int) x);
 	}
-	
+
 	/**
 	 * Sets an output parameter for this experiment
 	 * @param key The key for this parameter
@@ -494,7 +504,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_outputParameters.put(key, value);
 		return this;
 	}
-	
+
 	/**
 	 * Sets an output parameter for this experiment
 	 * @param key The key for this parameter
@@ -506,7 +516,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_outputParameters.put(key, value);
 		return this;
 	}
-	
+
 	/**
 	 * Sets an output parameter for this experiment
 	 * @param key The key for this parameter
@@ -519,7 +529,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		return this;
 	}
 
-	
+
 	/**
 	 * Sets an input parameter for this experiment by copying those from
 	 * an existing map
@@ -534,7 +544,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Sets an input parameter for this experiment
 	 * @param key The key for this parameter
@@ -546,7 +556,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_inputParameters.put(key, value);
 		return this;
 	}
-	
+
 	/**
 	 * Sets an input parameter for this experiment, by trying to cast
 	 * its string value into a primitive number type (int or float)
@@ -581,7 +591,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return setInput(key, (int) x);
 	}
-	
+
 	/**
 	 * Sets an input parameter for this experiment
 	 * @param key The key for this parameter
@@ -593,7 +603,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_inputParameters.put(key, value);
 		return this;
 	}
-	
+
 	/**
 	 * Sets an input parameter for this experiment
 	 * @param key The key for this parameter
@@ -605,7 +615,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_inputParameters.put(key, value);
 		return this;
 	}
-	
+
 	/**
 	 * Sets the names of the parameters that are editable by the user
 	 * @param parameters The names of the parameters
@@ -619,7 +629,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Checks if an experiment is editable. This is the case when at least
 	 * one input parameter has been declared editable.
@@ -631,7 +641,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return !m_editableKeys.isEmpty();
 	}
-	
+
 	/**
 	 * Checks if an input parameter is editable
 	 * @param parameter The name of the input parameter
@@ -642,7 +652,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_editableKeys.contains(parameter);
 	}
-	
+
 	/**
 	 * Gets the ID of this experiment. Note that the ID is controlled by the
 	 * laboratory, and should not be used for anything meaningful.
@@ -652,7 +662,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_id;
 	}
-	
+
 	/**
 	 * Gets the start time of the experiment
 	 * @return The difference, measured in milliseconds,
@@ -675,7 +685,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_endTime;
 	}
-	
+
 	/**
 	 * Gets the start time of requirement
 	 * @return The difference, measured in milliseconds,
@@ -707,7 +717,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_runBy;
 	}
-	
+
 	/**
 	 * Sets the name of the lab assistant that ran the experiment
 	 * @param name The name of the assistant that ran the experiment
@@ -718,7 +728,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_runBy = name;
 		return this;
 	}
-	
+
 	/**
 	 * Resets the experiment. This puts the experiment in the same state as if
 	 * it were not run. However, if prerequisites were generated, they are not
@@ -736,7 +746,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_errorMessage = "";
 		m_warnings.clear();
 	}
-	
+
 	/**
 	 * Resets the experiment and clears any prerequisites it may have generated.
 	 * This puts the experiment in the same state as if
@@ -747,7 +757,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		cleanPrerequisites();
 		reset();
 	}
-	
+
 	/**
 	 * Gets the current status of this experiment
 	 * @return The status
@@ -771,7 +781,12 @@ public abstract class Experiment implements Runnable, DataOwner
 	@Override
 	public final void run()
 	{
+<<<<<<< HEAD
 		
+=======
+		m_running = true;
+		m_startTime = System.currentTimeMillis();
+>>>>>>> original/master
 		if (!prerequisitesFulfilled())
 		{
 			m_startPrereqTime = System.currentTimeMillis();
@@ -802,6 +817,13 @@ public abstract class Experiment implements Runnable, DataOwner
 		{
 			execute();
 			m_status = Status.DONE;
+			if (m_status != Status.INTERRUPTED)
+			{
+				// The interrupt() method may have already changed the
+				// experiment's status. If so, we don't overwrite it with
+				// DONE
+				m_status = Status.DONE;
+			}
 		}
 		catch (Exception e)
 		{
@@ -818,8 +840,19 @@ public abstract class Experiment implements Runnable, DataOwner
 		{
 			m_status = Status.DONE_WARNING;
 		}
+		m_running = false;
 	}
 	
+	/**
+	 * Checks if the experiment is supposed to run
+	 * @return {@code true} if the experiment should keep running,
+	 * {@code false} if it should stop immediately 
+	 */
+	public final boolean isRunning()
+	{
+		return m_running;
+	}
+
 	/**
 	 * Returns the (eventual) error message produced by the execution of this
 	 * experiment.
@@ -829,7 +862,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_errorMessage;
 	}
-	
+
 	/**
 	 * Sets an error message produced by the execution of the experiment. The
 	 * message is intended to explain why the experiment has failed, and should
@@ -841,7 +874,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		m_errorMessage = message;
 	}
-	
+
 	/**
 	 * Provides an estimate of the time this experiment is supposed to take.
 	 * This value is used in the user interface to provide a rough measure
@@ -857,7 +890,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return 0f;
 	}
-	
+
 	/**
 	 * Waits for some time
 	 * @param duration The waiting interval, in milliseconds
@@ -873,7 +906,7 @@ public abstract class Experiment implements Runnable, DataOwner
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Retrieves a value, either from the input or the output parameters.
 	 * The method starts by fetching it from the input parameters; if this
@@ -911,13 +944,13 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return out;
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		return m_inputParameters.toString();
 	}
-	
+
 	/**
 	 * Outputs a description of this experiment as a short character string.
 	 * This is intended to be displayed in small text windows, such as in
@@ -932,7 +965,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return toString();
 	}
-	
+
 	/**
 	 * Gets the set of all input parameter <em>names</em>
 	 * @param exclude_hidden Set to true to exclude keys that have been
@@ -955,7 +988,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return input_keys;
 	}
-	
+
 	/**
 	 * Gets the set of all input parameter <em>names</em>
 	 * @return The set of names
@@ -964,7 +997,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return getInputKeys(false);
 	}
-	
+
 	/**
 	 * Sets a textual description for a parameter of the experiment
 	 * @param path The XPath corresponding to the parameter's location
@@ -977,7 +1010,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_parameterDescriptions.put(path, text);
 		return this;
 	}
-	
+
 	/**
 	 * Gets the textual description for a parameter of the experiment
 	 * @param path The XPath corresponding to the parameter's location
@@ -992,15 +1025,17 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return m_parameterDescriptions.get(path);
 	}
-	
+
 	/**
 	 * Interrupts the experiment
 	 * @return This experiment
 	 */
 	public final Experiment interrupt()
 	{
-		m_status = Status.FAILED;
+		m_running = false;
+		m_status = Status.INTERRUPTED;
 		m_errorMessage = "The experiment was manually interrupted";
+<<<<<<< HEAD
 		if (m_startTime > -1) 
 		{
 			m_endTime = System.currentTimeMillis();
@@ -1009,9 +1044,23 @@ public abstract class Experiment implements Runnable, DataOwner
 		{
 			m_endPrereqTime = System.currentTimeMillis();
 		}
+=======
+		m_endTime = System.currentTimeMillis();
+		prepareToInterrupt();
+>>>>>>> original/master
 		return this;
 	}
-	
+
+	/**
+	 * Manages the unexpected interruption of an experiment. For
+	 * example, if the experiment runs an external application, this
+	 * method should be responsible for terminating this application.
+	 */
+	public void prepareToInterrupt()
+	{
+
+	}
+
 	/**
 	 * Gets the random number generator for this experiment
 	 * @return The generator
@@ -1020,7 +1069,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_random;
 	}
-	
+
 	/**
 	 * Sets the current progression of the execution of the
 	 * experiment
@@ -1034,7 +1083,7 @@ public abstract class Experiment implements Runnable, DataOwner
 			m_progression = p;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the current progression of the execution of the
 	 * experiment
@@ -1054,7 +1103,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return m_progression;
 	}
-	
+
 	/**
 	 * Gets the maximum duration for this experiment
 	 * @return The duration
@@ -1063,7 +1112,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_maxDuration;
 	}
-	
+
 	/**
 	 * Sets the maximum duration for this experiment.
 	 * If the experiment lasts longer than this duration, the lab assistant
@@ -1076,7 +1125,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_maxDuration = duration;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the maximum duration for this experiment requirement
 	 * @return The duration
@@ -1105,7 +1154,8 @@ public abstract class Experiment implements Runnable, DataOwner
 	 */
 	public final Experiment kill()
 	{
-		m_status = Status.KILLED;
+		m_running = false;
+		m_status = Status.TIMEOUT;
 		m_errorMessage = "The experiment was interrupted by the lab assistant because it was taking too long";
 		if (m_startTime > -1) 
 		{
@@ -1117,7 +1167,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Checks if an experiment has a parameter of a given name
 	 * @param name The name
@@ -1127,7 +1177,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_inputParameters.containsKey(name) || m_outputParameters.containsKey(name);
 	}
-	
+
 	/**
 	 * Gets the number of "data points" generated by this experiment
 	 * @return The number of points
@@ -1136,7 +1186,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_outputParameters.keySet().size();
 	}
-	
+
 	/**
 	 * Checks if the data generated by this experiment is considered
 	 * valid. Normally, the purpose of this method is to add warnings
@@ -1149,29 +1199,29 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		// Do nothing
 	}
-		
+
 	@Override
 	public final NodeFunction dependsOn(String id)
 	{
 		return ExperimentValue.dependsOn(this, id);
 	}
-	
+
 	public final NodeFunction dependsOnKey(String key)
 	{
 		return new ExperimentValue(this, key);
 	}
-	
+
 	public final NodeFunction dependsOnCell(String key, int position)
 	{
 		return new ExperimentValue(this, key, position);
 	}
-	
+
 	@Override
 	public Experiment getOwner()
 	{
 		return this;
 	}
-	
+
 	/**
 	 * Merges the output parameters and status of an experiment into the
 	 * current one. This is only possible if the current experiment is not
@@ -1207,7 +1257,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		Experiment.Status status_e = e.getStatus();
 		if (is_remote && (status_e == Status.RUNNING || status_e == Status.RUNNING_REMOTELY))
 		{
-				m_status = Status.RUNNING_REMOTELY;
+			m_status = Status.RUNNING_REMOTELY;
 		}
 		else
 		{
@@ -1215,7 +1265,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		if (is_remote && (e.getQueueStatus() == QueueStatus.QUEUED || e.getQueueStatus() == QueueStatus.QUEUED_REMOTELY))
 		{
-				m_queueStatus = QueueStatus.QUEUED_REMOTELY;
+			m_queueStatus = QueueStatus.QUEUED_REMOTELY;
 		}
 		else
 		{
@@ -1231,7 +1281,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_runBy = e.m_runBy;
 		return true;
 	}
-	
+
 	/**
 	 * Checks if a parameter is an input parameter
 	 * @param name The name of the parameter
@@ -1242,7 +1292,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	{
 		return m_inputParameters.containsKey(name);
 	}
-	
+
 	/**
 	 * Callback called by the lab when an experiment has been edited by the user
 	 * @param new_parameters The new parameters entered by the user
@@ -1255,7 +1305,7 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_inputParameters = new_parameters;
 		reset();
 	}
-	
+
 	/**
 	 * Method that is called whenever the input parameters of an experiment
 	 * have been modified by the user. By default, this method does nothing;
@@ -1277,5 +1327,15 @@ public abstract class Experiment implements Runnable, DataOwner
 	public final JsonMap getInputParameters()
 	{
 		return m_inputParameters;
+	}
+
+	/**
+	 * Sets the running flag for this experiment
+	 * @param b The flag. Setting this to {@code false} should tell the
+	 * experiment to stop, if it is running. 
+	 */
+	public void setRunning(boolean b)
+	{
+		m_running = b;
 	}
 }

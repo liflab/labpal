@@ -210,18 +210,14 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 					param_set.addAll(e.getInputKeys(true));
 				}
 			}
-<<<<<<< HEAD
+
 			List<String> param_list = new ArrayList<String>(param_set.size());
 			param_list.addAll(param_set);
 			Collections.sort(param_list);
 			// Step 2: create the table
 			out.append("<table class=\"exp-table tablesorter\">\n<thead><tr><td class=\"top-td top-td-center\" colspan=\"5\" >Current</td> <td class=\"top-td top-td-center\" colspan=\"4\" >Shadow</td> </tr>");
 			out.append("<tr><td class=\"top-td\" ><input type=\"checkbox\" class=\"top-checkbox\" /></td><th>#</th>");
-=======
-			out.append("<tr class=\"tr tr-").append(id).append("\">");
-			out.append("<td class=\"exp-chk\"><input type=\"checkbox\" class=\"side-checkbox side-checkbox-").append(id).append("\" id=\"exp-chk-").append(id).append("\" name=\"exp-chk-").append(id).append("\"/></td>");
-			out.append("<td class=\"id-cell\"><a href=\"/experiment/").append(id).append("\">").append(id).append("</a></td>");
->>>>>>> original/master
+
 			for (String p_name : param_list)
 			{
 				

@@ -47,13 +47,8 @@ public abstract class Experiment implements Runnable, DataOwner
 	/**
 	 * The status of the experiment
 	 */
-<<<<<<< HEAD
-	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_RUNNING, PREREQ_OK, PREREQ_F, RUNNING, RUNNING_REMOTELY, DONE, DONE_WARNING, FAILED, KILLED};
-	
-=======
-	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, DONE, DONE_WARNING, FAILED, TIMEOUT, INTERRUPTED, RUNNING_REMOTELY};
+	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_RUNNING, PREREQ_OK, PREREQ_F, RUNNING, DONE, DONE_WARNING, FAILED, KILLED, TIMEOUT, INTERRUPTED, RUNNING_REMOTELY};
 
->>>>>>> original/master
 	/**
 	 * The queuing status of the experiment
 	 */
@@ -781,12 +776,10 @@ public abstract class Experiment implements Runnable, DataOwner
 	@Override
 	public final void run()
 	{
-<<<<<<< HEAD
+
+		//m_running = true;
+		//m_startTime = System.currentTimeMillis();
 		
-=======
-		m_running = true;
-		m_startTime = System.currentTimeMillis();
->>>>>>> original/master
 		if (!prerequisitesFulfilled())
 		{
 			m_startPrereqTime = System.currentTimeMillis();
@@ -1035,7 +1028,6 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_running = false;
 		m_status = Status.INTERRUPTED;
 		m_errorMessage = "The experiment was manually interrupted";
-<<<<<<< HEAD
 		if (m_startTime > -1) 
 		{
 			m_endTime = System.currentTimeMillis();
@@ -1044,10 +1036,10 @@ public abstract class Experiment implements Runnable, DataOwner
 		{
 			m_endPrereqTime = System.currentTimeMillis();
 		}
-=======
-		m_endTime = System.currentTimeMillis();
-		prepareToInterrupt();
->>>>>>> original/master
+
+		//m_endTime = System.currentTimeMillis();
+		//prepareToInterrupt();
+
 		return this;
 	}
 

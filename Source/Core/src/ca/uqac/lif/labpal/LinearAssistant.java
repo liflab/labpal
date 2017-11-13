@@ -124,14 +124,10 @@ public class LinearAssistant extends LabAssistant
 				// get Experiment requisites max duration
 				long max_prereq_duration = e.getMaxPrereqDuration();
 				// Experiment not started: start
-<<<<<<< HEAD
-				m_experimentThread = new Thread(e);
-				m_experimentThread.start();	
-=======
+
 				m_experimentThread = new ExperimentThread(e);
 				e.setWhoRan(m_name);
-				m_experimentThread.start();					
->>>>>>> original/master
+				m_experimentThread.start();
 				while (m_experimentThread.isAlive() && !m_stop)
 				{
 					try

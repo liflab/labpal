@@ -143,14 +143,16 @@ public class StatusPageCallback extends TemplatePageCallback
 		{
 			num_ex++;
 			Experiment ex = m_lab.getExperiment(id);
+			//out.append("<div> Running experiment : #").append(id).append("</div>\n");
 			switch (ex.getStatus())
 			{
 			case RUNNING:
 				out.delete(0,out.length()+1);
-				out.append("<div> Running experiment : #").append(ex.getId()).append("</div>\n");
+				out.append("<div> Running experiment : #").append(id).append("</div>\n");
 				break;
 			case DONE:
 				num_done++;
+				
 				break;
 			case FAILED:
 				num_failed++;

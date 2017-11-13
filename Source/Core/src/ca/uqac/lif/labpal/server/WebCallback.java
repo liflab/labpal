@@ -25,6 +25,7 @@ import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.RestCleanCallback;
+import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -134,4 +135,65 @@ public abstract class WebCallback extends RestCleanCallback
 		// Do nothing
 		return;
 	}
+	
+	/**
+	 * Produces a status bar indicating the relative completion of the
+	 * experiments in this lab.
+	 * @return HTML code for the status bar
+	 */
+	public final String getHeaderBar()
+	{
+		// Width of the bar, in pixels
+		final float bar_width_px = 400;
+		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0, num_warn = 0;
+		StringBuilder out = new StringBuilder();
+		for (int id : m_lab.getExperimentIds())
+		{
+			num_ex++;
+			Experiment ex = m_lab.getExperiment(id);
+			switch (ex.getStatus())
+			{
+			case RUNNING:
+				out.delete(0,out.length()+1);
+				out.append("<div> Running experiment : #").append(id).append("</div>\n");
+				break;
+			case DONE:
+				num_done++;
+				break;
+			case FAILED:
+				num_failed++;
+				break;
+			case DONE_WARNING:
+				num_warn++;
+				break;
+			default:
+				if (m_assistant.isQueued(id))
+				{
+					num_q++;
+				}
+				break;
+			}
+		}
+		
+		//StringBuilder out = new StringBuilder();
+		float scale = bar_width_px / num_ex;
+		int num_remaining = num_ex - num_done - num_q - num_failed;
+		
+		out.append("<ul id=\"progress-bar\" style=\"float:left;margin-bottom:20px;width:").append(((float) num_ex) * scale).append("px;\">");
+		out.append("<li class=\"done\" title=\"Done: ").append(num_done).append("\" style=\"width:").append(((float) num_done) * scale).append("px\"><span class=\"text-only\">Done: ").append(num_done).append("</span></li>");
+		out.append("<li class=\"queued\" title=\"Queued: ").append(num_q).append("\" style=\"width:").append(((float) num_q) * scale).append("px\"><span class=\"text-only\">Queued: ").append(num_q).append("</span></li>");
+		out.append("<li class=\"warning\" title=\"Warning: ").append(num_warn).append("\" style=\"width:").append(((float) num_warn) * scale).append("px\"><span class=\"text-only\">Warnings: ").append(num_warn).append("</span></li>");
+		out.append("<li class=\"failed\" title=\"Failed/cancelled: ").append(num_failed).append("\" style=\"width:").append(((float) num_failed) * scale).append("px\"><span class=\"text-only\">Failed/cancelled: ").append(num_failed).append("</span></li>");
+		out.append("<li class=\"other\" title=\"Other: ").append(num_remaining).append("\" style=\"width:").append(((float) num_remaining) * scale).append("px\"><span class=\"text-only\">Other: ").append(num_remaining).append("</span></li>");
+		out.append("</ul>");
+		out.append("<div>").append(num_done).append("/").append(num_ex).append("</div>");
+		out.append("<div style=\"clear:both\"></div>");
+		if (num_q !=0)
+			{
+			   return out.toString();
+			}
+		else return "";
+		
+	}
+	
 }

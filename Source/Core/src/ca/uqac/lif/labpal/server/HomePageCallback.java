@@ -73,6 +73,7 @@ public class HomePageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.HOME));
 		// We deliberately DON'T escape the description, as it is already valid HTML 
 		out = out.replaceAll("\\{%LAB_DESCRIPTION%\\}", Matcher.quoteReplacement(m_labDescription));
+		out = out.replaceAll("\\{%HEADER_PROGRESS_BAR%\\}", getHeaderBar());
 		out = resolveClassText(out);
 		return out;
 	}	

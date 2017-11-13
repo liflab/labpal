@@ -231,7 +231,12 @@ public abstract class Laboratory implements OwnershipManager
 	/**
 	 * The default filename assumed for the HTML description
 	 */
-	private static transient final String s_descriptionDefaultFilename = "description.html"; 
+	private static transient final String s_descriptionDefaultFilename = "description.html";
+	
+	/**
+	 * shadow laboratory
+	 */
+	private static transient Laboratory shadow_laboratory = null;
 
 	/**
 	 * Creates a new lab assistant
@@ -479,6 +484,16 @@ public abstract class Laboratory implements OwnershipManager
 		return ids;
 	}
 
+
+	/**
+	 * Gets the title given to this assistant
+	 * @return The 
+	 */
+	public String getTitle()
+	{
+		return m_title;
+	}
+	
 	/**
 	 * Gets the plot with given ID
 	 * @param id The ID
@@ -498,12 +513,12 @@ public abstract class Laboratory implements OwnershipManager
 
 
 	/**
-	 * Gets the title given to this assistant
-	 * @return The title
+	 * Gets the shadow_laboratory if the current lab has one
+	 * @return The shadow_laboratory
 	 */
-	public String getTitle()
+	public Laboratory getShadowLaboratory()
 	{
-		return m_title;
+		return shadow_laboratory;
 	}
 
 	/**
@@ -818,6 +833,10 @@ public abstract class Laboratory implements OwnershipManager
 		.withLongName("filter")
 		.withArgument("exp")
 		.withDescription("Filter experiments according to expression exp"));
+		parser.addArgument(new Argument()
+		.withLongName("shadow")
+		.withArgument("x")
+		.withDescription("Set shadow laboratory  to x"));
 		return parser;
 	}
 
@@ -866,21 +885,49 @@ public abstract class Laboratory implements OwnershipManager
 		{
 			new_lab = preloadLab(new_lab, stdout);
 		}
+		// are we a shadow lab?
+		if (argument_map.hasOption("shadow"))
+		{
+			String shadowLabFile = argument_map.getOptionValue("shadow");
+			try
+			{
+				shadow_laboratory = clazz.newInstance();
+			} 
+			catch (InstantiationException e)
+			{
+				e.printStackTrace();
+				//System.exit(ERR_LAB);
+			} 
+			catch (IllegalAccessException e)
+			{
+				e.printStackTrace();
+				//System.exit(ERR_LAB);
+			}
+			shadow_laboratory = loadFromFilename(shadow_laboratory, shadowLabFile);
+			shadow_laboratory.setAssistant(assistant);
+			shadow_laboratory.setupCli(parser);
+			shadow_laboratory.setup();
+		}
 		// Are we loading a lab file? If so, this overrides the
 		// lab loaded from an internal file (if any)
 		String filename = "";
 		List<String> names = argument_map.getOthers();
 		for (int i = 0; i < names.size(); i++)
 		{
-			filename = names.get(i);
-			if (i == 0)
+			int ii = 0;
+			if (names.get(i).toUpperCase().endsWith(".LABO"))
 			{
-				new_lab = loadFromFilename(new_lab, filename);
-			}
-			else
-			{
-				Laboratory lab_to_merge = loadFromFilename(new_lab, filename);
-				new_lab.mergeWith(lab_to_merge);
+				filename = names.get(i);
+				if (ii == 0)
+				{
+					new_lab = loadFromFilename(new_lab, filename);
+				}
+				else
+				{
+					Laboratory lab_to_merge = loadFromFilename(new_lab, filename);
+					new_lab.mergeWith(lab_to_merge);
+				}
+				ii++;
 			}
 		}
 		new_lab.setAssistant(assistant);
@@ -944,6 +991,7 @@ public abstract class Laboratory implements OwnershipManager
 			String assistant_name = argument_map.getOptionValue("name").trim();
 			assistant.setName(assistant_name);
 		}
+
 		// Sets an experiment filter
 		String filter_params = "";
 		if (argument_map.hasOption("filter"))

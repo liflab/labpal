@@ -1,6 +1,6 @@
 /*
-  ParkBench, a versatile benchmark environment
-  Copyright (C) 2015-2016 Sylvain Hallé
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -47,8 +47,7 @@ public class DownloadCallback extends WebCallback
 	}
 
 	/**
-	 * Whether to zip the response. Currently, downloading as a zip
-	 * works OK, but uploading as a zip does not work.
+	 * Whether to zip the response
 	 */
 	public static final boolean s_zip = true;
 

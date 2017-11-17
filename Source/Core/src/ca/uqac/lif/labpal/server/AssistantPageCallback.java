@@ -98,12 +98,14 @@ public class AssistantPageCallback extends ExperimentsPageCallback
 		if (m_assistant.isRunning())
 		{
 			out = out.replaceAll("\\{%BTN_STOP%\\}", "<input type=\"submit\" class=\"btn\" id=\"btn-stop\" name=\"stop\" value=\"Stop the assistant\"/>");
+			out = out.replaceAll("\\{%BTN_ACTION%\\}", "stop");
 		}
 		else
 		{
 			if (!m_assistant.getCurrentQueue().isEmpty())
 			{
 				out = out.replaceAll("\\{%BTN_START%\\}", "<input type=\"submit\" class=\"btn\" id=\"btn-start\" name=\"start\" value=\"Start the assistant\"/>");
+				out = out.replaceAll("\\{%BTN_ACTION%\\}", "start");
 			}
 		}
 		if (!m_assistant.getCurrentQueue().isEmpty())

@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
@@ -70,12 +71,18 @@ public class AllPlotsCallback extends WebCallback
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
+		Map<String,String> params = getParameters(t);
+		boolean with_captions = false;
+		if (params.containsKey("captions"))
+		{
+			with_captions = true;
+		}
 		List<String> filenames = new LinkedList<String>();
 		for (int id : m_lab.getPlotIds())
 		{
 			Plot plot = m_lab.getPlot(id);
 			// Get plot's image and write to temporary file
-			byte[] image = plot.getImage(Plot.ImageType.PDF, false);
+			byte[] image = plot.getImage(Plot.ImageType.PDF, with_captions);
 			try
 			{
 				if (image.length > 0)

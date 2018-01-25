@@ -22,10 +22,12 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import ca.uqac.lif.labpal.Claim;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -98,9 +100,14 @@ public class StatusPageCallback extends TemplatePageCallback
 					+ "<span>" + serialization_message + "</span></p>");
 		}
 		out = out.replaceAll("\\{%REPORTING_DIV%\\}", getReportingDiv());
+		out = out.replaceAll("\\{%CLAIM_DIV%\\}", getClaimDiv());
 		return out;
 	}
 
+	/**
+	 * Produces the part of the page that shows the reporting status of the lab
+	 * @return The HTML code for this part of the page
+	 */
 	protected String getReportingDiv()
 	{
 		ResultReporter rep = m_lab.getReporter();
@@ -126,6 +133,44 @@ public class StatusPageCallback extends TemplatePageCallback
 			rep_out.append("</div>\n");
 		}
 		return rep_out.toString();
+	}
+	
+	/**
+	 * Produces the part of the page that shows the status of each claim
+	 * @return The HTML code for this part of the page
+	 */
+	protected String getClaimDiv()
+	{
+		StringBuilder out = new StringBuilder();
+		out.append("<div>\n");
+		Set<Map.Entry<Integer,Claim.Result>> entries = m_lab.getClaimResults().entrySet();
+		if (entries.isEmpty())
+		{
+			out.append("<p>There are no claims made for this lab.</p>\n");
+		}
+		else
+		{
+			out.append("<a id=\"btn-compute-claims\" class=\"btn-24\" href=\"/claims/compute\"><span>Re-evaluate</span></a>\n");
+			StringBuilder claim_list = new StringBuilder();
+			claim_list.append("<table class=\"claim-table\">\n");
+			for (Map.Entry<Integer,Claim.Result> e : entries)
+			{
+				int c_id = e.getKey();
+				Claim c = m_lab.getClaim(c_id);
+				claim_list.append("<tr>");
+				Claim.Result result = e.getValue();
+				claim_list.append("<td>");
+				claim_list.append(ClaimCallback.getClaimIcon(result));
+				claim_list.append("</td>");
+				claim_list.append("<th><a href=\"claim/").append(c_id).append("\">").append(c_id).append("</a></th>");
+				claim_list.append("<td><a href=\"claim/").append(c_id).append("\">").append(c.getName()).append("</a></td>");
+				claim_list.append("</tr>\n");
+			}
+			claim_list.append("</ul>\n");
+			out.append(claim_list);
+		}
+		out.append("</div>\n");
+		return out.toString();
 	}
 
 	/**

@@ -94,9 +94,8 @@ public class ExplainCallback extends TemplatePageCallback
 		out.append("</li>\n");
 	}
 	
-	public static String getDataPointUrl(ProvenanceNode node)
+	public static String getDataPointUrl(NodeFunction nf)
 	{
-		NodeFunction nf = node.getNodeFunction();
 		if (nf == null)
 		{
 			return "#";
@@ -125,7 +124,7 @@ public class ExplainCallback extends TemplatePageCallback
 			}
 			if (first_owner != null)
 			{
-				return "table?id=" + first_owner.getId() + "&highlight=" + highlight_string.toString();
+				return "/table?id=" + first_owner.getId() + "&highlight=" + highlight_string.toString();
 			}
 			else
 			{
@@ -137,29 +136,35 @@ public class ExplainCallback extends TemplatePageCallback
 		{
 			TableCellNode tcn = (TableCellNode) nf;
 			highlight_string.append(tcn.getDataPointId());
-			return "table?id=" + tcn.getOwner().getId() + "&highlight=" + highlight_string.toString();
+			return "/table?id=" + tcn.getOwner().getId() + "&highlight=" + highlight_string.toString();
 		}
 		else if (nf instanceof TableFunctionNode)
 		{
 			TableFunctionNode tcn = (TableFunctionNode) nf;
-			return "table?id=" + tcn.getOwner().getId();
+			return "/table?id=" + tcn.getOwner().getId();
 		}
 		else if (nf instanceof PlotNode)
 		{
 			PlotNode tcn = (PlotNode) nf;
-			return "plot?id=" + tcn.getOwner().getId();
+			return "/plot?id=" + tcn.getOwner().getId();
 		}
 		else if (nf instanceof MacroNode)
 		{
 			MacroNode tcn = (MacroNode) nf;
-			return "macros" + "?highlight=" + tcn.getDataPointId() + "#" + tcn.getOwner().getId();
+			return "/macros" + "?highlight=" + tcn.getDataPointId() + "#" + tcn.getOwner().getId();
 		}
 		else if (nf instanceof ExperimentValue)
 		{
 			ExperimentValue ev = (ExperimentValue) nf;
 			highlight_string.append(ev.getDataPointId());
-			return "experiment?id=" + ev.getOwner().getId() + "&highlight=" + highlight_string.toString();
+			return "/experiment?id=" + ev.getOwner().getId() + "&highlight=" + highlight_string.toString();
 		}
 		return "#";
+	}
+	
+	public static String getDataPointUrl(ProvenanceNode node)
+	{
+		NodeFunction nf = node.getNodeFunction();
+		return getDataPointUrl(nf);
 	}
 }

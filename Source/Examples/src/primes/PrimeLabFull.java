@@ -1,17 +1,21 @@
 package primes;
 
+import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonNumber;
+import ca.uqac.lif.labpal.Claim;
 import ca.uqac.lif.labpal.CliParser;
 import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.provenance.ExperimentValue;
 import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.mtnp.plot.gral.Scatterplot;
 import ca.uqac.lif.mtnp.table.ExpandAsColumns;
+import ca.uqac.lif.petitpoucet.ProvenanceNode;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
 /**
@@ -30,7 +34,7 @@ public class PrimeLabFull extends Laboratory
 		parser.addArgument(new Argument().withLongName("step").withArgument("n")
 				.withDescription("Increment by n (default: 2000)"));
 	}
-	
+
 	@Override
 	public void setup()
 	{
@@ -46,17 +50,17 @@ public class PrimeLabFull extends Laboratory
 		// Print status
 		System.out.println("Ranging from " + start_number + " to " + stop_number 
 				+ " by steps of " + step);
-		
+
 		// Lab metadata
 		setTitle("Comparison of primality tests");
 		setAuthor("Emmett Brown");
 		setDescription("This lab compares various methods for checking if a number is prime.");
-		
+
 		// Create a table
 		ExperimentTable table = new ExperimentTable("Method", "Number", "Duration");
 		table.setTitle("Comparison of primality tests");
 		add(table);
-		
+
 		// Create and add experiments
 		TrialDivision exp_td = new TrialDivision(start_number, stop_number, step);
 		add(exp_td);
@@ -68,30 +72,35 @@ public class PrimeLabFull extends Laboratory
 		add(exp_es);
 		table.add(exp_es);
 		
+		// Add claims for each algorithm
+		add(new MonotonicIncreaseClaim(exp_td));
+		add(new MonotonicIncreaseClaim(exp_wt));
+		add(new MonotonicIncreaseClaim(exp_es));
+
 		// Create a plot, performing a transformation of the table before
 		Scatterplot plot = new Scatterplot(table, new ExpandAsColumns("Method", "Duration"));
 		plot.setLogscale(Axis.X).setCaption(Axis.Y, "Duration (us)");
 		add(plot);
 	}
-	
+
 	public static void main(String[] args)
 	{
 		// Nothing more to do here
 		initialize(args, PrimeLabFull.class);
 	}
-	
+
 	public static abstract class PrimeExperiment extends Experiment
 	{
 		// The bounds of the interval
 		protected long m_startNumber;
 		protected long m_stopNumber;
 		protected long m_step;
-		
+
 		// Define constants instead of hard-coding parameter names
 		public static final String METHOD = "Method";
 		public static final String NUMBER = "Number";
 		public static final String DURATION = "Duration";
-		
+
 		public PrimeExperiment(long start_number, long stop_number, long step)
 		{
 			super();
@@ -130,10 +139,10 @@ public class PrimeLabFull extends Laboratory
 				index++;
 			}
 		}
-		
+
 		public abstract boolean checkForPrime(long number) throws ExperimentException;		
 	}
-	
+
 	/**
 	 * Checks if a number is prime using trial division.
 	 */
@@ -159,7 +168,7 @@ public class PrimeLabFull extends Laboratory
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Checks if a number is prime using Wilson's theorem. The theorem states
 	 * that <i>p</i> is prime if and only if
@@ -194,7 +203,7 @@ public class PrimeLabFull extends Laboratory
 			return is_prime;
 		}
 	}
-	
+
 	/**
 	 * Checks if a number is prime using the Sieve of Erastothenes.
 	 */
@@ -210,20 +219,74 @@ public class PrimeLabFull extends Laboratory
 		@Override
 		public boolean checkForPrime(long n)
 		{
-			 if (n <= 1)
-				 return false;
-			 else if (n <= 3)
-				 return true;
-			 else if (n % 2 == 0 || n % 3 == 0)
-				 return false;
-			 long i = 5;
-			 while (i*i < n)
-			 {
-				 if (n % i == 0 || n % (i + 2) == 0)
-					 return false;
-				 i += 6;
-			 }
-			 return true;		
+			if (n <= 1)
+				return false;
+			else if (n <= 3)
+				return true;
+			else if (n % 2 == 0 || n % 3 == 0)
+				return false;
+			long i = 5;
+			while (i*i < n)
+			{
+				if (n % i == 0 || n % (i + 2) == 0)
+					return false;
+				i += 6;
+			}
+			return true;		
+		}
+	}
+
+	/**
+	 * Claims that the time required for primality check increases
+	 * monotonically with the magnitude of the number
+	 */
+	public static class MonotonicIncreaseClaim extends Claim
+	{
+		protected PrimeExperiment m_experiment;
+
+		public MonotonicIncreaseClaim(PrimeExperiment experiment)
+		{
+			super();
+			setName("Monotonic time for " + experiment.readString(PrimeExperiment.METHOD));
+			setDescription("Asserts that the time required to check the primality of a number using the " + experiment.readString(PrimeExperiment.METHOD) + " increases monotonically with the number's magnitude.");
+			m_experiment = experiment;
+		}
+
+		@Override
+		public Result verify(Laboratory lab)
+		{
+			Result r = Result.OK;
+			JsonList list = (JsonList) m_experiment.read(PrimeExperiment.DURATION);
+			long current = -1, last = -1;
+			int pos = 0;
+			for (JsonElement e : list)
+			{
+				if (e instanceof JsonNull)
+				{
+					current = -1;
+					last = -1;
+					continue;
+				}
+				long v = ((JsonNumber) e).numberValue().longValue();
+				if (last == -1)
+				{
+					last = v;
+				}
+				else
+				{
+					last = current;
+					current = v;
+					if (current < last)
+					{
+						r = Result.WARNING;
+						Explanation exp = new Explanation("The time to check primality of number at position " + pos + " is smaller than the time to check primality of number at position " + (pos-1));
+						exp.add(new ProvenanceNode(new ExperimentValue(m_experiment, PrimeExperiment.DURATION, pos - 1)), new ProvenanceNode(new ExperimentValue(m_experiment, PrimeExperiment.DURATION, pos)));
+						addExplanation(exp);
+					}
+				}
+				pos++;
+			}
+			return r;
 		}
 	}
 }

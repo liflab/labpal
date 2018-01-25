@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -229,6 +231,17 @@ public abstract class Laboratory implements OwnershipManager
 	private transient ResultReporter m_reporter;
 	
 	/**
+	 * A set of claims associated to this lab
+	 */
+	private transient List<Claim> m_claims;
+	
+	/**
+	 * A map associating to each registered claim the last computed result
+	 * for that claim
+	 */
+	private transient Map<Integer,Claim.Result> m_claimStatus;
+	
+	/**
 	 * The default filename assumed for the HTML description
 	 */
 	private static transient final String s_descriptionDefaultFilename = "description.html"; 
@@ -240,6 +253,8 @@ public abstract class Laboratory implements OwnershipManager
 	{
 		super();
 		m_experiments = new HashSet<Experiment>();
+		m_claims = new ArrayList<Claim>();
+		m_claimStatus = new HashMap<Integer,Claim.Result>();
 		m_dataTracker = new DataTracker(this);
 		m_plots = new HashSet<Plot>();
 		m_tables = new HashSet<Table>();
@@ -418,6 +433,21 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return this;
 	}
+	
+	/**
+	 * Assigns claims to this lab
+	 * @param claims The claims
+	 * @return This lab
+	 */
+	public Laboratory add(Claim ... claims)
+	{
+		for (Claim c : claims)
+		{
+			m_claims.add(c);
+			m_claimStatus.put(c.getId(), Claim.Result.UNKNOWN);
+		}
+		return this;
+	}
 
 	/**
 	 * Adds the arguments of a transformed table 
@@ -546,6 +576,41 @@ public abstract class Laboratory implements OwnershipManager
 			ids.add(e.getId());
 		}
 		return ids;
+	}
+	
+	/**
+	 * Gets a claim with given ID
+	 * @param id The ID of the claim to look for
+	 * @return The claim if found, {@code null} otherwise
+	 */
+	public final Claim getClaim(int id)
+	{
+		for (Claim c : m_claims)
+		{
+			if (c.getId() == id)
+			{
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the list of all claims associated to this lab
+	 * @return The list of claims
+	 */
+	public List<Claim> getClaims()
+	{
+		return m_claims;
+	}
+	
+	/**
+	 * Gets the latest status of each claim associated to this lab
+	 * @return A map associating claim IDs with their latest computed result
+	 */
+	public final Map<Integer,Claim.Result> getClaimResults()
+	{
+		return m_claimStatus;
 	}
 
 	public Laboratory start()
@@ -1661,6 +1726,32 @@ public abstract class Laboratory implements OwnershipManager
 	{
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * Recomputes the value of all claims
+	 */
+	public void computeClaims()
+	{
+		for (Claim c : m_claims)
+		{
+			Claim.Result r = c.check();
+			m_claimStatus.put(c.getId(), r);
+		}
+	}
+
+	/**
+	 * Recomputes the value of a claim
+	 * @param claim_nb The claim ID
+	 */
+	public void computeClaim(int claim_nb)
+	{
+		Claim c = getClaim(claim_nb);
+		if (c != null)
+		{
+			Claim.Result r = c.check();
+			m_claimStatus.put(c.getId(), r);
+		}
 	}
 
 }

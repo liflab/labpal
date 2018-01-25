@@ -267,7 +267,7 @@ public abstract class Experiment implements Runnable, DataOwner
 	/**
 	 * Adds a warning for this experiment, enclosing it in a
 	 * generic {@link ExperimentException} object
-	 * @param ex The message
+	 * @param message The message
 	 * @return This experiment
 	 */
 	public Experiment addWarning(String message)

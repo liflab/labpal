@@ -268,7 +268,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	 * Gets the set of keys that should be highlighted in the table of
 	 * experiment results
 	 * @param highlight The key to highlight
-	 * @return
+	 * @return A set of keys to highlight
 	 */
 	protected Set<String> getKeysToHighlight(String highlight)
 	{
@@ -289,7 +289,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	 * Checks if a set of strings contains exactly one specific string
 	 * @param set The set
 	 * @param key The string
-	 * @return
+	 * @return {@code true} if the set contains the key, {@code false} otherwise
 	 */
 	protected static boolean containsExactly(Set<String> set, String key)
 	{
@@ -300,7 +300,8 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	 * Checks if string is the prefix of a string in some set 
 	 * @param set The set
 	 * @param key The string
-	 * @return
+	 * @return {@code true} if the set has an element with {@code key} as its
+	 * prefix, {@code false} otherwise
 	 */
 	protected static boolean containsPrefix(Set<String> set, String key)
 	{

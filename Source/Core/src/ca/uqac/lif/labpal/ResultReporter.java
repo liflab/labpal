@@ -68,11 +68,6 @@ public class ResultReporter implements Runnable
 	 * @param lab The 
 	 * @param host The host to which experimental results should be 
 	 *   reported by HTTP
-	 * @param interval The interval (in ms) at which the lab's 
-	 *   results will be reported. Don't set it too small, as reporting
-	 *   involves serializing the lab, sending an HTTP request and
-	 *   waiting for the response. Set it to a negative value to 
-	 *   disable reporting. 
 	 */
 	public ResultReporter(Laboratory lab, String host)
 	{
@@ -244,7 +239,11 @@ public class ResultReporter implements Runnable
 
 	/**
 	 * Sets the interval at which results will be reported
-	 * @param interval The time interval (in ms)
+	 * @param interval The interval (in ms) at which the lab's 
+	 *   results will be reported. Don't set it too small, as reporting
+	 *   involves serializing the lab, sending an HTTP request and
+	 *   waiting for the response. Set it to a negative value to 
+	 *   disable reporting. 
 	 */
 	public void setInterval(int interval)
 	{

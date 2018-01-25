@@ -437,8 +437,8 @@ public class FileHelper
 	 * List directory contents for a resource folder. Not recursive.
 	 * This is basically a brute-force implementation.
 	 * Works for regular files and also JARs.
-	 * 
-	 * @author Greg Briggs
+	 * <p>
+	 * This method was authored by Greg Briggs.
 	 * @param clazz Any java class that lives in the same place as the resources you want.
 	 * @param path Should end with "/", but not start with one.
 	 * @param glob The pattern to match
@@ -455,13 +455,12 @@ public class FileHelper
 	 * List directory contents for a resource folder. Not recursive.
 	 * This is basically a brute-force implementation.
 	 * Works for regular files and also JARs.
-	 * 
-	 * @author Greg Briggs
+	 * <p>
+	 * This method was authored by Greg Briggs.
 	 * @param clazz Any java class that lives in the same place as the resources you want.
 	 * @param path Should end with "/", but not start with one.
 	 * @param glob The pattern to match
 	 * @param exclude_glob The pattern to exclude files
-	 * @param exclude_dirs Set to {@code true} to ignore entries that are directories
 	 * @return Just the name of each member item, not the full paths.
 	 * @throws URISyntaxException 
 	 * @throws IOException 

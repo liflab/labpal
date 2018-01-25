@@ -159,7 +159,7 @@ public class ClaimCallback extends TemplatePageCallback
 			claim_list.append("<div class=\"status-icon status-exclamation\"><span>WARNING</span></div>");
 			break;
 		case FAIL:
-			claim_list.append("<div class=\"status-icon status-fail\"><span>FAIL</span></div>");
+			claim_list.append("<div class=\"status-icon status-failed\"><span>FAIL</span></div>");
 			break;
 		default:
 			claim_list.append("<div class=\"status-icon status-unknown\"><span>UNKNOWN</span></div>");

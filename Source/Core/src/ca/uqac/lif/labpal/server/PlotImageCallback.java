@@ -121,9 +121,9 @@ public class PlotImageCallback extends WebCallback
 
 	/**
 	 * Gets the image file corresponding to a plot in the given format
-	 * @param plot_id
-	 * @param terminal
-	 * @return
+	 * @param plot_id The ID of the plot to display
+	 * @param format The image file format (png, pdf, dumb or gp)
+	 * @return An array of bytes containing the image
 	 */
 	public byte[] exportTo(int plot_id, String format)
 	{

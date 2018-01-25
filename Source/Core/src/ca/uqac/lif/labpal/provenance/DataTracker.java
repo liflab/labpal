@@ -131,7 +131,7 @@ public class DataTracker
 
 	/**
 	 * Builds a provenance tree for a given data point 
-	 * @param id The ID of the current node
+	 * @param nf A node function
 	 * @return The root of the provenance tree
 	 */
 	public ProvenanceNode explain(NodeFunction nf)
@@ -143,8 +143,9 @@ public class DataTracker
 	/**
 	 * Builds a provenance tree for a given data point 
 	 * @param nf The ID of the current node
-	 * @param added_ids A set of nodes already included in the tree. This
-	 *   is to avoid infinite looping due to possible circular dependencies.
+	 * @param seen_functions A set of nodes functions already included in the
+	 *   tree. This is to avoid infinite looping due to possible circular
+	 *   dependencies.
 	 * @return The root of the provenance tree
 	 */
 	protected ProvenanceNode explain(NodeFunction nf, Set<NodeFunction> seen_functions, int depth)

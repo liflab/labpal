@@ -1158,7 +1158,7 @@ public abstract class Laboratory implements OwnershipManager
 	{
 		String out = "";
 		out += "LabPal " + formatVersion() + " - A versatile environment for running experiments\n";
-		out += "(C) 2014-2017 Laboratoire d'informatique formelle\nUniversité du Québec à Chicoutimi, Canada\n";
+		out += "(C) 2014-2018 Laboratoire d'informatique formelle\nUniversité du Québec à Chicoutimi, Canada\n";
 		return out;
 	}
 
@@ -1608,7 +1608,8 @@ public abstract class Laboratory implements OwnershipManager
 
 	/**
 	 * Attempts to merge the results of a laboratory with the current lab. This
-	 * is done by calling the {@link Experiment#mergeWith(Experiment) mergeWith()}
+	 * is done by calling the
+	 * {@link Experiment#mergeWith(Experiment, boolean) mergeWith()}
 	 * method on experiments with matching IDs in both labs.
 	 * 
 	 * @param lab The lab to merge with the current lab

@@ -219,7 +219,7 @@ public class EditParametersFormCallback extends TemplatePageCallback
 	 * Gets the set of keys that should be highlighted in the table of
 	 * experiment results
 	 * @param highlight The key to highlight
-	 * @return
+	 * @return The set of keys to highlight
 	 */
 	protected Set<String> getKeysToHighlight(String highlight)
 	{
@@ -237,7 +237,7 @@ public class EditParametersFormCallback extends TemplatePageCallback
 	 * Checks if a set of strings contains exactly one specific string
 	 * @param set The set
 	 * @param key The string
-	 * @return
+	 * @return {@code true} if the set contains the string, {@code false} otherwise
 	 */
 	protected static boolean containsExactly(Set<String> set, String key)
 	{
@@ -248,7 +248,8 @@ public class EditParametersFormCallback extends TemplatePageCallback
 	 * Checks if string is the prefix of a string in some set 
 	 * @param set The set
 	 * @param key The string
-	 * @return
+	 * @return {@code true} if the set contains a string that has {@code key}
+	 * as its prefix, {@code false} otherwise
 	 */
 	protected static boolean containsPrefix(Set<String> set, String key)
 	{

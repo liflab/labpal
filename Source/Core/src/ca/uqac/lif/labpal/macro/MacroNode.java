@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2017 Sylvain Hallé
+  Copyright (C) 2014-2018 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -46,8 +46,10 @@ public class MacroNode implements NodeFunction
 	}
 
 	/**
-	 * Gets the identifier of a table
-	 * @param t The table
+	 * Gets the identifier of a macro
+	 * @param m The macro
+	 * @param key The key, in case the macro has multiple key-value
+	 *   pairs
 	 * @return The identifier
 	 */
 	public static String getDatapointId(Macro m, String key)

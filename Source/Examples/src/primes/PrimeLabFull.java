@@ -100,6 +100,11 @@ public class PrimeLabFull extends Laboratory
 		public static final String METHOD = "Method";
 		public static final String NUMBER = "Number";
 		public static final String DURATION = "Duration";
+		
+		protected PrimeExperiment()
+		{
+			super();
+		}
 
 		public PrimeExperiment(long start_number, long stop_number, long step)
 		{
@@ -148,6 +153,11 @@ public class PrimeLabFull extends Laboratory
 	 */
 	public static class TrialDivision extends PrimeExperiment
 	{
+		protected TrialDivision()
+		{
+			super();
+		}
+		
 		public TrialDivision(long start_number, long stop_number, long step)
 		{
 			super(start_number, stop_number, step);
@@ -176,6 +186,11 @@ public class PrimeLabFull extends Laboratory
 	 */
 	public static class WilsonTheorem extends PrimeExperiment
 	{
+		protected WilsonTheorem()
+		{
+			super();
+		}
+		
 		public WilsonTheorem(long start_number, long stop_number, long step)
 		{
 			super(start_number, stop_number, step);
@@ -209,6 +224,11 @@ public class PrimeLabFull extends Laboratory
 	 */
 	public static class EratosthenesSieve extends PrimeExperiment
 	{
+		protected EratosthenesSieve()
+		{
+			super();
+		}
+		
 		public EratosthenesSieve(long start_number, long stop_number, long step)
 		{
 			super(start_number, stop_number, step);

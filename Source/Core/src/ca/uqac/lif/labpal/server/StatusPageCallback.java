@@ -150,7 +150,7 @@ public class StatusPageCallback extends TemplatePageCallback
 		}
 		else
 		{
-			out.append("<a id=\"btn-compute-claims\" class=\"btn-24\" href=\"/claims/compute\"><span>Re-evaluate</span></a>\n");
+			out.append("<a class=\"btn-24 btn-compute-claims\" href=\"/claims/compute\"><span>Re-evaluate</span></a>\n");
 			StringBuilder claim_list = new StringBuilder();
 			claim_list.append("<table class=\"claim-table\">\n");
 			for (Map.Entry<Integer,Claim.Result> e : entries)
@@ -166,7 +166,7 @@ public class StatusPageCallback extends TemplatePageCallback
 				claim_list.append("<td><a href=\"claim/").append(c_id).append("\">").append(c.getName()).append("</a></td>");
 				claim_list.append("</tr>\n");
 			}
-			claim_list.append("</ul>\n");
+			claim_list.append("</table>\n");
 			out.append(claim_list);
 		}
 		out.append("</div>\n");

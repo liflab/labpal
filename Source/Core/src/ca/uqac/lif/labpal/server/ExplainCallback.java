@@ -167,4 +167,31 @@ public class ExplainCallback extends TemplatePageCallback
 		NodeFunction nf = node.getNodeFunction();
 		return getDataPointUrl(nf);
 	}
+
+	/**
+	 * Gets the icon class associated to a node function
+	 * @param nf The node function
+	 * @return The icon class
+	 */
+	public static String getDataPointIconClass(NodeFunction nf)
+	{
+		String dp_id = nf.getDataPointId();
+		if (dp_id.startsWith("E"))
+		{
+			return "experiment";
+		}
+		if (dp_id.startsWith("T"))
+		{
+			return "table";
+		}
+		if (dp_id.startsWith("M"))
+		{
+			return "macro";
+		}
+		if (dp_id.startsWith("P"))
+		{
+			return "plot";
+		}
+		return "other";
+	}
 }

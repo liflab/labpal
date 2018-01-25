@@ -74,7 +74,7 @@ public class ClaimCallback extends TemplatePageCallback
 		{
 			return "";
 		}
-		if (params.containsKey("compute"))
+		if (params.containsKey("compute") || path_parts.contains("compute"))
 		{
 			m_lab.computeClaim(claim_nb);
 		}
@@ -92,7 +92,7 @@ public class ClaimCallback extends TemplatePageCallback
 		{
 			claim_paragraph = "The last time it was checked, this claim was <strong>false</strong> on the contents of the lab.";
 			clm_explanations.append("<h3>Why?</h3>\n\n<p>Below are one or more explanations for the fact that this claim does not hold.</p>\n\n");
-			clm_explanations.append("<ul>\n");
+			clm_explanations.append("<ul class=\"explanation\">\n");
 			for (Explanation exp : exps)
 			{
 				clm_explanations.append("<li>\n");
@@ -114,25 +114,27 @@ public class ClaimCallback extends TemplatePageCallback
 	protected String formatExplanation(Explanation exp)
 	{
 		StringBuilder out = new StringBuilder();
-		out.append(exp.getDescription());
+		out.append("<div class=\"explanation-text\">").append(exp.getDescription()).append("</div>");
 		List<Object> objects = exp.getObjects();
 		if (!objects.isEmpty())
 		{
 			out.append("<ul>\n");
 			for (Object o : objects)
 			{
-				out.append("<li>");
 				if (o instanceof NodeFunction)
 				{
 					NodeFunction dv = (NodeFunction) o;
+					out.append("<li class=\"explanation-").append(ExplainCallback.getDataPointIconClass(dv)).append("\">");
 					out.append("<a href=\"").append(ExplainCallback.getDataPointUrl(dv)).append("\">").append(dv.getDataPointId()).append("</a>");;
+					out.append("</li>");
 				}
 				else if (o instanceof ProvenanceNode)
 				{
 					ProvenanceNode pn = (ProvenanceNode) o;
+					out.append("<li class=\"explanation-").append(ExplainCallback.getDataPointIconClass(pn.getNodeFunction())).append("\">");
 					out.append("<a href=\"").append(ExplainCallback.getDataPointUrl(pn)).append("\">").append(pn).append("</a>");;
+					out.append("</li>");
 				}
-				out.append("</li>");
 			}
 			out.append("</li>\n");
 			out.append("</ul>\n");
@@ -151,16 +153,16 @@ public class ClaimCallback extends TemplatePageCallback
 		switch (result)
 		{
 		case OK:
-			claim_list.append("<div class=\"claim-ok\"><span>OK</span></div>");
+			claim_list.append("<div class=\"status-icon status-done\"><span>OK</span></div>");
 			break;
 		case WARNING:
-			claim_list.append("<div class=\"claim-warning\"><span>WARNING</span></div>");
+			claim_list.append("<div class=\"status-icon status-exclamation\"><span>WARNING</span></div>");
 			break;
 		case FAIL:
-			claim_list.append("<div class=\"claim-fail\"><span>FAIL</span></div>");
+			claim_list.append("<div class=\"status-icon status-fail\"><span>FAIL</span></div>");
 			break;
 		default:
-			claim_list.append("<div class=\"claim-unknown\"><span>UNKNOWN</span></div>");
+			claim_list.append("<div class=\"status-icon status-unknown\"><span>UNKNOWN</span></div>");
 			break;
 		}
 		return claim_list.toString();

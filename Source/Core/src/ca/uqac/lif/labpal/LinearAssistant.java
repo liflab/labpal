@@ -162,7 +162,7 @@ public class LinearAssistant extends LabAssistant
 			}
 		}
 		// If some experiment is running, interrupt it
-		if (m_experimentThread != null)
+		if (m_experimentThread != null && m_experimentThread.isAlive())
 		{
 			m_experimentThread.interrupt();
 		}

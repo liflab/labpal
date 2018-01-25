@@ -243,6 +243,11 @@ h1 {
   padding-left: 40px;
 }
 
+.btn-compute-claims {
+  background: {%COLOR 4%} url('images/reset-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
 .btn-filter {
   background: {%COLOR 4%} url('images/find-24.png') 4px 4px no-repeat;
   padding-left: 40px;
@@ -328,6 +333,10 @@ table.exp-table td {
   background: url('images/status-warning-24.png') left center no-repeat;
 }
 
+.status-icon.status-exclamation {
+  background: url('images/status-exclamation-24.png') left center no-repeat;
+}
+
 .status-icon.status-running {
   background: url('images/status-running-24.png') left center no-repeat;
 }
@@ -344,12 +353,20 @@ table.exp-table td {
   background: url('images/status-timeout-24.png') left center no-repeat;
 }
 
+.status-icon.status-unknown {
+  background: url('images/status-unknown-24.png') left center no-repeat;
+}
+
 .status-icon.status-queued {
   background: url('images/status-queued-24.png') left center no-repeat;
 }
 
 .status-icon.status-prereq {
   background: url('images/status-prereq-24.png') left center no-repeat;
+}
+
+.status-icon > span {
+	display: none;
 }
 
 .plot {
@@ -622,3 +639,46 @@ a.anchor {
 	margin-bottom: 10pt;
 }
 
+/* Icons to represent explanation objects */
+
+.claim-table {
+	margin-top: 10pt;
+}
+
+.explanation-text {
+	margin-bottom: 6pt;
+}
+
+ul.explanation ul {
+	padding-left: 0px;
+}
+
+ul.explanation > li {
+	margin-bottom: 10pt;
+}
+
+ul.explanation ul li {
+	list-style-type: none;
+	padding-left: 20px;
+	margin-left: 0px;
+}
+
+li.explanation-experiment {
+	background: url('images/erlenmeyer-16.png') center left no-repeat;
+}
+
+li.explanation-table {
+	background: url('images/table-16.png') center left no-repeat;
+}
+
+li.explanation-plot {
+	background: url('images/graph-16.png') center left no-repeat;
+}
+
+li.explanation-macro {
+	background: url('images/tulip-16.png') center left no-repeat;
+}
+
+li.explanation-other {
+	background: url('images/info-16.png') center left no-repeat;
+}

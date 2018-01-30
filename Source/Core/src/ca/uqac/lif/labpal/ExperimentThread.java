@@ -57,6 +57,16 @@ public class ExperimentThread extends Thread
 	public void kill()
 	{
 		m_experiment.setRunning(false);
+		m_experiment.prepareToInterrupt();
+		try 
+		{
+			sleep(10);
+		}
+		catch (InterruptedException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		try 
 		{
 			join();

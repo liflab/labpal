@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2018 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -1754,5 +1754,32 @@ public abstract class Laboratory implements OwnershipManager
 			m_claimStatus.put(c.getId(), r);
 		}
 	}
-
+	
+	/**
+	 * Gets all experiments of the lab that fit into a given region
+	 * @param r The region to consider
+	 * @return The subset of of all experiments that lie within the region
+	 */
+	public Collection<Experiment> filterExperiments(Region r)
+	{
+		return Region.filterExperiments(getExperiments(), r);
+	}
+	
+	/**
+	 * Returns the set of all experiments in the lab that are descendents of
+	 * a given class
+	 * @param in_set The set of experiments to filter from
+	 * @param clazz Experiments must be descendents of this class to be kept
+	 * @return The set of experiments that match these conditions
+	 */
+	public static Collection<Experiment> filterExperiments(Collection<? extends Experiment> in_set, Class<? extends Experiment> clazz)
+	{
+		Set<Experiment> set = new HashSet<Experiment>();
+		for (Experiment e : in_set)
+		{
+			if (clazz.isAssignableFrom(e.getClass()))
+				set.add(e);
+		}
+		return set;
+	}
 }

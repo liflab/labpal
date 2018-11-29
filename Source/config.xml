@@ -62,6 +62,7 @@
       <files>
         <zip>https://github.com/liflab/json-lif/releases/download/v1.6.2/json-lif-1.6.2.zip</zip>
       </files>
+      <bundle>true</bundle>
     </dependency>
     <dependency>
       <!--
@@ -72,6 +73,7 @@
       <files>
         <zip>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.3.1/jerrydog-0.3.1.zip</zip>
       </files>
+      <bundle>true</bundle>
     </dependency>
     <dependency>
       <!--
@@ -82,6 +84,7 @@
       <files>
         <zip>https://github.com/sylvainhalle/Azrael/releases/download/v0.7.3-alpha/azrael-0.7.3-alpha.zip</zip>
       </files>
+	<bundle>true</bundle>
     </dependency>
     <dependency>
       <!--
@@ -92,6 +95,7 @@
       <files>
         <zip>https://github.com/liflab/mtnp/releases/download/v0.1.8-alpha/mtnp-0.1.8-alpha.zip</zip>
       </files>
+	<bundle>true</bundle>
     </dependency>
     <dependency>
       <!--
@@ -101,7 +105,8 @@
       <classname>ca.uqac.lif.petitpoucet.DataOwner</classname>
       <files>
         <zip>https://github.com/liflab/petitpoucet/releases/download/v0.2-alpha/petitpoucet-0.2-alpha.zip</zip>
-      </files>
+</files>
+	<bundle>true</bundle>
     </dependency>
   </dependencies>
 </build>

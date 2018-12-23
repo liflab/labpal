@@ -24,10 +24,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.json.JsonElement;
@@ -340,10 +342,16 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		{
 			String file_contents = exportToStaticHtml(exp_id);
 			String filename = "experiment/" + exp_id + ".html";
+			try {
 			ZipEntry ze = new ZipEntry(filename);
 			zos.putNextEntry(ze);
 			zos.write(file_contents.getBytes());
 			zos.closeEntry();
+			}
+			catch (ZipException e)
+			{
+				System.out.println(e);
+			}
 		}		
 	}
 }

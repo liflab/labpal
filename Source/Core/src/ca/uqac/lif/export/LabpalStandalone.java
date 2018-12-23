@@ -1,4 +1,4 @@
-package ca.uqac.lif.codeocean;
+package ca.uqac.lif.export;
 
 import java.util.List;
 import ca.uqac.lif.labpal.LabAssistant;
@@ -14,6 +14,7 @@ public class LabpalStandalone extends LabpalPlatform implements IPlatform {
 	public LabpalStandalone(Laboratory m_lab, LabAssistant m_assistant, AnsiPrinter m_printer,
 			List<WebCallback> callbacks) {
 		super(m_lab, m_assistant, m_printer);
+		config();
 		this.server = new LabPalServer(null, m_lab, m_assistant);
 		if (callbacks != null) {
 			for (WebCallback cb : callbacks) {
@@ -21,14 +22,16 @@ public class LabpalStandalone extends LabpalPlatform implements IPlatform {
 			}
 		}
 
-		super.run();
-
 	}
 
 	@Override
+	protected void config() {
+		FileManager.mkdir(Config.getProp("pathOutput"));
+	}
+	@Override
 	public void export() {
-		String path = Config.getProp("pathImageAbsolute") + Config.getProp("imageName") + ".zip";
-		FileManager.mkdir(Config.getProp("pathImageAbsolute"));
+		String path = Config.getProp("pathOutput") + Config.getProp("zipName") + ".zip";
+		FileManager.mkdir(Config.getProp("pathOutput"));
 		server.exportToStaticHtml(path);
 
 	}

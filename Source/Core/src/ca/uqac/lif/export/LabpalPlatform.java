@@ -1,4 +1,4 @@
-package ca.uqac.lif.codeocean;
+package ca.uqac.lif.export;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Experiment.QueueStatus;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.config.Config;
 import ca.uqac.lif.mtnp.plot.Plot;
 import ca.uqac.lif.mtnp.plot.Plot.ImageType;
 import ca.uqac.lif.mtnp.plot.gnuplot.GnuPlot;
@@ -152,6 +153,7 @@ public class LabpalPlatform {
 	}
 
 	protected void runFinishing() {
+		m_printer.print("\nPath output: "+Config.getProp("pathOutput"));
 		m_printer.print("\nDone");
 
 	}
@@ -191,6 +193,9 @@ public class LabpalPlatform {
 
 	protected void export() {
 
+	}
+	protected void config() {
+		
 	}
 
 }

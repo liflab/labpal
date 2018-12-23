@@ -1,4 +1,4 @@
-package ca.uqac.lif.codeocean;
+package ca.uqac.lif.export;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -81,20 +81,10 @@ public class FileManager {
 
 	public static void writeFile(String pathAbsolute, String fileName, String format, byte[] content)
 			throws IOException {
-		// "C:\\Users\\chafik.meniar\\Documents\\test\\" + filename + "." + ext
-
-		if (FileType.PNG.toString().toLowerCase().equals(format.substring(1))) {
+			if (FileType.PNG.toString().toLowerCase().equals(format.substring(1))) {
 			saveImage(pathAbsolute, fileName, content);
 		} else if (FileType.PDF.toString().toLowerCase().equals(format.substring(1))) {
 			savePdf(pathAbsolute, fileName, content);
-		} else {
-			/*
-			 * File f = new File(pathAbsolute+fileName+format); ZipOutputStream out = new
-			 * ZipOutputStream(new FileOutputStream(f)); ZipEntry e = new ZipEntry();
-			 * out.putNextEntry(e); out.write(content); out.closeEntry();
-			 * 
-			 * out.close();
-			 */
 		}
 
 	}
@@ -135,11 +125,11 @@ public class FileManager {
 		FileInputStream inputStream = null;
 		StringBuilder st = new StringBuilder();
 
-		if (ENV.WEB.equals(Config.env)) {
+		if (ENV.WINDOWS_LINUX.equals(Config.env)) {
 			try {
 				String root_path = "ca/uqac/lif/codeocean/";
 				String folder = "resource/";
-				String chemin = root_path + folder + fileName;
+				String chemin = root_path + folder + fileName+format;
 				// Getting ClassLoader obj
 				ClassLoader classLoader = FileManager.class.getClassLoader();
 				// Getting resource(File) from class loader
@@ -196,7 +186,7 @@ public class FileManager {
 			// Merging the two documents
 			PDFmerger.mergeDocuments();
             
-			System.out.println("Documents merged");
+			//System.out.println("Documents merged");
 			
 			for(PDDocument pdd:lstPDD)
 				pdd.close();

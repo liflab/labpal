@@ -138,6 +138,7 @@ public class TablePageCallback extends TemplatePageCallback
 		String contents = render(file, params, true);
 		contents = createStaticLinks(contents);
 		contents = relativizeUrls(contents, "../");
+		contents = contents.replaceAll("href=\"../explain(.)id=(T.+)\"", "href=\"../table/$2.html\"");
 		return contents;
 	}
 	

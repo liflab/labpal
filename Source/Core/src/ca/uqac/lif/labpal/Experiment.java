@@ -32,27 +32,30 @@ import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonPath;
 import ca.uqac.lif.json.JsonString;
-import ca.uqac.lif.petitpoucet.DataOwner;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
+import ca.uqac.lif.petitpoucet.DataOwner;
 import ca.uqac.lif.petitpoucet.NodeFunction;
 
 /**
- * An experiment is a runnable process that takes input parameters and
- * produces output parameters.
+ * An experiment is a runnable process that takes input parameters and produces
+ * output parameters.
  * 
  * @author Sylvain Hallé
  */
-public abstract class Experiment implements Runnable, DataOwner
-{
+public abstract class Experiment implements Runnable, DataOwner {
 	/**
 	 * The status of the experiment
 	 */
-	public static enum Status {DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, DONE, DONE_WARNING, FAILED, TIMEOUT, INTERRUPTED, RUNNING_REMOTELY};
+	public static enum Status {
+		DUNNO, PREREQ_NOK, PREREQ_OK, PREREQ_F, RUNNING, DONE, DONE_WARNING, FAILED, TIMEOUT, INTERRUPTED, RUNNING_REMOTELY
+	};
 
 	/**
 	 * The queuing status of the experiment
 	 */
-	public static enum QueueStatus {QUEUED, QUEUED_REMOTELY, NOT_QUEUED};
+	public static enum QueueStatus {
+		QUEUED, QUEUED_REMOTELY, NOT_QUEUED
+	};
 
 	/**
 	 * The input parameters given to this experiment
@@ -88,25 +91,24 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * A numerical value that uniquely identifies each experiment in a lab
 	 */
 	private int m_id;
-
+	public boolean finished = false;
 	/**
-	 * The maximum duration for this experiment (in milliseconds).
-	 * If the experiment lasts longer than this duration, the lab assistant
-	 * can interrupt it. A negative value indicates that no timeout
-	 * applies.
+	 * The maximum duration for this experiment (in milliseconds). If the experiment
+	 * lasts longer than this duration, the lab assistant can interrupt it. A
+	 * negative value indicates that no timeout applies.
 	 */
 	private long m_maxDuration = -1;
 
 	/**
-	 * A list of exceptions that the experiment does not throw, but
-	 * rather adds to a list
+	 * A list of exceptions that the experiment does not throw, but rather adds to a
+	 * list
 	 */
 	protected transient List<ExperimentException> m_warnings;
 
 	/**
-	 * Association of experiment parameters with a short textual description 
+	 * Association of experiment parameters with a short textual description
 	 */
-	private transient Map<String,String> m_parameterDescriptions;
+	private transient Map<String, String> m_parameterDescriptions;
 
 	/**
 	 * The start time of the experiment
@@ -142,18 +144,17 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * A random number generator associated with this experiment
 	 */
 	transient ca.uqac.lif.labpal.Random m_random;
-	
+
 	/**
 	 * A flag to signal the experiment to stop
 	 */
 	private transient volatile boolean m_running = false;
 
-	public Experiment(Status status)
-	{
+	public Experiment(Status status) {
 		super();
 		m_inputParameters = new JsonMap();
 		m_outputParameters = new JsonMap();
-		m_parameterDescriptions = new HashMap<String,String>();
+		m_parameterDescriptions = new HashMap<String, String>();
 		m_keysToHide = new HashSet<String>();
 		m_editableKeys = new HashSet<String>();
 		m_warnings = new ArrayList<ExperimentException>();
@@ -164,153 +165,153 @@ public abstract class Experiment implements Runnable, DataOwner
 		m_random = null;
 	}
 
-	public Experiment()
-	{
+	public Experiment() {
 		this(Status.DUNNO);
 	}
 
-	public Experiment(JsonMap params)
-	{
+	public Experiment(JsonMap params) {
 		this();
 		m_inputParameters = params;
 	}
 
 	/**
 	 * Sets the experiment's ID
-	 * @param id The ID
+	 * 
+	 * @param id
+	 *            The ID
 	 * @return This experiment
 	 */
-	public final Experiment setId(int id)
-	{
+	public final Experiment setId(int id) {
 		m_id = id;
 		return this;
 	}
 
 	/**
 	 * Sets the queuing status of this experiment
-	 * @param s The status
+	 * 
+	 * @param s
+	 *            The status
 	 * @return This experiment
 	 */
-	public final Experiment setQueueStatus(QueueStatus s)
-	{
+	public final Experiment setQueueStatus(QueueStatus s) {
 		m_queueStatus = s;
 		return this;
 	}
 
 	/**
 	 * Gets the queuing status of this experiment
-	 * @return  The status
+	 * 
+	 * @return The status
 	 */
-	public final QueueStatus getQueueStatus()
-	{
+	public final QueueStatus getQueueStatus() {
 		return m_queueStatus;
 	}
 
 	/**
 	 * Checks if the prerequisites for running this experiment are currently
-	 * fulfilled. Override this method if your experiment must do some form of
-	 * setup before starting (e.g. generating files, etc.). Do <em>not</em>
-	 * satisfy the prerequisites here: rather use
-	 * {@link #fulfillPrerequisites()}.
+	 * fulfilled. Override this method if your experiment must do some form of setup
+	 * before starting (e.g. generating files, etc.). Do <em>not</em> satisfy the
+	 * prerequisites here: rather use {@link #fulfillPrerequisites()}.
 	 * 
 	 * @return true if the prerequisites are fulfilled, false otherwise
 	 */
-	public boolean prerequisitesFulfilled()
-	{
+	public boolean prerequisitesFulfilled() {
 		return true;
 	}
 
 	/**
-	 * Generates the prerequisites for running this experiment.
-	 * Override this method if your experiment must do some form of
-	 * setup before starting (e.g. generating files, etc.). Obviously, there
-	 * should be some form of coherence between this method and 
-	 * {@link #prerequisitesFulfilled()}.
+	 * Generates the prerequisites for running this experiment. Override this method
+	 * if your experiment must do some form of setup before starting (e.g.
+	 * generating files, etc.). Obviously, there should be some form of coherence
+	 * between this method and {@link #prerequisitesFulfilled()}.
 	 * 
-	 * @throws ExperimentException If the prerequisites have not been
-	 *   successfully generated
+	 * @throws ExperimentException
+	 *             If the prerequisites have not been successfully generated
 	 */
-	public void fulfillPrerequisites() throws ExperimentException
-	{
+	public void fulfillPrerequisites() throws ExperimentException {
 		return;
 	}
 
 	/**
-	 * Cleans any prerequisites this experiment may have generated.
-	 * For example: deleting files that were generated, etc.
+	 * Cleans any prerequisites this experiment may have generated. For example:
+	 * deleting files that were generated, etc.
 	 */
-	public void cleanPrerequisites()
-	{
+	public void cleanPrerequisites() {
 		return;
 	}
 
 	/**
 	 * Adds the name of a key to hide from the experiment list
-	 * @param key The key
+	 * 
+	 * @param key
+	 *            The key
 	 */
-	public void addKeyToHide(String key)
-	{
+	public void addKeyToHide(String key) {
 		m_keysToHide.add(key);
 	}
 
 	/**
 	 * Adds a warning for this experiment
-	 * @param ex The warning
+	 * 
+	 * @param ex
+	 *            The warning
 	 * @return This experiment
 	 */
-	public Experiment addWarning(ExperimentException ex)
-	{
+	public Experiment addWarning(ExperimentException ex) {
 		m_warnings.add(ex);
 		return this;
 	}
 
 	/**
-	 * Adds a warning for this experiment, enclosing it in a
-	 * generic {@link ExperimentException} object
-	 * @param message The message
+	 * Adds a warning for this experiment, enclosing it in a generic
+	 * {@link ExperimentException} object
+	 * 
+	 * @param message
+	 *            The message
 	 * @return This experiment
 	 */
-	public Experiment addWarning(String message)
-	{
+	public Experiment addWarning(String message) {
 		m_warnings.add(new ExperimentException(message));
 		return this;
 	}
 
 	/**
 	 * Gets the warnings associated to this experiment
+	 * 
 	 * @return A list of warnings
 	 */
-	public List<ExperimentException> getWarnings()
-	{
+	public List<ExperimentException> getWarnings() {
 		return m_warnings;
 	}
 
 	/**
 	 * Checks if this experiment has warnings associated to it
+	 * 
 	 * @return {@code true} if there are warnings, {@code false} otherwise
 	 */
-	public boolean hasWarnings()
-	{
+	public boolean hasWarnings() {
 		return !m_warnings.isEmpty();
 	}
 
 	/**
 	 * Determines if this parameter should be hidden from the experiment list
-	 * @param key The key
+	 * 
+	 * @param key
+	 *            The key
 	 * @return true if the parameter should be hidden; false otherwise
 	 */
-	public boolean isHidden(String key)
-	{
+	public boolean isHidden(String key) {
 		return m_keysToHide.contains(key);
 	}
 
 	/**
 	 * Sets the description for this experiment
-	 * @param d The description. It must be valid HTML.
+	 * 
+	 * @param d
+	 *            The description. It must be valid HTML.
 	 * @return This experiment
 	 */
-	public Experiment setDescription(String d)
-	{
+	public Experiment setDescription(String d) {
 		if (d != null)
 			m_description = d;
 		return this;
@@ -318,33 +319,34 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Gets the description for this experiment
-	 * @return The description. If you override this method, make sure it
-	 * outputs valid HTML. Its contents are <em>not</em> escaped by the
-	 * server.
+	 * 
+	 * @return The description. If you override this method, make sure it outputs
+	 *         valid HTML. Its contents are <em>not</em> escaped by the server.
 	 */
-	public String getDescription()
-	{
+	public String getDescription() {
 		return m_description;
 	}
 
 	/**
 	 * Executes the experiment.
-	 * @throws ExperimentException Used to signal the abnormal termination
-	 *   of the experiment. If this method ends without throwing an exception,
-	 *   it is assumed it has completed successfully.
+	 * 
+	 * @throws ExperimentException
+	 *             Used to signal the abnormal termination of the experiment. If
+	 *             this method ends without throwing an exception, it is assumed it
+	 *             has completed successfully.
 	 */
 	public abstract void execute() throws ExperimentException, InterruptedException;
 
 	/**
 	 * Reads an output parameter for this experiment
-	 * @param key The path leading to the parameter
+	 * 
+	 * @param key
+	 *            The path leading to the parameter
 	 * @return The parameter
 	 */
-	public final int readInt(String key)
-	{
+	public final int readInt(String key) {
 		JsonElement e = read(key);
-		if (e != null && e instanceof JsonNumber)
-		{
+		if (e != null && e instanceof JsonNumber) {
 			return ((JsonNumber) e).numberValue().intValue();
 		}
 		return 0;
@@ -352,14 +354,14 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Reads an output parameter for this experiment
-	 * @param key The path leading to the parameter
+	 * 
+	 * @param key
+	 *            The path leading to the parameter
 	 * @return The parameter
 	 */
-	public final long readLong(String key)
-	{
+	public final long readLong(String key) {
 		JsonElement e = read(key);
-		if (e != null && e instanceof JsonNumber)
-		{
+		if (e != null && e instanceof JsonNumber) {
 			return ((JsonNumber) e).numberValue().longValue();
 		}
 		return 0;
@@ -367,14 +369,14 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Reads an output parameter for this experiment
-	 * @param key The path leading to the parameter
+	 * 
+	 * @param key
+	 *            The path leading to the parameter
 	 * @return The parameter
 	 */
-	public final float readFloat(String key)
-	{
+	public final float readFloat(String key) {
 		JsonElement e = read(key);
-		if (e != null && e instanceof JsonNumber)
-		{
+		if (e != null && e instanceof JsonNumber) {
 			return ((JsonNumber) e).numberValue().intValue();
 		}
 		return 0;
@@ -382,18 +384,17 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Reads an output parameter for this experiment
-	 * @param key The path leading to the parameter
+	 * 
+	 * @param key
+	 *            The path leading to the parameter
 	 * @return The parameter
 	 */
-	public final String readString(String key)
-	{
+	public final String readString(String key) {
 		JsonElement e = read(key);
-		if (e == null)
-		{
+		if (e == null) {
 			return null;
 		}
-		if (e instanceof JsonString)
-		{
+		if (e instanceof JsonString) {
 			return ((JsonString) e).stringValue();
 		}
 		return e.toString();
@@ -401,14 +402,14 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Reads an output parameter for this experiment
-	 * @param key The path leading to the parameter
+	 * 
+	 * @param key
+	 *            The path leading to the parameter
 	 * @return The parameter
 	 */
-	public final JsonMap readMap(String key)
-	{
+	public final JsonMap readMap(String key) {
 		JsonElement e = read(key);
-		if (e != null && e instanceof JsonMap)
-		{
+		if (e != null && e instanceof JsonMap) {
 			return (JsonMap) e;
 		}
 		return null;
@@ -416,14 +417,14 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Reads an output parameter for this experiment
-	 * @param key The path leading to the parameter
+	 * 
+	 * @param key
+	 *            The path leading to the parameter
 	 * @return The parameter
 	 */
-	public final JsonList readList(String key)
-	{
+	public final JsonList readList(String key) {
 		JsonElement e = read(key);
-		if (e != null && e instanceof JsonList)
-		{
+		if (e != null && e instanceof JsonList) {
 			return (JsonList) e;
 		}
 		return null;
@@ -431,28 +432,24 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Sets an output parameter for this experiment
-	 * @param key The key for this parameter
-	 * @param value The parameter's value
+	 * 
+	 * @param key
+	 *            The key for this parameter
+	 * @param value
+	 *            The parameter's value
 	 * @return This experiment
 	 */
-	public final Experiment writePrimitive(String key, String value)
-	{
+	public final Experiment writePrimitive(String key, String value) {
 		int x;
 		float f;
-		try
-		{
+		try {
 			// Is it an int
 			x = Integer.parseInt(value);
-		}
-		catch (NumberFormatException e1)
-		{
-			try
-			{
+		} catch (NumberFormatException e1) {
+			try {
 				// No; is it a float?
 				f = Float.parseFloat(value);
-			}
-			catch (NumberFormatException e2)
-			{
+			} catch (NumberFormatException e2) {
 				// Then it's a string
 				return write(key, value);
 			}
@@ -463,51 +460,57 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Sets an output parameter for this experiment
-	 * @param key The key for this parameter
-	 * @param value The parameter's value
+	 * 
+	 * @param key
+	 *            The key for this parameter
+	 * @param value
+	 *            The parameter's value
 	 * @return This experiment
 	 */
-	public final Experiment write(String key, JsonElement value)
-	{
+	public final Experiment write(String key, JsonElement value) {
 		m_outputParameters.put(key, value);
 		return this;
 	}
 
 	/**
 	 * Sets an output parameter for this experiment
-	 * @param key The key for this parameter
-	 * @param value The parameter's value
+	 * 
+	 * @param key
+	 *            The key for this parameter
+	 * @param value
+	 *            The parameter's value
 	 * @return This experiment
 	 */
-	public final Experiment write(String key, Number value)
-	{
+	public final Experiment write(String key, Number value) {
 		m_outputParameters.put(key, value);
+
 		return this;
 	}
 
 	/**
 	 * Sets an output parameter for this experiment
-	 * @param key The key for this parameter
-	 * @param value The parameter's value
+	 * 
+	 * @param key
+	 *            The key for this parameter
+	 * @param value
+	 *            The parameter's value
 	 * @return This experiment
 	 */
-	public final Experiment write(String key, String value)
-	{
+	public final Experiment write(String key, String value) {
 		m_outputParameters.put(key, value);
 		return this;
 	}
 
-
 	/**
-	 * Sets an input parameter for this experiment by copying those from
-	 * an existing map
-	 * @param params The input parameters
+	 * Sets an input parameter for this experiment by copying those from an existing
+	 * map
+	 * 
+	 * @param params
+	 *            The input parameters
 	 * @return This experiment
 	 */
-	public final Experiment setInput(JsonMap params)
-	{
-		for (String key : params.keySet())
-		{
+	public final Experiment setInput(JsonMap params) {
+		for (String key : params.keySet()) {
 			setInput(key, params.get(key));
 		}
 		return this;
@@ -515,43 +518,40 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Sets an input parameter for this experiment
-	 * @param key The key for this parameter
-	 * @param value The parameter's value
+	 * 
+	 * @param key
+	 *            The key for this parameter
+	 * @param value
+	 *            The parameter's value
 	 * @return This experiment
 	 */
-	public final Experiment setInput(String key, String value)
-	{
+	public final Experiment setInput(String key, String value) {
 		m_inputParameters.put(key, value);
 		return this;
 	}
 
 	/**
-	 * Sets an input parameter for this experiment, by trying to cast
-	 * its string value into a primitive number type (int or float)
-	 * if possible
-	 * @param key The key for this parameter
-	 * @param value The parameter's value. If the parameter cannot be cast
-	 * as a number, it will
+	 * Sets an input parameter for this experiment, by trying to cast its string
+	 * value into a primitive number type (int or float) if possible
+	 * 
+	 * @param key
+	 *            The key for this parameter
+	 * @param value
+	 *            The parameter's value. If the parameter cannot be cast as a
+	 *            number, it will
 	 * @return This experiment
 	 */
-	public final Experiment setInputPrimitive(String key, String value)
-	{
+	public final Experiment setInputPrimitive(String key, String value) {
 		int x;
 		float f;
-		try
-		{
+		try {
 			// Is it an int
 			x = Integer.parseInt(value);
-		}
-		catch (NumberFormatException e1)
-		{
-			try
-			{
+		} catch (NumberFormatException e1) {
+			try {
 				// No; is it a float?
 				f = Float.parseFloat(value);
-			}
-			catch (NumberFormatException e2)
-			{
+			} catch (NumberFormatException e2) {
 				// Then it's a string
 				return setInput(key, value);
 			}
@@ -562,125 +562,128 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Sets an input parameter for this experiment
-	 * @param key The key for this parameter
-	 * @param value The parameter's value
+	 * 
+	 * @param key
+	 *            The key for this parameter
+	 * @param value
+	 *            The parameter's value
 	 * @return This experiment
 	 */
-	public final Experiment setInput(String key, Number value)
-	{
+	public final Experiment setInput(String key, Number value) {
 		m_inputParameters.put(key, value);
 		return this;
 	}
 
 	/**
 	 * Sets an input parameter for this experiment
-	 * @param key The key for this parameter
-	 * @param value The parameter's value
+	 * 
+	 * @param key
+	 *            The key for this parameter
+	 * @param value
+	 *            The parameter's value
 	 * @return This experiment
 	 */
-	public final Experiment setInput(String key, JsonElement value)
-	{
+	public final Experiment setInput(String key, JsonElement value) {
 		m_inputParameters.put(key, value);
 		return this;
 	}
 
 	/**
 	 * Sets the names of the parameters that are editable by the user
-	 * @param parameters The names of the parameters
+	 * 
+	 * @param parameters
+	 *            The names of the parameters
 	 * @return This experiment
 	 */
-	public final Experiment setEditableParameters(String ... parameters)
-	{
-		for (String k : parameters)
-		{
+	public final Experiment setEditableParameters(String... parameters) {
+		for (String k : parameters) {
 			m_editableKeys.add(k);
 		}
 		return this;
 	}
 
 	/**
-	 * Checks if an experiment is editable. This is the case when at least
-	 * one input parameter has been declared editable.
+	 * Checks if an experiment is editable. This is the case when at least one input
+	 * parameter has been declared editable.
+	 * 
 	 * @see #setEditableParameters(String...)
 	 * @return {@code true} if the experiment can be edited by the user,
-	 *   {@code false} otherwise
+	 *         {@code false} otherwise
 	 */
-	public final boolean isEditable()
-	{
+	public final boolean isEditable() {
 		return !m_editableKeys.isEmpty();
 	}
 
 	/**
 	 * Checks if an input parameter is editable
-	 * @param parameter The name of the input parameter
-	 * @return {@code true} if the parameter is editable, {@code false}
-	 *   otherwise
+	 * 
+	 * @param parameter
+	 *            The name of the input parameter
+	 * @return {@code true} if the parameter is editable, {@code false} otherwise
 	 */
-	public final boolean isEditable(String parameter)
-	{
+	public final boolean isEditable(String parameter) {
 		return m_editableKeys.contains(parameter);
 	}
 
 	/**
 	 * Gets the ID of this experiment. Note that the ID is controlled by the
 	 * laboratory, and should not be used for anything meaningful.
+	 * 
 	 * @return The ID
 	 */
-	public final int getId()
-	{
+	public final int getId() {
 		return m_id;
 	}
 
 	/**
 	 * Gets the start time of the experiment
-	 * @return The difference, measured in milliseconds,
-	 *   between the start time and midnight, January 1, 1970 UTC. The
-	 *   value is -1 if the experiment has not started yet.
+	 * 
+	 * @return The difference, measured in milliseconds, between the start time and
+	 *         midnight, January 1, 1970 UTC. The value is -1 if the experiment has
+	 *         not started yet.
 	 */
-	public final long getStartTime()
-	{
+	public final long getStartTime() {
 		return m_startTime;
 	}
 
 	/**
 	 * Gets the end time of the experiment
-	 * @return The difference, measured in milliseconds,
-	 *   between the end time and midnight, January 1, 1970 UTC. The
-	 *   value is -1 if the experiment has not started yet or is still
-	 *   running.
+	 * 
+	 * @return The difference, measured in milliseconds, between the end time and
+	 *         midnight, January 1, 1970 UTC. The value is -1 if the experiment has
+	 *         not started yet or is still running.
 	 */
-	public final long getEndTime()
-	{
+	public final long getEndTime() {
 		return m_endTime;
 	}
 
 	/**
 	 * Gets the name of the lab assistant that ran the experiment
+	 * 
 	 * @return The name, or the empty string if the experiment has not run yet
 	 */
-	public final String getWhoRan()
-	{
+	public final String getWhoRan() {
 		return m_runBy;
 	}
 
 	/**
 	 * Sets the name of the lab assistant that ran the experiment
-	 * @param name The name of the assistant that ran the experiment
+	 * 
+	 * @param name
+	 *            The name of the assistant that ran the experiment
 	 * @return This experiment
 	 */
-	public final Experiment setWhoRan(String name)
-	{
+	public final Experiment setWhoRan(String name) {
 		m_runBy = name;
 		return this;
 	}
 
 	/**
-	 * Resets the experiment. This puts the experiment in the same state as if
-	 * it were not run. However, if prerequisites were generated, they are not
-	 * deleted. Use {@link #clean()} to do so.
+	 * Resets the experiment. This puts the experiment in the same state as if it
+	 * were not run. However, if prerequisites were generated, they are not deleted.
+	 * Use {@link #clean()} to do so.
 	 */
-	public synchronized final void reset()
-	{
+	public synchronized final void reset() {
 		m_outputParameters.clear();
 		m_startTime = -1;
 		m_endTime = -1;
@@ -692,29 +695,23 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Resets the experiment and clears any prerequisites it may have generated.
-	 * This puts the experiment in the same state as if
-	 * it were not run.
+	 * This puts the experiment in the same state as if it were not run.
 	 */
-	public final void clean()
-	{
+	public final void clean() {
 		cleanPrerequisites();
 		reset();
 	}
 
 	/**
 	 * Gets the current status of this experiment
+	 * 
 	 * @return The status
 	 */
-	public synchronized final Status getStatus()
-	{
-		if (m_status == Status.DUNNO || m_status == Status.PREREQ_NOK || m_status == Status.PREREQ_OK)
-		{
-			if (prerequisitesFulfilled())
-			{
+	public synchronized final Status getStatus() {
+		if (m_status == Status.DUNNO || m_status == Status.PREREQ_NOK || m_status == Status.PREREQ_OK) {
+			if (prerequisitesFulfilled()) {
 				m_status = Status.PREREQ_OK;
-			}
-			else
-			{
+			} else {
 				m_status = Status.PREREQ_NOK;
 			}
 		}
@@ -722,18 +719,13 @@ public abstract class Experiment implements Runnable, DataOwner
 	}
 
 	@Override
-	public final void run()
-	{
+	public final void run() {
 		m_running = true;
 		m_startTime = System.currentTimeMillis();
-		if (!prerequisitesFulfilled())
-		{
-			try
-			{
+		if (!prerequisitesFulfilled()) {
+			try {
 				fulfillPrerequisites();
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				// If the call throws anything, we consider it a failure
 				m_status = Status.PREREQ_F;
 				StringWriter sw = new StringWriter();
@@ -745,20 +737,16 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		m_status = Status.PREREQ_OK;
 		m_status = Status.RUNNING;
-		try
-		{
+		try {
 			execute();
 			m_status = Status.DONE;
-			if (m_status != Status.INTERRUPTED)
-			{
+			if (m_status != Status.INTERRUPTED) {
 				// The interrupt() method may have already changed the
 				// experiment's status. If so, we don't overwrite it with
 				// DONE
 				m_status = Status.DONE;
 			}
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			// If the experiment throws anything, we consider it a failure
 			m_status = Status.FAILED;
 			StringWriter sw = new StringWriter();
@@ -768,153 +756,147 @@ public abstract class Experiment implements Runnable, DataOwner
 		}
 		m_endTime = System.currentTimeMillis();
 		validate();
-		if (hasWarnings() && m_status == Status.DONE)
-		{
+		if (hasWarnings() && m_status == Status.DONE) {
 			m_status = Status.DONE_WARNING;
 		}
 		m_running = false;
+		finished = true;
 	}
-	
+
 	/**
 	 * Checks if the experiment is supposed to run
-	 * @return {@code true} if the experiment should keep running,
-	 * {@code false} if it should stop immediately 
+	 * 
+	 * @return {@code true} if the experiment should keep running, {@code false} if
+	 *         it should stop immediately
 	 */
-	public final boolean isRunning()
-	{
+	public final boolean isRunning() {
 		return m_running;
 	}
 
 	/**
 	 * Returns the (eventual) error message produced by the execution of this
 	 * experiment.
+	 * 
 	 * @return The message, or the empty string if nothing
 	 */
-	public final String getErrorMessage()
-	{
+	public final String getErrorMessage() {
 		return m_errorMessage;
 	}
 
 	/**
 	 * Sets an error message produced by the execution of the experiment. The
-	 * message is intended to explain why the experiment has failed, and should
-	 * be left empty if the experiment has not run yet or has finished
-	 * successfully.
-	 * @param message The message
+	 * message is intended to explain why the experiment has failed, and should be
+	 * left empty if the experiment has not run yet or has finished successfully.
+	 * 
+	 * @param message
+	 *            The message
 	 */
-	public final void setErrorMessage(String message)
-	{
+	public final void setErrorMessage(String message) {
 		m_errorMessage = message;
 	}
 
 	/**
-	 * Provides an estimate of the time this experiment is supposed to take.
-	 * This value is used in the user interface to provide a rough measure
-	 * of when a set of experiments is supposed to finish.
-	 * @param factor A scaling factor, provided by the lab. The same set of
-	 * experiments running in different environments (e.g. different computers)
-	 * may take a different time. This factor can be used to scale the
-	 * estimate. A higher value means a slower environment.
+	 * Provides an estimate of the time this experiment is supposed to take. This
+	 * value is used in the user interface to provide a rough measure of when a set
+	 * of experiments is supposed to finish.
+	 * 
+	 * @param factor
+	 *            A scaling factor, provided by the lab. The same set of experiments
+	 *            running in different environments (e.g. different computers) may
+	 *            take a different time. This factor can be used to scale the
+	 *            estimate. A higher value means a slower environment.
 	 * 
 	 * @return An estimate of the time, in seconds
 	 */
-	public float getDurationEstimate(float factor)
-	{
+	public float getDurationEstimate(float factor) {
 		return 0f;
 	}
 
 	/**
 	 * Waits for some time
-	 * @param duration The waiting interval, in milliseconds
+	 * 
+	 * @param duration
+	 *            The waiting interval, in milliseconds
 	 */
-	public static final void wait(int duration)
-	{
-		try
-		{
+	public static final void wait(int duration) {
+		try {
 			Thread.sleep(duration);
-		}
-		catch (InterruptedException e)
-		{
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Retrieves a value, either from the input or the output parameters.
-	 * The method starts by fetching it from the input parameters; if this
-	 * fails, it fetches it from the output parameters.
-	 * @param path The path to the element.
-	 * @return The element; null if the path cannot be found in either the
-	 *   input or the output parameters
+	 * Retrieves a value, either from the input or the output parameters. The method
+	 * starts by fetching it from the input parameters; if this fails, it fetches it
+	 * from the output parameters.
+	 * 
+	 * @param path
+	 *            The path to the element.
+	 * @return The element; null if the path cannot be found in either the input or
+	 *         the output parameters
 	 */
-	public final JsonElement read(String path)
-	{
+	public final JsonElement read(String path) {
 		JsonElement e = null;
 		e = JsonPath.get(m_inputParameters, path);
-		if (e == null)
-		{
+		if (e == null) {
 			e = JsonPath.get(m_outputParameters, path);
 		}
 		return e;
 	}
 
 	/**
-	 * Returns the set of all parameters of this experiment. This is effectively
-	 * a merging between the input and the output parameter maps.
+	 * Returns the set of all parameters of this experiment. This is effectively a
+	 * merging between the input and the output parameter maps.
+	 * 
 	 * @return The parameters
 	 */
-	public final JsonMap getAllParameters()
-	{
+	public final JsonMap getAllParameters() {
 		JsonMap out = new JsonMap();
-		for (String s : m_inputParameters.keySet())
-		{
+		for (String s : m_inputParameters.keySet()) {
 			out.put(s, m_inputParameters.get(s));
 		}
-		for (String s : m_outputParameters.keySet())
-		{
+		for (String s : m_outputParameters.keySet()) {
 			out.put(s, m_outputParameters.get(s));
 		}
 		return out;
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return m_inputParameters.toString();
 	}
 
 	/**
-	 * Outputs a description of this experiment as a short character string.
-	 * This is intended to be displayed in small text windows, such as in
-	 * LabPal's text interface. By default, this method does the same thing
-	 * as {@link #toString()}, but it can be overridden to produce a better
-	 * display.
-	 * @param width The suggested width of this string. You can use this
-	 *   value to adjust the verbosity of the display to the available space
+	 * Outputs a description of this experiment as a short character string. This is
+	 * intended to be displayed in small text windows, such as in LabPal's text
+	 * interface. By default, this method does the same thing as
+	 * {@link #toString()}, but it can be overridden to produce a better display.
+	 * 
+	 * @param width
+	 *            The suggested width of this string. You can use this value to
+	 *            adjust the verbosity of the display to the available space
 	 * @return The string
 	 */
-	public String toShortString(int width)
-	{
+	public String toShortString(int width) {
 		return toString();
 	}
 
 	/**
 	 * Gets the set of all input parameter <em>names</em>
-	 * @param exclude_hidden Set to true to exclude keys that have been
-	 *   marked as hidden by {@link #addKeyToHide(String)}
+	 * 
+	 * @param exclude_hidden
+	 *            Set to true to exclude keys that have been marked as hidden by
+	 *            {@link #addKeyToHide(String)}
 	 * @return The set of names
 	 */
-	public final Set<String> getInputKeys(boolean exclude_hidden)
-	{
-		if (exclude_hidden == false)
-		{
+	public final Set<String> getInputKeys(boolean exclude_hidden) {
+		if (exclude_hidden == false) {
 			return m_inputParameters.keySet();
 		}
 		Set<String> input_keys = new HashSet<String>();
-		for (String key : m_inputParameters.keySet())
-		{
-			if (!m_keysToHide.contains(key))
-			{
+		for (String key : m_inputParameters.keySet()) {
+			if (!m_keysToHide.contains(key)) {
 				input_keys.add(key);
 			}
 		}
@@ -923,36 +905,38 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Gets the set of all input parameter <em>names</em>
+	 * 
 	 * @return The set of names
 	 */
-	public final Set<String> getInputKeys()
-	{
+	public final Set<String> getInputKeys() {
 		return getInputKeys(false);
 	}
 
 	/**
 	 * Sets a textual description for a parameter of the experiment
-	 * @param path The XPath corresponding to the parameter's location
-	 *   in the JSON structure
-	 * @param text The textual description
+	 * 
+	 * @param path
+	 *            The XPath corresponding to the parameter's location in the JSON
+	 *            structure
+	 * @param text
+	 *            The textual description
 	 * @return This experiment
 	 */
-	public final Experiment describe(String path, String text)
-	{
+	public final Experiment describe(String path, String text) {
 		m_parameterDescriptions.put(path, text);
 		return this;
 	}
 
 	/**
 	 * Gets the textual description for a parameter of the experiment
-	 * @param path The XPath corresponding to the parameter's location
-	 *   in the JSON structure
+	 * 
+	 * @param path
+	 *            The XPath corresponding to the parameter's location in the JSON
+	 *            structure
 	 * @return The textual description
 	 */
-	public final String getDescription(String path)
-	{
-		if (!m_parameterDescriptions.containsKey(path))
-		{
+	public final String getDescription(String path) {
+		if (!m_parameterDescriptions.containsKey(path)) {
 			return "";
 		}
 		return m_parameterDescriptions.get(path);
@@ -960,10 +944,10 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Interrupts the experiment
+	 * 
 	 * @return This experiment
 	 */
-	public final Experiment interrupt()
-	{
+	public final Experiment interrupt() {
 		m_running = false;
 		m_status = Status.INTERRUPTED;
 		m_errorMessage = "The experiment was manually interrupted";
@@ -973,53 +957,49 @@ public abstract class Experiment implements Runnable, DataOwner
 	}
 
 	/**
-	 * Manages the unexpected interruption of an experiment. For
-	 * example, if the experiment runs an external application, this
-	 * method should be responsible for terminating this application.
+	 * Manages the unexpected interruption of an experiment. For example, if the
+	 * experiment runs an external application, this method should be responsible
+	 * for terminating this application.
 	 */
-	public void prepareToInterrupt()
-	{
+	public void prepareToInterrupt() {
 
 	}
 
 	/**
 	 * Gets the random number generator for this experiment
+	 * 
 	 * @return The generator
 	 */
-	public final ca.uqac.lif.labpal.Random getRandom()
-	{
+	public final ca.uqac.lif.labpal.Random getRandom() {
 		return m_random;
 	}
 
 	/**
-	 * Sets the current progression of the execution of the
-	 * experiment
-	 * @param p The current progression. This should be a value between
-	 *   0 (not done at all) and 1 (finished or failed)
+	 * Sets the current progression of the execution of the experiment
+	 * 
+	 * @param p
+	 *            The current progression. This should be a value between 0 (not
+	 *            done at all) and 1 (finished or failed)
 	 * @return This experiment
 	 */
-	public synchronized final Experiment setProgression(float p)
-	{
+	public synchronized final Experiment setProgression(float p) {
 		if (p >= 0 && p <= 1)
 			m_progression = p;
 		return this;
 	}
 
 	/**
-	 * Gets the current progression of the execution of the
-	 * experiment
-	 * @return The current progression. This should be a value between
-	 *   0 (not done at all) and 1 (finished or failed)
+	 * Gets the current progression of the execution of the experiment
+	 * 
+	 * @return The current progression. This should be a value between 0 (not done
+	 *         at all) and 1 (finished or failed)
 	 */
-	public synchronized final float getProgression()
-	{
+	public synchronized final float getProgression() {
 		Status s = getStatus();
-		if (s == Status.DONE)
-		{
+		if (s == Status.DONE) {
 			return 1;
 		}
-		if (s == Status.PREREQ_F || s == Status.PREREQ_NOK || s == Status.FAILED)
-		{
+		if (s == Status.PREREQ_F || s == Status.PREREQ_NOK || s == Status.FAILED) {
 			return 0;
 		}
 		return m_progression;
@@ -1027,32 +1007,31 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Gets the maximum duration for this experiment
+	 * 
 	 * @return The duration
 	 */
-	public final long getMaxDuration()
-	{
+	public final long getMaxDuration() {
 		return m_maxDuration;
 	}
 
 	/**
-	 * Sets the maximum duration for this experiment.
-	 * If the experiment lasts longer than this duration, the lab assistant
-	 * can interrupt it.
-	 * @return The duration, in milliseconds. A negative value indicates
-	 * that no timeout applies.
+	 * Sets the maximum duration for this experiment. If the experiment lasts longer
+	 * than this duration, the lab assistant can interrupt it.
+	 * 
+	 * @return The duration, in milliseconds. A negative value indicates that no
+	 *         timeout applies.
 	 */
-	public final Experiment setMaxDuration(long duration)
-	{
+	public final Experiment setMaxDuration(long duration) {
 		m_maxDuration = duration;
 		return this;
 	}
 
 	/**
 	 * Interrupts the current experiment
+	 * 
 	 * @return This experiment
 	 */
-	public final Experiment kill()
-	{
+	public final Experiment kill() {
 		m_running = false;
 		m_status = Status.TIMEOUT;
 		m_errorMessage = "The experiment was interrupted by the lab assistant because it was taking too long";
@@ -1062,65 +1041,60 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Checks if an experiment has a parameter of a given name
-	 * @param name The name
+	 * 
+	 * @param name
+	 *            The name
 	 * @return {@code true} if the parameter exists, {@code false} otherwise
 	 */
-	public boolean hasParameter(String name)
-	{
+	public boolean hasParameter(String name) {
 		return m_inputParameters.containsKey(name) || m_outputParameters.containsKey(name);
 	}
 
 	/**
 	 * Gets the number of "data points" generated by this experiment
+	 * 
 	 * @return The number of points
 	 */
-	public int countDataPoints()
-	{
+	public int countDataPoints() {
 		return m_outputParameters.keySet().size();
 	}
 
 	/**
-	 * Checks if the data generated by this experiment is considered
-	 * valid. Normally, the purpose of this method is to add warnings
-	 * to the experiment after it has executed, if anything "strange"
-	 * has happened.
+	 * Checks if the data generated by this experiment is considered valid.
+	 * Normally, the purpose of this method is to add warnings to the experiment
+	 * after it has executed, if anything "strange" has happened.
 	 * 
 	 * @see #addWarning(ExperimentException)
 	 */
-	public void validate()
-	{
+	public void validate() {
 		// Do nothing
 	}
 
 	@Override
-	public final NodeFunction dependsOn(String id)
-	{
+	public final NodeFunction dependsOn(String id) {
 		return ExperimentValue.dependsOn(this, id);
 	}
 
-	public final NodeFunction dependsOnKey(String key)
-	{
+	public final NodeFunction dependsOnKey(String key) {
 		return new ExperimentValue(this, key);
 	}
 
-	public final NodeFunction dependsOnCell(String key, int position)
-	{
+	public final NodeFunction dependsOnCell(String key, int position) {
 		return new ExperimentValue(this, key, position);
 	}
 
 	@Override
-	public Experiment getOwner()
-	{
+	public Experiment getOwner() {
 		return this;
 	}
 
 	/**
-	 * Merges the output parameters and status of an experiment into the
-	 * current one. This is only possible if the current experiment is not
-	 * currently running.
+	 * Merges the output parameters and status of an experiment into the current
+	 * one. This is only possible if the current experiment is not currently
+	 * running.
 	 * <p>
-	 * The following things in the current experiment will be overwritten
-	 * by the same things in the experiment passed as an argument:
+	 * The following things in the current experiment will be overwritten by the
+	 * same things in the experiment passed as an argument:
 	 * <ul>
 	 * <li>The experiment's status</li>
 	 * <li>All the output parameters</li>
@@ -1130,37 +1104,33 @@ public abstract class Experiment implements Runnable, DataOwner
 	 * <li>The start and end time</li>
 	 * <li>The "run by" string</li>
 	 * <li>The queuing status</li>
-	 * </ul> 
-	 * @param e The experiment to merge with
-	 * @param is_remote Set to {@code true} to indicate that {@code e} comes
-	 *   from a different instance of the lab. This will have for effect that if
-	 *   {@code e} is in state {@code RUNNING}, the current experiment will be
-	 *   set in state {@code RUNNING_REMOTELY}. 
-	 * @return {@code true} if the merge was done successfully, {@code false}
-	 *   if the merging was not done
+	 * </ul>
+	 * 
+	 * @param e
+	 *            The experiment to merge with
+	 * @param is_remote
+	 *            Set to {@code true} to indicate that {@code e} comes from a
+	 *            different instance of the lab. This will have for effect that if
+	 *            {@code e} is in state {@code RUNNING}, the current experiment will
+	 *            be set in state {@code RUNNING_REMOTELY}.
+	 * @return {@code true} if the merge was done successfully, {@code false} if the
+	 *         merging was not done
 	 */
-	public synchronized boolean mergeWith(Experiment e, boolean is_remote)
-	{
-		if (m_status == Status.RUNNING)
-		{
+	public synchronized boolean mergeWith(Experiment e, boolean is_remote) {
+		if (m_status == Status.RUNNING) {
 			return false;
 		}
 		m_outputParameters = e.m_outputParameters;
 		Experiment.Status status_e = e.getStatus();
-		if (is_remote && (status_e == Status.RUNNING || status_e == Status.RUNNING_REMOTELY))
-		{
+		if (is_remote && (status_e == Status.RUNNING || status_e == Status.RUNNING_REMOTELY)) {
 			m_status = Status.RUNNING_REMOTELY;
-		}
-		else
-		{
+		} else {
 			m_status = e.getStatus();
 		}
-		if (is_remote && (e.getQueueStatus() == QueueStatus.QUEUED || e.getQueueStatus() == QueueStatus.QUEUED_REMOTELY))
-		{
+		if (is_remote
+				&& (e.getQueueStatus() == QueueStatus.QUEUED || e.getQueueStatus() == QueueStatus.QUEUED_REMOTELY)) {
 			m_queueStatus = QueueStatus.QUEUED_REMOTELY;
-		}
-		else
-		{
+		} else {
 			m_queueStatus = e.getQueueStatus();
 		}
 		m_warnings = e.m_warnings;
@@ -1174,58 +1144,62 @@ public abstract class Experiment implements Runnable, DataOwner
 
 	/**
 	 * Checks if a parameter is an input parameter
-	 * @param name The name of the parameter
-	 * @return {@code true} if it is an input parameter, {@code false}
-	 * otherwise
+	 * 
+	 * @param name
+	 *            The name of the parameter
+	 * @return {@code true} if it is an input parameter, {@code false} otherwise
 	 */
-	public final boolean isInputParameter(String name)
-	{
+	public final boolean isInputParameter(String name) {
 		return m_inputParameters.containsKey(name);
 	}
 
 	/**
 	 * Callback called by the lab when an experiment has been edited by the user
-	 * @param new_parameters The new parameters entered by the user
-	 * @throws ExperimentException Thrown if an error was raised when
-	 * modifying the parameters
+	 * 
+	 * @param new_parameters
+	 *            The new parameters entered by the user
+	 * @throws ExperimentException
+	 *             Thrown if an error was raised when modifying the parameters
 	 */
-	public final void editCallback(JsonMap new_parameters) throws ExperimentException
-	{
+	public final void editCallback(JsonMap new_parameters) throws ExperimentException {
 		edit(new_parameters);
 		m_inputParameters = new_parameters;
 		reset();
 	}
 
 	/**
-	 * Method that is called whenever the input parameters of an experiment
-	 * have been modified by the user. By default, this method does nothing;
-	 * you should override it if you need to change the experiment's state
-	 * according to these changes.
-	 * @param new_parameters The new parameters entered by the user
-	 * @throws ExperimentException Throw this exception if the experiment
-	 * cannot reconfigure itself with the 
+	 * Method that is called whenever the input parameters of an experiment have
+	 * been modified by the user. By default, this method does nothing; you should
+	 * override it if you need to change the experiment's state according to these
+	 * changes.
+	 * 
+	 * @param new_parameters
+	 *            The new parameters entered by the user
+	 * @throws ExperimentException
+	 *             Throw this exception if the experiment cannot reconfigure itself
+	 *             with the
 	 */
-	protected void edit(JsonMap new_parameters) throws ExperimentException
-	{
+	protected void edit(JsonMap new_parameters) throws ExperimentException {
 		// Do nothing
 	}
 
 	/**
 	 * Gets the map of input parameters for this experiment
+	 * 
 	 * @return A JsonMap of input parameters
 	 */
-	public final JsonMap getInputParameters()
-	{
+	public final JsonMap getInputParameters() {
 		return m_inputParameters;
 	}
 
 	/**
 	 * Sets the running flag for this experiment
-	 * @param b The flag. Setting this to {@code false} should tell the
-	 * experiment to stop, if it is running. 
+	 * 
+	 * @param b
+	 *            The flag. Setting this to {@code false} should tell the experiment
+	 *            to stop, if it is running.
 	 */
-	public void setRunning(boolean b)
-	{
+	public void setRunning(boolean b) {
 		m_running = b;
 	}
 }

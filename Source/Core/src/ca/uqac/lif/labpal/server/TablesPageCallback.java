@@ -99,9 +99,10 @@ public class TablesPageCallback extends TemplatePageCallback
 		String contents = super.exportToStaticHtml(path_to_root);
 		// Transform URLs for individual plot buttons
 		contents = contents.replaceAll("src=\"(.*?)\\.html\"", "src=\"$1.png\"");
-		contents = contents.replaceAll("href=\"table/export/(.*?)\\?format=csv.*?\"", "href=\"table/$1.csv\"");
-		contents = contents.replaceAll("href=\"table/export/(.*?)\\?format=tex.*?\"", "href=\"table/$1.tex\"");
-		contents = contents.replaceAll("href=\"table/export/(.*?)\\?format=html.*?\"", "href=\"table/$1.html\"");
+		contents = contents.replaceAll("href=\"all-tables\"", "href=\"labpal-tables.tex\"");
+		contents = contents.replaceAll("href=\"table-export(.)id=(\\d)&amp;(format=csv&amp;dl=1)\"", "href=\"table/$2.csv\"");
+		contents = contents.replaceAll("href=\"table-export(.)id=(\\d)&amp;(format=tex&amp;dl=1)\"", "href=\"table/$2.tex\"");
+		contents = contents.replaceAll("href=\"table-export(.)id=(\\d)&amp;(format=html&amp;dl=1)\"", "href=\"table/$2.html\"");
 		return contents;
 	}
 

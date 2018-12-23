@@ -58,7 +58,7 @@ public class TemplatePageCallback extends WebCallback
 	/**
 	 * The pattern to create static URLs for experiments
 	 */
-	protected static final Pattern s_experimentPattern = Pattern.compile("\"experiment/(\\d+).*?\"");
+	protected static final Pattern s_experimentPattern = Pattern.compile("\"/experiment/(\\d+).*?\"");
 	
 	/**
 	 * The pattern to create static URLs for plots
@@ -173,6 +173,7 @@ public class TemplatePageCallback extends WebCallback
 		s = s.replaceAll("href=\"/assistant\"", unavailable);
 		s = s.replaceAll("href=\"/find\"", unavailable);
 		s = s.replaceAll("href=\"explain.*?\"", unavailable);
+		s = s.replaceAll("id=\"select\""," class=\"hidden\"");
 		return s;
 	}
 	

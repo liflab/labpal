@@ -1,6 +1,5 @@
-package ca.uqac.lif.codeocean;
+package ca.uqac.lif.export;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +17,24 @@ public class LabpalCodeOcean extends LabpalPlatform implements IPlatform {
 		EXPERIMENT, TABLE, GRAPHIC
 	}
 
+	@Override
+	protected void config() {
+
+		if (Config.env.equals(Config.ENV.CODEOCEAN)) {
+			Config.setProp("namefileTempExp", "Experiments.html");
+			Config.setProp("pathInput", "../data/Experiments.html");
+			Config.setProp("pathOutput", "../results/");
+			Config.setProp("pdfName", "plots");
+			Config.setProp("imageName", "img");
+		}
+	}
+
 	public LabpalCodeOcean(Laboratory m_lab, LabAssistant m_assistant, AnsiPrinter m_printer) {
+
 		super(m_lab, m_assistant, m_printer);
-		run();
+
+		config();
+
 	}
 
 	void exportExperiments() throws Exception {
@@ -42,12 +56,12 @@ public class LabpalCodeOcean extends LabpalPlatform implements IPlatform {
 		rowshtmlTable.append("</table>");
 
 		StringBuilder templateContent = FileManager.readFile(Config.getProp("namefileTempExp"), ".html",
-				Config.getProp("pathTempExp"));
+				Config.getProp("pathInput"));
 
 		int index = templateContent.indexOf("<!-- include -->");
 		templateContent.insert(index, rowshtmlTable);
 
-		FileManager.writeFile(Config.getProp("pathOutputExp"), Config.getProp("namefileTempExp"), ".html",
+		FileManager.writeFile(Config.getProp("pathOutput"), Config.getProp("namefileTempExp"), ".html",
 				templateContent.toString());
 
 	}
@@ -64,17 +78,17 @@ public class LabpalCodeOcean extends LabpalPlatform implements IPlatform {
 			String content = tab.getTitle() + "    \n" + d_tab.toCsv();
 			allTablesContent.append(content);
 			allTablesContent.append("\n");
-			FileManager.writeFile(Config.getProp("pathTablesAbsolute"), "table" + id, ".csv", content);
+			FileManager.writeFile(Config.getProp("pathOutput"), "table" + id, ".csv", content);
 
 			content = "<H1> " + tab.getTitle() + "</H1> " + d_tab.toHtml();
 			allTablesContentHtml.append(content);
 			allTablesContentHtml.append("\n");
-			FileManager.writeFile(Config.getProp("pathTablesAbsolute"), "table" + id, ".html", content);
+			FileManager.writeFile(Config.getProp("pathOutput"), "table" + id, ".html", content);
 
 		}
 
-		FileManager.writeFile(Config.getProp("pathTablesAbsolute"), "tables", ".csv", allTablesContent.toString());
-		FileManager.writeFile(Config.getProp("pathTablesAbsolute"), "tables", ".html", allTablesContentHtml.toString());
+		FileManager.writeFile(Config.getProp("pathOutput"), "tables", ".csv", allTablesContent.toString());
+		FileManager.writeFile(Config.getProp("pathOutput"), "tables", ".html", allTablesContentHtml.toString());
 
 	}
 
@@ -84,26 +98,23 @@ public class LabpalCodeOcean extends LabpalPlatform implements IPlatform {
 
 			byte[] byte_array = exportTo(id, "png");
 
-			FileManager.writeFile(Config.getProp("pathImageAbsolute"), Config.getProp("imageName") + id, ".png",
-					byte_array);
+			FileManager.writeFile(Config.getProp("pathOutput"), Config.getProp("imageName") + id, ".png", byte_array);
 
 		}
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		List<String> lstPath = new ArrayList<>();
 		for (int id : lab.getPlotIds()) {
 
 			byte[] bytes = exportTo(id, "pdf");
-			lstPath.add(Config.getProp("pathPdfAbsolute") + Config.getProp("pdfName") + id + ".pdf");
-			FileManager.writeFile(Config.getProp("pathPdfAbsolute"), Config.getProp("pdfName") + id, ".pdf", bytes);
+			lstPath.add(Config.getProp("pathOutput") + Config.getProp("pdfName") + id + ".pdf");
+			FileManager.writeFile(Config.getProp("pathOutput"), Config.getProp("pdfName") + id, ".pdf", bytes);
 		}
 		if (!lstPath.isEmpty()) {
 
 			String[] tab = lstPath.toArray(new String[lstPath.size()]);
-			FileManager.mergePdF(Config.getProp("pathPdfAbsolute") + Config.getProp("pdfName") + ".pdf", tab);
+			FileManager.mergePdF(Config.getProp("pathOutput") + Config.getProp("pdfName") + ".pdf", tab);
 		}
 
 	}
-
 
 	@Override
 	public void export() {

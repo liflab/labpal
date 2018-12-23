@@ -18,6 +18,8 @@
 package ca.uqac.lif.labpal.server;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,45 +33,45 @@ import ca.uqac.lif.jerrydog.CachedRequestCallback;
 import ca.uqac.lif.jerrydog.InnerFileServer;
 import ca.uqac.lif.jerrydog.RequestCallback;
 import ca.uqac.lif.labpal.CliParser;
+import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.CliParser.ArgumentMap;
+import ca.uqac.lif.labpal.config.Config;
 
 /**
  * Server supporting LabPal's web GUI
- *  
+ * 
  * @author Sylvain Hallé
  *
  */
-public class LabPalServer extends InnerFileServer
-{
+public class LabPalServer extends InnerFileServer {
 	/**
 	 * The default port
 	 */
 	public static final transient int s_defaultPort = 21212;
-	
+
 	/**
-	 * The time (in seconds) during which the client is allowed to cache
-	 * static resources (such as images or JS files) locally
+	 * The time (in seconds) during which the client is allowed to cache static
+	 * resources (such as images or JS files) locally
 	 */
 	protected static final transient int s_cacheInterval = 600;
-	
+
 	/**
 	 * A number identifying the color scheme used in the GUI
 	 */
 	protected int m_colorScheme = 0;
-	
+
 	/**
 	 * The predefined color schemes used for the GUI
 	 */
 	protected static final List<String[]> s_colorSchemes = loadSchemes();
-	
+
 	/**
 	 * The instance of lab this server is responsible for
 	 */
 	protected transient Laboratory m_lab;
-	
+
 	/**
 	 * The callback for the individual experiment page
 	 */
@@ -79,25 +81,24 @@ public class LabPalServer extends InnerFileServer
 	 * The callback for the dynamic CSS file
 	 */
 	private CssCallback m_cssCallback;
-	
+
 	/**
 	 * Creates a new LabPal server
+	 * 
 	 * @param args
 	 * @param lab
 	 * @param assistant
 	 */
-	public LabPalServer(ArgumentMap args, Laboratory lab, LabAssistant assistant)
-	{
+	public LabPalServer(ArgumentMap args, Laboratory lab, LabAssistant assistant) {
 		super(LabPalServer.class, true, s_cacheInterval);
 		m_lab = lab;
-		setUserAgent("LabPal " + Laboratory.s_versionString);
-		if (args.hasOption("port"))
-		{
-			setServerPort(Integer.parseInt(args.getOptionValue("port")));
-		}
-		else
-		{
-			setServerPort(s_defaultPort);
+		if (Config.ENV.WEB == Config.env) {
+			setUserAgent("LabPal " + Laboratory.s_versionString);
+			if (args.hasOption("port")) {
+				setServerPort(Integer.parseInt(args.getOptionValue("port")));
+			} else {
+				setServerPort(s_defaultPort);
+			}
 		}
 		registerCallback(0, new HomePageCallback(lab, assistant));
 		m_cssCallback = new CssCallback(this, lab, assistant);
@@ -134,43 +135,42 @@ public class LabPalServer extends InnerFileServer
 		registerCallback(0, new ClaimCallback(lab, assistant));
 		registerCallback(0, new UnavailableCallback(lab, assistant));
 	}
-		
+
 	/**
 	 * Sets the the color scheme used in the GUI
-	 * @param c A number identifying the color scheme
+	 * 
+	 * @param c
+	 *            A number identifying the color scheme
 	 */
-	public void setColorScheme(int c)
-	{
+	public void setColorScheme(int c) {
 		m_colorScheme = c % s_colorSchemes.size();
 	}
-	
+
 	/**
-	 * Changes the laboratory associated with each registered callback.
-	 * This occurs when the user loads a new lab from a file.
-	 * @param lab The new laboratory
+	 * Changes the laboratory associated with each registered callback. This occurs
+	 * when the user loads a new lab from a file.
+	 * 
+	 * @param lab
+	 *            The new laboratory
 	 */
-	public void changeLab(Laboratory lab)
-	{
+	public void changeLab(Laboratory lab) {
 		m_lab = lab;
-		for (RequestCallback cb : m_callbacks)
-		{
-			if (cb instanceof WebCallback)
-			{
+		for (RequestCallback cb : m_callbacks) {
+			if (cb instanceof WebCallback) {
 				((WebCallback) cb).changeLab(lab);
 			}
 		}
 	}
-	
+
 	/**
 	 * Loads the set of color schemes from an internal file
+	 * 
 	 * @return A list of arrays with hex colors
 	 */
-	protected static List<String[]> loadSchemes()
-	{
+	protected static List<String[]> loadSchemes() {
 		Scanner scanner = new Scanner(LabPalServer.class.getResourceAsStream("schemes.csv"));
 		List<String[]> lines = new ArrayList<String[]>();
-		while (scanner.hasNextLine())
-		{
+		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine().trim();
 			if (line.isEmpty() || !line.startsWith("#"))
 				continue;
@@ -180,47 +180,62 @@ public class LabPalServer extends InnerFileServer
 		scanner.close();
 		return lines;
 	}
-	
+
 	/**
-	 * Gets the array of hex colors corresponding to the current color
-	 * scheme
+	 * Gets the array of hex colors corresponding to the current color scheme
+	 * 
 	 * @return The array
 	 */
-	public String[] getColorScheme()
-	{
+	public String[] getColorScheme() {
 		return s_colorSchemes.get(m_colorScheme);
 	}
-	
+
 	/**
-	 * Adds options to the command line parser. Currently this method
-	 * does nothing when called.
-	 * @param parser The parser
+	 * Adds options to the command line parser. Currently this method does nothing
+	 * when called.
+	 * 
+	 * @param parser
+	 *            The parser
 	 */
-	public static void setupCli(CliParser parser)
-	{
+	public static void setupCli(CliParser parser) {
 		// Currently the server receives nothing from the CLI
 	}
-	
+
 	/**
-	 * Exports the whole contents of the lab as a zipped bundle
-	 * of static web pages.
-	 * @return An array of bytes, with the contents of the zip file
-	 * generated
+	 * Exports the whole contents of the lab as a zipped bundle of static web pages.
+	 * 
+	 * @return An array of bytes, with the contents of the zip file generated
 	 */
-	public byte[] exportToStaticHtml()
-	{
-		String file_contents, filename;
+	public byte[] exportToStaticHtml() {
+
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ZipOutputStream zos = new ZipOutputStream(bos);
-		try
-		{
+		outputStream(bos);
+
+		return bos.toByteArray();
+	}
+
+	public void exportToStaticHtml(String path) {
+
+		try {
+			FileOutputStream fos = new FileOutputStream(path);
+			outputStream(fos);
+		} catch (FileNotFoundException e) {
+			Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
+		}
+
+	}
+
+	void outputStream(java.io.OutputStream fos) {
+		String file_contents, filename;
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		try {
 			{
 				// All the non-HTML pages in the root
 				String root_path = "ca/uqac/lif/labpal/server/";
 				String folder = "resource/";
-				List<String> internal_files = FileHelper.getResourceListing(LabPalServer.class, root_path + folder, ".*", ".*html|.*~|images|screen\\.css$");
-				for (String in_filename : internal_files)
-				{
+				List<String> internal_files = FileHelper.getResourceListing(LabPalServer.class, root_path + folder,
+						".*", ".*html|.*~|images|screen\\.css$");
+				for (String in_filename : internal_files) {
 					byte[] contents = FileHelper.internalFileToBytes(LabPalServer.class, folder + in_filename);
 					ZipEntry ze = new ZipEntry(in_filename);
 					zos.putNextEntry(ze);
@@ -241,9 +256,9 @@ public class LabPalServer extends InnerFileServer
 				// Everything in images
 				String root_path = "ca/uqac/lif/labpal/server/";
 				String folder = "resource/images/";
-				List<String> internal_files = FileHelper.getResourceListing(LabPalServer.class, root_path + folder, ".*", ".*html|.*~$");
-				for (String in_filename : internal_files)
-				{
+				List<String> internal_files = FileHelper.getResourceListing(LabPalServer.class, root_path + folder,
+						".*", ".*html|.*~$");
+				for (String in_filename : internal_files) {
 					byte[] contents = FileHelper.internalFileToBytes(LabPalServer.class, folder + in_filename);
 					ZipEntry ze = new ZipEntry("images/" + in_filename);
 					zos.putNextEntry(ze);
@@ -252,30 +267,20 @@ public class LabPalServer extends InnerFileServer
 				}
 			}
 			// Then all the callbacks
-			for (RequestCallback wc : m_callbacks)
-			{
-				if (wc instanceof WebCallback)
-				{
+			for (RequestCallback wc : m_callbacks) {
+				if (wc instanceof WebCallback) {
 					((WebCallback) wc).addToZipBundle(zos);
 				}
 			}
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
 			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
+		} finally {
+			try {
 				zos.close();
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
 			}
 		}
-		return bos.toByteArray();
 	}
 }

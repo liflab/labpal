@@ -108,5 +108,27 @@
 </files>
 	<bundle>true</bundle>
     </dependency>
+    <dependency>
+			<!-- GRAL. Stand-alone plotting library -->
+			<name>PDFBox</name>
+			<classname>org.apache.pdfbox</classname>
+			<files>
+				<jar>http://central.maven.org/maven2/org/apache/pdfbox/pdfbox/2.0.1/pdfbox-2.0.1.jar
+				</jar>
+				<jar>http://central.maven.org/maven2/org/apache/pdfbox/fontbox/2.0.0/fontbox-2.0.0.jar
+				</jar>
+				<jar>http://central.maven.org/maven2/org/apache/pdfbox/jempbox/1.8.11/jempbox-1.8.11.jar
+				</jar>
+				<jar>http://central.maven.org/maven2/org/apache/pdfbox/xmpbox/2.0.0/xmpbox-2.0.0.jar
+				</jar>
+				<jar>http://central.maven.org/maven2/org/apache/pdfbox/preflight/2.0.0/preflight-2.0.0.jar
+				</jar>
+				<jar>http://central.maven.org/maven2/org/apache/pdfbox/pdfbox-tools/2.0.0/pdfbox-tools-2.0.0.jar
+				</jar>
+				<jar>http://central.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar
+				</jar>
+			</files>
+			<bundle>true</bundle>
+		</dependency>
   </dependencies>
 </build>

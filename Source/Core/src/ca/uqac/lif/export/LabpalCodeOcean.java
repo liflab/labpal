@@ -24,11 +24,12 @@ public class LabpalCodeOcean extends LabpalPlatform implements IPlatform {
 	protected void config() {
 
 		if (Config.env.equals(Config.ENV.CODEOCEAN)) {
-			Config.setProp("namefileTempExp", "Experiments.html");
-			Config.setProp("pathInput", "../data/Experiments.html");
+			Config.setProp("namefileTempExp", "Experiments");
+			Config.setProp("pathInput", "../data/");
 			Config.setProp("pathOutput", "../results/");
-			Config.setProp("pdfName", "plots");
+			Config.setProp("pdfName", "labpal-plots");
 			Config.setProp("imageName", "img");
+			Config.setProp("zipName", "LabpalStatic");
 		}
 	}
 

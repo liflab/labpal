@@ -955,7 +955,7 @@ public abstract class Laboratory implements OwnershipManager {
 
 		new_lab.m_filter = new_lab.createFilter(filter_params);
 		if(new_lab.m_cliArguments.hasOption("codeocean"))
-		{   Boolean io =new_lab.m_cliArguments.hasOption("input") == new_lab.m_cliArguments.hasOption("output");
+		{   Boolean io =new_lab.m_cliArguments.hasOption("input") == true && new_lab.m_cliArguments.hasOption("output") ==true;
 			if(io)
 			{   Config.env=ENV.WINDOWS_LINUX;
 				Config.setProp("pathInput",argument_map.getOptionValue("input")+"\\");

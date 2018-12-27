@@ -157,8 +157,7 @@ public class FileManager {
 			return st;
 		} else {
 
-			String cheminTemplate = path + fileName + format;
-			return getFileContent(cheminTemplate);
+			return getFileContent(path + fileName + format);
 		}
 
 	}

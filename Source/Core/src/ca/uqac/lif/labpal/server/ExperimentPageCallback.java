@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,8 +41,8 @@ import ca.uqac.lif.labpal.Experiment.Status;
 import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.LabAssistant;
-import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LabPalTui;
+import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.petitpoucet.NodeFunction;
 
 /**
@@ -52,63 +51,55 @@ import ca.uqac.lif.petitpoucet.NodeFunction;
  * @author Sylvain Hallé
  *
  */
-public class ExperimentPageCallback extends TemplatePageCallback
-{
+public class ExperimentPageCallback extends TemplatePageCallback {
 	/**
-	 * A date format object, used to format the start and end time of
-	 * an experiment in {@link #formatDate(long)}
+	 * A date format object, used to format the start and end time of an experiment
+	 * in {@link #formatDate(long)}
 	 */
 	protected static final SimpleDateFormat s_dateFormat = new SimpleDateFormat();
-	
+
 	/**
-	 * A regex pattern object, used to split the "owner" part of the "path" in
-	 * a datapoint ID in {@link #getKeysToHighlight(String)}
+	 * A regex pattern object, used to split the "owner" part of the "path" in a
+	 * datapoint ID in {@link #getKeysToHighlight(String)}
 	 */
-	protected static final Pattern s_highlightKeyPattern = Pattern.compile("^.*?"+ Pattern.quote(NodeFunction.s_separator) + "(.*)$");
+	protected static final Pattern s_highlightKeyPattern = Pattern
+			.compile("^.*?" + Pattern.quote(NodeFunction.s_separator) + "(.*)$");
 
 	/**
 	 * Creates a new callback for the "Experiments" page.
-	 * @param lab The lab this page belongs to
-	 * @param assistant The assistant used to run this lab
+	 * 
+	 * @param lab
+	 *            The lab this page belongs to
+	 * @param assistant
+	 *            The assistant used to run this lab
 	 */
-	public ExperimentPageCallback(Laboratory lab, LabAssistant assistant)
-	{
+	public ExperimentPageCallback(Laboratory lab, LabAssistant assistant) {
 		super("/experiment", lab, assistant);
 	}
 
 	@Override
-	public String fill(String page, Map<String,String> params, boolean is_offline)
-	{
+	public String fill(String page, Map<String, String> params, boolean is_offline) {
 		List<String> path_parts = getParametersFromPath(params);
 		int experiment_nb = -1;
-		if (!path_parts.isEmpty())
-		{
+		if (!path_parts.isEmpty()) {
 			experiment_nb = Integer.parseInt(path_parts.get(0));
-		}
-		else if (params.containsKey("id"))
-		{
+		} else if (params.containsKey("id")) {
 			experiment_nb = Integer.parseInt(params.get("id"));
-		}
-		else
-		{
+		} else {
 			return "";
 		}
 		Experiment e = m_lab.getExperiment(experiment_nb);
-		if (e == null)
-		{
+		if (e == null) {
 			return "";
 		}
-		if (params.containsKey("reset"))
-		{
+		if (params.containsKey("reset")) {
 			e.reset();
 		}
-		if (params.containsKey("clean"))
-		{
+		if (params.containsKey("clean")) {
 			e.clean();
 		}
 		Set<String> to_highlight = new HashSet<String>();
-		if (params.containsKey("highlight"))
-		{
+		if (params.containsKey("highlight")) {
 			to_highlight = getKeysToHighlight(params.get("highlight"));
 		}
 		String out = page.replaceAll("\\{%TITLE%\\}", "Experiment #" + experiment_nb);
@@ -118,63 +109,64 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		out = out.replaceAll("\\{%EXP_END%\\}", formatDate(e.getEndTime()));
 		out = out.replaceAll("\\{%EXP_STATUS%\\}", ExperimentsPageCallback.getStatusLabel(e, m_assistant));
 		out = out.replaceAll("\\{%EXP_ESTIMATE%\\}", LabPalTui.formatEta(e.getDurationEstimate(Laboratory.s_parkMips)));
-		if (e.getEndTime() > 0)
-		{
-			out = out.replaceAll("\\{%EXP_DURATION%\\}", LabPalTui.formatEta((e.getEndTime() - e.getStartTime()) / 1000f));
+		if (e.getEndTime() > 0) {
+			out = out.replaceAll("\\{%EXP_DURATION%\\}",
+					LabPalTui.formatEta((e.getEndTime() - e.getStartTime()) / 1000f));
 		}
 		out = out.replaceAll("\\{%EXP_BY%\\}", Matcher.quoteReplacement(htmlEscape(e.getWhoRan())));
-		out = out.replaceAll("\\{%EXP_DATA%\\}", Matcher.quoteReplacement(renderHtml(e.getAllParameters(), "", e, to_highlight).toString()));
+		out = out.replaceAll("\\{%EXP_DATA%\\}",
+				Matcher.quoteReplacement(renderHtml(e.getAllParameters(), "", e, to_highlight).toString()));
 		String description = e.getDescription();
-		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}", Matcher.quoteReplacement("<div class=\"description\">" + description + "</div>"));
+		out = out.replaceAll("\\{%EXP_DESCRIPTION%\\}",
+				Matcher.quoteReplacement("<div class=\"description\">" + description + "</div>"));
 		Status st = e.getStatus();
-		if (e.isEditable() && st != Status.RUNNING && st != Status.RUNNING_REMOTELY)
-		{
-			out = out.replaceAll("\\{%EXP_EDIT_BUTTON%\\}", Matcher.quoteReplacement("<a class=\"btn-24 btn-edit\" href=\"/experiment/edit/" + e.getId() + "\" title=\"Modify the input parameters of this experiment\">Edit parameters</a>"));
+		if (e.isEditable() && st != Status.RUNNING && st != Status.RUNNING_REMOTELY) {
+			out = out.replaceAll("\\{%EXP_EDIT_BUTTON%\\}",
+					Matcher.quoteReplacement("<a class=\"btn-24 btn-edit\" href=\"/experiment/edit/" + e.getId()
+							+ "\" title=\"Modify the input parameters of this experiment\">Edit parameters</a>"));
 		}
 		String timeout_string = "No timeout";
-		if (e.getMaxDuration() > 0)
-		{
+		if (e.getMaxDuration() > 0) {
 			timeout_string = (e.getMaxDuration() / 1000) + " s";
 		}
 		out = out.replaceAll("\\{%EXP_TIMEOUT%\\}", timeout_string);
 		String error_msg = e.getErrorMessage();
-		if (!error_msg.isEmpty())
-		{
-			out = out.replaceAll("\\{%FAIL_MSG%\\}", Matcher.quoteReplacement("<h2>Error message</h2><pre>" + error_msg + "</pre>"));
+		if (!error_msg.isEmpty()) {
+			out = out.replaceAll("\\{%FAIL_MSG%\\}",
+					Matcher.quoteReplacement("<h2>Error message</h2><pre>" + error_msg + "</pre>"));
 		}
-		if (e.hasWarnings())
-		{
+		if (e.hasWarnings()) {
 			StringBuilder warning_msg_build = new StringBuilder();
-			for (ExperimentException ex : e.getWarnings())
-			{
+			for (ExperimentException ex : e.getWarnings()) {
 				warning_msg_build.append("<div>");
 				warning_msg_build.append(ex.getMessage());
 				warning_msg_build.append("</div>\n");
 			}
-			out = out.replaceAll("\\{%WARNINGS%\\}", Matcher.quoteReplacement("<h2>Warnings</h2>" + warning_msg_build.toString() + ""));
+			out = out.replaceAll("\\{%WARNINGS%\\}",
+					Matcher.quoteReplacement("<h2>Warnings</h2>" + warning_msg_build.toString() + ""));
 		}
 		Set<Group> groups = m_lab.getGroups(experiment_nb);
 		String group_description = "";
-		for (Group g : groups)
-		{
+		for (Group g : groups) {
 			group_description += g.getDescription();
 		}
-		if (!group_description.trim().isEmpty())
-		{
-			out = out.replaceAll("\\{%GROUP_DESC%\\}", Matcher.quoteReplacement("<div class=\"around-pulldown\">\n<h3 class=\"pulldown\">Generic description</h3>\n<div class=\"pulldown-contents\">" + group_description + "</div></div>"));
+		if (!group_description.trim().isEmpty()) {
+			out = out.replaceAll("\\{%GROUP_DESC%\\}", Matcher.quoteReplacement(
+					"<div class=\"around-pulldown\">\n<h3 class=\"pulldown\">Generic description</h3>\n<div class=\"pulldown-contents\">"
+							+ group_description + "</div></div>"));
 		}
 		return out;
 	}
 
 	/**
 	 * Formats the date
-	 * @param timestamp A Unix timestamp 
+	 * 
+	 * @param timestamp
+	 *            A Unix timestamp
 	 * @return A formatted date
 	 */
-	protected static String formatDate(long timestamp)
-	{
-		if (timestamp < 0)
-		{
+	protected static String formatDate(long timestamp) {
+		if (timestamp < 0) {
 			return "";
 		}
 		return s_dateFormat.format(new Date(timestamp));
@@ -182,38 +174,34 @@ public class ExperimentPageCallback extends TemplatePageCallback
 
 	/**
 	 * Creates HTML code displaying (recursively) the experiment's parameters
-	 * @param e The current JSON element in the parameters
-	 * @param path The path in the experiment's parameters from the root
-	 * @param exp The experiment
-	 * @param to_highlight A set of datapoint IDs to highlight 
-	 * @return A well-formatted HTML structure showing the parameters 
+	 * 
+	 * @param e
+	 *            The current JSON element in the parameters
+	 * @param path
+	 *            The path in the experiment's parameters from the root
+	 * @param exp
+	 *            The experiment
+	 * @param to_highlight
+	 *            A set of datapoint IDs to highlight
+	 * @return A well-formatted HTML structure showing the parameters
 	 */
-	public static StringBuilder renderHtml(JsonElement e, String path, Experiment exp, Set<String> to_highlight)
-	{
+	public static StringBuilder renderHtml(JsonElement e, String path, Experiment exp, Set<String> to_highlight) {
 		StringBuilder out = new StringBuilder();
-		if (e instanceof JsonString)
-		{
+		if (e instanceof JsonString) {
 			out.append(((JsonString) e).stringValue());
-		}
-		else if (e instanceof JsonNumber)
-		{
+		} else if (e instanceof JsonNumber) {
 			out.append(((JsonNumber) e).numberValue());
-		}
-		else if (e instanceof JsonList)
-		{
+		} else if (e instanceof JsonList) {
 			out.append("<table class=\"json-table\">\n");
 			int el_cnt = 0;
-			for (JsonElement v : (JsonList) e)
-			{
+			for (JsonElement v : (JsonList) e) {
 				String path_append = path + NodeFunction.s_separator + el_cnt;
 				String css_class_key = "";
 				String css_class_value = "";
-				if (containsExactly(to_highlight, path_append))
-				{
+				if (containsExactly(to_highlight, path_append)) {
 					css_class_value += " class=\"highlighted\"";
 				}
-				if (containsPrefix(to_highlight, path_append))
-				{
+				if (containsPrefix(to_highlight, path_append)) {
 					css_class_key += " class=\"highlighted\"";
 				}
 				out.append("<tr><th").append(css_class_key).append(">").append(el_cnt).append("</th>");
@@ -223,38 +211,30 @@ public class ExperimentPageCallback extends TemplatePageCallback
 				el_cnt++;
 			}
 			out.append("</table>\n");
-		}
-		else if (e instanceof JsonMap)
-		{
+		} else if (e instanceof JsonMap) {
 			JsonMap m = (JsonMap) e;
 			out.append("<table class=\"json-table\">\n");
-			for (String k : m.keySet())
-			{
+			for (String k : m.keySet()) {
 				String path_append = "";
-				if (!path.isEmpty())
-				{
+				if (!path.isEmpty()) {
 					path_append += ".";
 				}
 				path_append += k;
 				out.append("<tr>");
 				String css_class_key = "";
 				String css_class_value = "";
-				if (containsExactly(to_highlight, path_append))
-				{
+				if (containsExactly(to_highlight, path_append)) {
 					css_class_value += " class=\"highlighted\"";
 				}
-				if (containsPrefix(to_highlight, path_append))
-				{
+				if (containsPrefix(to_highlight, path_append)) {
 					css_class_key += " highlighted";
 				}
 				String p_desc = exp.getDescription(path_append);
-				if (p_desc.isEmpty())
-				{
+				if (p_desc.isEmpty()) {
 					out.append("<th class=\"" + css_class_key + "\">").append(htmlEscape(k)).append("</th>");
-				}
-				else
-				{
-					out.append("<th class=\"with-desc").append(css_class_key).append("\" title=\"").append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");					
+				} else {
+					out.append("<th class=\"with-desc").append(css_class_key).append("\" title=\"")
+							.append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k)).append("</th>");
 				}
 				out.append("<td " + css_class_value + ">");
 				JsonElement v = m.get(k);
@@ -267,20 +247,19 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	}
 
 	/**
-	 * Gets the set of keys that should be highlighted in the table of
-	 * experiment results
-	 * @param highlight The key to highlight
+	 * Gets the set of keys that should be highlighted in the table of experiment
+	 * results
+	 * 
+	 * @param highlight
+	 *            The key to highlight
 	 * @return A set of keys to highlight
 	 */
-	protected Set<String> getKeysToHighlight(String highlight)
-	{
+	protected Set<String> getKeysToHighlight(String highlight) {
 		Set<String> to_highlight = new HashSet<String>();
 		String[] ids = highlight.split(",");
-		for (String id : ids)
-		{
+		for (String id : ids) {
 			Matcher matcher = s_highlightKeyPattern.matcher(id);
-			if (matcher.find())
-			{
+			if (matcher.find()) {
 				to_highlight.add(matcher.group(1));
 			}
 		}
@@ -289,28 +268,30 @@ public class ExperimentPageCallback extends TemplatePageCallback
 
 	/**
 	 * Checks if a set of strings contains exactly one specific string
-	 * @param set The set
-	 * @param key The string
+	 * 
+	 * @param set
+	 *            The set
+	 * @param key
+	 *            The string
 	 * @return {@code true} if the set contains the key, {@code false} otherwise
 	 */
-	protected static boolean containsExactly(Set<String> set, String key)
-	{
+	protected static boolean containsExactly(Set<String> set, String key) {
 		return set.contains(key);
 	}
 
 	/**
-	 * Checks if string is the prefix of a string in some set 
-	 * @param set The set
-	 * @param key The string
+	 * Checks if string is the prefix of a string in some set
+	 * 
+	 * @param set
+	 *            The set
+	 * @param key
+	 *            The string
 	 * @return {@code true} if the set has an element with {@code key} as its
-	 * prefix, {@code false} otherwise
+	 *         prefix, {@code false} otherwise
 	 */
-	protected static boolean containsPrefix(Set<String> set, String key)
-	{
-		for (String s : set)
-		{
-			if (s.startsWith(key))
-			{
+	protected static boolean containsPrefix(Set<String> set, String key) {
+		for (String s : set) {
+			if (s.startsWith(key)) {
 				return true;
 			}
 		}
@@ -319,14 +300,14 @@ public class ExperimentPageCallback extends TemplatePageCallback
 
 	/**
 	 * Exports the page for an experiment
-	 * @param experiment_id The ID of the experiement whose page is 
-	 *   to be rendered
-	 * @return The HTML contents of the page 
+	 * 
+	 * @param experiment_id
+	 *            The ID of the experiement whose page is to be rendered
+	 * @return The HTML contents of the page
 	 */
-	public String exportToStaticHtml(int experiment_id)
-	{
+	public String exportToStaticHtml(int experiment_id) {
 		String file = readTemplateFile();
-		Map<String,String> params = new HashMap<String,String>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put("id", Integer.toString(experiment_id));
 		String contents = render(file, params, true);
 		contents = createStaticLinks(contents);
@@ -335,23 +316,19 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException
-	{
+	public void addToZipBundle(ZipOutputStream zos) throws IOException {
 		Set<Integer> exp_ids = m_lab.getExperimentIds();
-		for (int exp_id : exp_ids)
-		{
+		for (int exp_id : exp_ids) {
 			String file_contents = exportToStaticHtml(exp_id);
 			String filename = "experiment/" + exp_id + ".html";
 			try {
-			ZipEntry ze = new ZipEntry(filename);
-			zos.putNextEntry(ze);
-			zos.write(file_contents.getBytes());
-			zos.closeEntry();
-			}
-			catch (ZipException e)
-			{
+				ZipEntry ze = new ZipEntry(filename);
+				zos.putNextEntry(ze);
+				zos.write(file_contents.getBytes());
+				zos.closeEntry();
+			} catch (ZipException e) {
 				System.out.println(e);
 			}
-		}		
+		}
 	}
 }

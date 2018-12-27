@@ -16,12 +16,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 
 import ca.uqac.lif.labpal.config.Config;
 import ca.uqac.lif.labpal.config.Config.ENV;
@@ -75,7 +76,7 @@ public class FileManager {
 			out.println(content);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -145,10 +146,10 @@ public class FileManager {
 
 			} catch (FileNotFoundException e) {
 
-				e.printStackTrace();
+				Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
 			} catch (IOException e) {
 
-				e.printStackTrace();
+				Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
 			} finally {
 				inputStream.close();
 			}
@@ -200,8 +201,7 @@ public class FileManager {
 			 pdf.close();
 			return data;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
 		}
       return null;
 	}

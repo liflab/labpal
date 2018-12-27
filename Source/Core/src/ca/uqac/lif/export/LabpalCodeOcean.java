@@ -2,11 +2,14 @@ package ca.uqac.lif.export;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.config.Config;
+import ca.uqac.lif.labpal.server.AllPlotsLatexCallback;
 import ca.uqac.lif.mtnp.table.Table;
 import ca.uqac.lif.mtnp.table.TempTable;
 import ca.uqac.lif.tui.AnsiPrinter;
@@ -79,12 +82,10 @@ public class LabpalCodeOcean extends LabpalPlatform implements IPlatform {
 			allTablesContent.append(content);
 			allTablesContent.append("\n");
 			FileManager.writeFile(Config.getProp("pathOutput"), "table" + id, ".csv", content);
-
 			content = "<H1> " + tab.getTitle() + "</H1> " + d_tab.toHtml();
 			allTablesContentHtml.append(content);
 			allTablesContentHtml.append("\n");
 			FileManager.writeFile(Config.getProp("pathOutput"), "table" + id, ".html", content);
-
 		}
 
 		FileManager.writeFile(Config.getProp("pathOutput"), "tables", ".csv", allTablesContent.toString());
@@ -116,6 +117,11 @@ public class LabpalCodeOcean extends LabpalPlatform implements IPlatform {
 
 	}
 
+	void exportLatex() throws Exception {
+		FileManager.writeFile(Config.getProp("pathOutput"), "AllPlotsLatex", ".tex",
+				AllPlotsLatexCallback.generateBodyLatex(lab).toString());
+	}
+
 	@Override
 	public void export() {
 
@@ -123,9 +129,9 @@ public class LabpalCodeOcean extends LabpalPlatform implements IPlatform {
 			exportExperiments();
 			exportTables();
 			exportPlots();
+			exportLatex();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
 		}
 	}
 }

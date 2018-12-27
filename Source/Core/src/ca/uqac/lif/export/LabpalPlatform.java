@@ -3,6 +3,8 @@ package ca.uqac.lif.export;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Experiment.QueueStatus;
@@ -24,7 +26,6 @@ public class LabpalPlatform {
 
 	private List<Experiment> lstExp = new ArrayList<>();
 
-
 	public LabpalPlatform(Laboratory m_lab, LabAssistant m_assistant, AnsiPrinter m_printer) {
 		super();
 		this.m_printer = m_printer;
@@ -41,6 +42,7 @@ public class LabpalPlatform {
 		}
 		return false;
 	}
+
 	public List<Experiment> getLstExp() {
 		if (lstExp.isEmpty())
 			setLstExp(getListExperiment());
@@ -82,9 +84,9 @@ public class LabpalPlatform {
 
 	protected void displayRuningExperiments() {
 
-		int num_ex = 0, num_q = 0, num_failed = 0, num_done = 0, num_warn = 0;
+		int num_done = 0;
 		for (int id : getExperimentIds()) {
-			num_ex++;
+
 			Experiment ex = getExperiment(id);
 			switch (ex.getStatus()) {
 			case RUNNING:
@@ -93,19 +95,8 @@ public class LabpalPlatform {
 						+ num_done + "/" + getLstExp().size());
 
 				break;
-			case DONE:
-				num_done++;
-				break;
-			case FAILED:
-				num_failed++;
-				break;
-			case DONE_WARNING:
-				num_warn++;
-				break;
 			default:
-				if (assistant.isQueued(id)) {
-					num_q++;
-				}
+
 				break;
 			}
 		}
@@ -153,7 +144,7 @@ public class LabpalPlatform {
 	}
 
 	protected void runFinishing() {
-		m_printer.print("\nPath output: "+Config.getProp("pathOutput"));
+		m_printer.print("\nPath output: " + Config.getProp("pathOutput"));
 		m_printer.print("\nDone");
 
 	}
@@ -187,15 +178,16 @@ public class LabpalPlatform {
 			export();
 			runFinishing();
 		} catch (Exception e) {
-
+			Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
 		}
 	}
 
 	protected void export() {
 
 	}
+
 	protected void config() {
-		
+
 	}
 
 }

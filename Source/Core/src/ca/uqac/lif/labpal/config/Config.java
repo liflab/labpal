@@ -18,7 +18,7 @@ public class Config {
 			put("namefileTempExp", "Experiments");
 			put("pathInput", "../data/Experiments.html");
 			put("pathOutput", "../results/");
-			put("pdfName", "plots");
+			put("pdfName", "labpal-plots");
 			put("imageName", "img");
 			put("zipName", "LabpalStatic");
 			

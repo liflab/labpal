@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2018 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -110,6 +110,34 @@ public class Region
 		new_list.add(value);
 		m_ranges.put(name, new_list);
 		m_names.add(name);
+	}
+	
+	/**
+	 * Creates a region from the current one by reducing the values of a given
+	 * dimension to a single one
+	 * @param name The name of the dimension
+	 * @param value The value to set for this dimension
+	 * @return The new region
+	 */
+	public Region set(String name, String value)
+	{
+		Region reg = new Region(this);
+		reg.set(name, new JsonString(value));
+		return reg;
+	}
+	
+	/**
+	 * Creates a region from the current one by reducing the values of a given
+	 * dimension to a single one
+	 * @param name The name of the dimension
+	 * @param value The value to set for this dimension
+	 * @return The new region
+	 */
+	public Region set(String name, Number value)
+	{
+		Region reg = new Region(this);
+		reg.set(name, new JsonNumber(value));
+		return reg;
 	}
 	
 	/**

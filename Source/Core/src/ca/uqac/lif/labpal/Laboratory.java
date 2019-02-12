@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2018 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ public abstract class Laboratory implements OwnershipManager
 	/**
 	 * The revision version number
 	 */
-	private static final transient int s_revisionVersionNumber = 0;
+	private static final transient int s_revisionVersionNumber = 1;
 
 	/**
 	 * The set of experiments this lab has access to

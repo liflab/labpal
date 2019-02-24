@@ -85,7 +85,7 @@ public class PlotsPageCallback extends TemplatePageCallback
 			Table t = plot.getTable();
 			out.append("<div class=\"plot\">\n");
 			out.append("<a href=\"plot/").append(id).append("\" target=\"_blank\" title=\"Click on plot to view in new window\">");
-			out.append("<img src=\"plot/").append(id).append("\" alt=\"Plot\" /></a>\n");
+			out.append("<img src=\"plot/").append(id).append("\" alt=\"" + htmlEscape(plot.getNickname()) + "\" /></a>\n");
 			out.append("<div><ul>");
 			if (plot instanceof GnuPlot)
 			{

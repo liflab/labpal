@@ -88,12 +88,12 @@ public abstract class Laboratory implements OwnershipManager
 	/**
 	 * The minor version number
 	 */
-	private static final transient int s_minorVersionNumber = 10;
+	private static final transient int s_minorVersionNumber = 11;
 
 	/**
 	 * The revision version number
 	 */
-	private static final transient int s_revisionVersionNumber = 1;
+	private static final transient int s_revisionVersionNumber = 0;
 
 	/**
 	 * The set of experiments this lab has access to
@@ -1782,4 +1782,25 @@ public abstract class Laboratory implements OwnershipManager
 		}
 		return set;
 	}
+	
+	/**
+	 * Filters experiments according to a region and a class
+	 * @param reg The region
+	 * @param exp_type The class of the experiments
+	 * @return A collection of all the experiments of the same class as
+	 * <tt>exp_type</tt> having parameters compatible with those of <tt>reg</tt>
+	 */
+	/*@ non_null @*/ public Collection<Experiment> filterExperiments(/*@ non_null @*/ Region reg, /*@ non_null @*/ Class<?> exp_type)
+  {
+    Collection<Experiment> col = filterExperiments(reg);
+    Collection<Experiment> c_col = new HashSet<Experiment>();
+    for (Experiment e : col)
+    {
+      if (exp_type.isInstance(e))
+      {
+        c_col.add(e);
+      }
+    }
+    return c_col;
+  }
 }

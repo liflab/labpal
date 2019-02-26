@@ -71,7 +71,7 @@ public abstract class Namer
    * @param s The string to replace
    * @return The replaced string
    */
-  protected static String latexify(String s)
+  public static String latexify(String s)
   {
     s = s.replaceAll("0", "Z");
     s = s.replaceAll("1", "O");

@@ -486,4 +486,15 @@ public class Region
 	{
 	  return m_ranges.keySet();
 	}
+	
+	/**
+	 * Checks if a region has a dimension of a given name
+	 * @param name The name of the dimension
+	 * @return <tt>true</tt> if the dimension exists, <tt>false</tt>
+	 * otherwise
+	 */
+	public boolean hasDimension(String name)
+	{
+	  return m_ranges.containsKey(name);
+	}
 }

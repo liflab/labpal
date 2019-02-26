@@ -77,7 +77,10 @@ public abstract class ExperimentFactory<L extends Laboratory,T extends Experimen
     {
       // Experiment does not exist
       exp = createExperiment(r);
-      m_lab.add(exp);
+      if (exp != null)
+      {
+        m_lab.add(exp);
+      }
     }
     else
     {

@@ -265,6 +265,7 @@ public abstract class Laboratory implements OwnershipManager
 		m_serializer = new JsonSerializer();
 		m_serializer.addClassLoader(ca.uqac.lif.labpal.Laboratory.class.getClassLoader());
 		m_reporter = new ResultReporter(this);
+		m_filter = createFilter("");
 		if (FileHelper.internalFileExists(getClass(), s_descriptionDefaultFilename))
 		{
 			setDescription(FileHelper.internalFileToString(getClass(), "description.html"));

@@ -77,6 +77,10 @@ public class AllTablesCallback extends WebCallback
 		for (int id : m_lab.getTableIds(true))
 		{
 			Table tab = m_lab.getTable(id);
+			if (!tab.showsInList())
+			{
+			  continue;
+			}
 			LatexTableRenderer renderer = new LatexTableRenderer(tab);
 			String box_name = tab.getTitle();
 			if (!tab.getNickname().isEmpty())

@@ -84,6 +84,7 @@ public abstract class Namer
     s = s.replaceAll("8", "H");
     s = s.replaceAll("9", "N");
     s = s.replaceAll("\\.", "D");
+    s = s.replaceAll("-", "T");
     s = s.replaceAll(",", "C");
     s = s.replaceAll(" ", "P");
     return s;

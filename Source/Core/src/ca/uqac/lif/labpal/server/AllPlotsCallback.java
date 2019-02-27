@@ -27,13 +27,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import com.sun.net.httpserver.HttpExchange;
-
-import ca.uqac.lif.export.FileManager;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.export.FileManager;
 import ca.uqac.lif.mtnp.plot.Plot;
 
 /**

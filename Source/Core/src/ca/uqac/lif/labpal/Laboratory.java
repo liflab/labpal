@@ -153,7 +153,7 @@ public abstract class Laboratory implements OwnershipManager
 	/**
 	 * A filter for experiments
 	 */
-	private transient ExperimentFilter m_filter;
+	private ExperimentFilter m_filter;
 
 	/**
 	 * The version string of this lab

@@ -55,7 +55,7 @@ public class PlotsPageCallback extends TemplatePageCallback
 		if (GnuPlot.isGnuplotPresent())
 		{
 			out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
-			if (AllPlotsCallback.s_pdftkPresent)
+			//if (AllPlotsCallback.s_pdftkPresent)
 			{
 				out = out.replaceAll("\\{%ALL_PLOTS%\\}", "<a class=\"btn-24 btn-all-plots\" title=\"Download all plots as a single PDF file\" href=\"/all-plots\">Download all plots</a>");
 			}
@@ -110,11 +110,12 @@ public class PlotsPageCallback extends TemplatePageCallback
 		String contents = super.exportToStaticHtml(path_to_root);
 		// Transform URLs for individual plot buttons
 		contents = contents.replaceAll("src=\"(.*?)\\.html\"", "src=\"$1.png\"");
+		contents = contents.replaceAll("href=\"plot/(.*?)\\.html\"", "href=\"plot/$1.png\"");
 		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=gp.*?\"", "href=\"plot/$1.gp\"");
 		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=dumb.*?\"", "href=\"plot/$1.txt\"");
 		contents = contents.replaceAll("href=\"plot/(.*?)\\?format=pdf.*?\"", "href=\"plot/$1.pdf\"");
-		contents = contents.replaceAll("href=\"/all-plots\"", "href=\"labpal-plots.pdf\"");
-		contents = contents.replaceAll("href=\"/all-plots-latex\"", "href=\"labpal-plots.tex\"");
+		contents = contents.replaceAll("href=\"all-plots\"", "href=\"plot/labpal-plots.pdf\"");
+		contents = contents.replaceAll("href=\"all-plots-latex\"", "href=\"plot/labpal-plots.tex\"");
 		return contents;
 	}
 	

@@ -683,6 +683,9 @@ li.explanation-other {
 	background: url('images/info-16.png') center left no-repeat;
 }
 
+.hidden {
+  display: none;
+
 .nickname {
 	color: grey;
 	font-family: monospace;

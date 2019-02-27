@@ -86,7 +86,7 @@ public class PlotImageCallback extends WebCallback
 			response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
 			return response;
 		}
-		if (!GnuPlot.isGnuplotPresent())
+	    if (!GnuPlot.isGnuplotPresent())
 		{
 			// Asking for an image, but Gnuplot not available: stop right here
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);

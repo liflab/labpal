@@ -189,11 +189,11 @@ public class ClaimCallback extends TemplatePageCallback
 	@Override
 	public void addToZipBundle(ZipOutputStream zos) throws IOException
 	{
-		Set<Integer> exp_ids = m_lab.getExperimentIds();
-		for (int exp_id : exp_ids)
+		List<Claim> claims = m_lab.getClaims();
+		for (Claim exp_id : claims)
 		{
-			String file_contents = exportToStaticHtml(exp_id);
-			String filename = "experiment/" + exp_id + ".html";
+			String file_contents = exportToStaticHtml(exp_id.getId());
+			String filename = "claim/" + exp_id + ".html";
 			ZipEntry ze = new ZipEntry(filename);
 			zos.putNextEntry(ze);
 			zos.write(file_contents.getBytes());

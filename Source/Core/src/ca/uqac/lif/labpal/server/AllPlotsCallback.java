@@ -18,138 +18,108 @@
 package ca.uqac.lif.labpal.server;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import com.sun.net.httpserver.HttpExchange;
+
+import ca.uqac.lif.export.FileManager;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.jerrydog.Server;
-import ca.uqac.lif.labpal.CommandRunner;
-import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.mtnp.plot.Plot;
 
-import com.sun.net.httpserver.HttpExchange;
-
 /**
- * Callback to download all plots as a single, multi-page PDF file.
- * This callback makes use of pdftk in the background.
- * It will return a 404 response if this program cannot be found.
- * 
+ * Callback to download all plots as a single, multi-page PDF file. This
+ * callback makes use of Apache PDFBox library,  in the background. It will return a 404 response
+ * if this program cannot be found.
  * @author Sylvain Hallé
  *
  */
-public class AllPlotsCallback extends WebCallback
-{
-	/**
-	 * The path to launch pdftk
-	 */
-	protected static transient String s_path = "pdftk";
-	
-	/**
-	 * Whether pdftk is present on the system
-	 */
-	protected static transient final boolean s_pdftkPresent = FileHelper.commandExists(s_path);
-	
-	public AllPlotsCallback(Laboratory lab, LabAssistant assistant)
-	{
+public class AllPlotsCallback extends WebCallback {
+
+	public AllPlotsCallback(Laboratory lab, LabAssistant assistant) {
 		super("/all-plots", lab, assistant);
 	}
 
 	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
+	public CallbackResponse process(HttpExchange t) {
 		CallbackResponse response = new CallbackResponse(t);
-		if (!s_pdftkPresent)
-		{
-			// Can't do this without pdftk
-			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
-			return response;
-		}
-		Map<String,String> params = getParameters(t);
+
+		Map<String, String> params = getParameters(t);
 		boolean with_captions = false;
-		if (params.containsKey("captions"))
-		{
+		if (params.containsKey("captions")) {
 			with_captions = true;
 		}
-		List<String> filenames = new LinkedList<String>();
-		for (int id : m_lab.getPlotIds())
-		{
-			Plot plot = m_lab.getPlot(id);
-			// Get plot's image and write to temporary file
-			byte[] image = plot.getImage(Plot.ImageType.PDF, with_captions);
-			try
-			{
-				if (image.length > 0)
-				{
-					// Do something only if pdftk produced a non-zero-sized file
-					File tmp_file = File.createTempFile("plot", ".pdf");
-					tmp_file.deleteOnExit();
-					FileOutputStream fos = new FileOutputStream(tmp_file);
-					fos.write(image, 0, image.length);
-					fos.flush();
-					fos.close();
-					String filename = tmp_file.getPath();
-					filenames.add(filename);
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				response.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-				return response;
-			}
-			catch (IOException e)
-			{
-				response.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-				return response;
-			}
+
+		byte[] file_contents;
+
+		try {
+			file_contents = export(with_captions);
+		} catch (Exception e) {
+			response.setCode(CallbackResponse.HTTP_BAD_REQUEST);
+			return response;
 		}
-		// Now run pdftk to merge all the plots into a single PDF
-		List<String> command = new LinkedList<String>();
-		command.add("pdftk");
-		command.addAll(filenames);
-		command.add("cat");
-		command.add("output");
-		command.add("-");
-		CommandRunner runner = new CommandRunner(command, null);
-		runner.start();
-		while (runner.isAlive())
-		{
-			// Wait 0.1 s and check again
-			try
-			{
-				Thread.sleep(100);
-			}
-			catch (InterruptedException e)
-			{
-				// This happens if the user cancels the command manually
-				runner.stopCommand();
-				runner.interrupt();
-				return null;
-			}
-		}
-		// pdftk is done; read the output
-		byte[] file_contents = runner.getBytes();
+
 		response.setContentType(ContentType.PDF);
 		String filename = Server.urlEncode("labpal-plots.pdf");
 		response.setAttachment(filename);
 		response.setContents(file_contents);
+
 		return response;
+	}
+
+	byte[] export(boolean with_captions) throws IOException {
+		List<String> filenames = new ArrayList<String>();
+
+		for (int id : m_lab.getPlotIds()) {
+			Plot plot = m_lab.getPlot(id);
+			// Get plot's image and write to temporary file
+			byte[] image = plot.getImage(Plot.ImageType.PDF, with_captions);
+
+			if (image.length > 0) {
+				// Do something only if pdftk produced a non-zero-sized file
+				File tmp_file = File.createTempFile("plot", ".pdf");
+				tmp_file.deleteOnExit();
+				FileOutputStream fos = new FileOutputStream(tmp_file);
+				fos.write(image, 0, image.length);
+				fos.flush();
+				fos.close();
+				String filename = tmp_file.getPath();
+				filenames.add(filename);
+
+			}
+		}
+		String[] tab = filenames.toArray(new String[filenames.size()]);
+		byte[] file_contents = FileManager.mergePdF(File.createTempFile("plots", ".pdf").getPath(), tab);
+
+		return file_contents;
+
 	}
 
 	/**
 	 * Gets the name given to the file containing all the plots
-	 * @param lab The lab
+	 * 
+	 * @param lab
+	 *            The lab
 	 * @return The name
 	 */
-	public static String getPlotsFilename(Laboratory lab)
-	{
+	public static String getPlotsFilename(Laboratory lab) {
 		return "labpal-plots.pdf";
-		//return lab.getTitle() + ".pdf";
+	}
+
+	@Override
+	public void addToZipBundle(ZipOutputStream zos) throws IOException {
+		ZipEntry ze = new ZipEntry("plot/labpal-plots.pdf");
+		zos.putNextEntry(ze);
+		zos.write(export(true));
+		zos.closeEntry();
 	}
 }

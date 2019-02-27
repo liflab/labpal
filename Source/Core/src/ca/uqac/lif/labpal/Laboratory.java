@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2018 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ public abstract class Laboratory implements OwnershipManager {
 	/**
 	 * The minor version number
 	 */
-	private static final transient int s_minorVersionNumber = 10;
+	private static final transient int s_minorVersionNumber = 11;
 
 	/**
 	 * The revision version number
@@ -157,7 +157,7 @@ public abstract class Laboratory implements OwnershipManager {
 	/**
 	 * A filter for experiments
 	 */
-	private transient ExperimentFilter m_filter;
+	private ExperimentFilter m_filter;
 
 	/**
 	 * The version string of this lab
@@ -268,7 +268,9 @@ public abstract class Laboratory implements OwnershipManager {
 		m_serializer = new JsonSerializer();
 		m_serializer.addClassLoader(ca.uqac.lif.labpal.Laboratory.class.getClassLoader());
 		m_reporter = new ResultReporter(this);
-		if (FileHelper.internalFileExists(getClass(), s_descriptionDefaultFilename)) {
+		m_filter = createFilter("");
+		if (FileHelper.internalFileExists(getClass(), s_descriptionDefaultFilename))
+		{
 			setDescription(FileHelper.internalFileToString(getClass(), "description.html"));
 		}
 	}
@@ -1717,4 +1719,25 @@ public abstract class Laboratory implements OwnershipManager {
 		}
 		return set;
 	}
+	
+	/**
+	 * Filters experiments according to a region and a class
+	 * @param reg The region
+	 * @param exp_type The class of the experiments
+	 * @return A collection of all the experiments of the same class as
+	 * <tt>exp_type</tt> having parameters compatible with those of <tt>reg</tt>
+	 */
+	/*@ non_null @*/ public Collection<Experiment> filterExperiments(/*@ non_null @*/ Region reg, /*@ non_null @*/ Class<?> exp_type)
+  {
+    Collection<Experiment> col = filterExperiments(reg);
+    Collection<Experiment> c_col = new HashSet<Experiment>();
+    for (Experiment e : col)
+    {
+      if (exp_type.isInstance(e))
+      {
+        c_col.add(e);
+      }
+    }
+    return c_col;
+  }
 }

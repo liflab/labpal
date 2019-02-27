@@ -684,5 +684,9 @@ li.explanation-other {
 }
 
 .hidden {
-display: none;
+  display: none;
+
+.nickname {
+	color: grey;
+	font-family: monospace;
 }

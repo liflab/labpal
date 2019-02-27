@@ -286,6 +286,11 @@ public class HttpUtilities
 				break;
 			}
 		}
+		if (right <= left)
+		{
+		  // Nothing in this array
+		  return null;
+		}
 		byte[] file_contents = new byte[right - left];
 		for (int i = left; i < right; i++)
 		{

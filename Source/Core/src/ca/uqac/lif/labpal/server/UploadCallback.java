@@ -65,6 +65,12 @@ public class UploadCallback extends WebCallback
 			break;
 		}
 		byte[] lab_file_contents = parts.get(filename); 
+		if (filename == null || filename.isEmpty() || lab_file_contents == null)
+		{
+		// Baaaad request
+      doBadRequest(cbr, "No file was uploaded");
+      return cbr;
+		}
 		String json = null;
 		if (filename.endsWith(".zip") || filename.endsWith("." + Laboratory.s_fileExtension))
 		{

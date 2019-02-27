@@ -109,6 +109,11 @@ public class TablePageCallback extends TemplatePageCallback
 		{
 			s = s.replaceAll("\\{%DESCRIPTION%\\}", Matcher.quoteReplacement(desc));
 		}
+		String nick = tab.getNickname();
+    if (nick != null && !nick.isEmpty())
+    {
+      s = s.replaceAll("\\{%NICKNAME%\\}", Matcher.quoteReplacement(nick));
+    }
 		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
 		return s;
 	}

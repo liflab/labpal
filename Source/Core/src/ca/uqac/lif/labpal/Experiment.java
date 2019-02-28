@@ -91,7 +91,7 @@ public abstract class Experiment implements Runnable, DataOwner {
 	 * A numerical value that uniquely identifies each experiment in a lab
 	 */
 	private int m_id;
-	public boolean finished = false;
+	
 	/**
 	 * The maximum duration for this experiment (in milliseconds). If the experiment
 	 * lasts longer than this duration, the lab assistant can interrupt it. A
@@ -760,7 +760,6 @@ public abstract class Experiment implements Runnable, DataOwner {
 			m_status = Status.DONE_WARNING;
 		}
 		m_running = false;
-		finished = true;
 	}
 
 	/**

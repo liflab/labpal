@@ -1,3 +1,20 @@
+/*
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2019 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.labpal.export;
 
 import java.util.ArrayList;
@@ -19,30 +36,30 @@ import ca.uqac.lif.tui.AnsiPrinter;
 public class LabpalPlatform
 {
 
-  AnsiPrinter m_printer;
+  protected AnsiPrinter m_printer;
 
-  Laboratory lab;
+  protected Laboratory m_lab;
 
-  LabAssistant assistant;
+  protected LabAssistant m_assistant;
 
   private List<Experiment> lstExp = new ArrayList<Experiment>();
 
-  public LabpalPlatform(Laboratory m_lab, LabAssistant m_assistant, AnsiPrinter m_printer)
+  public LabpalPlatform(Laboratory lab, LabAssistant m_assistant, AnsiPrinter m_printer)
   {
     super();
     this.m_printer = m_printer;
-    this.lab = m_lab;
-    this.assistant = m_assistant;
+    this.m_lab = lab;
+    this.m_assistant = m_assistant;
   }
 
   boolean isExpStillRunning()
   {
     for (Experiment e : lstExp)
     {
-      if (!e.finished)
+      Experiment.Status st = e.getStatus();
+      if (st == Experiment.Status.RUNNING || st == Experiment.Status.RUNNING_REMOTELY)
       {
         return true;
-
       }
     }
     return false;
@@ -62,12 +79,12 @@ public class LabpalPlatform
 
   protected Set<Integer> getExperimentIds()
   {
-    return lab.getExperimentIds();
+    return m_lab.getExperimentIds();
   }
 
   protected Experiment getExperiment(int id)
   {
-    return lab.getExperiment(id);
+    return m_lab.getExperiment(id);
   }
 
   private List<Experiment> getListExperiment()
@@ -85,7 +102,7 @@ public class LabpalPlatform
     getLstExp();
     for (Experiment e : lstExp)
     {
-      assistant.queue(e);
+      m_assistant.queue(e);
       boolean b = true;
       while (b)
       {
@@ -108,8 +125,9 @@ public class LabpalPlatform
       {
       case RUNNING:
         long seconds = System.currentTimeMillis() - ex.getStartTime();
-        m_printer.print("\n Running experiment : #" + ex.getId() + " for " + seconds
-            + " seconds [######-----]" + num_done + "/" + getLstExp().size());
+        float progression = ex.getProgression();
+        m_printer.print("\n Running experiment #" + ex.getId() + " since " + (seconds / 1000)
+            + " seconds " + printProgression(progression)  + num_done + "/" + getLstExp().size());
 
         break;
       default:
@@ -117,7 +135,24 @@ public class LabpalPlatform
         break;
       }
     }
-
+  }
+  
+  protected String printProgression(float x)
+  {
+    int total = 10;
+    int to_draw = (int) (x * (float) total);
+    StringBuilder out = new StringBuilder();
+    out.append("[");
+    for (int i = 0; i < to_draw; i++)
+    {
+      out.append("#");
+    }
+    for (int i = to_draw; i < total; i++)
+    {
+      out.append(" ");
+    }
+    out.append("]");
+    return out.toString();
   }
 
   /**
@@ -131,7 +166,7 @@ public class LabpalPlatform
    */
   protected byte[] exportTo(int plot_id, String format)
   {
-    Plot p = lab.getPlot(plot_id);
+    Plot p = m_lab.getPlot(plot_id);
     byte[] image = null;
     if (format.compareToIgnoreCase("png") == 0)
     {
@@ -147,7 +182,7 @@ public class LabpalPlatform
     }
     else if (format.compareToIgnoreCase("gp") == 0 && p instanceof GnuPlot)
     {
-      image = ((GnuPlot) p).toGnuplot(ImageType.PDF, lab.getTitle(), true).getBytes();
+      image = ((GnuPlot) p).toGnuplot(ImageType.PDF, m_lab.getTitle(), true).getBytes();
     }
     return image;
   }
@@ -158,7 +193,7 @@ public class LabpalPlatform
     {
       m_printer.print("\nWarning: Gnuplot was not found on your system");
     }
-    if (lab.isEnvironmentOk() != null)
+    if (m_lab.isEnvironmentOk() != null)
     {
       m_printer.print("\nError: some of the environment requirements for this lab are not met");
       m_printer.print("\nThis means you are missing something to run the experiments.");
@@ -174,7 +209,7 @@ public class LabpalPlatform
 
   protected void runFinishing()
   {
-    m_printer.print("\nPath output: " + Config.getProp("pathOutput"));
+    m_printer.print("\nPath output: " + Config.getProperty("pathOutput"));
     m_printer.print("\nDone");
 
   }
@@ -193,7 +228,7 @@ public class LabpalPlatform
 
   protected void startLab()
   {
-    lab.start();
+    m_lab.start();
   }
 
   public void run()

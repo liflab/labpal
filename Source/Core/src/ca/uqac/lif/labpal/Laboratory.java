@@ -1032,13 +1032,13 @@ public abstract class Laboratory implements OwnershipManager
     if (new_lab.m_cliArguments == null)
     {
       // Could not parse command line arguments
-      parser.printHelp(getCliHeader(), System.out);
+      parser.printHelp("", System.out);
       stdout.close();
       System.exit(ERR_ARGUMENTS);
     }
     if (new_lab.m_cliArguments.hasOption("help"))
     {
-      parser.printHelp(getCliHeader(), System.out);
+      parser.printHelp("", System.out);
       stdout.close();
       System.exit(ERR_OK);
     }

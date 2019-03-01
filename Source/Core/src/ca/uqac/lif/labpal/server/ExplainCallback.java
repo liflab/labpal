@@ -58,198 +58,254 @@ import ca.uqac.lif.mtnp.table.Table.CellCoordinate;
  * @author Sylvain Hallé
  *
  */
-public class ExplainCallback extends TemplatePageCallback {
-	public ExplainCallback(Laboratory lab, LabAssistant assistant) {
-		super("/explain", lab, assistant);
-	}
+public class ExplainCallback extends TemplatePageCallback
+{
+  public ExplainCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/explain", lab, assistant);
+  }
 
-	@Override
-	public String fill(String s, Map<String, String> params, boolean is_offline) {
+  @Override
+  public String fill(String s, Map<String, String> params, boolean is_offline)
+  {
 
-		String datapoint_id = params.get("id");
-		s = s.replaceAll("\\{%TITLE%\\}", "Explanation");
-		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.BINOCULARS));
-		ProvenanceNode node = m_lab.getDataTracker().explain(datapoint_id);
-		if (node == null) {
-			s = s.replaceAll("\\{%EXPLANATION%\\}",
-					"<p>There does not seem to be an explanation available for this data point. Some data points are available only when the experiments they depend on have been executed.</p>");
-			return s;
-		}
-		s = s.replaceAll("\\{%IMAGE_URL%\\}", Matcher.quoteReplacement("provenance-graph?id=" + datapoint_id));
-		StringBuilder out = new StringBuilder();
-		out.append("<ul class=\"explanation\">\n");
-		explanationToHtml(node, "", out);
-		out.append("</ul>\n");
-		s = s.replaceAll("\\{%EXPLANATION%\\}", Matcher.quoteReplacement(out.toString()));
+    String datapoint_id = params.get("id");
+    s = s.replaceAll("\\{%TITLE%\\}", "Explanation");
+    s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.BINOCULARS));
+    ProvenanceNode node = m_lab.getDataTracker().explain(datapoint_id);
+    if (node == null)
+    {
+      s = s.replaceAll("\\{%EXPLANATION%\\}",
+          "<p>There does not seem to be an explanation available for this data point. Some data points are available only when the experiments they depend on have been executed.</p>");
+      return s;
+    }
+    s = s.replaceAll("\\{%IMAGE_URL%\\}",
+        Matcher.quoteReplacement("provenance-graph?id=" + datapoint_id));
+    StringBuilder out = new StringBuilder();
+    out.append("<ul class=\"explanation\">\n");
+    explanationToHtml(node, "", out);
+    out.append("</ul>\n");
+    s = s.replaceAll("\\{%EXPLANATION%\\}", Matcher.quoteReplacement(out.toString()));
 
-		return s;
-	}
+    return s;
+  }
 
-	protected void explanationToHtml(ProvenanceNode node, String parent_id, StringBuilder out) {
-		out.append(
-				"<li><div class=\"around-pulldown\"><div class=\"pulldown\"><a title=\"Click to see where this value comes from\" href=\"")
-				.append(htmlEscape(getDataPointUrl(node))).append("\">").append(node).append("</a></div>\n");
-		List<ProvenanceNode> parents = node.getParents();
-		if (parents != null && !parents.isEmpty()) {
-			String new_parent = node.getNodeFunction().getDataPointId();
-			out.append("<div class=\"pulldown-contents\"><ul>");
-			for (ProvenanceNode pn : parents) {
-				explanationToHtml(pn, new_parent, out);
-			}
-			out.append("</ul></div></div>");
-		}
-		out.append("</li>\n");
-	}
+  protected void explanationToHtml(ProvenanceNode node, String parent_id, StringBuilder out)
+  {
+    out.append(
+        "<li><div class=\"around-pulldown\"><div class=\"pulldown\"><a title=\"Click to see where this value comes from\" href=\"")
+        .append(htmlEscape(getDataPointUrl(node))).append("\">").append(node)
+        .append("</a></div>\n");
+    List<ProvenanceNode> parents = node.getParents();
+    if (parents != null && !parents.isEmpty())
+    {
+      String new_parent = node.getNodeFunction().getDataPointId();
+      out.append("<div class=\"pulldown-contents\"><ul>");
+      for (ProvenanceNode pn : parents)
+      {
+        explanationToHtml(pn, new_parent, out);
+      }
+      out.append("</ul></div></div>");
+    }
+    out.append("</li>\n");
+  }
 
-	public static String getDataPointUrl(NodeFunction nf) {
-		if (nf == null) {
-			return "#";
-		}
-		StringBuilder highlight_string = new StringBuilder();
-		if (nf instanceof AggregateFunction) {
-			AggregateFunction af = (AggregateFunction) nf;
-			boolean first = true;
-			Table first_owner = null;
-			for (NodeFunction dep_node : af.getDependencyNodes()) {
-				if (first) {
-					first = false;
-				} else {
-					highlight_string.append(",");
-				}
-				if (first_owner == null && dep_node instanceof TableCellNode) {
-					first_owner = ((TableCellNode) dep_node).getOwner();
-				}
-				highlight_string.append(dep_node.getDataPointId());
-			}
-			if (first_owner != null) {
-				return "/table?id=" + first_owner.getId() + "&highlight=" + highlight_string.toString();
-			} else {
-				return "#";
-			}
+  public static String getDataPointUrl(NodeFunction nf)
+  {
+    if (nf == null)
+    {
+      return "#";
+    }
+    StringBuilder highlight_string = new StringBuilder();
+    if (nf instanceof AggregateFunction)
+    {
+      AggregateFunction af = (AggregateFunction) nf;
+      boolean first = true;
+      Table first_owner = null;
+      for (NodeFunction dep_node : af.getDependencyNodes())
+      {
+        if (first)
+        {
+          first = false;
+        }
+        else
+        {
+          highlight_string.append(",");
+        }
+        if (first_owner == null && dep_node instanceof TableCellNode)
+        {
+          first_owner = ((TableCellNode) dep_node).getOwner();
+        }
+        highlight_string.append(dep_node.getDataPointId());
+      }
+      if (first_owner != null)
+      {
+        return "/table?id=" + first_owner.getId() + "&highlight=" + highlight_string.toString();
+      }
+      else
+      {
+        return "#";
+      }
 
-		} else if (nf instanceof TableCellNode) {
-			TableCellNode tcn = (TableCellNode) nf;
-			highlight_string.append(tcn.getDataPointId());
-			return "/table?id=" + tcn.getOwner().getId() + "&highlight=" + highlight_string.toString();
-		} else if (nf instanceof TableFunctionNode) {
-			TableFunctionNode tcn = (TableFunctionNode) nf;
-			return "/table?id=" + tcn.getOwner().getId();
-		} else if (nf instanceof PlotNode) {
-			PlotNode tcn = (PlotNode) nf;
-			return "/plot?id=" + tcn.getOwner().getId();
-		} else if (nf instanceof MacroNode) {
-			MacroNode tcn = (MacroNode) nf;
-			return "/macros" + "?highlight=" + tcn.getDataPointId() + "#" + tcn.getOwner().getId();
-		} else if (nf instanceof ExperimentValue) {
-			ExperimentValue ev = (ExperimentValue) nf;
-			highlight_string.append(ev.getDataPointId());
-			return "/experiment?id=" + ev.getOwner().getId() + "&highlight=" + highlight_string.toString();
-		}
-		return "#";
-	}
+    }
+    else if (nf instanceof TableCellNode)
+    {
+      TableCellNode tcn = (TableCellNode) nf;
+      highlight_string.append(tcn.getDataPointId());
+      return "/table?id=" + tcn.getOwner().getId() + "&highlight=" + highlight_string.toString();
+    }
+    else if (nf instanceof TableFunctionNode)
+    {
+      TableFunctionNode tcn = (TableFunctionNode) nf;
+      return "/table?id=" + tcn.getOwner().getId();
+    }
+    else if (nf instanceof PlotNode)
+    {
+      PlotNode tcn = (PlotNode) nf;
+      return "/plot?id=" + tcn.getOwner().getId();
+    }
+    else if (nf instanceof MacroNode)
+    {
+      MacroNode tcn = (MacroNode) nf;
+      return "/macros" + "?highlight=" + tcn.getDataPointId() + "#" + tcn.getOwner().getId();
+    }
+    else if (nf instanceof ExperimentValue)
+    {
+      ExperimentValue ev = (ExperimentValue) nf;
+      highlight_string.append(ev.getDataPointId());
+      return "/experiment?id=" + ev.getOwner().getId() + "&highlight="
+          + highlight_string.toString();
+    }
+    return "#";
+  }
 
-	public static String getDataPointUrl(ProvenanceNode node) {
-		NodeFunction nf = node.getNodeFunction();
-		return getDataPointUrl(nf);
-	}
+  public static String getDataPointUrl(ProvenanceNode node)
+  {
+    NodeFunction nf = node.getNodeFunction();
+    return getDataPointUrl(nf);
+  }
 
-	/**
-	 * Gets the icon class associated to a node function
-	 * 
-	 * @param nf
-	 *            The node function
-	 * @return The icon class
-	 */
-	public static String getDataPointIconClass(NodeFunction nf) {
-		String dp_id = nf.getDataPointId();
-		if (dp_id.startsWith("E")) {
-			return "experiment";
-		}
-		if (dp_id.startsWith("T")) {
-			return "table";
-		}
-		if (dp_id.startsWith("M")) {
-			return "macro";
-		}
-		if (dp_id.startsWith("P")) {
-			return "plot";
-		}
-		return "other";
-	}
+  /**
+   * Gets the icon class associated to a node function
+   * 
+   * @param nf
+   *          The node function
+   * @return The icon class
+   */
+  public static String getDataPointIconClass(NodeFunction nf)
+  {
+    String dp_id = nf.getDataPointId();
+    if (dp_id.startsWith("E"))
+    {
+      return "experiment";
+    }
+    if (dp_id.startsWith("T"))
+    {
+      return "table";
+    }
+    if (dp_id.startsWith("M"))
+    {
+      return "macro";
+    }
+    if (dp_id.startsWith("P"))
+    {
+      return "plot";
+    }
+    return "other";
+  }
 
-	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException {
-		Set<Integer> ids = m_lab.getTableIds();
-		for (int id : ids) {
-			Table tab = m_lab.getTable(id);
-			HardTable tbl = tab.getDataTable();
-			renderTableTree(zos,tab, tbl.getTree(), tbl.getColumnNames());
-			zos.closeEntry();
-		}
-	}
+  @Override
+  public void addToZipBundle(ZipOutputStream zos) throws IOException
+  {
+    Set<Integer> ids = m_lab.getTableIds();
+    for (int id : ids)
+    {
+      Table tab = m_lab.getTable(id);
+      HardTable tbl = tab.getDataTable();
+      renderTableTree(zos, tab, tbl.getTree(), tbl.getColumnNames());
+      zos.closeEntry();
+    }
+  }
 
-	String renderTableTree(ZipOutputStream zos, Table tab, TableNode node, String[] sort_order) {
+  String renderTableTree(ZipOutputStream zos, Table tab, TableNode node, String[] sort_order)
+  {
+    System.out.println(tab.getId());
+    int width = sort_order.length;
+    StringBuilder out = new StringBuilder();
+    if (node == null || (node.m_children.isEmpty()))
+    {
+      return "";
+    }
+    List<PrimitiveValue> values = new ArrayList<PrimitiveValue>();
+    renderRecursive(zos, tab, node, values, out, 0, width);
 
-		int width = sort_order.length;
-		StringBuilder out = new StringBuilder();
-		if (node == null || (node.m_children.isEmpty())) {
-			return "";
-		}
-		List<PrimitiveValue> values = new ArrayList<PrimitiveValue>();
-		renderRecursive(zos, tab, node, values, out, width);
+    return out.toString();
 
-		return out.toString();
+  }
 
-	}
+  protected void renderRecursive(ZipOutputStream zos, Table tab, TableNode cur_node,
+      List<PrimitiveValue> values, StringBuilder out, int depth, int max_depth)
+  {
+    if (depth >= max_depth)
+    {
+      // This is to avoid an infinite recursion
+      return;
+    }
+    if (values != null && values.size() > 0)
+    {
+      WriteZipElement(zos, tab, out, values, cur_node.countLeaves(), max_depth, cur_node);
+    }
+    boolean first_child = true;
+    for (TableNode child : cur_node.m_children)
+    {
+      values.add(child.getValue());
+      if (first_child)
+      {
+        first_child = false;
+      }
+      renderRecursive(zos, tab, child, values, out, depth + 1, max_depth);
+      values.remove(values.size() - 1);
+    }
+  }
 
-	protected void renderRecursive(ZipOutputStream zos, Table tab, TableNode cur_node, List<PrimitiveValue> values,
-			StringBuilder out, int max_depth) {
-		if (values != null && values.size() > 0) {
-			WriteZipElement(zos, tab, out, values, cur_node.countLeaves(), max_depth, cur_node);
-		}
-		boolean first_child = true;
-		for (TableNode child : cur_node.m_children) {
-			values.add(child.getValue());
-			if (first_child) {
-				first_child = false;
-			}
-			renderRecursive(zos, tab, child, values, out, max_depth);
-			values.remove(values.size() - 1);
-		}
-	}
+  public void WriteZipElement(ZipOutputStream zos, Table tab, StringBuilder out,
+      List<PrimitiveValue> values, int nb_children, int max_depth, TableNode node)
+  {
+    List<CellCoordinate> coordinates = node.getCoordinates();
+    System.out.println(node);
+    if (coordinates.size() > 0)
+    {
+      CellCoordinate cc = coordinates.get(0);
+      String dp_id = "";
+      NodeFunction nf = tab.dependsOn(cc.row, cc.col);
+      if (nf != null)
+      {
+        dp_id = nf.getDataPointId();
+      }
+      HashMap<String, String> params = new HashMap<String, String>();
+      params.put("id", dp_id);
+      ZipEntry ze = new ZipEntry("table/" + dp_id + ".html");
+      try
+      {
+        zos.putNextEntry(ze);
+        zos.write(exportToStaticHtml("../", params).getBytes());
+        zos.closeEntry();
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace();
+      }
+    }
 
-	public void WriteZipElement(ZipOutputStream zos, Table tab, StringBuilder out, List<PrimitiveValue> values,
-			int nb_children, int max_depth, TableNode node) {
-		List<CellCoordinate> coordinates = node.getCoordinates();
-		if (coordinates.size() > 0) {
-			CellCoordinate cc = coordinates.get(0);
-			String dp_id = "";
-			NodeFunction nf = tab.dependsOn(cc.row, cc.col);
-			if (nf != null) {
-				dp_id = nf.getDataPointId();
-			}
-			HashMap<String, String> params = new HashMap<String,String>();
-			params.put("id", dp_id);
-			ZipEntry ze = new ZipEntry("table/"+dp_id+".html");
-			try {
-				zos.putNextEntry(ze);
+  }
 
-				zos.write(exportToStaticHtml("../",params).getBytes());
-				zos.closeEntry();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			}
-
-	}
-	
-	public String exportToStaticHtml(String path_to_root,HashMap<String,String> params)
-	{
-		String file = readTemplateFile();
-		String contents = render(file, params, true);
-		contents = createStaticLinks(contents);
-		contents = relativizeUrls(contents, path_to_root);
-		return contents;
-	}
+  public String exportToStaticHtml(String path_to_root, HashMap<String, String> params)
+  {
+    String file = readTemplateFile();
+    String contents = render(file, params, true);
+    contents = createStaticLinks(contents);
+    contents = relativizeUrls(contents, path_to_root);
+    return contents;
+  }
 
 }

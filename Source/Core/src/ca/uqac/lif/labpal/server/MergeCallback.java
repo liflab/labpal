@@ -30,47 +30,48 @@ import com.sun.net.httpserver.HttpExchange;
 
 /**
  * Merges the current lab with the one sent in the HTTP request
+ * 
  * @author Sylvain Hallé
  */
 public class MergeCallback extends WebCallback
 {
-	public static final String s_path = "/merge";
-	
-	public MergeCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super(s_path, lab, assistant);
-		setMethod(Method.POST);
-	}
+  public static final String s_path = "/merge";
 
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		CallbackResponse cbr = new CallbackResponse(t);
-		cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-		InputStream is = t.getRequestBody();
-		try
-		{
-			byte[] payload = HttpUtilities.streamToBytes(is);
-			Laboratory lab_to_merge = m_lab.getFromZip(payload);
-			m_lab.mergeWith(lab_to_merge);
-		}
-		catch (IOException e)
-		{
-			cbr.setContents("The contents of the request could not be read");
-			return cbr;
-		} 
-		catch (SerializerException e)
-		{
-			cbr.setContents(e.getMessage());
-			return cbr;
-		} 
-		catch (JsonParseException e)
-		{
-			cbr.setContents(e.getMessage());
-			return cbr;
-		}
-		cbr.setCode(CallbackResponse.HTTP_OK);
-		return cbr;
-	}
+  public MergeCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super(s_path, lab, assistant);
+    setMethod(Method.POST);
+  }
+
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse cbr = new CallbackResponse(t);
+    cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
+    InputStream is = t.getRequestBody();
+    try
+    {
+      byte[] payload = HttpUtilities.streamToBytes(is);
+      Laboratory lab_to_merge = m_lab.getFromZip(payload);
+      m_lab.mergeWith(lab_to_merge);
+    }
+    catch (IOException e)
+    {
+      cbr.setContents("The contents of the request could not be read");
+      return cbr;
+    }
+    catch (SerializerException e)
+    {
+      cbr.setContents(e.getMessage());
+      return cbr;
+    }
+    catch (JsonParseException e)
+    {
+      cbr.setContents(e.getMessage());
+      return cbr;
+    }
+    cbr.setCode(CallbackResponse.HTTP_OK);
+    return cbr;
+  }
 
 }

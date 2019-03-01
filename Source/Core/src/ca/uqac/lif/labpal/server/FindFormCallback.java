@@ -36,67 +36,71 @@ import ca.uqac.lif.petitpoucet.ProvenanceNode;
  *
  */
 public class FindFormCallback extends WebCallback
-{	
-	public FindFormCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/find", lab, assistant);
-	}
-	
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		CallbackResponse response = new CallbackResponse(t);
-		response.disableCaching();
-		response.setContentType(ContentType.HTML);
-		Map<String,String> params = getParameters(t);
-		if (params.containsKey("id"))
-		{
-			String datapoint_id = params.get("id");
-			ProvenanceNode pn = m_lab.getDataTracker().explain(datapoint_id);
-			if (pn == null)
-			{
-				response.setCode(CallbackResponse.HTTP_NOT_FOUND);
-				response.setContents("<html><body><h1>Not Found</h1><p>This data point does not seem to exist.</p></body></html>");
-				return response;
-			}
-			String url = ExplainCallback.getDataPointUrl(pn);
-			if (url == null || url.isEmpty() || url.compareTo("#") == 0)
-			{
-				response.setCode(CallbackResponse.HTTP_NOT_FOUND);
-				response.setContents("<html><body><h1>Not Found</h1><p>This data point does not seem to exist.</p></body></html>");
-				return response;
-			}
-			response.setCode(CallbackResponse.HTTP_REDIRECT);
-			response.setHeader("Location", url);
-			return response;
-		}
-		//Give the right content-type to the browser by giving it what it's looking for
-		Headers headers = t.getRequestHeaders();
-		String accept_Header = headers.get("Accept").get(0);
-		response.setContentType(accept_Header.split(",")[0]);
-		// Read file and put into response
-		String file_contents = FileHelper.internalFileToString(LabPalServer.class, TemplatePageCallback.s_path + m_path + ".html");
-		if (file_contents == null)
-		{
-			response.setCode(CallbackResponse.HTTP_INTERNAL_SERVER_ERROR);
-			return response;
-		}
-		file_contents = TemplatePageCallback.resolveInclude(file_contents);
-		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Find a data point");
-		file_contents = file_contents.replaceAll("\\{%SEL_FIND%\\}", "selected");
-		file_contents = file_contents.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
-		String doi = m_lab.getDoi();
-		if (!doi.isEmpty())
-		{
-			file_contents = file_contents.replaceAll("\\{%DOI%\\}", doi + "/");
-		}
-		else
-		{
-			file_contents = file_contents.replaceAll("\\{%DOI%\\}", "");
-		}
-		file_contents = file_contents.replaceAll("\\{%FAVICON%\\}", TemplatePageCallback.getFavicon(TemplatePageCallback.IconType.BINOCULARS));
-		response.setContents(file_contents);
-		response.setCode(CallbackResponse.HTTP_OK);
-		return response;
-	}
+{
+  public FindFormCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/find", lab, assistant);
+  }
+
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse response = new CallbackResponse(t);
+    response.disableCaching();
+    response.setContentType(ContentType.HTML);
+    Map<String, String> params = getParameters(t);
+    if (params.containsKey("id"))
+    {
+      String datapoint_id = params.get("id");
+      ProvenanceNode pn = m_lab.getDataTracker().explain(datapoint_id);
+      if (pn == null)
+      {
+        response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+        response.setContents(
+            "<html><body><h1>Not Found</h1><p>This data point does not seem to exist.</p></body></html>");
+        return response;
+      }
+      String url = ExplainCallback.getDataPointUrl(pn);
+      if (url == null || url.isEmpty() || url.compareTo("#") == 0)
+      {
+        response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+        response.setContents(
+            "<html><body><h1>Not Found</h1><p>This data point does not seem to exist.</p></body></html>");
+        return response;
+      }
+      response.setCode(CallbackResponse.HTTP_REDIRECT);
+      response.setHeader("Location", url);
+      return response;
+    }
+    // Give the right content-type to the browser by giving it what it's looking for
+    Headers headers = t.getRequestHeaders();
+    String accept_Header = headers.get("Accept").get(0);
+    response.setContentType(accept_Header.split(",")[0]);
+    // Read file and put into response
+    String file_contents = FileHelper.internalFileToString(LabPalServer.class,
+        TemplatePageCallback.s_path + m_path + ".html");
+    if (file_contents == null)
+    {
+      response.setCode(CallbackResponse.HTTP_INTERNAL_SERVER_ERROR);
+      return response;
+    }
+    file_contents = TemplatePageCallback.resolveInclude(file_contents);
+    file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "Find a data point");
+    file_contents = file_contents.replaceAll("\\{%SEL_FIND%\\}", "selected");
+    file_contents = file_contents.replaceAll("\\{%VERSION_STRING%\\}", Laboratory.s_versionString);
+    String doi = m_lab.getDoi();
+    if (!doi.isEmpty())
+    {
+      file_contents = file_contents.replaceAll("\\{%DOI%\\}", doi + "/");
+    }
+    else
+    {
+      file_contents = file_contents.replaceAll("\\{%DOI%\\}", "");
+    }
+    file_contents = file_contents.replaceAll("\\{%FAVICON%\\}",
+        TemplatePageCallback.getFavicon(TemplatePageCallback.IconType.BINOCULARS));
+    response.setContents(file_contents);
+    response.setCode(CallbackResponse.HTTP_OK);
+    return response;
+  }
 }

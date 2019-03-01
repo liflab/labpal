@@ -18,8 +18,10 @@
 package ca.uqac.lif.labpal;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -297,5 +299,16 @@ public class LinearAssistant extends LabAssistant
 		}
 		m_queueLock.unlock();
 		return out;
+	}
+	
+	@Override
+	public Set<Experiment> getRunningExperiments()
+	{
+	  Set<Experiment> set = new HashSet<Experiment>();
+	  if (m_experimentThread != null)
+	  {
+	    set.add(m_experimentThread.m_experiment);
+	  }
+	  return set;
 	}
 }

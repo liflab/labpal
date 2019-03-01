@@ -49,11 +49,9 @@ import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Experiment.QueueStatus;
 import ca.uqac.lif.labpal.Experiment.Status;
-import ca.uqac.lif.labpal.config.Config;
-import ca.uqac.lif.labpal.config.Config.ENV;
-import ca.uqac.lif.labpal.export.LabpalCodeOcean;
-import ca.uqac.lif.labpal.export.LabpalPlatform;
-import ca.uqac.lif.labpal.export.LabpalStandalone;
+import ca.uqac.lif.labpal.export.BatchRunner;
+import ca.uqac.lif.labpal.export.CodeOceanRunner;
+import ca.uqac.lif.labpal.export.LocalBatchRunner;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.provenance.DataTracker;
 import ca.uqac.lif.labpal.server.HomePageCallback;
@@ -871,12 +869,12 @@ public abstract class Laboratory implements OwnershipManager
       catch (SerializerException e)
       {
         System.err
-            .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
+        .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
       }
       catch (JsonParseException e)
       {
         System.err
-            .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
+        .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
       }
     }
     else
@@ -894,12 +892,12 @@ public abstract class Laboratory implements OwnershipManager
       catch (SerializerException e)
       {
         System.err
-            .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
+        .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
       }
       catch (JsonParseException e)
       {
         System.err
-            .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
+        .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
       }
     }
     return new_lab;
@@ -918,13 +916,15 @@ public abstract class Laboratory implements OwnershipManager
     parser.addArgument(
         new Argument().withLongName("console").withDescription("Start LabPal in console mode"));
     parser.addArgument(
-        new Argument().withLongName("codeocean").withDescription("Start LabPal in mode Ocean"));
-    parser.addArgument(
         new Argument().withLongName("input").withArgument("x").withDescription("Input x"));
     parser.addArgument(
         new Argument().withLongName("output").withArgument("x").withDescription("Output x"));
     parser.addArgument(
-        new Argument().withLongName("static-batch").withDescription("Start LabPal in mode Static"));
+        new Argument().withLongName("batch").withDescription("Start in batch mode"));
+    parser.addArgument(
+        new Argument().withLongName("codeocean").withDescription("Indicates lab is running inside CodeOcean capsule"));
+    parser.addArgument(
+        new Argument().withLongName("save-to").withDescription("Save files to dir").withArgument("dir"));
     parser.addArgument(new Argument().withLongName("seed").withArgument("x")
         .withDescription("Sets the seed for the random number generator to x"));
     parser.addArgument(
@@ -936,7 +936,7 @@ public abstract class Laboratory implements OwnershipManager
     parser.addArgument(new Argument().withLongName("port").withArgument("x")
         .withDescription("Starts server on port x"));
     parser
-        .addArgument(new Argument().withLongName("version").withDescription("Shows version info"));
+    .addArgument(new Argument().withLongName("version").withDescription("Shows version info"));
     parser.addArgument(new Argument().withLongName("color-scheme").withArgument("c")
         .withDescription("Use GUI color scheme c (0-3)"));
     parser.addArgument(new Argument().withLongName("report-to").withArgument("host:port")
@@ -950,12 +950,12 @@ public abstract class Laboratory implements OwnershipManager
     return parser;
   }
 
-  public static final void initialize(String[] args, Class<? extends Laboratory> clazz)
+  public static final int initialize(String[] args, Class<? extends Laboratory> clazz)
   {
-    initialize(args, clazz, new LinearAssistant());
+    return initialize(args, clazz, new LinearAssistant());
   }
 
-  public static final void initialize(String[] args, Class<? extends Laboratory> clazz,
+  public static final int initialize(String[] args, Class<? extends Laboratory> clazz,
       final LabAssistant assistant)
   {
 
@@ -969,16 +969,16 @@ public abstract class Laboratory implements OwnershipManager
     catch (InstantiationException e)
     {
       e.printStackTrace();
-      System.exit(ERR_LAB);
+      return ERR_LAB;
     }
     catch (IllegalAccessException e)
     {
       e.printStackTrace();
-      System.exit(ERR_LAB);
+      return ERR_LAB;
     }
     if (new_lab == null)
     {
-      System.exit(ERR_LAB);
+      return ERR_LAB;
     }
     stdout.resetColors();
     stdout.print(getCliHeader());
@@ -991,7 +991,7 @@ public abstract class Laboratory implements OwnershipManager
       stdout.print(getCliHeader());
       System.err.println(
           "Error parsing command-line arguments. Run the lab with --help to see the syntax.");
-      System.exit(ERR_ARGUMENTS);
+      return ERR_ARGUMENTS;
     }
     // Are we loading a lab from an internal file?
     if (argument_map.hasOption("preload"))
@@ -1034,19 +1034,19 @@ public abstract class Laboratory implements OwnershipManager
       // Could not parse command line arguments
       parser.printHelp("", System.out);
       stdout.close();
-      System.exit(ERR_ARGUMENTS);
+      return ERR_ARGUMENTS;
     }
     if (new_lab.m_cliArguments.hasOption("help"))
     {
       parser.printHelp("", System.out);
       stdout.close();
-      System.exit(ERR_OK);
+      return ERR_OK;
     }
     if (new_lab.m_cliArguments.hasOption("version"))
     {
       showVersionInfo(stdout);
       stdout.close();
-      System.exit(ERR_OK);
+      return ERR_OK;
     }
     if (new_lab.m_cliArguments.hasOption("seed"))
     {
@@ -1070,7 +1070,7 @@ public abstract class Laboratory implements OwnershipManager
       if (argument_map.hasOption("interval"))
       {
         new_lab.getReporter()
-            .setInterval(Integer.parseInt(argument_map.getOptionValue("interval")) * 1000);
+        .setInterval(Integer.parseInt(argument_map.getOptionValue("interval")) * 1000);
       }
     }
     if (argument_map.hasOption("name"))
@@ -1085,40 +1085,32 @@ public abstract class Laboratory implements OwnershipManager
       filter_params = argument_map.getOptionValue("filter");
     }
     new_lab.m_filter = new_lab.createFilter(filter_params);
-
-    new_lab.m_filter = new_lab.createFilter(filter_params);
-    if (new_lab.m_cliArguments.hasOption("codeocean"))
+    BatchRunner br = null;
+    if (new_lab.m_cliArguments.hasOption("batch") || new_lab.m_cliArguments.hasOption("codeocean"))
     {
-      Boolean io = new_lab.m_cliArguments.hasOption("input") == true
-          && new_lab.m_cliArguments.hasOption("output") == true;
-      if (io)
+      if (new_lab.m_cliArguments.hasOption("codeocean"))
       {
-        Config.env = ENV.WINDOWS_LINUX;
-        Config.setProperty("pathInput", argument_map.getOptionValue("input") + "\\");
-
-        Config.setProperty("pathOutput", argument_map.getOptionValue("output") + "\\");
+        br = new CodeOceanRunner(new_lab, assistant, stdout);
       }
       else
       {
-        Config.env = ENV.CODEOCEAN;
+        if (!new_lab.m_cliArguments.hasOption("save-to"))
+        {
+          System.err.println("Batch mode selected; parameter save-to required");
+          return ERR_ARGUMENTS;
+        }
+        String to_path = new_lab.m_cliArguments.getOptionValue("save-to");
+        br = new LocalBatchRunner(new_lab, assistant, stdout, to_path);
       }
-      new LabpalCodeOcean(new_lab, assistant, stdout).run();
-    }
-    else if (new_lab.m_cliArguments.hasOption("static-batch"))
-    {
-      Boolean io = new_lab.m_cliArguments.hasOption("output");
-      if (io)
+      if (br != null)
       {
-        Config.setProperty("pathOutput", argument_map.getOptionValue("output") + "\\");
+        // Batch mode
+        br.run();
       }
-
-      Config.env = ENV.STATIC;
-
-      new LabpalStandalone(new_lab, assistant, stdout, callbacks).run();
     }
     else if (!new_lab.m_cliArguments.hasOption("console"))
     {
-      // Start ParkBench's web interface
+      // Start LabPal's web interface
       LabPalServer server = new LabPalServer(new_lab.m_cliArguments, new_lab, assistant);
       if (callbacks != null)
       {
@@ -1129,7 +1121,7 @@ public abstract class Laboratory implements OwnershipManager
         }
       }
       stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort()
-          + HomePageCallback.URL + " in your browser\n");
+      + HomePageCallback.URL + " in your browser\n");
       stdout.print("Hit Ctrl+C in this window to stop\n");
       try
       {
@@ -1138,9 +1130,9 @@ public abstract class Laboratory implements OwnershipManager
       catch (IOException e)
       {
         System.err.println("Cannot start server on port " + server.getServerPort()
-            + ". Is another lab already running?");
+        + ". Is another lab already running?");
         stdout.close();
-        System.exit(ERR_SERVER);
+        return ERR_SERVER;
       }
       if (new_lab.m_cliArguments.hasOption("color-scheme"))
       {
@@ -1151,19 +1143,12 @@ public abstract class Laboratory implements OwnershipManager
       {
         new_lab.startAll();
       }
-
-      if (ENV.CODEOCEAN.equals(Config.env) || ENV.ALL.equals(Config.env))
-      {
-
-        LabpalPlatform s = new LabpalCodeOcean(new_lab, assistant, stdout);
-        s.run();
-      }
+      // Server mode
       while (true)
       {
         Experiment.wait(10000);
       }
     }
-
     else
     {
       // Start LabPal's text interface
@@ -1171,7 +1156,7 @@ public abstract class Laboratory implements OwnershipManager
       code = tui.run();
     }
     stdout.close();
-    System.exit(code);
+    return code;
 
   }
 
@@ -1589,7 +1574,8 @@ public abstract class Laboratory implements OwnershipManager
   }
 
   /**
-   * Guesses the host name
+   * Guesses the host name by running the <tt>hostname</tt> command at
+   * the command line.
    * 
    * @return The host name
    */

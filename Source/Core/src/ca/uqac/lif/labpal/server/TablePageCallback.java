@@ -38,14 +38,13 @@ import ca.uqac.lif.mtnp.table.rendering.HtmlTableNodeRenderer;
 import ca.uqac.lif.mtnp.table.rendering.PlainTableRenderer;
 
 /**
- * Callback producing a file from one of the lab's tables, in various
- * formats.
+ * Callback producing a file from one of the lab's tables, in various formats.
  * <p>
  * The HTTP request accepts the following parameters:
  * <ul>
  * <li><tt>id=x</tt>: mandatory; the ID of the table to display</li>
- * <li><tt>format=x</tt>: the requested image format. Currenly supports
- *   tex, csv and html.
+ * <li><tt>format=x</tt>: the requested image format. Currenly supports tex, csv
+ * and html.
  * </ul>
  * 
  * @author Sylvain Hallé
@@ -53,110 +52,111 @@ import ca.uqac.lif.mtnp.table.rendering.PlainTableRenderer;
  */
 public class TablePageCallback extends TemplatePageCallback
 {
-	/**
-	 * Whether to render the tables as "plain". This is mostly to debug the
-	 * highlighting of tables with the normal renderer.
-	 */
-	protected static boolean s_renderPlain = false;
-	
-	public TablePageCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/table", lab, assistant);
-	}
+  /**
+   * Whether to render the tables as "plain". This is mostly to debug the
+   * highlighting of tables with the normal renderer.
+   */
+  protected static boolean s_renderPlain = false;
 
-	@Override
-	public String fill(String s, Map<String,String> params, boolean is_offline)
-	{
-		List<String> path_parts = getParametersFromPath(params);
-		int tab_id = -1;
-		if (!path_parts.isEmpty())
-		{
-			tab_id = Integer.parseInt(path_parts.get(0));
-		}
-		else if (params.containsKey("id"))
-		{
-			tab_id = Integer.parseInt(params.get("id"));
-		}
-		Table tab = m_lab.getTable(tab_id);
-		if (tab == null)
-		{
-			return "";
-		}
-		HardTable tbl = tab.getDataTable();
-		String highlight = "";
-		String table_html = "";
-		if (params.containsKey("highlight"))
-		{
-			// If cells have to be highlighted, display the table without
-			// sorting the cells
-			highlight = params.get("highlight");
-		}
-		if (s_renderPlain && params.containsKey("highlight"))
-		{
-			PlainTableRenderer renderer = new PlainTableRenderer(tab, getCellsToHighlight(highlight));
-			table_html = renderer.render();
-		}
-		else
-		{
-			HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer(tab, getCellsToHighlight(highlight));
-			renderer.setExplainUrlPrefix("../explain");
-			table_html = renderer.render(tbl.getTree(), tbl.getColumnNames());
-		}
-		s = s.replaceAll("\\{%TITLE%\\}", Matcher.quoteReplacement(tab.getTitle()));
-		s = s.replaceAll("\\{%TABLE%\\}", Matcher.quoteReplacement(table_html));
-		String desc = tab.getDescription();
-		if (desc != null && !desc.isEmpty())
-		{
-			s = s.replaceAll("\\{%DESCRIPTION%\\}", Matcher.quoteReplacement(desc));
-		}
-		String nick = tab.getNickname();
+  public TablePageCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/table", lab, assistant);
+  }
+
+  @Override
+  public String fill(String s, Map<String, String> params, boolean is_offline)
+  {
+    List<String> path_parts = getParametersFromPath(params);
+    int tab_id = -1;
+    if (!path_parts.isEmpty())
+    {
+      tab_id = Integer.parseInt(path_parts.get(0));
+    }
+    else if (params.containsKey("id"))
+    {
+      tab_id = Integer.parseInt(params.get("id"));
+    }
+    Table tab = m_lab.getTable(tab_id);
+    if (tab == null)
+    {
+      return "";
+    }
+    HardTable tbl = tab.getDataTable();
+    String highlight = "";
+    String table_html = "";
+    if (params.containsKey("highlight"))
+    {
+      // If cells have to be highlighted, display the table without
+      // sorting the cells
+      highlight = params.get("highlight");
+    }
+    if (s_renderPlain && params.containsKey("highlight"))
+    {
+      PlainTableRenderer renderer = new PlainTableRenderer(tab, getCellsToHighlight(highlight));
+      table_html = renderer.render();
+    }
+    else
+    {
+      HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer(tab,
+          getCellsToHighlight(highlight));
+      renderer.setExplainUrlPrefix("../explain");
+      table_html = renderer.render(tbl.getTree(), tbl.getColumnNames());
+    }
+    s = s.replaceAll("\\{%TITLE%\\}", Matcher.quoteReplacement(tab.getTitle()));
+    s = s.replaceAll("\\{%TABLE%\\}", Matcher.quoteReplacement(table_html));
+    String desc = tab.getDescription();
+    if (desc != null && !desc.isEmpty())
+    {
+      s = s.replaceAll("\\{%DESCRIPTION%\\}", Matcher.quoteReplacement(desc));
+    }
+    String nick = tab.getNickname();
     if (nick != null && !nick.isEmpty())
     {
       s = s.replaceAll("\\{%NICKNAME%\\}", Matcher.quoteReplacement(nick));
     }
-		s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
-		return s;
-	}
-	
-	protected Set<CellCoordinate> getCellsToHighlight(String highlight)
-	{
-		// TODO: we should call TableCellNode to get the x,y coordinates of a datapoint
-		Set<CellCoordinate> to_highlight = new HashSet<CellCoordinate>();
-		String[] ids = highlight.split(",");
-		for (String id : ids)
-		{
-			if (id.trim().isEmpty())
-				continue;
-			String[] parts = id.split(Pattern.quote(TableCellNode.s_separator));
-			int row = Integer.parseInt(parts[1]);
-			int col = Integer.parseInt(parts[2]);
-			to_highlight.add(new Table.CellCoordinate(row, col));
-		}
-		return to_highlight;
-	}
-	
-	public String exportToStaticHtml(int id)
-	{
-		String file = readTemplateFile();
-		Map<String,String> params = new HashMap<String,String>();
-		params.put("id", Integer.toString(id));
-		String contents = render(file, params, true);
-		contents = createStaticLinks(contents);
-		contents = relativizeUrls(contents, "../");
-		contents = contents.replaceAll("href=\"../explain(.)id=(T.+)\"", "href=\"../table/$2.html\"");
-		return contents;
-	}
-	
-	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException
-	{
-		Set<Integer> ids = m_lab.getTableIds();
-		for (int id : ids)
-		{
-			ZipEntry ze = new ZipEntry("table/" + id + ".html");
-			zos.putNextEntry(ze);
-			zos.write(exportToStaticHtml(id).getBytes());
-			zos.closeEntry();
-		}
-	}
+    s = s.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
+    return s;
+  }
+
+  protected Set<CellCoordinate> getCellsToHighlight(String highlight)
+  {
+    // TODO: we should call TableCellNode to get the x,y coordinates of a datapoint
+    Set<CellCoordinate> to_highlight = new HashSet<CellCoordinate>();
+    String[] ids = highlight.split(",");
+    for (String id : ids)
+    {
+      if (id.trim().isEmpty())
+        continue;
+      String[] parts = id.split(Pattern.quote(TableCellNode.s_separator));
+      int row = Integer.parseInt(parts[1]);
+      int col = Integer.parseInt(parts[2]);
+      to_highlight.add(new Table.CellCoordinate(row, col));
+    }
+    return to_highlight;
+  }
+
+  public String exportToStaticHtml(int id)
+  {
+    String file = readTemplateFile();
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("id", Integer.toString(id));
+    String contents = render(file, params, true);
+    contents = createStaticLinks(contents);
+    contents = relativizeUrls(contents, "../");
+    contents = contents.replaceAll("href=\"../explain(.)id=(T.+)\"", "href=\"../table/$2.html\"");
+    return contents;
+  }
+
+  @Override
+  public void addToZipBundle(ZipOutputStream zos) throws IOException
+  {
+    Set<Integer> ids = m_lab.getTableIds();
+    for (int id : ids)
+    {
+      ZipEntry ze = new ZipEntry("table/" + id + ".html");
+      zos.putNextEntry(ze);
+      zos.write(exportToStaticHtml(id).getBytes());
+      zos.closeEntry();
+    }
+  }
 }

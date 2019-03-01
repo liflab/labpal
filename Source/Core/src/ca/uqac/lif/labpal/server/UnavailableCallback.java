@@ -25,8 +25,8 @@ import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 
 /**
- * Callback for a special page, used only in the static export of a lab,
- * saying that some feature is not available.
+ * Callback for a special page, used only in the static export of a lab, saying
+ * that some feature is not available.
  * 
  * @author Sylvain Hallé
  *
@@ -34,17 +34,17 @@ import ca.uqac.lif.labpal.Laboratory;
 public class UnavailableCallback extends TemplatePageCallback
 {
 
-	public UnavailableCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/unavailable", lab, assistant);
-	}
+  public UnavailableCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/unavailable", lab, assistant);
+  }
 
-	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException
-	{
-		ZipEntry ze = new ZipEntry("unavailable.html");
-		zos.putNextEntry(ze);
-		zos.write(exportToStaticHtml("").getBytes());
-		zos.closeEntry();
-	}
+  @Override
+  public void addToZipBundle(ZipOutputStream zos) throws IOException
+  {
+    ZipEntry ze = new ZipEntry("unavailable.html");
+    zos.putNextEntry(ze);
+    zos.write(exportToStaticHtml("").getBytes());
+    zos.closeEntry();
+  }
 }

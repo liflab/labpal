@@ -35,16 +35,15 @@ import ca.uqac.lif.mtnp.table.rendering.LatexTableRenderer;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
- * Callback producing an table from the lab, in various
- * formats.
+ * Callback producing an table from the lab, in various formats.
  * <p>
  * The HTTP request accepts the following parameters:
  * <ul>
- * <li><tt>dl=1</tt>: to download the table instead of displaying it. This
- *   will prompt the user to save the file in its browser</li>
+ * <li><tt>dl=1</tt>: to download the table instead of displaying it. This will
+ * prompt the user to save the file in its browser</li>
  * <li><tt>id=x</tt>: mandatory; the ID of the table to display</li>
- * <li><tt>format=x</tt>: the requested table format. Currenly supports
- *   tex, csv and html.
+ * <li><tt>format=x</tt>: the requested table format. Currenly supports tex, csv
+ * and html.
  * </ul>
  * 
  * @author Sylvain Hallé
@@ -52,82 +51,82 @@ import com.sun.net.httpserver.HttpExchange;
  */
 public class TableExportCallback extends WebCallback
 {
-	public TableExportCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/table-export", lab, assistant);
-	}
+  public TableExportCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/table-export", lab, assistant);
+  }
 
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		CallbackResponse response = new CallbackResponse(t);
-		Map<String,String> params = getParameters(t);
-		int plot_id = Integer.parseInt(params.get("id"));
-		Table tab = m_lab.getTable(plot_id);
-		if (tab == null)
-		{
-			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
-			return response;
-		}
-		TempTable d_tab = tab.getDataTable();
-		if (params.get("format").compareToIgnoreCase("tex") == 0)
-		{
-			LatexTableRenderer renderer = new LatexTableRenderer(tab);
-			String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
-			response.setContents(contents);
-			response.setCode(CallbackResponse.HTTP_OK);
-			response.setContentType("application/x-latex");
-			if (params.containsKey("dl"))
-			{
-				response.setAttachment(Server.urlEncode(tab.getTitle() + ".tex"));
-			}
-			return response;
-		}
-		if (params.get("format").compareToIgnoreCase("html") == 0)
-		{
-			response.setContents(d_tab.toHtml());
-			response.setCode(CallbackResponse.HTTP_OK);
-			response.setContentType(ContentType.HTML);
-			if (params.containsKey("dl"))
-			{
-				response.setAttachment(Server.urlEncode(tab.getTitle() + ".html"));
-			}
-			return response;
-		}
-		response.setContents(d_tab.toCsv());
-		response.setCode(CallbackResponse.HTTP_OK);
-		response.setContentType(ContentType.TEXT);
-		if (params.containsKey("dl"))
-		{
-			response.setAttachment(Server.urlEncode(tab.getTitle() + ".csv"));
-		}
-		return response;
-	}
-	
-	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException
-	{
-		Set<Integer> ids = m_lab.getTableIds();
-		for (int id : ids)
-		{
-			Table tab = m_lab.getTable(id);
-			TempTable d_tab = tab.getDataTable();
-			{
-				// Latex
-				LatexTableRenderer renderer = new LatexTableRenderer(tab);
-				String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
-				ZipEntry ze = new ZipEntry("/table/" + id + ".tex");
-				zos.putNextEntry(ze);
-				zos.write(contents.getBytes());
-				zos.closeEntry();
-			}
-			{
-				// CSV
-				ZipEntry ze = new ZipEntry("/table/" + id + ".csv");
-				zos.putNextEntry(ze);
-				zos.write(d_tab.toCsv().getBytes());
-				zos.closeEntry();
-			}
-		}
-	}
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse response = new CallbackResponse(t);
+    Map<String, String> params = getParameters(t);
+    int plot_id = Integer.parseInt(params.get("id"));
+    Table tab = m_lab.getTable(plot_id);
+    if (tab == null)
+    {
+      response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+      return response;
+    }
+    TempTable d_tab = tab.getDataTable();
+    if (params.get("format").compareToIgnoreCase("tex") == 0)
+    {
+      LatexTableRenderer renderer = new LatexTableRenderer(tab);
+      String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
+      response.setContents(contents);
+      response.setCode(CallbackResponse.HTTP_OK);
+      response.setContentType("application/x-latex");
+      if (params.containsKey("dl"))
+      {
+        response.setAttachment(Server.urlEncode(tab.getTitle() + ".tex"));
+      }
+      return response;
+    }
+    if (params.get("format").compareToIgnoreCase("html") == 0)
+    {
+      response.setContents(d_tab.toHtml());
+      response.setCode(CallbackResponse.HTTP_OK);
+      response.setContentType(ContentType.HTML);
+      if (params.containsKey("dl"))
+      {
+        response.setAttachment(Server.urlEncode(tab.getTitle() + ".html"));
+      }
+      return response;
+    }
+    response.setContents(d_tab.toCsv());
+    response.setCode(CallbackResponse.HTTP_OK);
+    response.setContentType(ContentType.TEXT);
+    if (params.containsKey("dl"))
+    {
+      response.setAttachment(Server.urlEncode(tab.getTitle() + ".csv"));
+    }
+    return response;
+  }
+
+  @Override
+  public void addToZipBundle(ZipOutputStream zos) throws IOException
+  {
+    Set<Integer> ids = m_lab.getTableIds();
+    for (int id : ids)
+    {
+      Table tab = m_lab.getTable(id);
+      TempTable d_tab = tab.getDataTable();
+      {
+        // Latex
+        LatexTableRenderer renderer = new LatexTableRenderer(tab);
+        String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
+        ZipEntry ze = new ZipEntry("/table/" + id + ".tex");
+        zos.putNextEntry(ze);
+        zos.write(contents.getBytes());
+        zos.closeEntry();
+      }
+      {
+        // CSV
+        ZipEntry ze = new ZipEntry("/table/" + id + ".csv");
+        zos.putNextEntry(ze);
+        zos.write(d_tab.toCsv().getBytes());
+        zos.closeEntry();
+      }
+    }
+  }
 }

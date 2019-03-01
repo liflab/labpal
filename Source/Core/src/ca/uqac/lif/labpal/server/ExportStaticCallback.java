@@ -26,33 +26,34 @@ import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 
 /**
- * Exports the whole contents of the lab's web interface
- * as a bundle of static HTML files.
+ * Exports the whole contents of the lab's web interface as a bundle of static
+ * HTML files.
+ * 
  * @author Sylvain Hallé
  */
 public class ExportStaticCallback extends WebCallback
 {
-	/**
-	 * The server this callback is attached to
-	 */
-	protected final LabPalServer m_server;
+  /**
+   * The server this callback is attached to
+   */
+  protected final LabPalServer m_server;
 
-	public ExportStaticCallback(Laboratory lab, LabAssistant assistant, LabPalServer server)
-	{
-		super("/export-static", lab, assistant);
-		m_server = server;
-	}
+  public ExportStaticCallback(Laboratory lab, LabAssistant assistant, LabPalServer server)
+  {
+    super("/export-static", lab, assistant);
+    m_server = server;
+  }
 
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		CallbackResponse cbr = new CallbackResponse(t);
-		cbr.setCode(CallbackResponse.HTTP_OK);
-		byte[] contents = m_server.exportToStaticHtml();
-		cbr.setContentType(ContentType.ZIP);
-		cbr.setContents(contents);
-		cbr.setAttachment(Server.urlEncode(m_lab.getTitle()) + ".zip");
-		return cbr;
-	}
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse cbr = new CallbackResponse(t);
+    cbr.setCode(CallbackResponse.HTTP_OK);
+    byte[] contents = m_server.exportToStaticHtml();
+    cbr.setContentType(ContentType.ZIP);
+    cbr.setContents(contents);
+    cbr.setAttachment(Server.urlEncode(m_lab.getTitle()) + ".zip");
+    return cbr;
+  }
 
 }

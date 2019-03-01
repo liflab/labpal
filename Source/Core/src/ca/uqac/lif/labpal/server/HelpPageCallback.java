@@ -33,29 +33,29 @@ import ca.uqac.lif.labpal.Laboratory;
  */
 public class HelpPageCallback extends TemplatePageCallback
 {
-	
-	public HelpPageCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/help", lab, assistant);
-	}
-	
-	@Override
-	public String fill(String page, Map<String,String> params, boolean is_offline)
-	{
-		String out = page.replaceAll("\\{%TITLE%\\}", "Help");
-		out = out.replaceAll("\\{%SEL_HELP%\\}", "selected");
-		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.HELP));
-		return out;
-	}
-	
-	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException
-	{
-		String file_contents = exportToStaticHtml("");
-		String filename = "help.html";
-		ZipEntry ze = new ZipEntry(filename);
-		zos.putNextEntry(ze);
-		zos.write(file_contents.getBytes());
-		zos.closeEntry();
-	}
+
+  public HelpPageCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/help", lab, assistant);
+  }
+
+  @Override
+  public String fill(String page, Map<String, String> params, boolean is_offline)
+  {
+    String out = page.replaceAll("\\{%TITLE%\\}", "Help");
+    out = out.replaceAll("\\{%SEL_HELP%\\}", "selected");
+    out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.HELP));
+    return out;
+  }
+
+  @Override
+  public void addToZipBundle(ZipOutputStream zos) throws IOException
+  {
+    String file_contents = exportToStaticHtml("");
+    String filename = "help.html";
+    ZipEntry ze = new ZipEntry(filename);
+    zos.putNextEntry(ze);
+    zos.write(file_contents.getBytes());
+    zos.closeEntry();
+  }
 }

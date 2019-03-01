@@ -38,81 +38,92 @@ import ca.uqac.lif.mtnp.table.Table;
  */
 public class TablesPageCallback extends TemplatePageCallback
 {
-	protected static final transient Pattern s_pattern = Pattern.compile("exp-chk-(\\d+)");
+  protected static final transient Pattern s_pattern = Pattern.compile("exp-chk-(\\d+)");
 
-	public TablesPageCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/tables", lab, assistant);
-	}
-	
-	@Override
-	public String fill(String page, Map<String,String> params, boolean is_offline)
-	{
-		String out = page.replaceAll("\\{%TITLE%\\}", "Tables");
-		{
-			Vector<Integer> ids = new Vector<Integer>();
-			ids.addAll(m_lab.getTableIds());
-			if (ids.isEmpty())
-			{
-				out = out.replaceAll("\\{%TABLES%\\}", "<p>No table is associated to this lab</p>\n");
-			}
-			else
-			{
-				Collections.sort(ids);
-				out = out.replaceAll("\\{%TABLES%\\}", getTables(ids));			
-			}
-		}
-		out = out.replaceAll("\\{%ALL_TABLES%\\}", Matcher.quoteReplacement("<p><a class=\"btn-24 btn-all-tables\" title=\"Download all tables as a single LaTeX file\" href=\"all-tables\">Download all tables</a></p>"));
-		out = out.replaceAll("\\{%SEL_TABLES%\\}", "selected");
-		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
-		return out;
-	}
-	
-	/**
-	 * Produces the list of tables
-	 * @return A well-formatted HTML string showing of each of the lab's plots
-	 */
-	public String getTables(Vector<Integer> ids)
-	{
-		StringBuilder out = new StringBuilder();
-		out.append("<table class=\"tables\">\n");
-		for (int id : ids)
-		{
-			Table table = m_lab.getTable(id);
-			out.append("<tr>");
-			out.append("<td class=\"id-cell\"><a href=\"/table/").append(id).append("\" title=\"Click on table to view in new window\">");
-			out.append(id).append("</a></td>");
-			out.append("<td class=\"table-icon\"></td>");
-			out.append("<td><a href=\"table/").append(id).append("\">").append(htmlEscape(table.getTitle())).append("</a></td>");
-			out.append("<td><a class=\"btn-csv\" href=\"/table-export?id=").append(id).append("&amp;format=csv&amp;dl=1\" title=\"Download as CSV\"><span class=\"text-only\">CSV</span></a></td>");
-			out.append("<td><a class=\"btn-tex\" href=\"/table-export?id=").append(id).append("&amp;format=tex&amp;dl=1\" title=\"Download as LaTeX\"><span class=\"text-only\">TeX</span></a></td>");
-			out.append("<td><a class=\"btn-html\" href=\"/table-export?id=").append(id).append("&amp;format=html&amp;dl=1\" title=\"Download as HTML\"><span class=\"text-only\">HTML</span></a></td>");
-			out.append("<td><a class=\"nickname\" href=\"table/").append(id).append("\">").append(htmlEscape(table.getNickname())).append("</a></td>");
-			out.append("</tr>\n");
-		}
-		out.append("</table>\n");
-		return out.toString();
-	}
-	
-	@Override
-	public String exportToStaticHtml(String path_to_root)
-	{
-		String contents = super.exportToStaticHtml(path_to_root);
-		// Transform URLs for individual plot buttons
-		contents = contents.replaceAll("src=\"(.*?)\\.html\"", "src=\"$1.png\"");
-		contents = contents.replaceAll("href=\"all-tables\"", "href=\"labpal-tables.tex\"");
-		contents = contents.replaceAll("href=\"table-export(.)id=(\\d)&amp;(format=csv&amp;dl=1)\"", "href=\"table/$2.csv\"");
-		contents = contents.replaceAll("href=\"table-export(.)id=(\\d)&amp;(format=tex&amp;dl=1)\"", "href=\"table/$2.tex\"");
-		contents = contents.replaceAll("href=\"table-export(.)id=(\\d)&amp;(format=html&amp;dl=1)\"", "href=\"table/$2.html\"");
-		return contents;
-	}
+  public TablesPageCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/tables", lab, assistant);
+  }
 
-	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException
-	{
-		ZipEntry ze = new ZipEntry("tables.html");
-		zos.putNextEntry(ze);
-		zos.write(exportToStaticHtml("").getBytes());
-		zos.closeEntry();
-	}
+  @Override
+  public String fill(String page, Map<String, String> params, boolean is_offline)
+  {
+    String out = page.replaceAll("\\{%TITLE%\\}", "Tables");
+    {
+      Vector<Integer> ids = new Vector<Integer>();
+      ids.addAll(m_lab.getTableIds());
+      if (ids.isEmpty())
+      {
+        out = out.replaceAll("\\{%TABLES%\\}", "<p>No table is associated to this lab</p>\n");
+      }
+      else
+      {
+        Collections.sort(ids);
+        out = out.replaceAll("\\{%TABLES%\\}", getTables(ids));
+      }
+    }
+    out = out.replaceAll("\\{%ALL_TABLES%\\}", Matcher.quoteReplacement(
+        "<p><a class=\"btn-24 btn-all-tables\" title=\"Download all tables as a single LaTeX file\" href=\"all-tables\">Download all tables</a></p>"));
+    out = out.replaceAll("\\{%SEL_TABLES%\\}", "selected");
+    out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TABLE));
+    return out;
+  }
+
+  /**
+   * Produces the list of tables
+   * 
+   * @return A well-formatted HTML string showing of each of the lab's plots
+   */
+  public String getTables(Vector<Integer> ids)
+  {
+    StringBuilder out = new StringBuilder();
+    out.append("<table class=\"tables\">\n");
+    for (int id : ids)
+    {
+      Table table = m_lab.getTable(id);
+      out.append("<tr>");
+      out.append("<td class=\"id-cell\"><a href=\"/table/").append(id)
+          .append("\" title=\"Click on table to view in new window\">");
+      out.append(id).append("</a></td>");
+      out.append("<td class=\"table-icon\"></td>");
+      out.append("<td><a href=\"table/").append(id).append("\">")
+          .append(htmlEscape(table.getTitle())).append("</a></td>");
+      out.append("<td><a class=\"btn-csv\" href=\"/table-export?id=").append(id).append(
+          "&amp;format=csv&amp;dl=1\" title=\"Download as CSV\"><span class=\"text-only\">CSV</span></a></td>");
+      out.append("<td><a class=\"btn-tex\" href=\"/table-export?id=").append(id).append(
+          "&amp;format=tex&amp;dl=1\" title=\"Download as LaTeX\"><span class=\"text-only\">TeX</span></a></td>");
+      out.append("<td><a class=\"btn-html\" href=\"/table-export?id=").append(id).append(
+          "&amp;format=html&amp;dl=1\" title=\"Download as HTML\"><span class=\"text-only\">HTML</span></a></td>");
+      out.append("<td><a class=\"nickname\" href=\"table/").append(id).append("\">")
+          .append(htmlEscape(table.getNickname())).append("</a></td>");
+      out.append("</tr>\n");
+    }
+    out.append("</table>\n");
+    return out.toString();
+  }
+
+  @Override
+  public String exportToStaticHtml(String path_to_root)
+  {
+    String contents = super.exportToStaticHtml(path_to_root);
+    // Transform URLs for individual plot buttons
+    contents = contents.replaceAll("src=\"(.*?)\\.html\"", "src=\"$1.png\"");
+    contents = contents.replaceAll("href=\"all-tables\"", "href=\"labpal-tables.tex\"");
+    contents = contents.replaceAll("href=\"table-export(.)id=(\\d)&amp;(format=csv&amp;dl=1)\"",
+        "href=\"table/$2.csv\"");
+    contents = contents.replaceAll("href=\"table-export(.)id=(\\d)&amp;(format=tex&amp;dl=1)\"",
+        "href=\"table/$2.tex\"");
+    contents = contents.replaceAll("href=\"table-export(.)id=(\\d)&amp;(format=html&amp;dl=1)\"",
+        "href=\"table/$2.html\"");
+    return contents;
+  }
+
+  @Override
+  public void addToZipBundle(ZipOutputStream zos) throws IOException
+  {
+    ZipEntry ze = new ZipEntry("tables.html");
+    zos.putNextEntry(ze);
+    zos.write(exportToStaticHtml("").getBytes());
+    zos.closeEntry();
+  }
 }

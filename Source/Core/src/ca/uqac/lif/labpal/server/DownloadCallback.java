@@ -39,56 +39,56 @@ import com.sun.net.httpserver.HttpExchange;
  */
 public class DownloadCallback extends WebCallback
 {
-	public DownloadCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/download", lab, assistant);
-		//setMethod(Method.GET);
-		setMethod(Method.POST);
-	}
+  public DownloadCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/download", lab, assistant);
+    // setMethod(Method.GET);
+    setMethod(Method.POST);
+  }
 
-	/**
-	 * Whether to zip the response
-	 */
-	public static final boolean s_zip = true;
+  /**
+   * Whether to zip the response
+   */
+  public static final boolean s_zip = true;
 
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		String lab_contents = m_lab.saveToString();
-		CallbackResponse response = new CallbackResponse(t);
-		String filename = Server.urlEncode(m_lab.getTitle());
-		if (s_zip)
-		{
-			// zip contents of JSON
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ZipOutputStream zos = new ZipOutputStream(bos);
-			String ZE = filename + ".json";
-			ZipEntry ze = new ZipEntry(ZE);
-			try
-			{
-				zos.putNextEntry(ze);
-				zos.write(lab_contents.getBytes());
-				zos.closeEntry();
-				zos.close();
-			}
-			catch (IOException e)
-			{
-				Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
-			}
-			response.setContents(bos.toByteArray());
-			response.setContentType(Laboratory.s_mimeType);
-			filename += "." + Laboratory.s_fileExtension;
-		}
-		else
-		{
-			// Send in clear text
-			response.setContents(lab_contents);
-			response.setContentType(CallbackResponse.ContentType.JSON);
-			filename += ".json";
-		}
-		// Tell the browser to download the document rather than display it
-		response.setAttachment(filename);
-		return response;
-	}
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    String lab_contents = m_lab.saveToString();
+    CallbackResponse response = new CallbackResponse(t);
+    String filename = Server.urlEncode(m_lab.getTitle());
+    if (s_zip)
+    {
+      // zip contents of JSON
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      ZipOutputStream zos = new ZipOutputStream(bos);
+      String ZE = filename + ".json";
+      ZipEntry ze = new ZipEntry(ZE);
+      try
+      {
+        zos.putNextEntry(ze);
+        zos.write(lab_contents.getBytes());
+        zos.closeEntry();
+        zos.close();
+      }
+      catch (IOException e)
+      {
+        Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage());
+      }
+      response.setContents(bos.toByteArray());
+      response.setContentType(Laboratory.s_mimeType);
+      filename += "." + Laboratory.s_fileExtension;
+    }
+    else
+    {
+      // Send in clear text
+      response.setContents(lab_contents);
+      response.setContentType(CallbackResponse.ContentType.JSON);
+      filename += ".json";
+    }
+    // Tell the browser to download the document rather than display it
+    response.setAttachment(filename);
+    return response;
+  }
 
 }

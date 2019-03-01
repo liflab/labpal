@@ -43,99 +43,110 @@ import ca.uqac.lif.labpal.macro.MacroScalar;
  */
 public class MacrosPageCallback extends TemplatePageCallback
 {
-	public MacrosPageCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/macros", lab, assistant);
-	}
+  public MacrosPageCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/macros", lab, assistant);
+  }
 
-	@Override
-	public String fill(String page, Map<String,String> params, boolean is_offline)
-	{
-		String out = page.replaceAll("\\{%TITLE%\\}", "Macros");
-		Set<String> to_highlight = new HashSet<String>();
-		if (params.containsKey("highlight"))
-		{
-			String[] parts = params.get("highlight").split(",");
-			for (String p : parts)
-			{
-				to_highlight.add(p);
-			}
-		}
-		Collection<Macro> macros = m_lab.getMacros();
-		if (macros.isEmpty())
-		{
-			out = out.replaceAll("\\{%MACROS%\\}", "<p>No macro is associated to this lab.</p>\n");
-		}
-		else
-		{
-			out = out.replaceAll("\\{%MACROS%\\}", Matcher.quoteReplacement(getMacros(macros, to_highlight)));			
-		}
-		out = out.replaceAll("\\{%ALL_MACROS%\\}", Matcher.quoteReplacement("<p><a class=\"btn-24 btn-all-tables\" title=\"Download all macros as a single LaTeX file\" href=\"/all-macros-latex\">Download all macros</a></p>"));
-		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TULIP));
-		return out;
-	}
+  @Override
+  public String fill(String page, Map<String, String> params, boolean is_offline)
+  {
+    String out = page.replaceAll("\\{%TITLE%\\}", "Macros");
+    Set<String> to_highlight = new HashSet<String>();
+    if (params.containsKey("highlight"))
+    {
+      String[] parts = params.get("highlight").split(",");
+      for (String p : parts)
+      {
+        to_highlight.add(p);
+      }
+    }
+    Collection<Macro> macros = m_lab.getMacros();
+    if (macros.isEmpty())
+    {
+      out = out.replaceAll("\\{%MACROS%\\}", "<p>No macro is associated to this lab.</p>\n");
+    }
+    else
+    {
+      out = out.replaceAll("\\{%MACROS%\\}",
+          Matcher.quoteReplacement(getMacros(macros, to_highlight)));
+    }
+    out = out.replaceAll("\\{%ALL_MACROS%\\}", Matcher.quoteReplacement(
+        "<p><a class=\"btn-24 btn-all-tables\" title=\"Download all macros as a single LaTeX file\" href=\"/all-macros-latex\">Download all macros</a></p>"));
+    out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.TULIP));
+    return out;
+  }
 
-	/**
-	 * Produces the list of macros
-	 * @return A well-formatted HTML string showing of each of the lab's macros
-	 */
-	public String getMacros(Collection<Macro> macros, Set<String> to_highlight)
-	{
-		StringBuilder out = new StringBuilder();
-		out.append("<dl class=\"macros\">\n");
-		for (Macro m : macros)
-		{
-			if (m instanceof MacroScalar)
-			{
-				MacroScalar ms = (MacroScalar) m;
-				String css_class = "";
-				String dp_id = MacroNode.getDatapointId(ms, "");
-				if (to_highlight.contains(dp_id))
-				{
-					css_class = " class=\"highlighted\"";
-				}
-				out.append("<dt>").append("<a class=\"anchor\" name=\"").append(ms.getId()).append("\"></a>");
-				out.append("<a").append(css_class).append(" href=\"explain?id=").append(dp_id).append("\"><span class=\"macro-name\">").append(ms.getName()).append("</span></a>: <span class=\"macro-value\">").append(ms.getValue()).append("</span></dt>\n");
-				out.append("<dd>").append(ms.getDescription()).append("</dd>\n");
-			}
-			else if (m instanceof MacroMap)
-			{
-				MacroMap mm = (MacroMap) m;
-				List<String> names = mm.getNames();
-				Map<String,JsonElement> values = mm.getValues();
-				for (String name : names)
-				{
-					String css_class = "";
-					String dp_id = MacroNode.getDatapointId(mm, name);
-					if (to_highlight.contains(dp_id))
-					{
-						css_class = " class=\"highlighted\"";
-					}
-					out.append("<dt>").append("<a class=\"anchor\" name=\"").append(m.getId()).append("\"></a>");
-					out.append("<a").append(css_class).append(" href=\"explain?id=").append(dp_id).append("\"><span class=\"macro-name\">").append(name).append("</span></a>: <span class=\"macro-value\">").append(values.get(name)).append("</span></dt>\n");
-					out.append("<dd>").append(mm.getDescription(name)).append("</dd>\n");
-				}
-			}
-		}
-		out.append("</dl>\n");
-		return out.toString();
-	}
-	
-	@Override
-	public String exportToStaticHtml(String path_to_root)
-	{
-		String contents = super.exportToStaticHtml(path_to_root);
-		contents = contents.replaceAll("all-macros-latex", "labpal-macros.tex");
-		return contents;
-	}
-	
-	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException
-	{
-		ZipEntry ze = new ZipEntry("macros.html");
-		zos.putNextEntry(ze);
-		zos.write(exportToStaticHtml("").getBytes());
-		zos.closeEntry();
-	}
+  /**
+   * Produces the list of macros
+   * 
+   * @return A well-formatted HTML string showing of each of the lab's macros
+   */
+  public String getMacros(Collection<Macro> macros, Set<String> to_highlight)
+  {
+    StringBuilder out = new StringBuilder();
+    out.append("<dl class=\"macros\">\n");
+    for (Macro m : macros)
+    {
+      if (m instanceof MacroScalar)
+      {
+        MacroScalar ms = (MacroScalar) m;
+        String css_class = "";
+        String dp_id = MacroNode.getDatapointId(ms, "");
+        if (to_highlight.contains(dp_id))
+        {
+          css_class = " class=\"highlighted\"";
+        }
+        out.append("<dt>").append("<a class=\"anchor\" name=\"").append(ms.getId())
+            .append("\"></a>");
+        out.append("<a").append(css_class).append(" href=\"explain?id=").append(dp_id)
+            .append("\"><span class=\"macro-name\">").append(ms.getName())
+            .append("</span></a>: <span class=\"macro-value\">").append(ms.getValue())
+            .append("</span></dt>\n");
+        out.append("<dd>").append(ms.getDescription()).append("</dd>\n");
+      }
+      else if (m instanceof MacroMap)
+      {
+        MacroMap mm = (MacroMap) m;
+        List<String> names = mm.getNames();
+        Map<String, JsonElement> values = mm.getValues();
+        for (String name : names)
+        {
+          String css_class = "";
+          String dp_id = MacroNode.getDatapointId(mm, name);
+          if (to_highlight.contains(dp_id))
+          {
+            css_class = " class=\"highlighted\"";
+          }
+          out.append("<dt>").append("<a class=\"anchor\" name=\"").append(m.getId())
+              .append("\"></a>");
+          out.append("<a").append(css_class).append(" href=\"explain?id=").append(dp_id)
+              .append("\"><span class=\"macro-name\">").append(name)
+              .append("</span></a>: <span class=\"macro-value\">").append(values.get(name))
+              .append("</span></dt>\n");
+          out.append("<dd>").append(mm.getDescription(name)).append("</dd>\n");
+        }
+      }
+    }
+    out.append("</dl>\n");
+    return out.toString();
+  }
+
+  @Override
+  public String exportToStaticHtml(String path_to_root)
+  {
+    String contents = super.exportToStaticHtml(path_to_root);
+    contents = contents.replaceAll("all-macros-latex", "labpal-macros.tex");
+    return contents;
+  }
+
+  @Override
+  public void addToZipBundle(ZipOutputStream zos) throws IOException
+  {
+    ZipEntry ze = new ZipEntry("macros.html");
+    zos.putNextEntry(ze);
+    zos.write(exportToStaticHtml("").getBytes());
+    zos.closeEntry();
+  }
 
 }

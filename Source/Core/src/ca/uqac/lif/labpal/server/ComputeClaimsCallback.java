@@ -27,33 +27,34 @@ import com.sun.net.httpserver.HttpExchange;
 
 /**
  * Re-computes the value of all claims in the lab
+ * 
  * @author Sylvain Hallé
  */
 public class ComputeClaimsCallback extends WebCallback
 {
-	public static final String s_path = "/claims";
+  public static final String s_path = "/claims";
 
-	public ComputeClaimsCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super(s_path, lab, assistant);
-	}
+  public ComputeClaimsCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super(s_path, lab, assistant);
+  }
 
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		CallbackResponse cbr = new CallbackResponse(t);
-		List<String> params = getParametersFromPath(getParameters(t));
-		if (!params.contains("compute"))
-		{
-			cbr.setCode(CallbackResponse.HTTP_NOT_FOUND);
-		}
-		else
-		{
-			cbr.setCode(CallbackResponse.HTTP_REDIRECT);
-			cbr.setHeader("Location", "/status");
-			m_lab.computeClaims();
-		}
-		return cbr;
-	}
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse cbr = new CallbackResponse(t);
+    List<String> params = getParametersFromPath(getParameters(t));
+    if (!params.contains("compute"))
+    {
+      cbr.setCode(CallbackResponse.HTTP_NOT_FOUND);
+    }
+    else
+    {
+      cbr.setCode(CallbackResponse.HTTP_REDIRECT);
+      cbr.setHeader("Location", "/status");
+      m_lab.computeClaims();
+    }
+    return cbr;
+  }
 
 }

@@ -34,7 +34,7 @@ public class TransformLab extends Laboratory
 	public static void main(String[] args)
 	{
 		// Nothing more to do here
-		initialize(args, TransformLab.class);
+		System.exit(initialize(args, TransformLab.class));
 	}
 
 	@Override

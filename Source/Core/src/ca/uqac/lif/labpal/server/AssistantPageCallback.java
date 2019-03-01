@@ -36,93 +36,102 @@ import ca.uqac.lif.labpal.LabPalTui;
  */
 public class AssistantPageCallback extends ExperimentsPageCallback
 {
-	/**
-	 * An instance of the server
-	 */
-	protected LabPalServer m_server;
-	
-	public AssistantPageCallback(Laboratory lab, LabAssistant assistant, LabPalServer server)
-	{
-		super("/assistant", lab, assistant);
-		m_server = server;
-		ignoreMethod();
-	}
-	
-	@Override
-	public String fill(String page, Map<String,String> params, boolean is_offline)
-	{
-		String message = "";
-		if (params.containsValue("start"))
-		{
-			if (!m_assistant.isRunning())
-			{
-				m_lab.start();
-				message = "<p class=\"message info\"><span>Assistant started</span></p>";
-			}
-			else
-			{
-				message = "<p class=\"message info\"><span>Assistant already started</span></p>";
-			}
-		}
-		else if (params.containsKey("stop"))
-		{
-			m_assistant.stop();
-			message = "<p class=\"message info\"><span>Assistant stopped</span></p>";
-		}
-		String out = page.replaceAll("\\{%TITLE%\\}", "Lab assistant");
-		if (params.containsKey("unqueue"))
-		{
-			message = unqueue(params);
-		}
-		else if (params.containsKey("reset"))
-		{
-			message = reset(params);
-		}
-		else if (params.containsKey("clean"))
-		{
-			message = clean(params);
-		}
-		List<Integer> queue = m_assistant.getCurrentQueue();
-		if (queue.isEmpty())
-		{
-			out = out.replaceAll("\\{%EXP_LIST%\\}", "<p>This lab assistant has no experiment left to do.</p>\n");
-		}
-		else
-		{
-			out = out.replaceAll("\\{%EXP_LIST%\\}", Matcher.quoteReplacement(ExperimentsPageCallback.getExperimentList(m_lab, m_assistant, queue)));
-		}
-		out = out.replaceAll("\\{%ASSISTANT_TIME%\\}", LabPalTui.formatEta(m_assistant.getRunningTime() / 1000));
-		out = out.replaceAll("\\{%ASSISTANT_NAME%\\}", Matcher.quoteReplacement(htmlEscape(m_assistant.getName())));
-		out = out.replaceAll("\\{%SEL_ASSISTANT%\\}", "selected");
-		out = out.replaceAll("\\{%TIME_ESTIMATE%\\}", LabPalTui.formatEta(m_assistant.getTimeEstimate()));
-		if (m_assistant.isRunning())
-		{
-			out = out.replaceAll("\\{%BTN_STOP%\\}", "<input type=\"submit\" class=\"btn\" id=\"btn-stop\" name=\"stop\" value=\"Stop the assistant\"/>");
-			out = out.replaceAll("\\{%BTN_ACTION%\\}", "stop");
-		}
-		else
-		{
-			if (!m_assistant.getCurrentQueue().isEmpty())
-			{
-				out = out.replaceAll("\\{%BTN_START%\\}", "<input type=\"submit\" class=\"btn\" id=\"btn-start\" name=\"start\" value=\"Start the assistant\"/>");
-				out = out.replaceAll("\\{%BTN_ACTION%\\}", "start");
-			}
-		}
-		if (!m_assistant.getCurrentQueue().isEmpty())
-		{
-			out = out.replaceAll("\\{%EXP_OPTIONS%\\}", FileHelper.internalFileToString(LabPalServer.class, m_server.getResourceFolderName() + "/assistant-exp-options.inc.html"));			
-		}
-		out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
-		out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ASSISTANT));
-		return out;
-	}
-	
-	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException
-	{
-		// Do nothing; this method must stay here to override
-		// ExperimentsPageCallback. Otherwise, will create a duplicate
-		// "experiments.html" page.
-	}
+  /**
+   * An instance of the server
+   */
+  protected LabPalServer m_server;
+
+  public AssistantPageCallback(Laboratory lab, LabAssistant assistant, LabPalServer server)
+  {
+    super("/assistant", lab, assistant);
+    m_server = server;
+    ignoreMethod();
+  }
+
+  @Override
+  public String fill(String page, Map<String, String> params, boolean is_offline)
+  {
+    String message = "";
+    if (params.containsValue("start"))
+    {
+      if (!m_assistant.isRunning())
+      {
+        m_lab.start();
+        message = "<p class=\"message info\"><span>Assistant started</span></p>";
+      }
+      else
+      {
+        message = "<p class=\"message info\"><span>Assistant already started</span></p>";
+      }
+    }
+    else if (params.containsKey("stop"))
+    {
+      m_assistant.stop();
+      message = "<p class=\"message info\"><span>Assistant stopped</span></p>";
+    }
+    String out = page.replaceAll("\\{%TITLE%\\}", "Lab assistant");
+    if (params.containsKey("unqueue"))
+    {
+      message = unqueue(params);
+    }
+    else if (params.containsKey("reset"))
+    {
+      message = reset(params);
+    }
+    else if (params.containsKey("clean"))
+    {
+      message = clean(params);
+    }
+    List<Integer> queue = m_assistant.getCurrentQueue();
+    if (queue.isEmpty())
+    {
+      out = out.replaceAll("\\{%EXP_LIST%\\}",
+          "<p>This lab assistant has no experiment left to do.</p>\n");
+    }
+    else
+    {
+      out = out.replaceAll("\\{%EXP_LIST%\\}", Matcher
+          .quoteReplacement(ExperimentsPageCallback.getExperimentList(m_lab, m_assistant, queue)));
+    }
+    out = out.replaceAll("\\{%ASSISTANT_TIME%\\}",
+        LabPalTui.formatEta(m_assistant.getRunningTime() / 1000));
+    out = out.replaceAll("\\{%ASSISTANT_NAME%\\}",
+        Matcher.quoteReplacement(htmlEscape(m_assistant.getName())));
+    out = out.replaceAll("\\{%SEL_ASSISTANT%\\}", "selected");
+    out = out.replaceAll("\\{%TIME_ESTIMATE%\\}",
+        LabPalTui.formatEta(m_assistant.getTimeEstimate()));
+    if (m_assistant.isRunning())
+    {
+      out = out.replaceAll("\\{%BTN_STOP%\\}",
+          "<input type=\"submit\" class=\"btn\" id=\"btn-stop\" name=\"stop\" value=\"Stop the assistant\"/>");
+      out = out.replaceAll("\\{%BTN_ACTION%\\}", "stop");
+    }
+    else
+    {
+      if (!m_assistant.getCurrentQueue().isEmpty())
+      {
+        out = out.replaceAll("\\{%BTN_START%\\}",
+            "<input type=\"submit\" class=\"btn\" id=\"btn-start\" name=\"start\" value=\"Start the assistant\"/>");
+        out = out.replaceAll("\\{%BTN_ACTION%\\}", "start");
+      }
+    }
+    if (!m_assistant.getCurrentQueue().isEmpty())
+    {
+      out = out.replaceAll("\\{%EXP_OPTIONS%\\}",
+          FileHelper.internalFileToString(LabPalServer.class,
+              m_server.getResourceFolderName() + "/assistant-exp-options.inc.html"));
+    }
+    out = out.replaceAll("\\{%MESSAGE%\\}", Matcher.quoteReplacement(message));
+    out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.ASSISTANT));
+    return out;
+  }
+
+  @Override
+  public void addToZipBundle(ZipOutputStream zos) throws IOException
+  {
+    // Do nothing; this method must stay here to override
+    // ExperimentsPageCallback. Otherwise, will create a duplicate
+    // "experiments.html" page.
+  }
 
 }

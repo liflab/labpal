@@ -17,50 +17,49 @@
  */
 package ca.uqac.lif.labpal.export;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.config.Config;
 import ca.uqac.lif.labpal.server.AllPlotsLatexCallback;
+import ca.uqac.lif.mtnp.plot.Plot;
+import ca.uqac.lif.mtnp.plot.Plot.ImageType;
+import ca.uqac.lif.mtnp.plot.gnuplot.GnuPlot;
 import ca.uqac.lif.mtnp.table.Table;
 import ca.uqac.lif.mtnp.table.TempTable;
 import ca.uqac.lif.tui.AnsiPrinter;
 
-public class LabpalCodeOcean extends LabpalPlatform implements ExportPlatform
+/**
+ * Batch runner that exports its data in a format suitable to be used in
+ * CodeOcean.
+ * 
+ * @author Chafik Meniar
+ * @author Sylvain Hallé
+ */
+public class CodeOceanRunner extends BatchRunner
 {
+  public CodeOceanRunner(Laboratory lab, LabAssistant assistant, AnsiPrinter printer)
+  {
+    super(lab, assistant, printer, "../results");
+  }
+
   @Override
-  protected void config()
+  public void showStartMessage()
   {
-
-    if (Config.env.equals(Config.ENV.CODEOCEAN))
-    {
-      Config.setProperty("namefileTempExp", "Experiments");
-      Config.setProperty("pathInput", "../data/");
-      Config.setProperty("pathOutput", "../results/");
-      Config.setProperty("pdfName", "labpal-plots");
-      Config.setProperty("imageName", "img");
-      Config.setProperty("zipName", "LabpalStatic");
-    }
+    m_stdout.println("Starting " + m_lab.getTitle() + " in Code Ocean");
   }
 
-  public LabpalCodeOcean(Laboratory m_lab, LabAssistant m_assistant, AnsiPrinter m_printer)
-  {
-    super(m_lab, m_assistant, m_printer);
-    config();
-  }
-
-  void exportExperiments() throws Exception
+  void exportExperiments() throws IOException
   {
     StringBuilder rowshtmlTable = new StringBuilder();
     StringBuilder tagTable = new StringBuilder(
-        "<table> <tr>  <th>#</th>  <th>Experiments</th>  <th>Status</th>	</tr>");
+        "<table> <tr>  <th>#</th>  <th>Experiments</th>  <th>Status</th>  </tr>");
     rowshtmlTable.append(tagTable);
-    for (Experiment e : getLstExp())
+    for (Experiment e : m_lab.getExperiments())
     {
       StringBuilder row = new StringBuilder();
       row.append("  <tr>");
@@ -83,7 +82,7 @@ public class LabpalCodeOcean extends LabpalPlatform implements ExportPlatform
         templateContent.toString());
   }
 
-  void exportTables() throws Exception
+  void exportTables() throws IOException
   {
     StringBuilder allTablesContent = new StringBuilder();
     StringBuilder allTablesContentHtml = new StringBuilder();
@@ -111,7 +110,7 @@ public class LabpalCodeOcean extends LabpalPlatform implements ExportPlatform
         allTablesContentHtml.toString());
   }
 
-  void exportPlots() throws Exception
+  void exportPlots() throws IOException
   {
     for (int id : m_lab.getPlotIds())
     {
@@ -130,29 +129,56 @@ public class LabpalCodeOcean extends LabpalPlatform implements ExportPlatform
     if (!lstPath.isEmpty())
     {
       String[] tab = lstPath.toArray(new String[lstPath.size()]);
-      FileManager.mergePdF(Config.getProperty("pathOutput") + Config.getProperty("pdfName") + ".pdf", tab);
+      FileManager.mergePdf(Config.getProperty("pathOutput") + Config.getProperty("pdfName") + ".pdf", tab);
     }
   }
+  
+  /**
+   * Gets the image file corresponding to a plot in the given format
+   * 
+   * @param plot_id
+   *          The ID of the plot to display
+   * @param format
+   *          The image file format (png, pdf, dumb or gp)
+   * @return An array of bytes containing the image
+   */
+  protected byte[] exportTo(int plot_id, String format)
+  {
+    Plot p = m_lab.getPlot(plot_id);
+    byte[] image = null;
+    if (format.compareToIgnoreCase("png") == 0)
+    {
+      image = ((GnuPlot) p).getImage(ImageType.PNG);
+    }
+    else if (format.compareToIgnoreCase("pdf") == 0)
+    {
+      image = p.getImage(ImageType.PDF);
+    }
+    else if (format.compareToIgnoreCase("dumb") == 0)
+    {
+      image = p.getImage(ImageType.DUMB);
+    }
+    else if (format.compareToIgnoreCase("gp") == 0 && p instanceof GnuPlot)
+    {
+      image = ((GnuPlot) p).toGnuplot(ImageType.PDF, m_lab.getTitle(), true).getBytes();
+    }
+    return image;
+  }
 
-  void exportLatex() throws Exception
+
+  void exportLatex() throws IOException
   {
     FileManager.writeFile(Config.getProperty("pathOutput"), "AllPlotsLatex", ".tex",
         AllPlotsLatexCallback.generateBodyLatex(m_lab).toString());
   }
 
   @Override
-  public void export()
+  public void export() throws IOException
   {
-    try
-    {
-      exportExperiments();
-      exportTables();
-      exportPlots();
-      exportLatex();
-    }
-    catch (Exception e)
-    {
-      Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
-    }
+    m_stdout.println("Exporting files to " + m_path);
+    exportExperiments();
+    exportTables();
+    exportPlots();
+    exportLatex();
   }
 }

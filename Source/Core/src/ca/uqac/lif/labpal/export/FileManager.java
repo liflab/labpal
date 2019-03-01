@@ -195,7 +195,7 @@ public class FileManager
   }
 
   @SuppressWarnings("deprecation")
-  public static byte[] mergePdF(String dest, String... paths)
+  public static byte[] mergePdf(String dest, String... paths)
   {
     try
     {

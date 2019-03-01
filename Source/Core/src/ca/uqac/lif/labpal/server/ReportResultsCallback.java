@@ -26,36 +26,37 @@ import ca.uqac.lif.labpal.ResultReporter.ReporterException;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
- * Triggers the sending of experimental data by the results
- * reported associated to the lab.
+ * Triggers the sending of experimental data by the results reported associated
+ * to the lab.
+ * 
  * @author Sylvain Hallé
  */
 public class ReportResultsCallback extends WebCallback
 {
-	public ReportResultsCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/report-results", lab, assistant);
-	}
+  public ReportResultsCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/report-results", lab, assistant);
+  }
 
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		CallbackResponse cbr = new CallbackResponse(t);
-		cbr.setHeader("Location", "/status");
-		ResultReporter reporter = m_lab.getReporter();
-		if (reporter != null)
-		{
-			try
-			{
-				reporter.reportResults();
-				cbr.setCode(CallbackResponse.HTTP_OK);
-			} 
-			catch (ReporterException e)
-			{
-				cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-				cbr.setContents(e.getMessage());
-			}
-		}
-		return cbr;
-	}
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse cbr = new CallbackResponse(t);
+    cbr.setHeader("Location", "/status");
+    ResultReporter reporter = m_lab.getReporter();
+    if (reporter != null)
+    {
+      try
+      {
+        reporter.reportResults();
+        cbr.setCode(CallbackResponse.HTTP_OK);
+      }
+      catch (ReporterException e)
+      {
+        cbr.setCode(CallbackResponse.HTTP_BAD_REQUEST);
+        cbr.setContents(e.getMessage());
+      }
+    }
+    return cbr;
+  }
 }

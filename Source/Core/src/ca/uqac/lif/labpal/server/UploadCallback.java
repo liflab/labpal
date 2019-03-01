@@ -36,119 +36,121 @@ import ca.uqac.lif.labpal.Laboratory;
  *
  */
 public class UploadCallback extends WebCallback
-{	
-	protected LabPalServer m_server;
+{
+  protected LabPalServer m_server;
 
-	public UploadCallback(LabPalServer server, Laboratory lab, LabAssistant assistant)
-	{
-		super("/upload", lab, assistant);
-		setMethod(Method.POST);
-		m_server = server;
-	}
+  public UploadCallback(LabPalServer server, Laboratory lab, LabAssistant assistant)
+  {
+    super("/upload", lab, assistant);
+    setMethod(Method.POST);
+    m_server = server;
+  }
 
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		CallbackResponse cbr = new CallbackResponse(t);
-		Map<String,byte[]> parts = HttpUtilities.getParts(t);
-		Laboratory new_lab = null;
-		if (parts == null || parts.isEmpty())
-		{ 
-			// Baaaad request
-			doBadRequest(cbr, "No file was uploaded");
-			return cbr;
-		}
-		String filename = null;
-		for (String fn : parts.keySet())
-		{
-			filename = fn;
-			break;
-		}
-		byte[] lab_file_contents = parts.get(filename); 
-		if (filename == null || filename.isEmpty() || lab_file_contents == null)
-		{
-		// Baaaad request
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse cbr = new CallbackResponse(t);
+    Map<String, byte[]> parts = HttpUtilities.getParts(t);
+    Laboratory new_lab = null;
+    if (parts == null || parts.isEmpty())
+    {
+      // Baaaad request
       doBadRequest(cbr, "No file was uploaded");
       return cbr;
-		}
-		String json = null;
-		if (filename.endsWith(".zip") || filename.endsWith("." + Laboratory.s_fileExtension))
-		{
-			try
-			{
-				new_lab = m_lab.getFromZip(lab_file_contents);
-			}
-			catch (SerializerException e) 
-			{
-				// Baaaad request
-				doBadRequest(cbr, "The file's contents could not be loaded into the "
-						+ "current laboratory. This can occur when you try loading the data from a different "
-						+ "lab. " + e.getMessage());
-				return cbr;
-			}
-			catch (JsonParseException e) 
-			{
-				// Baaaad request
-				doBadRequest(cbr, "The file's contents could not be loaded into the "
-						+ "current laboratory. This can occur when you try loading the data from a different "
-						+ "lab. " + e.getMessage());
-				return cbr;
-			}
-			catch (IOException e) 
-			{
-				// Baaaad request
-				doBadRequest(cbr, "The file's contents could not be loaded into the "
-						+ "current laboratory. This can occur when you try loading the data from a different "
-						+ "lab. " + e.getMessage());
-				return cbr;
-			}
-		}
-		else
-		{
-			// JSON sent in clear in the request
-			json = new String(lab_file_contents);
-			if (json.isEmpty())
-			{
-				// Baaaad request
-				doBadRequest(cbr, "No file was uploaded");
-				return cbr;
-			}
-			try
-			{
-				new_lab = m_lab.loadFromString(json);
-			}
-			catch (SerializerException e) 
-			{
-				// Baaaad request
-				doBadRequest(cbr, "The file's contents could not be loaded into the "
-						+ "current laboratory. This can occur when you try loading the data from a different "
-						+ "lab. " + e.getMessage());
-				return cbr;
-			}
-			catch (JsonParseException e) 
-			{
-				// Baaaad request
-				doBadRequest(cbr, "The file's contents could not be loaded into the "
-						+ "current laboratory. This can occur when you try loading the data from a different "
-						+ "lab. " + e.getMessage());
-				return cbr;
-			}
-		}		
-		if (new_lab == null)
-		{
-			// Baaaad request
-			doBadRequest(cbr, "The file's contents could not be loaded into the "
-					+ "current laboratory. This can occur when you try loading the data from a different "
-					+ "lab.");
-			return cbr;
-		}
-		new_lab.setAssistant(m_assistant);
-		m_server.changeLab(new_lab);
-		String file_contents = FileHelper.internalFileToString(LabPalServer.class, TemplatePageCallback.s_path + "/upload-ok.html");
-		file_contents = TemplatePageCallback.resolveInclude(file_contents);
-		file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "File uploaded");
-		cbr.setCode(CallbackResponse.HTTP_OK);
-		cbr.setContents(file_contents);
-		return cbr;
-	}
+    }
+    String filename = null;
+    for (String fn : parts.keySet())
+    {
+      filename = fn;
+      break;
+    }
+    byte[] lab_file_contents = parts.get(filename);
+    if (filename == null || filename.isEmpty() || lab_file_contents == null)
+    {
+      // Baaaad request
+      doBadRequest(cbr, "No file was uploaded");
+      return cbr;
+    }
+    String json = null;
+    if (filename.endsWith(".zip") || filename.endsWith("." + Laboratory.s_fileExtension))
+    {
+      try
+      {
+        new_lab = m_lab.getFromZip(lab_file_contents);
+      }
+      catch (SerializerException e)
+      {
+        // Baaaad request
+        doBadRequest(cbr, "The file's contents could not be loaded into the "
+            + "current laboratory. This can occur when you try loading the data from a different "
+            + "lab. " + e.getMessage());
+        return cbr;
+      }
+      catch (JsonParseException e)
+      {
+        // Baaaad request
+        doBadRequest(cbr, "The file's contents could not be loaded into the "
+            + "current laboratory. This can occur when you try loading the data from a different "
+            + "lab. " + e.getMessage());
+        return cbr;
+      }
+      catch (IOException e)
+      {
+        // Baaaad request
+        doBadRequest(cbr, "The file's contents could not be loaded into the "
+            + "current laboratory. This can occur when you try loading the data from a different "
+            + "lab. " + e.getMessage());
+        return cbr;
+      }
+    }
+    else
+    {
+      // JSON sent in clear in the request
+      json = new String(lab_file_contents);
+      if (json.isEmpty())
+      {
+        // Baaaad request
+        doBadRequest(cbr, "No file was uploaded");
+        return cbr;
+      }
+      try
+      {
+        new_lab = m_lab.loadFromString(json);
+      }
+      catch (SerializerException e)
+      {
+        // Baaaad request
+        doBadRequest(cbr, "The file's contents could not be loaded into the "
+            + "current laboratory. This can occur when you try loading the data from a different "
+            + "lab. " + e.getMessage());
+        return cbr;
+      }
+      catch (JsonParseException e)
+      {
+        // Baaaad request
+        doBadRequest(cbr, "The file's contents could not be loaded into the "
+            + "current laboratory. This can occur when you try loading the data from a different "
+            + "lab. " + e.getMessage());
+        return cbr;
+      }
+    }
+    if (new_lab == null)
+    {
+      // Baaaad request
+      doBadRequest(cbr,
+          "The file's contents could not be loaded into the "
+              + "current laboratory. This can occur when you try loading the data from a different "
+              + "lab.");
+      return cbr;
+    }
+    new_lab.setAssistant(m_assistant);
+    m_server.changeLab(new_lab);
+    String file_contents = FileHelper.internalFileToString(LabPalServer.class,
+        TemplatePageCallback.s_path + "/upload-ok.html");
+    file_contents = TemplatePageCallback.resolveInclude(file_contents);
+    file_contents = file_contents.replaceAll("\\{%TITLE%\\}", "File uploaded");
+    cbr.setCode(CallbackResponse.HTTP_OK);
+    cbr.setContents(file_contents);
+    return cbr;
+  }
 }

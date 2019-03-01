@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 package ca.uqac.lif.labpal;
 
 import java.util.List;
+import java.util.Set;
 
 import ca.uqac.lif.labpal.ResultReporter.ReporterException;
 
@@ -239,4 +240,10 @@ public abstract class LabAssistant implements Runnable
 			// Do nothing
 		}
 	}
+	
+	/**
+	 * Gets the set of experiments that are currently running
+	 * @return The set of experiments
+	 */
+	public abstract Set<Experiment> getRunningExperiments();
 }

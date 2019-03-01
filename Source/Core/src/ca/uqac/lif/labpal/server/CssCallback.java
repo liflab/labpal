@@ -26,51 +26,54 @@ import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 
 /**
- * Special callback for the CSS file. The source CSS file contains
- * placeholders that are to be replaced by actual color values when
- * queried.
+ * Special callback for the CSS file. The source CSS file contains placeholders
+ * that are to be replaced by actual color values when queried.
+ * 
  * @author Sylvain Hallé
  *
  */
-public class CssCallback extends WebCallback 
+public class CssCallback extends WebCallback
 {
-	protected LabPalServer m_server;
-	
-	public CssCallback(LabPalServer server, Laboratory lab, LabAssistant assistant)
-	{
-		super("/screen.css", lab, assistant);
-		m_server = server;
-	}
+  protected LabPalServer m_server;
 
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		CallbackResponse response = new CallbackResponse(t);
-		response.setCode(CallbackResponse.HTTP_OK);
-		response.setContentType(ContentType.CSS);
-		response.setContents(getCssContents());
-		return response;
-	}
+  public CssCallback(LabPalServer server, Laboratory lab, LabAssistant assistant)
+  {
+    super("/screen.css", lab, assistant);
+    m_server = server;
+  }
 
-	/**
-	 * Exports the CSS file as a static
-	 * @param string Unused
-	 * @return The contents of the CSS file
-	 */
-	public String exportToStaticHtml(String string)
-	{
-		return getCssContents();
-	}
-	
-	protected String getCssContents()
-	{
-		String file_contents = FileHelper.internalFileToString(LabPalServer.class, "resource/screen.css");
-		String[] color_scheme = m_server.getColorScheme();
-		for (int i = 0; i < color_scheme.length; i++)
-		{
-			file_contents = file_contents.replace("{%COLOR " + (i + 1) +"%}", color_scheme[i]);
-		}
-		return file_contents;
-	}
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse response = new CallbackResponse(t);
+    response.setCode(CallbackResponse.HTTP_OK);
+    response.setContentType(ContentType.CSS);
+    response.setContents(getCssContents());
+    return response;
+  }
+
+  /**
+   * Exports the CSS file as a static
+   * 
+   * @param string
+   *          Unused
+   * @return The contents of the CSS file
+   */
+  public String exportToStaticHtml(String string)
+  {
+    return getCssContents();
+  }
+
+  protected String getCssContents()
+  {
+    String file_contents = FileHelper.internalFileToString(LabPalServer.class,
+        "resource/screen.css");
+    String[] color_scheme = m_server.getColorScheme();
+    for (int i = 0; i < color_scheme.length; i++)
+    {
+      file_contents = file_contents.replace("{%COLOR " + (i + 1) + "%}", color_scheme[i]);
+    }
+    return file_contents;
+  }
 
 }

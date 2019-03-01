@@ -37,88 +37,100 @@ import ca.uqac.lif.mtnp.plot.Plot;
 
 /**
  * Callback to download all plots as a single, multi-page PDF file. This
- * callback makes use of Apache PDFBox library,  in the background. It will return a 404 response
- * if this program cannot be found.
+ * callback makes use of Apache PDFBox library, in the background. It will
+ * return a 404 response if this program cannot be found.
+ * 
  * @author Sylvain Hallé
  *
  */
-public class AllPlotsCallback extends WebCallback {
+public class AllPlotsCallback extends WebCallback
+{
 
-	public AllPlotsCallback(Laboratory lab, LabAssistant assistant) {
-		super("/all-plots", lab, assistant);
-	}
+  public AllPlotsCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/all-plots", lab, assistant);
+  }
 
-	@Override
-	public CallbackResponse process(HttpExchange t) {
-		CallbackResponse response = new CallbackResponse(t);
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse response = new CallbackResponse(t);
 
-		Map<String, String> params = getParameters(t);
-		boolean with_captions = false;
-		if (params.containsKey("captions")) {
-			with_captions = true;
-		}
+    Map<String, String> params = getParameters(t);
+    boolean with_captions = false;
+    if (params.containsKey("captions"))
+    {
+      with_captions = true;
+    }
 
-		byte[] file_contents;
+    byte[] file_contents;
 
-		try {
-			file_contents = export(with_captions);
-		} catch (Exception e) {
-			response.setCode(CallbackResponse.HTTP_BAD_REQUEST);
-			return response;
-		}
+    try
+    {
+      file_contents = export(with_captions);
+    }
+    catch (Exception e)
+    {
+      response.setCode(CallbackResponse.HTTP_BAD_REQUEST);
+      return response;
+    }
 
-		response.setContentType(ContentType.PDF);
-		String filename = Server.urlEncode("labpal-plots.pdf");
-		response.setAttachment(filename);
-		response.setContents(file_contents);
+    response.setContentType(ContentType.PDF);
+    String filename = Server.urlEncode("labpal-plots.pdf");
+    response.setAttachment(filename);
+    response.setContents(file_contents);
 
-		return response;
-	}
+    return response;
+  }
 
-	byte[] export(boolean with_captions) throws IOException {
-		List<String> filenames = new ArrayList<String>();
+  byte[] export(boolean with_captions) throws IOException
+  {
+    List<String> filenames = new ArrayList<String>();
 
-		for (int id : m_lab.getPlotIds()) {
-			Plot plot = m_lab.getPlot(id);
-			// Get plot's image and write to temporary file
-			byte[] image = plot.getImage(Plot.ImageType.PDF, with_captions);
+    for (int id : m_lab.getPlotIds())
+    {
+      Plot plot = m_lab.getPlot(id);
+      // Get plot's image and write to temporary file
+      byte[] image = plot.getImage(Plot.ImageType.PDF, with_captions);
 
-			if (image.length > 0)
-			{
-				// Do something only if the plot produced a non-zero-sized file
-				File tmp_file = File.createTempFile("plot", ".pdf");
-				tmp_file.deleteOnExit();
-				FileOutputStream fos = new FileOutputStream(tmp_file);
-				fos.write(image, 0, image.length);
-				fos.flush();
-				fos.close();
-				String filename = tmp_file.getPath();
-				filenames.add(filename);
-			}
-		}
-		String[] tab = filenames.toArray(new String[filenames.size()]);
-		byte[] file_contents = FileManager.mergePdF(File.createTempFile("plots", ".pdf").getPath(), tab);
+      if (image.length > 0)
+      {
+        // Do something only if the plot produced a non-zero-sized file
+        File tmp_file = File.createTempFile("plot", ".pdf");
+        tmp_file.deleteOnExit();
+        FileOutputStream fos = new FileOutputStream(tmp_file);
+        fos.write(image, 0, image.length);
+        fos.flush();
+        fos.close();
+        String filename = tmp_file.getPath();
+        filenames.add(filename);
+      }
+    }
+    String[] tab = filenames.toArray(new String[filenames.size()]);
+    byte[] file_contents = FileManager.mergePdf(File.createTempFile("plots", ".pdf").getPath(),
+        tab);
+    return file_contents;
 
-		return file_contents;
+  }
 
-	}
+  /**
+   * Gets the name given to the file containing all the plots
+   * 
+   * @param lab
+   *          The lab
+   * @return The name
+   */
+  public static String getPlotsFilename(Laboratory lab)
+  {
+    return "labpal-plots.pdf";
+  }
 
-	/**
-	 * Gets the name given to the file containing all the plots
-	 * 
-	 * @param lab
-	 *            The lab
-	 * @return The name
-	 */
-	public static String getPlotsFilename(Laboratory lab) {
-		return "labpal-plots.pdf";
-	}
-
-	@Override
-	public void addToZipBundle(ZipOutputStream zos) throws IOException {
-		ZipEntry ze = new ZipEntry("plot/labpal-plots.pdf");
-		zos.putNextEntry(ze);
-		zos.write(export(true));
-		zos.closeEntry();
-	}
+  @Override
+  public void addToZipBundle(ZipOutputStream zos) throws IOException
+  {
+    ZipEntry ze = new ZipEntry("plot/labpal-plots.pdf");
+    zos.putNextEntry(ze);
+    zos.write(export(true));
+    zos.closeEntry();
+  }
 }

@@ -34,70 +34,68 @@ import com.sun.net.httpserver.HttpExchange;
 public class EditParametersCallback extends WebCallback
 {
 
-	public EditParametersCallback(Laboratory lab, LabAssistant assistant)
-	{
-		super("/edit-parameters", lab, assistant);
-		setMethod(Method.POST);
-	}
+  public EditParametersCallback(Laboratory lab, LabAssistant assistant)
+  {
+    super("/edit-parameters", lab, assistant);
+    setMethod(Method.POST);
+  }
 
-	@Override
-	public CallbackResponse process(HttpExchange t)
-	{
-		CallbackResponse cbr = new CallbackResponse(t);
-		Map<String,String> params = getParameters(t);
-		if (!params.containsKey("exp-id"))
-		{
-			doBadRequest(cbr, "No experiment ID was passed to the page");
-			return cbr;
-		}
-		int exp_id = Integer.parseInt(params.get("exp-id").trim());
-		JsonMap new_parameters = new JsonMap();
-		Experiment e = m_lab.getExperiment(exp_id);
-		if (e == null)
-		{
-			doBadRequest(cbr, "Experiment #" + exp_id + " cannot be found");
-			return cbr;
-		}
-		for (String key : params.keySet())
-		{
-			if (!key.startsWith("fld-"))
-				continue;
-			String param_name = key.substring(4);
-			String value = null;
-			try
-			{
-				value = URLDecoder.decode(params.get(key), "UTF-8");
-			} 
-			catch (UnsupportedEncodingException e1)
-			{
-				// Not supposed to happen
-				doBadRequest(cbr, e1.getMessage());
-				return cbr;
-			}
-			if (NumberHelper.isNumeric(value))
-			{
-				Number num = NumberHelper.toPrimitiveNumber(value);
-				new_parameters.put(param_name, num);
-			}
-			else
-			{
-				new_parameters.put(param_name, value);
-			}
-		}
-		try
-		{
-			e.editCallback(new_parameters);
-		}
-		catch (ExperimentException ex)
-		{
-			doBadRequest(cbr, ex.getMessage());
-			return cbr;
-		}
-		cbr.setCode(CallbackResponse.HTTP_REDIRECT);
-		cbr.setHeader("Location", "/experiment/" + exp_id);
-		return cbr;
-	}
-	
-	
+  @Override
+  public CallbackResponse process(HttpExchange t)
+  {
+    CallbackResponse cbr = new CallbackResponse(t);
+    Map<String, String> params = getParameters(t);
+    if (!params.containsKey("exp-id"))
+    {
+      doBadRequest(cbr, "No experiment ID was passed to the page");
+      return cbr;
+    }
+    int exp_id = Integer.parseInt(params.get("exp-id").trim());
+    JsonMap new_parameters = new JsonMap();
+    Experiment e = m_lab.getExperiment(exp_id);
+    if (e == null)
+    {
+      doBadRequest(cbr, "Experiment #" + exp_id + " cannot be found");
+      return cbr;
+    }
+    for (String key : params.keySet())
+    {
+      if (!key.startsWith("fld-"))
+        continue;
+      String param_name = key.substring(4);
+      String value = null;
+      try
+      {
+        value = URLDecoder.decode(params.get(key), "UTF-8");
+      }
+      catch (UnsupportedEncodingException e1)
+      {
+        // Not supposed to happen
+        doBadRequest(cbr, e1.getMessage());
+        return cbr;
+      }
+      if (NumberHelper.isNumeric(value))
+      {
+        Number num = NumberHelper.toPrimitiveNumber(value);
+        new_parameters.put(param_name, num);
+      }
+      else
+      {
+        new_parameters.put(param_name, value);
+      }
+    }
+    try
+    {
+      e.editCallback(new_parameters);
+    }
+    catch (ExperimentException ex)
+    {
+      doBadRequest(cbr, ex.getMessage());
+      return cbr;
+    }
+    cbr.setCode(CallbackResponse.HTTP_REDIRECT);
+    cbr.setHeader("Location", "/experiment/" + exp_id);
+    return cbr;
+  }
 
 }

@@ -174,7 +174,6 @@ public class ExplainImageCallback extends WebCallback
       {
         dp_id = nf.getDataPointId();
       }
-      // System.out.println("hhh " + dp_id);
       HashMap<String, String> params = new HashMap<String, String>();
       params.put("id", dp_id);
       ZipEntry ze = new ZipEntry("table/" + dp_id + ".png");

@@ -229,7 +229,6 @@ public class ExplainCallback extends TemplatePageCallback
 
   String renderTableTree(ZipOutputStream zos, Table tab, TableNode node, String[] sort_order)
   {
-    System.out.println(tab.getId());
     int width = sort_order.length;
     StringBuilder out = new StringBuilder();
     if (node == null || (node.m_children.isEmpty()))
@@ -237,20 +236,15 @@ public class ExplainCallback extends TemplatePageCallback
       return "";
     }
     List<PrimitiveValue> values = new ArrayList<PrimitiveValue>();
-    renderRecursive(zos, tab, node, values, out, 0, width);
+    renderRecursive(zos, tab, node, values, out, width);
 
     return out.toString();
 
   }
 
   protected void renderRecursive(ZipOutputStream zos, Table tab, TableNode cur_node,
-      List<PrimitiveValue> values, StringBuilder out, int depth, int max_depth)
+      List<PrimitiveValue> values, StringBuilder out, int max_depth)
   {
-    if (depth >= max_depth)
-    {
-      // This is to avoid an infinite recursion
-      return;
-    }
     if (values != null && values.size() > 0)
     {
       WriteZipElement(zos, tab, out, values, cur_node.countLeaves(), max_depth, cur_node);
@@ -263,7 +257,7 @@ public class ExplainCallback extends TemplatePageCallback
       {
         first_child = false;
       }
-      renderRecursive(zos, tab, child, values, out, depth + 1, max_depth);
+      renderRecursive(zos, tab, child, values, out, max_depth);
       values.remove(values.size() - 1);
     }
   }
@@ -272,7 +266,6 @@ public class ExplainCallback extends TemplatePageCallback
       List<PrimitiveValue> values, int nb_children, int max_depth, TableNode node)
   {
     List<CellCoordinate> coordinates = node.getCoordinates();
-    System.out.println(node);
     if (coordinates.size() > 0)
     {
       CellCoordinate cc = coordinates.get(0);

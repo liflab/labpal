@@ -26,7 +26,7 @@
   <name>LabPal</name>
   
   <!-- The project's version number -->
-  <version>2.10.2</version>
+  <version>2.11</version>
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
@@ -93,7 +93,7 @@
       <name>MTNP</name>
       <classname>ca.uqac.lif.mtnp.table.Table</classname>
       <files>
-        <zip>https://github.com/liflab/mtnp/releases/download/v0.1.9-alpha/mtnp-0.1.9-alpha.zip</zip>
+        <zip>https://github.com/liflab/mtnp/releases/download/v0.1.10-alpha/mtnp-0.1.10-alpha.zip</zip>
       </files>
 	<bundle>true</bundle>
     </dependency>

@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -140,7 +140,7 @@ public class PlotImageCallback extends WebCallback
     {
       image = p.getImage(ImageType.PDF);
     }
-    else if (format.compareToIgnoreCase("dumb") == 0)
+    else if (format.compareToIgnoreCase("dumb") == 0 && p instanceof GnuPlot)
     {
       image = p.getImage(ImageType.DUMB);
     }
@@ -161,6 +161,10 @@ public class PlotImageCallback extends WebCallback
     for (int id : ids) // PNG
     {
       byte_contents = exportTo(id, "png");
+      if (byte_contents == null)
+      {
+        continue;
+      }
       filename = "plot/" + id + ".png";
       ZipEntry ze = new ZipEntry(filename);
       zos.putNextEntry(ze);
@@ -170,6 +174,10 @@ public class PlotImageCallback extends WebCallback
     for (int id : ids) // PDF
     {
       byte_contents = exportTo(id, "pdf");
+      if (byte_contents == null)
+      {
+        continue;
+      }
       filename = "plot/" + id + ".pdf";
       ZipEntry ze = new ZipEntry(filename);
       zos.putNextEntry(ze);
@@ -179,6 +187,10 @@ public class PlotImageCallback extends WebCallback
     for (int id : ids) // DUMB
     {
       byte_contents = exportTo(id, "dumb");
+      if (byte_contents == null)
+      {
+        continue;
+      }
       filename = "plot/" + id + ".txt";
       ZipEntry ze = new ZipEntry(filename);
       zos.putNextEntry(ze);
@@ -188,6 +200,10 @@ public class PlotImageCallback extends WebCallback
     for (int id : ids) // GP
     {
       byte_contents = exportTo(id, "gp");
+      if (byte_contents == null)
+      {
+        continue;
+      }
       filename = "plot/" + id + ".gp";
       ZipEntry ze = new ZipEntry(filename);
       zos.putNextEntry(ze);

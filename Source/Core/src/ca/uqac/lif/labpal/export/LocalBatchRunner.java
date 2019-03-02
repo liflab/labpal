@@ -26,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.tui.AnsiPrinter;
@@ -48,6 +49,7 @@ public class LocalBatchRunner extends BatchRunner
   public void export() throws IOException
   {
     m_stdout.println("Exporting files to " + m_path);
+    new File(m_path).mkdirs();
     byte[] zip_bytes = m_server.exportToStaticHtml();
     byte[] buffer = new byte[2048];
     Path out_path = Paths.get(m_path);
@@ -67,7 +69,9 @@ public class LocalBatchRunner extends BatchRunner
       {
         int len;
         Path file_path = out_path.resolve(filename);
-        FileOutputStream  output = new FileOutputStream(file_path.toFile());
+        File f = file_path.toFile();
+        FileHelper.createIfNotExists(f);
+        FileOutputStream  output = new FileOutputStream(f);
         while ((len = zis.read(buffer)) > 0)
         {
           output.write(buffer, 0, len);

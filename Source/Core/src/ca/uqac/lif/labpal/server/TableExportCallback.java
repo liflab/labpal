@@ -115,14 +115,14 @@ public class TableExportCallback extends WebCallback
         // Latex
         LatexTableRenderer renderer = new LatexTableRenderer(tab);
         String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
-        ZipEntry ze = new ZipEntry("/table/" + id + ".tex");
+        ZipEntry ze = new ZipEntry("table/" + id + ".tex");
         zos.putNextEntry(ze);
         zos.write(contents.getBytes());
         zos.closeEntry();
       }
       {
         // CSV
-        ZipEntry ze = new ZipEntry("/table/" + id + ".csv");
+        ZipEntry ze = new ZipEntry("table/" + id + ".csv");
         zos.putNextEntry(ze);
         zos.write(d_tab.toCsv().getBytes());
         zos.closeEntry();

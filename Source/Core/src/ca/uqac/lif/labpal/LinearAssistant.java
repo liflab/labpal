@@ -168,17 +168,6 @@ public class LinearAssistant extends LabAssistant
 		{
 			m_experimentThread.interrupt();
 		}
-		/*m_queueLock.lock();
-		boolean empty = m_queue.isEmpty();
-		m_queueLock.unlock();
-		if (!empty)
-		{
-			m_queueLock.lock();
-			Experiment e = m_queue.get(0);
-			m_queueLock.unlock();
-			System.out.println("Weird case");
-			e.interrupt();
-		}*/
 		m_lab.getReporter().stop();
 	}
 

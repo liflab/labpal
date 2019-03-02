@@ -86,14 +86,13 @@ public class AllPlotsCallback extends WebCallback
   byte[] export(boolean with_captions) throws IOException
   {
     List<String> filenames = new ArrayList<String>();
-
     for (int id : m_lab.getPlotIds())
     {
       Plot plot = m_lab.getPlot(id);
       // Get plot's image and write to temporary file
       byte[] image = plot.getImage(Plot.ImageType.PDF, with_captions);
 
-      if (image.length > 0)
+      if (image != null && image.length > 0)
       {
         // Do something only if the plot produced a non-zero-sized file
         File tmp_file = File.createTempFile("plot", ".pdf");
@@ -110,7 +109,6 @@ public class AllPlotsCallback extends WebCallback
     byte[] file_contents = FileManager.mergePdf(File.createTempFile("plots", ".pdf").getPath(),
         tab);
     return file_contents;
-
   }
 
   /**

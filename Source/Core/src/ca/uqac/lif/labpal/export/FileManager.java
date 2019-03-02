@@ -222,10 +222,10 @@ public class FileManager
       // Merging the two documents
       PDFmerger.mergeDocuments();
 
-      // System.out.println("Documents merged");
-
       for (PDDocument pdd : lstPDD)
+      {
         pdd.close();
+      }
 
       PDDocument pdf = PDDocument.load(new File(dest));
 

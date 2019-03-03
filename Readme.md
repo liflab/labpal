@@ -2,6 +2,10 @@
 
 If you are doing research in Computer Science, it is very likely that every now and then, you need to run experiments on your computer. LabPal is a Java library that allows you to quickly setup an environment for running these experiments, collating their results and processing them in various ways: generating tables, data files, plots, etc.
 
+Read more about LabPal in this recent article:
+
+- S. Hall&eacute;, R. Khoury, M. Awesso. (2018). Streamlining the Inclusion of Computer Experiments In a Research Paper. *IEEE Computer* 51(11): 78-89. DOI: [10.1109/MC.2018.2876075](https://doi.org/10.1109/MC.2018.2876075)
+
 ## Features
 
 - All your experimental setup (including your code, its input files and library dependencies) can be bundled into a **single, runnable JAR** file, making it easy for anybody to download and re-run your experiments.
@@ -33,4 +37,4 @@ If you want to know more about LabPal's features:
 
 ## About LabPal
 
-LabPal was developed by [Sylvain Hallé](http://leduotang.ca/sylvain), Associate Processor at [Université du Québec à Chicoutimi](http://www.uqac.ca), Canada. Pr. Hallé is also the head of [LIF](http://liflab.ca), a research lab, where LabPal is extensively used for the processing of experimental results.
+LabPal was developed by [Sylvain Hallé](http://leduotang.ca/sylvain), Full Processor at [Université du Québec à Chicoutimi](http://www.uqac.ca), Canada. Pr. Hallé is also the head of [LIF](http://liflab.ca), a research lab, where LabPal is extensively used for the processing of experimental results.

@@ -60,7 +60,7 @@
       <name>json-lif</name>
       <classname>ca.uqac.lif.json.JsonParser</classname>
       <files>
-        <zip>https://github.com/liflab/json-lif/releases/download/v1.6.2/json-lif-1.6.2.zip</zip>
+        <zip>https://github.com/liflab/json-lif/releases/download/v1.6.3/json-lif-1.6.3.zip</zip>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -109,17 +109,21 @@
 	  <bundle>true</bundle>
     </dependency>
     <dependency>
-	<!-- GRAL. Stand-alone plotting library -->
+	<!-- 
+	PDFBox. To export figures as a PDF
+	-->
 	<name>PDFBox</name>
-	<classname>org.apache.pdfbox</classname>
+	<classname>org.apache.pdfbox.util.Version</classname>
 	<files>
-		<jar>http://central.maven.org/maven2/org/apache/pdfbox/pdfbox/2.0.1/pdfbox-2.0.1.jar</jar>
+		<jar>http://central.maven.org/maven2/org/apache/pdfbox/pdfbox/2.0.14/pdfbox-2.0.14.jar</jar>
+		<!-- These are not necessary
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/fontbox/2.0.0/fontbox-2.0.0.jar</jar>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/jempbox/1.8.11/jempbox-1.8.11.jar</jar>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/xmpbox/2.0.0/xmpbox-2.0.0.jar</jar>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/preflight/2.0.0/preflight-2.0.0.jar</jar>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/pdfbox-tools/2.0.0/pdfbox-tools-2.0.0.jar</jar>
 		<jar>http://central.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar</jar>
+		-->
 	</files>
 	<bundle>true</bundle>
     </dependency>

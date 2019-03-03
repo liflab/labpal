@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2017 Sylvain Hallé
+  Copyright (C) 2014-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package ca.uqac.lif.labpal.server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,11 +28,13 @@ import java.util.regex.Matcher;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.MacroNode;
 import ca.uqac.lif.mtnp.plot.PlotNode;
 import ca.uqac.lif.petitpoucet.AggregateFunction;
+import ca.uqac.lif.labpal.provenance.DotProvenanceTreeRenderer;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
 import ca.uqac.lif.petitpoucet.NodeFunction;
 import ca.uqac.lif.petitpoucet.ProvenanceNode;
@@ -80,7 +83,7 @@ public class ExplainCallback extends TemplatePageCallback
       return s;
     }
     s = s.replaceAll("\\{%IMAGE_URL%\\}",
-        Matcher.quoteReplacement("provenance-graph?id=" + datapoint_id));
+        Matcher.quoteReplacement("/provenance-graph?id=" + datapoint_id));
     StringBuilder out = new StringBuilder();
     out.append("<ul class=\"explanation\">\n");
     explanationToHtml(node, "", out);
@@ -94,8 +97,8 @@ public class ExplainCallback extends TemplatePageCallback
   {
     out.append(
         "<li><div class=\"around-pulldown\"><div class=\"pulldown\"><a title=\"Click to see where this value comes from\" href=\"")
-        .append(htmlEscape(getDataPointUrl(node))).append("\">").append(node)
-        .append("</a></div>\n");
+    .append(htmlEscape(getDataPointUrl(node))).append("\">").append(node)
+    .append("</a></div>\n");
     List<ProvenanceNode> parents = node.getParents();
     if (parents != null && !parents.isEmpty())
     {
@@ -173,7 +176,7 @@ public class ExplainCallback extends TemplatePageCallback
       ExperimentValue ev = (ExperimentValue) nf;
       highlight_string.append(ev.getDataPointId());
       return "/experiment?id=" + ev.getOwner().getId() + "&highlight="
-          + highlight_string.toString();
+      + highlight_string.toString();
     }
     return "#";
   }
@@ -217,16 +220,17 @@ public class ExplainCallback extends TemplatePageCallback
   public void addToZipBundle(ZipOutputStream zos) throws IOException
   {
     Set<Integer> ids = m_lab.getTableIds();
+    Set<String> rendered_ids = new HashSet<String>();
     for (int id : ids)
     {
       Table tab = m_lab.getTable(id);
       HardTable tbl = tab.getDataTable();
-      renderTableTree(zos, tab, tbl.getTree(), tbl.getColumnNames());
+      renderTableTree(zos, tab, tbl.getTree(), tbl.getColumnNames(), rendered_ids);
       zos.closeEntry();
     }
   }
 
-  String renderTableTree(ZipOutputStream zos, Table tab, TableNode node, String[] sort_order)
+  String renderTableTree(ZipOutputStream zos, Table tab, TableNode node, String[] sort_order, Set<String> rendered_ids)
   {
     int width = sort_order.length;
     StringBuilder out = new StringBuilder();
@@ -235,16 +239,16 @@ public class ExplainCallback extends TemplatePageCallback
       return "";
     }
     List<PrimitiveValue> values = new ArrayList<PrimitiveValue>();
-    renderRecursive(zos, tab, node, values, out, width);
+    renderRecursive(zos, tab, node, values, out, width, rendered_ids);
     return out.toString();
   }
 
   protected void renderRecursive(ZipOutputStream zos, Table tab, TableNode cur_node,
-      List<PrimitiveValue> values, StringBuilder out, int max_depth)
+      List<PrimitiveValue> values, StringBuilder out, int max_depth, Set<String> rendered_ids)
   {
     if (values != null && values.size() > 0)
     {
-      WriteZipElement(zos, tab, out, values, cur_node.countLeaves(), max_depth, cur_node);
+      WriteZipElement(zos, tab, out, values, cur_node.countLeaves(), max_depth, cur_node, rendered_ids);
     }
     boolean first_child = true;
     for (TableNode child : cur_node.m_children)
@@ -254,13 +258,14 @@ public class ExplainCallback extends TemplatePageCallback
       {
         first_child = false;
       }
-      renderRecursive(zos, tab, child, values, out, max_depth);
+      renderRecursive(zos, tab, child, values, out, max_depth, rendered_ids);
       values.remove(values.size() - 1);
     }
   }
 
   public void WriteZipElement(ZipOutputStream zos, Table tab, StringBuilder out,
-      List<PrimitiveValue> values, int nb_children, int max_depth, TableNode node)
+      List<PrimitiveValue> values, int nb_children, int max_depth, TableNode node,
+      Set<String> rendered_ids)
   {
     List<CellCoordinate> coordinates = node.getCoordinates();
     if (coordinates.size() > 0)
@@ -272,6 +277,12 @@ public class ExplainCallback extends TemplatePageCallback
       {
         dp_id = nf.getDataPointId();
       }
+      if (rendered_ids.contains(dp_id))
+      {
+        // This file has already been rendered
+        return;
+      }
+      rendered_ids.add(dp_id);
       HashMap<String, String> params = new HashMap<String, String>();
       params.put("id", dp_id);
       ZipEntry ze = new ZipEntry("table/" + dp_id + ".html");
@@ -285,8 +296,9 @@ public class ExplainCallback extends TemplatePageCallback
       {
         e.printStackTrace();
       }
+      // Render the image at the same time
+      renderImage(zos, dp_id);
     }
-
   }
 
   public String exportToStaticHtml(String path_to_root, HashMap<String, String> params)
@@ -298,4 +310,49 @@ public class ExplainCallback extends TemplatePageCallback
     return contents;
   }
 
+  protected void renderImage(ZipOutputStream zos, String datapoint_id)
+  {
+    if (!GraphvizRenderer.s_dotPresent)
+    {
+      return;
+    }
+    ProvenanceNode p_node = m_lab.getDataTracker().explain(datapoint_id);
+    DotProvenanceTreeRenderer renderer = new DotProvenanceTreeRenderer();
+    // Render as SVG
+    byte[] image = renderer.toImage(p_node, "svg");
+    String file_contents = new String(image);
+    // Change links in SVG
+    file_contents = createStaticLinks(file_contents);
+    file_contents = relativizeUrls(file_contents, "../");
+    if (image != null)
+    {
+      ZipEntry ze = new ZipEntry("table/" + datapoint_id + ".svg");
+      try
+      {
+        zos.putNextEntry(ze);
+        zos.write(file_contents.getBytes());
+        zos.closeEntry();
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace();
+      }
+    }
+    // Render as PNG
+    image = renderer.toImage(p_node, "png");
+    if (image != null)
+    {
+      ZipEntry ze = new ZipEntry("table/" + datapoint_id + ".png");
+      try
+      {
+        zos.putNextEntry(ze);
+        zos.write(image);
+        zos.closeEntry();
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
 }

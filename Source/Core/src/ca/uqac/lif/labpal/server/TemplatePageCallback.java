@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -69,17 +69,32 @@ public class TemplatePageCallback extends WebCallback
   /**
    * The pattern to create static URLs for experiments
    */
-  protected static final Pattern s_experimentPattern = Pattern.compile("\"/experiment/(\\d+).*?\"");
+  protected static final Pattern s_experimentPattern = Pattern.compile("href=\".*?experiment/(\\d+).*?\"");
+  
+  /**
+   * The pattern to create static URLs for experiments (alternate version)
+   */
+  protected static final Pattern s_experimentAlternatePattern = Pattern.compile("href=\".*?experiment\\?id=(\\d+).*?\"");
+  
+  /**
+   * The pattern to create static URLs for provenance graphs
+   */
+  protected static final Pattern s_provenanceGraphPattern = Pattern.compile("href=\".*?provenance-graph\\?id=(.*?)\"");
 
   /**
    * The pattern to create static URLs for plots
    */
-  protected static final Pattern s_plotPattern = Pattern.compile("\"plot/(\\d+)\"");
+  protected static final Pattern s_plotPattern = Pattern.compile("href=\".*?plot/(\\d+)\"");
 
   /**
    * The pattern to create static URLs for tables
    */
-  protected static final Pattern s_tablePattern = Pattern.compile("\"table/(\\d+).*?\"");
+  protected static final Pattern s_tablePattern = Pattern.compile("href=\".*?table/(\\d+).*?\"");
+  
+  /**
+   * The pattern to create static URLs for tables (alternate version)
+   */
+  protected static final Pattern s_tableAlternatePattern = Pattern.compile("href=\".*?table\\?id=(\\d+).*?\"");
 
   /**
    * The pattern for HREF links
@@ -90,7 +105,18 @@ public class TemplatePageCallback extends WebCallback
    * The pattern for SRC links
    */
   protected static final Pattern s_srcPattern = Pattern.compile("src=\"/(.*?)\"");
+  
+  /**
+   * The pattern for explain links
+   */
+  protected static final Pattern s_explainPattern = Pattern.compile("\"explain\\?id=(.*?)\"");
 
+  /**
+   * Creates a new template page callback
+   * @param prefix The prefix of the page
+   * @param lab The lab of which this page is a callback
+   * @param assistant The assistant that runs the experiments
+   */
   public TemplatePageCallback(String prefix, Laboratory lab, LabAssistant assistant)
   {
     super(prefix, lab, assistant);
@@ -184,7 +210,8 @@ public class TemplatePageCallback extends WebCallback
     String unavailable = "href=\"/unavailable.html\"";
     s = s.replaceAll("href=\"/assistant\"", unavailable);
     s = s.replaceAll("href=\"/find\"", unavailable);
-    s = s.replaceAll("href=\"explain.*?\"", unavailable);
+    s = s.replaceAll("href=\".*?experiment/\\d+/(clean|reset)\"", unavailable);
+    s = s.replaceAll("<form (.*?) action=\"(.*?)\"", "<form $1 action=\"../unavailable.html\"");
     s = s.replaceAll("id=\"select\"", " class=\"hidden\"");
     return s;
   }
@@ -218,7 +245,6 @@ public class TemplatePageCallback extends WebCallback
       return "images/tulip-48.png";
     default:
       return "images/erlenmeyer-48.png";
-
     }
   }
 
@@ -235,11 +261,19 @@ public class TemplatePageCallback extends WebCallback
   {
     Matcher mat;
     mat = s_experimentPattern.matcher(contents);
-    contents = mat.replaceAll("\"experiment/$1.html\"");
+    contents = mat.replaceAll("href=\"/experiment/$1.html\"");
+    mat = s_experimentAlternatePattern.matcher(contents);
+    contents = mat.replaceAll("href=\"/experiment/$1.html\"");
     mat = s_plotPattern.matcher(contents);
-    contents = mat.replaceAll("\"plot/$1.html\"");
+    contents = mat.replaceAll("href=\"/plot/$1.html\"");
     mat = s_tablePattern.matcher(contents);
-    contents = mat.replaceAll("\"table/$1.html\"");
+    contents = mat.replaceAll("href=\"/table/$1.html\"");
+    mat = s_tableAlternatePattern.matcher(contents);
+    contents = mat.replaceAll("href=\"/table/$1.html\"");
+    mat = s_explainPattern.matcher(contents);
+    contents = mat.replaceAll("href=\"/table/$1.html\"");
+    mat = s_provenanceGraphPattern.matcher(contents);
+    contents = mat.replaceAll("href=\"/table/$1.svg\"");
     // Top menu
     contents = contents.replaceAll("href=\"/index\"", "href=\"/index.html\"");
     contents = contents.replaceAll("href=\"/experiments\"", "href=\"/experiments.html\"");

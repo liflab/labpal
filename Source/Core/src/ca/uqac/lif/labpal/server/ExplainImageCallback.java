@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,13 +17,7 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -34,11 +28,6 @@ import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.provenance.DotProvenanceTreeRenderer;
-import ca.uqac.lif.mtnp.table.PrimitiveValue;
-import ca.uqac.lif.mtnp.table.Table;
-import ca.uqac.lif.mtnp.table.Table.CellCoordinate;
-import ca.uqac.lif.mtnp.table.TableNode;
-import ca.uqac.lif.petitpoucet.NodeFunction;
 import ca.uqac.lif.petitpoucet.ProvenanceNode;
 
 /**
@@ -69,7 +58,7 @@ public class ExplainImageCallback extends WebCallback
   public CallbackResponse process(HttpExchange t)
   {
     CallbackResponse response = new CallbackResponse(t);
-    Map<String, String> params = getParameters(t);
+    Map<String,String> params = getParameters(t);
     String datapoint_id = params.get("id");
     ProvenanceNode node = m_lab.getDataTracker().explain(datapoint_id);
     if (node == null)
@@ -112,98 +101,4 @@ public class ExplainImageCallback extends WebCallback
     }
     return response;
   }
-
-  @Override
-  public void addToZipBundle(ZipOutputStream zos) throws IOException
-  {
-
-    /*
-     * Set<Integer> ids = m_lab.getTableIds(); for (int id : ids) { Table tab =
-     * m_lab.getTable(id); HardTable tbl = tab.getDataTable(); render1(zos,tab,
-     * tbl.getTree(), tbl.getColumnNames()); zos.closeEntry(); }
-     */
-
-  }
-
-  String render1(ZipOutputStream zos, Table tab, TableNode node, String[] sort_order)
-  {
-
-    int width = sort_order.length;
-    StringBuilder out = new StringBuilder();
-    if (node == null || (node.m_children.isEmpty()))
-    {
-      return "";
-    }
-    List<PrimitiveValue> values = new ArrayList<PrimitiveValue>();
-    renderRecursive(zos, tab, node, values, out, width);
-
-    return out.toString();
-
-  }
-
-  protected void renderRecursive(ZipOutputStream zos, Table tab, TableNode cur_node,
-      List<PrimitiveValue> values, StringBuilder out, int max_depth)
-  {
-    if (values != null && values.size() > 0)
-    {
-      printCell(zos, tab, out, values, cur_node.countLeaves(), max_depth, cur_node);
-    }
-    boolean first_child = true;
-    for (TableNode child : cur_node.m_children)
-    {
-      values.add(child.getValue());
-      if (first_child)
-      {
-        first_child = false;
-      }
-      renderRecursive(zos, tab, child, values, out, max_depth);
-      values.remove(values.size() - 1);
-    }
-  }
-
-  public void printCell(ZipOutputStream zos, Table tab, StringBuilder out,
-      List<PrimitiveValue> values, int nb_children, int max_depth, TableNode node)
-  {
-    List<CellCoordinate> coordinates = node.getCoordinates();
-    if (coordinates.size() > 0)
-    {
-      CellCoordinate cc = coordinates.get(0);
-      String dp_id = "";
-      NodeFunction nf = tab.dependsOn(cc.row, cc.col);
-      if (nf != null)
-      {
-        dp_id = nf.getDataPointId();
-      }
-      HashMap<String, String> params = new HashMap<String, String>();
-      params.put("id", dp_id);
-      ZipEntry ze = new ZipEntry("table/" + dp_id + ".png");
-      try
-      {
-        zos.putNextEntry(ze);
-
-        zos.write(exportToStaticHtml(dp_id));
-        zos.closeEntry();
-      }
-      catch (IOException e)
-      {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
-
-  }
-
-  public byte[] exportToStaticHtml(String datapoint_id)
-  {
-    DotProvenanceTreeRenderer renderer = new DotProvenanceTreeRenderer();
-
-    ProvenanceNode node = m_lab.getDataTracker().explain(datapoint_id);
-    if (!GraphvizRenderer.s_dotPresent)
-    {
-      return renderer.toImage(node, "png");
-    }
-    return null;
-
-  }
-
 }

@@ -19,6 +19,7 @@ package ca.uqac.lif.labpal;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,6 +38,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 import ca.uqac.lif.jerrydog.InnerFileServer;
 
@@ -565,5 +571,60 @@ public class FileHelper
 		}
 		return internalFileToString(o.getClass(), filename);
 	}
+
+	/**
+	 * Merges multiple PDF files into a single file
+	 * @param dest The destination filename
+	 * @param paths The input files
+	 * @return The array of bytes containing the merged PDF
+	 */
+  @SuppressWarnings("deprecation")
+  public static byte[] mergePdf(String dest, String... paths)
+  {
+    try
+    {
+      ByteArrayOutputStream out = null;
+      List<File> lst = new ArrayList<File>();
+      List<PDDocument> lstPDD = new ArrayList<PDDocument>();
+      for (String path : paths)
+      {
+        File file1 = new File(path);
+
+        lstPDD.add(PDDocument.load(file1));
+        lst.add(file1);
+      }
+      PDFMergerUtility PDFmerger = new PDFMergerUtility();
+
+      // Setting the destination file
+      PDFmerger.setDestinationFileName(dest);
+      for (File file : lst)
+      {
+        // adding the source files
+        PDFmerger.addSource(file);
+
+      }
+      // Merging the two documents
+      PDFmerger.mergeDocuments();
+
+      for (PDDocument pdd : lstPDD)
+      {
+        pdd.close();
+      }
+
+      PDDocument pdf = PDDocument.load(new File(dest));
+
+      out = new ByteArrayOutputStream();
+
+      pdf.save(out);
+      byte[] data = out.toByteArray();
+      pdf.close();
+      return data;
+    }
+    catch (IOException e)
+    {
+      Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
+    }
+    return null;
+  }
 
 }

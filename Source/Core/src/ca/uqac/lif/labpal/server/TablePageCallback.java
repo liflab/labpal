@@ -157,6 +157,11 @@ public class TablePageCallback extends TemplatePageCallback
       zos.putNextEntry(ze);
       zos.write(exportToStaticHtml(id).getBytes());
       zos.closeEntry();
+      // Also export to CSV
+      ze = new ZipEntry("table/" + id + ".csv");
+      zos.putNextEntry(ze);
+      zos.write(m_lab.getTable(id).getDataTable().toCsv().getBytes());
+      zos.closeEntry();
     }
   }
 }

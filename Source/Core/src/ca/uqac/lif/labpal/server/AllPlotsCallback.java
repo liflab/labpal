@@ -30,15 +30,14 @@ import com.sun.net.httpserver.HttpExchange;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.jerrydog.Server;
+import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.export.FileManager;
 import ca.uqac.lif.mtnp.plot.Plot;
 
 /**
  * Callback to download all plots as a single, multi-page PDF file. This
- * callback makes use of Apache PDFBox library, in the background. It will
- * return a 404 response if this program cannot be found.
+ * callback makes use of Apache PDFBox library, in the background. 
  * 
  * @author Sylvain Hallé
  *
@@ -106,7 +105,7 @@ public class AllPlotsCallback extends WebCallback
       }
     }
     String[] tab = filenames.toArray(new String[filenames.size()]);
-    byte[] file_contents = FileManager.mergePdf(File.createTempFile("plots", ".pdf").getPath(),
+    byte[] file_contents = FileHelper.mergePdf(File.createTempFile("plots", ".pdf").getPath(),
         tab);
     return file_contents;
   }

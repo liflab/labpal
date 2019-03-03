@@ -38,7 +38,6 @@ import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.config.Config;
 
 /**
  * Server supporting LabPal's web GUI
@@ -95,17 +94,14 @@ public class LabPalServer extends InnerFileServer
   {
     super(LabPalServer.class, true, s_cacheInterval);
     m_lab = lab;
-    if (Config.ENV.WEB == Config.env)
+    setUserAgent("LabPal " + Laboratory.s_versionString);
+    if (args.hasOption("port"))
     {
-      setUserAgent("LabPal " + Laboratory.s_versionString);
-      if (args.hasOption("port"))
-      {
-        setServerPort(Integer.parseInt(args.getOptionValue("port")));
-      }
-      else
-      {
-        setServerPort(s_defaultPort);
-      }
+      setServerPort(Integer.parseInt(args.getOptionValue("port")));
+    }
+    else
+    {
+      setServerPort(s_defaultPort);
     }
     registerCallback(0, new HomePageCallback(lab, assistant));
     m_cssCallback = new CssCallback(this, lab, assistant);

@@ -26,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import ca.uqac.lif.azrael.SerializerException;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -48,6 +49,7 @@ public class LocalBatchRunner extends BatchRunner
   @Override
   public void export() throws IOException
   {
+    saveLab();
     m_stdout.println("Exporting files to " + m_path);
     new File(m_path).mkdirs();
     byte[] zip_bytes = m_server.exportToStaticHtml();
@@ -79,6 +81,22 @@ public class LocalBatchRunner extends BatchRunner
         output.close();
       }
       ze = zis.getNextEntry();
+    }
+  }
+  
+  @Override
+  public void saveLab()
+  {
+    try
+    {
+      String lab = m_lab.saveToString();
+      Path p = Paths.get(m_path, "Lab.json");
+      FileHelper.writeFromString(p.toFile(), lab);
+      m_stdout.println("Lab status saved to " + p.toString());
+    }
+    catch (SerializerException e)
+    {
+      m_stdout.println("Lab data could not be saved");
     }
   }
   

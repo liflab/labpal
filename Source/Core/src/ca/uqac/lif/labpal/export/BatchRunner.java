@@ -40,32 +40,32 @@ public abstract class BatchRunner
    * The local path where the static files will be written
    */
   protected String m_path;
-  
+
   /**
    * The lab that will be run in batch
    */
   protected Laboratory m_lab;
-  
+
   /**
    * The printer where status messages will be written during the process
    */
   protected AnsiPrinter m_stdout;
-  
+
   /**
    * The assistant that will run the experiments
    */
   protected LabAssistant m_assistant;
-  
+
   /**
    * A headless server, which will be used to export data to static pages
    */
   protected LabPalServer m_server;
-  
+
   /**
    * The interval (in ms) at which updates will be printed to the console
    */
   protected static final transient long s_updateInterval = 5000;
-  
+
   /**
    * Creates a new batch runner
    * @param lab The lab that will be run in batch
@@ -82,7 +82,7 @@ public abstract class BatchRunner
     m_server = new LabPalServer(m_lab.getCliArguments(), m_lab, m_assistant);
     m_path = path;
   }
-  
+
   /**
    * Runs the lab in batch mode
    */
@@ -92,19 +92,31 @@ public abstract class BatchRunner
     checkDependencies();
     // Start lab and display regular updates
     m_lab.startAll();
-    while (showStatus())
+    boolean stay = true;
+    long last_update = 0, now = 0;
+    while (stay)
     {
-      try
+      now = System.currentTimeMillis();
+      if (last_update == 0 || now - last_update > s_updateInterval)
       {
-        Thread.sleep(s_updateInterval);
+        stay = showStatus();
+        last_update = now;
       }
-      catch (InterruptedException e)
+      if (stay)
       {
-        // Stop
-        break;
+        try
+        {
+          Thread.sleep(500);
+        }
+        catch (InterruptedException e)
+        {
+          // Stop
+          break;
+        }
       }
     }
     showStatus(); // One last time
+    m_stdout.println();
     // Export data
     try
     {
@@ -117,7 +129,7 @@ public abstract class BatchRunner
     }
     m_stdout.println("Done.");
   }
-  
+
   /**
    * Checks the dependencies
    */
@@ -133,7 +145,7 @@ public abstract class BatchRunner
       m_stdout.print("\nThis means you are missing something to run the experiments.");
     }
   }
-  
+
   /**
    * Prints a textual progression bar
    * @param x A value between 0 and 1 indicating the progression
@@ -156,7 +168,7 @@ public abstract class BatchRunner
     out.append("]");
     return out.toString();
   }
-  
+
   /**
    * Shows a status message indicating the state of the running experiments
    * @return <tt>true</tt> if the assistant is still running, <tt>false</tt>
@@ -172,17 +184,22 @@ public abstract class BatchRunner
     {
       long seconds = System.currentTimeMillis() - e.getStartTime();
       float progression = e.getProgression();
-      m_stdout.print("\n Running experiment #" + e.getId() + " since " + (seconds / 1000)
-          + " seconds " + printProgression(progression)  + done + "/" + all);
+      m_stdout.printf("\n Running experiment #%3d since %3d seconds %s %d/%d", e.getId(), seconds / 1000,
+          printProgression(progression), done, all);
     }
     return m_assistant.isRunning();
   }
-  
+
   /**
    * Exports the lab's data
    */
   protected abstract void export() throws IOException;
   
+  /**
+   * Exports the lab's state
+   */
+  protected abstract void saveLab() throws IOException;
+
   /**
    * Shows a start message
    */

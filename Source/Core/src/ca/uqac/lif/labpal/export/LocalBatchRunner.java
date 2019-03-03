@@ -49,9 +49,9 @@ public class LocalBatchRunner extends BatchRunner
   @Override
   public void export() throws IOException
   {
+    new File(m_path).mkdirs();
     saveLab();
     m_stdout.println("Exporting files to " + m_path);
-    new File(m_path).mkdirs();
     byte[] zip_bytes = m_server.exportToStaticHtml();
     byte[] buffer = new byte[2048];
     Path out_path = Paths.get(m_path);
@@ -61,7 +61,6 @@ public class LocalBatchRunner extends BatchRunner
     while (ze != null)
     {
       String filename = ze.getName();
-      System.out.println(filename);
       if (ze.isDirectory())
       {
         File f = new File(filename);

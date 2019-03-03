@@ -250,6 +250,16 @@ public abstract class Laboratory implements OwnershipManager
   private static transient final String s_descriptionDefaultFilename = "description.html";
 
   /**
+   * A list of environments in which a lab can be running
+   */
+  public static enum Environment {STANDALONE, CODEOCEAN}
+
+  /**
+   * The environment in which the lab is running
+   */
+  private transient Environment m_environment = Environment.STANDALONE;
+
+  /**
    * Creates a new lab assistant
    */
   public Laboratory()
@@ -707,8 +717,10 @@ public abstract class Laboratory implements OwnershipManager
    * 
    * @return The JSON string with the assistant's state, or null if some error
    *         occurred
+   * @throws SerializerException Thrown if the serialization of the lab
+   * could not be done for some reason
    */
-  public String saveToString()
+  public String saveToString() throws SerializerException
   {
     JsonElement je = saveToJson();
     if (je != null)
@@ -723,23 +735,13 @@ public abstract class Laboratory implements OwnershipManager
    * 
    * @return The JSON element with the assistant's state, or null if some error
    *         occurred
+   * @throws SerializerException Thrown if the serialization of the lab
+   * could not be done for some reason
    */
-  public JsonElement saveToJson()
+  public JsonElement saveToJson() throws SerializerException
   {
-    /*
-     * NOTE: this method should instead throw the exception and let higher levels of
-     * the GUI handle it, rather than silently fail
-     */
-    try
-    {
-      JsonElement js_out = m_serializer.serializeAs(this, this.getClass());
-      return js_out;
-    }
-    catch (SerializerException e)
-    {
-      // Do nothing
-    }
-    return null;
+    JsonElement js_out = m_serializer.serializeAs(this, this.getClass());
+    return js_out;
   }
 
   /**
@@ -1091,6 +1093,7 @@ public abstract class Laboratory implements OwnershipManager
       if (new_lab.m_cliArguments.hasOption("codeocean"))
       {
         br = new CodeOceanRunner(new_lab, assistant, stdout);
+        new_lab.m_environment = Environment.CODEOCEAN;
       }
       else
       {
@@ -1802,8 +1805,10 @@ public abstract class Laboratory implements OwnershipManager
    * @return The byte array with the contents of the zip file
    * @throws IOException
    *           Thrown if the creation of the zip failed for some reason
+   * @throws SerializerException
+   *           Thrown if the serialization of the lab failed for some reason
    */
-  public byte[] saveToZip() throws IOException
+  public byte[] saveToZip() throws IOException, SerializerException
   {
     String filename = Server.urlEncode(getTitle());
     String lab_contents = saveToString();
@@ -1967,5 +1972,14 @@ public abstract class Laboratory implements OwnershipManager
       }
     }
     return c_col;
+  }
+
+  /**
+   * Gets the environment in which the lab is running
+   * @return The environment
+   */
+  public Environment getEnvironment()
+  {
+    return m_environment;
   }
 }

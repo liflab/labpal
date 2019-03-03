@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import ca.uqac.lif.azrael.SerializerException;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.labpal.LabAssistant;
@@ -54,8 +55,18 @@ public class DownloadCallback extends WebCallback
   @Override
   public CallbackResponse process(HttpExchange t)
   {
-    String lab_contents = m_lab.saveToString();
     CallbackResponse response = new CallbackResponse(t);
+    String lab_contents = null;
+    try
+    {
+      lab_contents = m_lab.saveToString();
+    }
+    catch (SerializerException e)
+    {
+      // Baaad request
+      doBadRequest(response, "The lab's contents could not be saved");
+      return response;
+    }
     String filename = Server.urlEncode(m_lab.getTitle());
     if (s_zip)
     {

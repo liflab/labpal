@@ -51,7 +51,6 @@ public class AllTablesCallback extends WebCallback
   public CallbackResponse process(HttpExchange t)
   {
     CallbackResponse response = new CallbackResponse(t);
-
     response.setContentType(ContentType.LATEX);
     String filename = Server.urlEncode("labpal-tables.tex");
     response.setAttachment(filename);
@@ -103,7 +102,8 @@ public class AllTablesCallback extends WebCallback
       HardTable d_tab = tab.getDataTable();
       String tab_contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
       out.append("% ----------------------").append(FileHelper.CRLF).append("% Table: ")
-          .append(box_name).append(FileHelper.CRLF);
+          .append(box_name).append(FileHelper.CRLF).append("% ")
+          .append(LatexTableRenderer.formatName(tab.getTitle())).append(FileHelper.CRLF);
       out.append("% ----------------------").append(FileHelper.CRLF);
       out.append("\\newsavebox{\\").append(box_name).append("}").append(FileHelper.CRLF);
       out.append("\\begin{lrbox}{\\").append(box_name).append("}").append(FileHelper.CRLF);

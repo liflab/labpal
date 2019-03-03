@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -47,10 +47,19 @@ import ca.uqac.lif.tui.TuiList;
  */
 public class LabPalTui
 {
+  /**
+   * The lab to be controlled by the command line
+   */
 	protected Laboratory m_lab;
 	
+	/**
+	 * The assistant that runs the experiments
+	 */
 	protected LabAssistant m_assistant;
 	
+	/**
+	 * The printer where the messages are output
+	 */
 	protected AnsiPrinter m_printer;
 		
 	/**
@@ -298,9 +307,16 @@ public class LabPalTui
 			{
 				filename = line;
 			}
-			String json_string = m_lab.saveToString();
-			FileHelper.writeFromString(new File(filename), json_string);
-			printer.print("Wrote " + json_string.length() + " bytes\n");
+			try
+			{
+			  String json_string = m_lab.saveToString();
+			  FileHelper.writeFromString(new File(filename), json_string);
+	      printer.print("Wrote " + json_string.length() + " bytes\n");
+			}
+			catch (SerializerException e)
+			{
+			  printer.print("Could not save the lab's contents");
+			}
 		}
 	}
 	

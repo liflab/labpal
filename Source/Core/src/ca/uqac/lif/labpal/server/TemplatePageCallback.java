@@ -43,14 +43,23 @@ import ca.uqac.lif.labpal.Laboratory;
  */
 public class TemplatePageCallback extends WebCallback
 {
+  /**
+   * The path where the template files are located
+   */
   public static final transient String s_path = "resource";
 
+  /**
+   * The string pattern to look for in a template
+   */
   protected static final transient Pattern s_patternInclude = Pattern.compile("\\{!(.*?)!\\}");
 
+  /**
+   * The icon type associated to a page
+   */
   public static enum IconType
   {
     ERLENMEYER, TABLE, STATUS, GRAPH, HOME, HELP, ASSISTANT, BINOCULARS, TULIP
-  };
+  }
 
   /**
    * The filename of the template to read

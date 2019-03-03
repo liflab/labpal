@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,12 +29,23 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import ca.uqac.lif.azrael.SerializerException;
 import ca.uqac.lif.labpal.server.MergeCallback;
 
+/**
+ * Reports the status of a lab instance to a server at a given HTTP address. 
+ * @author Sylvain Hallé
+ */
 public class ResultReporter implements Runnable
 {
+  /**
+   * The thread where the reporter is running
+   */
 	private Thread m_thread;
 
+	/**
+	 * Flag indicating whether the thread is running
+	 */
 	private volatile boolean m_running = false;
 
 	/**
@@ -200,6 +211,10 @@ public class ResultReporter implements Runnable
 		{
 			throw new ReporterException(e);
 		}
+		catch (SerializerException e)
+    {
+      throw new ReporterException(e);
+    }
 		finally 
 		{
 			if (connection != null) 

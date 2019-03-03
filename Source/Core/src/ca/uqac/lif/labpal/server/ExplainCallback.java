@@ -146,7 +146,6 @@ public class ExplainCallback extends TemplatePageCallback
       {
         return "#";
       }
-
     }
     else if (nf instanceof TableCellNode)
     {
@@ -237,9 +236,7 @@ public class ExplainCallback extends TemplatePageCallback
     }
     List<PrimitiveValue> values = new ArrayList<PrimitiveValue>();
     renderRecursive(zos, tab, node, values, out, width);
-
     return out.toString();
-
   }
 
   protected void renderRecursive(ZipOutputStream zos, Table tab, TableNode cur_node,

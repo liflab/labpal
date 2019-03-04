@@ -1,3 +1,20 @@
+/*
+  LabPal, a versatile benchmark environment
+  Copyright (C) 2015-2017 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.labpal.provenance;
 
 import java.util.regex.Pattern;
@@ -6,19 +23,49 @@ import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.petitpoucet.NodeFunction;
 import ca.uqac.lif.petitpoucet.OwnershipManager;
 
+/**
+ * Node function indicating a dependency to a value computed by an experiment.
+ * @author Sylvain Hallé
+ */
 public class ExperimentValue implements NodeFunction 
 {
+  /**
+   * The experiment this function refers to
+   */
 	protected final Experiment m_experiment;
 	
+	/**
+	 * The parameter name in the experiment this function refers to
+	 */
 	protected final String m_parameter;
 	
+	/**
+	 * If the parameter is an array, the position in the array this function
+	 * refers to. The value -1 indicates that the position is not
+	 * relevant.
+	 */
 	protected final int m_position;
 	
+	/**
+	 * Creates a new experiment value function.
+	 * @param e The experiment this function refers to
+	 * @param key The parameter name in the experiment this function
+	 * refers to
+	 */
 	public ExperimentValue(Experiment e, String key)
 	{
 		this(e, key, -1);
 	}
 	
+	/**
+   * Creates a new experiment value function.
+   * @param e The experiment this function refers to
+   * @param key The parameter name in the experiment this function
+   * refers to
+   * @param position If the parameter is an array, the position in the array this function
+   * refers to. The value -1 indicates that the position is not
+   * relevant.
+   */
 	public ExperimentValue(Experiment e, String key, int position)
 	{
 		super();
@@ -86,12 +133,12 @@ public class ExperimentValue implements NodeFunction
 	
 	/**
 	 * Gets the owner of a datapoint
-	 * @param lab
-	 * @param datapoint_id
+	 * @param lab The lab in which to look for the data point
+	 * @param datapoint_id The LDI
 	 * @return The owner, or {@code null} if this object could not
 	 * find the owner
 	 */
-	public static Experiment getOwner(OwnershipManager lab, String datapoint_id)
+	/*@ pure null @*/ public static Experiment getOwner(/*@ non_null @*/ OwnershipManager lab, /*@ non_null @*/ String datapoint_id)
 	{
 		if (!datapoint_id.startsWith("E"))
 			return null;

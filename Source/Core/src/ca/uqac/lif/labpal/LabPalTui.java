@@ -82,6 +82,7 @@ public class LabPalTui
 	 * @param lab The lab
 	 * @param assistant The assistant
 	 * @param printer The printer used to display the TUI
+	 * @param args The arguments passed from the command line
 	 */
 	public LabPalTui(Laboratory lab, LabAssistant assistant, AnsiPrinter printer, ArgumentMap args)
 	{

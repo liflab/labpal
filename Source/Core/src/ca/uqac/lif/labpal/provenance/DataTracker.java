@@ -38,23 +38,40 @@ import ca.uqac.lif.petitpoucet.NodeFunction;
 import ca.uqac.lif.petitpoucet.OwnershipManager;
 import ca.uqac.lif.petitpoucet.ProvenanceNode;
 
+/**
+ * Tracks the ownership of each data point produced by a lab.
+ * This is the class taking care of the LabPal Datapoint Identifiers
+ * (LDI).
+ * @author Sylvain Hallé
+ */
 public class DataTracker
 {
 	/**
 	 * The lab
 	 */
-	protected OwnershipManager m_lab;
+  /*@ non_null @*/ protected OwnershipManager m_lab;
+  
+  /**
+   * The maximum depth of a provenance tree
+   */
+  protected static final transient int s_maxDepth = 10;
 
 	/**
 	 * Creates a new data tracker
+	 * @param lab The lab this tracker is associated with
 	 */
-	public DataTracker(OwnershipManager lab)
+	public DataTracker(/*@ non_null @*/ OwnershipManager lab)
 	{
 		super();
 		m_lab = lab;
 	}
 
-	public Object getOwner(String id)
+	/**
+	 * Gets the owner of a data point
+	 * @param id The data point ID
+	 * @return The owner; maybe <tt>null</tt> if no owner can be found
+	 */
+	/*@ pure null @*/ public Object getOwner(String id)
 	{
 		// Is it a table?
 		Table t = TableCellNode.getOwner(m_lab, id);
@@ -119,7 +136,12 @@ public class DataTracker
 		return null;
 	}
 
-	public ProvenanceNode explain(String datapoint_id)
+	/**
+	 * Produces a provenance tree for a given LDI
+	 * @param datapoint_id The LDI
+	 * @return A reference to the root of the provenance tree
+	 */
+	/*@ non_null @*/ public ProvenanceNode explain(String datapoint_id)
 	{
 		NodeFunction nf = getNodeFunction(datapoint_id);
 		if (nf == null)
@@ -137,7 +159,7 @@ public class DataTracker
 	public ProvenanceNode explain(NodeFunction nf)
 	{
 		Set<NodeFunction> functions = new HashSet<NodeFunction>();
-		return explain(nf, functions, 10);
+		return explain(nf, functions, s_maxDepth);
 	}
 
 	/**
@@ -146,6 +168,9 @@ public class DataTracker
 	 * @param seen_functions A set of nodes functions already included in the
 	 *   tree. This is to avoid infinite looping due to possible circular
 	 *   dependencies.
+	 * @param depth A counter that is being decreased every time the method is
+	 * called recursively. This can be used to specify the maximum depth of
+	 * the provenance tree.
 	 * @return The root of the provenance tree
 	 */
 	protected ProvenanceNode explain(NodeFunction nf, Set<NodeFunction> seen_functions, int depth)

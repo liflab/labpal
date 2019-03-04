@@ -150,6 +150,10 @@ public abstract class Experiment implements Runnable, DataOwner {
 	 */
 	private transient volatile boolean m_running = false;
 
+	/**
+	 * Creates an experiment and sets its status
+	 * @param status The status
+	 */
 	public Experiment(Status status) {
 		super();
 		m_inputParameters = new JsonMap();
@@ -165,10 +169,17 @@ public abstract class Experiment implements Runnable, DataOwner {
 		m_random = null;
 	}
 
+	/**
+	 * Creates an empty experiment
+	 */
 	public Experiment() {
 		this(Status.DUNNO);
 	}
 
+	/**
+	 * Creates an experiment and sets its input parameters
+	 * @param params The parameters
+	 */
 	public Experiment(JsonMap params) {
 		this();
 		m_inputParameters = params;
@@ -334,6 +345,8 @@ public abstract class Experiment implements Runnable, DataOwner {
 	 *             Used to signal the abnormal termination of the experiment. If
 	 *             this method ends without throwing an exception, it is assumed it
 	 *             has completed successfully.
+	 * @throws InterruptedException Used to signal that the thread running the
+	 * experiment has been interrupted.
 	 */
 	public abstract void execute() throws ExperimentException, InterruptedException;
 
@@ -1017,8 +1030,9 @@ public abstract class Experiment implements Runnable, DataOwner {
 	 * Sets the maximum duration for this experiment. If the experiment lasts longer
 	 * than this duration, the lab assistant can interrupt it.
 	 * 
-	 * @return The duration, in milliseconds. A negative value indicates that no
+	 * @param duration The duration, in milliseconds. A negative value indicates that no
 	 *         timeout applies.
+	 * @return This experiment
 	 */
 	public final Experiment setMaxDuration(long duration) {
 		m_maxDuration = duration;

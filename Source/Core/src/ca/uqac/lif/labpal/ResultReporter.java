@@ -165,6 +165,8 @@ public class ResultReporter implements Runnable
 	 * Reports the results of the lab. This is done by sending an
 	 * HTTP POST request with the zipped contents of the lab.
 	 * @return The HTTP response obtained from the request
+	 * @throws ReporterException If the sending of the HTTP request
+	 * resulted in an error
 	 */
 	public synchronized String reportResults() throws ReporterException
 	{

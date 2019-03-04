@@ -178,7 +178,6 @@ public class Region
 	 * @param name The name of the new dimension
 	 * @param start The start of the range
 	 * @param end The end of the range (inclusive)
-	 * @param increment The increment step for generating values in the range
 	 * @return This region
 	 */
 	public Region addRange(String name, Number start, Number end)
@@ -350,7 +349,7 @@ public class Region
 	
 	/**
 	 * Retrieves an integer value for a dimension
-	 * @param name The index of the dimension
+	 * @param index The index of the dimension
 	 * @return The integer value, or 0 if not found
 	 */
 	public int getInt(int index)
@@ -360,8 +359,8 @@ public class Region
 	
 	/**
 	 * Creates an iterable collection of all regions
-	 * @param names
-	 * @return
+	 * @param names The names of all the dimensions to be iterated over
+	 * @return An iterable collection of sub-regions
 	 */
 	public Iterable<Region> all(String ... names)
 	{
@@ -394,6 +393,13 @@ public class Region
 		return regions;
 	}
 	
+	/**
+   * Creates an iterable collection of all regions, by specifying the index
+   * of the dimension to iterate over
+   * @param index The index of the dimension
+   * @param names The names of all the dimensions to be iterated over
+   * @return An iterable collection of sub-regions
+   */
 	protected List<Region> all(int index, String ... names)
 	{
 		List<Region> regions = new ArrayList<Region>();
@@ -470,8 +476,10 @@ public class Region
 	}
 	
 	/**
-	 * 
-	 * @param r
+	 * Callback that is being called by {@link #applyAll(String...)}
+	 * on each iterated region. Override this method to implement
+	 * a specific functionality.
+	 * @param r The region
 	 */
 	public void doFor(Region r)
 	{

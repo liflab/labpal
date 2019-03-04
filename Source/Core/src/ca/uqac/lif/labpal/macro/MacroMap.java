@@ -47,6 +47,7 @@ public abstract class MacroMap extends Macro
 	
 	/**
 	 * Creates a new macro map with given data point names
+	 * @param lab The lab this macro is associated with
 	 * @param names The names
 	 */
 	public MacroMap(Laboratory lab, String ... names)

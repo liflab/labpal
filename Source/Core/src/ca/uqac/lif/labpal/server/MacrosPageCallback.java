@@ -78,8 +78,10 @@ public class MacrosPageCallback extends TemplatePageCallback
   }
 
   /**
-   * Produces the list of macros
-   * 
+   * Produces the list of macros in HTML format
+   * @param macros A list of macros
+   * @param to_highlight A set of strings, each of which being the
+   * LDI to a macro that will be highlighted in the page
    * @return A well-formatted HTML string showing of each of the lab's macros
    */
   public String getMacros(Collection<Macro> macros, Set<String> to_highlight)

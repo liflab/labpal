@@ -86,9 +86,10 @@ public class LabPalServer extends InnerFileServer
   /**
    * Creates a new LabPal server
    * 
-   * @param args
-   * @param lab
-   * @param assistant
+   * @param args The arguments passed from the command line
+   * @param lab The lab that this server will manage
+   * @param assistant The asssitant used to coordinate the execution
+   * of the lab's experiments
    */
   public LabPalServer(ArgumentMap args, Laboratory lab, LabAssistant assistant)
   {

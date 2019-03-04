@@ -62,8 +62,8 @@ public class Formatter
 	 * <li>If either n or d are null, returns 0</li>
 	 * <li>If d = 0, returns 0</li>
 	 * </ul>
-	 * @param n
-	 * @param d
+	 * @param n The numerator
+	 * @param d The denominator
 	 * @return The ratio n/d, cast as a float
 	 */
 	public static float divide(Number n, Number d)

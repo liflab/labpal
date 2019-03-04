@@ -96,7 +96,7 @@ public abstract class Laboratory implements OwnershipManager
   /**
    * The revision version number
    */
-  private static final transient int s_revisionVersionNumber = 0;
+  private static final transient int s_revisionVersionNumber = 1;
 
   /**
    * The set of experiments this lab has access to
@@ -489,7 +489,7 @@ public abstract class Laboratory implements OwnershipManager
   /**
    * Adds the arguments of a transformed table
    * 
-   * @param table
+   * @param table The table
    */
   protected void addInternalTable(TransformedTable table)
   {
@@ -750,8 +750,6 @@ public abstract class Laboratory implements OwnershipManager
    * @param clazz
    *          The class
    * @return This lab
-   * @throws NoEmptyConstructorException
-   *           If the class to be added does not have a no-args constructor
    */
   public Laboratory addClassToSerialize(Class<?> clazz)
   {
@@ -800,9 +798,11 @@ public abstract class Laboratory implements OwnershipManager
    * @param is
    *          The input stream
    * @return A new lab instance
-   * @throws IOException
-   * @throws SerializerException
-   * @throws JsonParseException
+   * @throws IOException Thrown if stream cannot be read
+   * @throws SerializerException Thrown if input stream does not contain
+   * a valid lab instance
+   * @throws JsonParseException Thrown if input stream does not
+   * contain valid JSON
    */
   public final Laboratory loadFromZip(InputStream is)
       throws IOException, SerializerException, JsonParseException
@@ -828,8 +828,10 @@ public abstract class Laboratory implements OwnershipManager
    * @param is
    *          The input stream
    * @return A new lab instance
-   * @throws SerializerException
-   * @throws JsonParseException
+   * @throws SerializerException Thrown if input stream does not contain
+   * a valid lab instance
+   * @throws JsonParseException Thrown if input stream does not
+   * contain valid JSON
    */
   public final Laboratory loadFromJson(InputStream is)
       throws SerializerException, JsonParseException
@@ -1424,7 +1426,7 @@ public abstract class Laboratory implements OwnershipManager
    * @param name
    *          The fully qualified name of the class
    * @return The class, or null if the class could not be found
-   * @throws ClassNotFoundException
+   * @throws ClassNotFoundException The class could not be found
    */
   public final Class<?> findClass(String name) throws ClassNotFoundException
   {
@@ -1826,11 +1828,13 @@ public abstract class Laboratory implements OwnershipManager
   /**
    * Creates a new lab instance from the contents of a zip file
    * 
-   * @param lab_file_contents
+   * @param lab_file_contents An array of bytes containing the zip file
    * @return The lab
-   * @throws IOException
-   * @throws SerializerException
-   * @throws JsonParseException
+   * @throws IOException Thrown if the zip file cannot be read
+   * @throws SerializerException Thrown if input stream does not contain
+   * a valid lab instance
+   * @throws JsonParseException Thrown if input stream does not
+   * contain valid JSON
    */
   public Laboratory getFromZip(byte[] lab_file_contents)
       throws IOException, SerializerException, JsonParseException
@@ -1877,17 +1881,16 @@ public abstract class Laboratory implements OwnershipManager
   /**
    * Edit the parameters of an experiment
    * 
-   * @param exp_id
-   * @param new_parameters
+   * @param exp_id The ID of the experiment
+   * @param new_parameters A map with the new parameters of the experiment
    */
   public void editParameters(int exp_id, JsonMap new_parameters)
   {
     // TODO Auto-generated method stub
-
   }
 
   /**
-   * Recomputes the value of all claims
+   * Recomputes the value of all claims associated to the lab
    */
   public void computeClaims()
   {

@@ -50,7 +50,8 @@ public class HttpUtilities
    * @param zipIn
    *          The zip input stream
    * @return Byte array
-   * @throws IOException
+   * @throws IOException Thrown if the byte array could not be read for some
+   * reason
    */
   public static byte[] extractFile(InputStream zipIn) throws IOException
   {
@@ -254,7 +255,8 @@ public class HttpUtilities
    * @param is
    *          The input stream
    * @return The byte array
-   * @throws IOException
+   * @throws IOException Thrown if the byte array could not be read for some
+   * reason
    */
   public static byte[] streamToBytes(InputStream is) throws IOException
   {

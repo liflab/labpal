@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2018 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -99,6 +99,7 @@ public abstract class Claim
 	/**
 	 * Creates a new claim and associates it to a laboratory
 	 * @param lab The lab to associate the claim to
+	 * @param name The name of the claim
 	 */
 	public Claim(Laboratory lab, String name)
 	{

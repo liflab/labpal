@@ -64,6 +64,7 @@ public class LinearAssistant extends LabAssistant
 
 	/**
 	 * Creates a new assistant
+	 * @param lab The lab this assistant will coordinate
 	 */
 	public LinearAssistant(Laboratory lab)
 	{

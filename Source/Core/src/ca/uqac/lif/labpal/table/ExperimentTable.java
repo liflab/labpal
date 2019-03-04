@@ -55,16 +55,14 @@ public class ExperimentTable extends Table
 	public String[] m_dimensions;
 
 	/**
-	 * The type of each column in the table
+	 * Creates an empty table with a given list of column names
+	 * @param dimensions The column names
 	 */
-	//public Class<? extends Comparable<?>>[] m_columnTypes;
-
 	public ExperimentTable(String ... dimensions)
 	{
 		super();
 		m_experiments = new ArrayList<Experiment>();
 		m_dimensions = dimensions;
-		//setColumn_nbr(m_dimensions.length);
 	}	
 
 	/**
@@ -135,7 +133,11 @@ public class ExperimentTable extends Table
 	 * experiment has parameters whose value is a list instead of a
 	 * scalar value. This allows a single experiment to define multiple
 	 * data points.
+	 * @param temporary Set to <tt>true</tt> if the table is a temporary
+	 * table, i.e. a table that is not associated with the lab
 	 * @param e The experiment
+	 * @param row_start Unused; will likely be deprecated in a future
+	 * version
 	 * @param dimensions The columns to consider when expanding
 	 * @return A list of table entries corresponding to the data
 	 *   points in the experiment

@@ -192,11 +192,15 @@ public abstract class BatchRunner
 
   /**
    * Exports the lab's data
+   * @throws IOException If writing data to an output stream cannot be done
+   * for some reason
    */
   protected abstract void export() throws IOException;
   
   /**
    * Exports the lab's state
+   * @throws IOException If writing data to an output stream cannot be done
+   * for some reason
    */
   protected abstract void saveLab() throws IOException;
 

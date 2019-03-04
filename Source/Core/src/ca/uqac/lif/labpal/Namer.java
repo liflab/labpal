@@ -145,7 +145,7 @@ public abstract class Namer
   
   /**
    * Applies a transformation to the suffix
-   * @param prefix The suffix
+   * @param suffix The suffix
    * @return The transformed suffix
    */
   protected String handleSuffix(String suffix)

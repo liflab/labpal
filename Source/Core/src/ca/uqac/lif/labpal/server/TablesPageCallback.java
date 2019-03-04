@@ -72,6 +72,8 @@ public class TablesPageCallback extends TemplatePageCallback
   /**
    * Produces the list of tables
    * 
+   * @param ids A vector of integers, each of which being the
+   * ID to a table that will be shown in the page
    * @return A well-formatted HTML string showing of each of the lab's plots
    */
   public String getTables(Vector<Integer> ids)

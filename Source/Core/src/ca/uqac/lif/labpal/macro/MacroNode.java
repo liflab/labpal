@@ -29,10 +29,21 @@ import ca.uqac.lif.petitpoucet.OwnershipManager;
  */
 public class MacroNode implements NodeFunction 
 {
+  /**
+   * The macro to link to
+   */
 	protected final Macro m_macro;
 	
+	/**
+	 * The key to the macro
+	 */
 	protected final String m_key;
 
+	/**
+	 * Creates a new macro node
+	 * @param m The macro to link to
+	 * @param key The key to the macro
+	 */
 	public MacroNode(Macro m, String key)
 	{
 		super();
@@ -40,6 +51,10 @@ public class MacroNode implements NodeFunction
 		m_key = key;
 	}
 	
+	/**
+	 * Creates a new macro node
+   * @param m The macro to link to
+	 */
 	public MacroNode(Macro m)
 	{
 		this(m, "");
@@ -99,6 +114,13 @@ public class MacroNode implements NodeFunction
 		return null;
 	}
 
+	/**
+	 * Gets the node function that is the dependency to this macro
+	 * @param m The macro
+	 * @param datapoint_id The data point ID to look for
+	 * @return The node function, or <tt>null</tt> if no dependency
+	 * could be found
+	 */
 	public static NodeFunction dependsOn(Macro m, String datapoint_id)
 	{
 		// Parse the datapoint ID and call the experiment on the extracted values
@@ -127,12 +149,12 @@ public class MacroNode implements NodeFunction
 
 	/**
 	 * Gets the owner of a datapoint
-	 * @param lab
-	 * @param datapoint_id
+	 * @param lab The lab in which to look for the datapoint
+	 * @param datapoint_id The data point ID to look for
 	 * @return The owner, or {@code null} if this object could not
 	 * find the owner
 	 */
-	public static Macro getOwner(OwnershipManager lab, String datapoint_id)
+	/*@ null @*/ public static Macro getOwner(/*@ non_null @*/ OwnershipManager lab, /*@ non_null @*/ String datapoint_id)
 	{
 		if (!datapoint_id.startsWith("M"))
 			return null;
@@ -140,6 +162,10 @@ public class MacroNode implements NodeFunction
 		return (Macro) lab.getObjectWithId(parts[0]);
 	}
 
+	/**
+	 * Gets the owner of this macro node
+	 * @return The macro
+	 */
 	public Macro getOwner()
 	{
 		return m_macro;

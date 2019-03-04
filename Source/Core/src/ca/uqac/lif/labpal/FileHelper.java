@@ -56,6 +56,11 @@ public class FileHelper
 	 * The system-dependent carriage return symbol
 	 */
 	public static final transient String CRLF = System.getProperty("line.separator");
+	
+	/**
+	 * The system-dependent symbol for separating paths
+	 */
+	public static final transient String SLASH = System.getProperty("file.separator");
 
 	/**
 	 * Reads the contents of a file and puts it into a string.
@@ -525,7 +530,10 @@ public class FileHelper
 						}*/
 						if (entry.matches(glob))
 						{
-							result.add(entry);
+						  if (!entry.matches(exclude_glob))
+	            {
+						    result.add(entry);
+	            }
 						}
 					}
 				}

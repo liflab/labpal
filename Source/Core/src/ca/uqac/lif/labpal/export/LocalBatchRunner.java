@@ -27,6 +27,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import ca.uqac.lif.azrael.SerializerException;
+import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
@@ -54,25 +55,33 @@ public class LocalBatchRunner extends BatchRunner
     m_stdout.println("Exporting files to " + m_path);
     byte[] zip_bytes = m_server.exportToStaticHtml();
     byte[] buffer = new byte[2048];
-    Path out_path = Paths.get(m_path);
     // Unzip the contents
     ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zip_bytes));
     ZipEntry ze = zis.getNextEntry();
     while (ze != null)
     {
       String filename = ze.getName();
+      if (filename.isEmpty())
+      {
+        ze = zis.getNextEntry();
+        continue;
+      }
+      String out_filename = Paths.get(m_path).toString() + FileHelper.SLASH + filename;
       if (ze.isDirectory())
       {
-        File f = new File(filename);
+        File f = new File(out_filename);
         f.mkdirs();
       }
       else
       {
         int len;
-        Path file_path = out_path.resolve(filename);
-        File f = file_path.toFile();
-        FileHelper.createIfNotExists(f);
-        FileOutputStream  output = new FileOutputStream(f);
+        File f = new File(out_filename);
+        File p_f = f.getParentFile();
+        if (p_f != null)
+        {
+          p_f.mkdirs();
+        }
+        FileOutputStream output = new FileOutputStream(f);
         while ((len = zis.read(buffer)) > 0)
         {
           output.write(buffer, 0, len);
@@ -88,7 +97,8 @@ public class LocalBatchRunner extends BatchRunner
   {
     try
     {
-      String lab = m_lab.saveToString();
+      JsonMap jm = (JsonMap) m_lab.saveToJson();
+      String lab = jm.toString("", false);
       Path p = Paths.get(m_path, "Lab.json");
       FileHelper.writeFromString(p.toFile(), lab);
       m_stdout.println("Lab status saved to " + p.toString());

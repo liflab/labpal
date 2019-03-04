@@ -92,27 +92,17 @@ public abstract class BatchRunner
     checkDependencies();
     // Start lab and display regular updates
     m_lab.startAll();
-    boolean stay = true;
+    // Give some time for the assistant to start
+    Experiment.wait(500);
     long last_update = 0, now = 0;
-    while (stay)
+    while (m_assistant.isRunning())
     {
+      Experiment.wait(500);
       now = System.currentTimeMillis();
       if (last_update == 0 || now - last_update > s_updateInterval)
       {
-        stay = showStatus();
+        showStatus();
         last_update = now;
-      }
-      if (stay)
-      {
-        try
-        {
-          Thread.sleep(500);
-        }
-        catch (InterruptedException e)
-        {
-          // Stop
-          break;
-        }
       }
     }
     showStatus(); // One last time
@@ -125,7 +115,8 @@ public abstract class BatchRunner
     catch (IOException e)
     {
       m_stdout.println("Error exporting lab data.");
-      m_stdout.println(e.getMessage());
+      e.printStackTrace();
+      //m_stdout.println(e.getMessage());
     }
     m_stdout.println("Done.");
   }
@@ -184,7 +175,7 @@ public abstract class BatchRunner
     {
       long seconds = System.currentTimeMillis() - e.getStartTime();
       float progression = e.getProgression();
-      m_stdout.printf("\n Running experiment #%3d since %3d seconds %s %d/%d", e.getId(), seconds / 1000,
+      m_stdout.printf("Running experiment #%3d since %3d seconds %s %d/%d\n", e.getId(), seconds / 1000,
           printProgression(progression), done, all);
     }
     return m_assistant.isRunning();

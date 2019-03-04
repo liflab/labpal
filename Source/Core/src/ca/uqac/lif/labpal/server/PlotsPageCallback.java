@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -119,6 +119,7 @@ public class PlotsPageCallback extends TemplatePageCallback
   {
     String contents = super.exportToStaticHtml(path_to_root);
     // Transform URLs for individual plot buttons
+    contents = contents.replaceAll("src=\".*?plot/(\\d+)\"", "src=\"plot/$1.png\"");
     contents = contents.replaceAll("src=\"(.*?)\\.html\"", "src=\"$1.png\"");
     contents = contents.replaceAll("href=\"plot/(.*?)\\.html\"", "href=\"plot/$1.png\"");
     contents = contents.replaceAll("href=\"plot/(.*?)\\?format=gp.*?\"", "href=\"plot/$1.gp\"");

@@ -264,7 +264,7 @@ public class LabPalServer extends InnerFileServer
         String root_path = "ca/uqac/lif/labpal/server/";
         String folder = "resource/";
         List<String> internal_files = FileHelper.getResourceListing(LabPalServer.class,
-            root_path + folder, ".*", ".*html|.*~|images|screen\\.css$");
+            root_path + folder, ".*", ".*html|.*~|images.*|screen\\.css$");
         for (String in_filename : internal_files)
         {
           byte[] contents = FileHelper.internalFileToBytes(LabPalServer.class,

@@ -40,7 +40,7 @@ public class SortingLab extends Laboratory
 	{
 		// A few constants
 		final int min_length = 5000;
-		final int max_length = 80000;
+		final int max_length = 10000;
 		final int increment = 5000;
 		
 		// Give a name to the lab

@@ -50,6 +50,10 @@ public abstract class Macro
 	 */
 	protected final Laboratory m_lab;
 	
+	/**
+	 * Creates a new macro
+	 * @param lab The lab this macro is associated with
+	 */
 	protected Macro(Laboratory lab)
 	{
 		super();

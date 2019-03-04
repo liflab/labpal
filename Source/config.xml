@@ -26,7 +26,7 @@
   <name>LabPal</name>
   
   <!-- The project's version number -->
-  <version>2.11</version>
+  <version>2.11.1</version>
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
@@ -116,13 +116,13 @@
 	<classname>org.apache.pdfbox.util.Version</classname>
 	<files>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/pdfbox/2.0.14/pdfbox-2.0.14.jar</jar>
+		<jar>http://central.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar</jar>
 		<!-- These are not necessary
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/fontbox/2.0.0/fontbox-2.0.0.jar</jar>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/jempbox/1.8.11/jempbox-1.8.11.jar</jar>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/xmpbox/2.0.0/xmpbox-2.0.0.jar</jar>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/preflight/2.0.0/preflight-2.0.0.jar</jar>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/pdfbox-tools/2.0.0/pdfbox-tools-2.0.0.jar</jar>
-		<jar>http://central.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar</jar>
 		-->
 	</files>
 	<bundle>true</bundle>

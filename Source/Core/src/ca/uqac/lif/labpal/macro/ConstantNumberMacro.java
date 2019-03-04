@@ -19,10 +19,24 @@ package ca.uqac.lif.labpal.macro;
 
 import ca.uqac.lif.labpal.Laboratory;
 
+/**
+ * Macro that outputs a single number that does not depend on the lab's state.
+ * @author Sylvain Hallé
+ */
 public class ConstantNumberMacro extends NumberMacro
 {
+  /**
+   * The number to output
+   */
 	protected Number m_value;
 
+	/**
+	 * Creates a new constant number macro.
+	 * @param lab The lab this macro is associated with
+	 * @param name The name of the macro
+	 * @param description A textual description of the macro
+	 * @param value The value to be output by the macro
+	 */
 	public ConstantNumberMacro(Laboratory lab, String name, String description, Number value) 
 	{
 		super(lab, name, description);

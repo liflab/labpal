@@ -44,7 +44,7 @@ public class MacroScalar extends Macro
 	/**
 	 * Creates a new macro of given name
 	 * @param lab The lab this macro is associated with
-	 * @param name The name
+	 * @param name The name of the macro
 	 */
 	public MacroScalar(Laboratory lab, String name)
 	{
@@ -54,8 +54,8 @@ public class MacroScalar extends Macro
 	/**
 	 * Creates a new macro of given name
 	 * @param lab The lab this macro is associated with
-	 * @param name The name
-	 * @param description The description
+   * @param name The name of the macro
+   * @param description A textual description of the macro
 	 */
 	public MacroScalar(Laboratory lab, String name, String description)
 	{

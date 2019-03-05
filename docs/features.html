@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html class="not-ie" lang="en"> <!--<![endif]-->
+<!--
+	ucorpora by freshdesignweb.com
+	Twitter: https://twitter.com/freshdesignweb
+	https://www.freshdesignweb.com/ucorpora/
+-->
+<head>
+	<!-- Basic Meta Tags -->
+  <meta charset="utf-8">
+  <title>Features - LabPal</title>
+	<meta name="description" content="LabPal is a Java library that simplifies the execution of computer experiments and the processing of its results">
+	<meta name="keywords" content="LabPal, experiments, reproducible, reproducibility, artifacts, reusability, benchmark, open science, artifact evaluation, batch, lab, plotting, interactive articles">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--[if (gte IE 9)|!(IE)]>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <![endif]--> 
+
+  <!-- Favicon -->
+  <link href="img/favicon.ico" rel="icon" type="image/png">
+
+  <!-- Styles -->
+  <link href="css/styles.css" rel="stylesheet">
+  <link href="css/bootstrap-override.css" rel="stylesheet">
+
+  <!-- Font Avesome Styles -->
+  <link href="css/font-awesome/font-awesome.css" rel="stylesheet">
+	<!--[if IE 7]>
+		<link href="css/font-awesome/font-awesome-ie7.min.css" rel="stylesheet">
+	<![endif]-->
+
+  <!-- FlexSlider Style -->
+  <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen">
+
+	<!-- Internet Explorer condition - HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->   
+<!-- Piwik --><script type="text/javascript">
+  var _paq = _paq || [];
+  // tracker methods like "setCustomDimension" should be called before "trackPageView"
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//leduotang.ca/piwik/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '3']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script><!-- End Piwik Code -->
+</head>       
+<body>
+  <!-- Header -->
+  <header id="header">
+    <div class="container">
+      <div class="row t-container">
+
+        <!-- Logo -->
+        <div class="span3">
+          <div class="logo">
+            <a href="index.html"><img src="img/logo-header.png" alt=""></a>
+          </div>            
+        </div>
+
+        <div class="span9">
+          <div class="row space60"></div>
+             <nav id="nav" role="navigation">
+               	<a href="#nav" title="Show navigation">Show navigation</a>
+	            <a href="#" title="Hide navigation">Hide navigation</a>
+	            <ul class="clearfix">
+	           	<li class="active"><a href="index.html" title="">Home</a></li>
+                <li><a href="quick-tutorial.html" title="">Quick tutorial</a></li>
+                <li><a href="features.html" title="">Features</a></li>
+                <li><a href="resources.html" title=""><span>Resources</span></a>
+                  <ul>
+                  <li><a href="documentation.html" title="">Documentation</a></li>
+                  <li><a href="videos.html" title="">Videos</a></li>
+                  <li><a href="examples.html" title="">Examples</a></li>
+                  </ul>
+                </li>
+                <li><a href="download.html" title="">Download</a>
+               </li>
+	           </ul>
+          </nav>
+         </div> 
+      </div> 
+       <div class="row space40"></div>
+  </div> 
+</header><!-- Header End -->
+<!-- Titlebar
+================================================== -->
+<section id="titlebar">
+	<!-- Container -->
+	<div class="container">
+	
+		<div class="eight columns">
+			<h3 class="left">Features</h3>
+		</div>
+		
+		<div class="eight columns">
+			<nav id="breadcrumbs">
+				<ul>
+					<li>You are here:</li>
+					<li><a href="index.html">Home</a></li>
+					<li>Features</li>
+				</ul>
+			</nav>
+		</div>
+
+	</div>
+	<!-- Container / End -->
+</section>
+
+  <!-- Content -->
+  <div id="content">
+    <div class="container">
+
+      <div class="row">
+        <div class="span12">
+          <p>LabPal incorporates a number of innovative features. <strong>If you are not using LabPal, does your experimental code allow you to tick a box on each of these items?</strong></p>
+          
+          <dl>
+          <dt>Export to a stand-alone executable bundle</dt>
+          <dd>All your experimental setup (including your code, its input files and library dependencies) can be bundled into a single, runnable JAR file, making it easy for anybody to download and re-run your experiments.</dd>
+          
+          <dt>Execution control through a web interface</dt>
+          <dd>The runnable JAR acts as a web server; when launched, a user can see all the experiments and control their execution using a web browser.
+                      A user can choose to run only a selection of experiments, and generate only a portion of all the tables and plots.
+                      Each running experiment can update a visual progress bar; LabPal can even estimate and show the time remaining before they complete.</dd>
+                      
+          <dt>Provenance tracking</dt>
+          <dd>LabPal keeps track of each datapoint generated by an experiment. These datapoints are given unique IDs and can be queried through the web interface. In addition, LabPal can display the complete chain of transformations leading from raw data to any individual value computed by your lab. No extra code is needed from the user.
+          Table cells and macros exported to LaTeX have PDF hyperlinks containing the unique ID of each datapoint, making it possible to retrace every individual value included in a PDF back to the lab's experiment where it was computed.
+          (See the <a href="https://www.youtube.com/watch?v=StXflS52h4s">video</a> that shows an example.)
+          </dd>
+                      
+          <dt>Experiment prerequisites</dt>
+          <dd>Experiments can declare pre-conditions that must be fulfilled before being run, and can also fulfill these prerequisites (e.g. generating files). If multiple experiments share the same prerequisites, LabPal makes sure they can be shared and fulfilled only once.</dd>
+          
+          <dt>Automated generation of PDF and PNG plots</dt>
+          <dd>Tables and plots are first-class objects provided by LabPal. You can create a table by simply adding experiments to a <tt>Table</tt> object, and a plot by associating a table to a <tt>Plot</tt> object.
+                      Tables can be transformed by applying <tt>TableTransformation</tt> to them; no need to manually parse and crunch intermediate CSV files.
+                      Plots can be generated using either Gnuplot or GRAL, and exported to a variety of formats.</dd>
+          
+          <dt>Pause, save and resume</dt>
+          <dd>A set of partially executed experiments can be saved to disk, then reloaded and resumed at a later time (or even on a different machine).</dd>
+          
+          <dt>LaTeX integration</dt>
+          <dd>LabPal generates LaTeX files for all tables and plots, making it easy to include these elements inside a research paper in progress without any extra code.
+                          What is more, tables and plots can be bundled into a single include file; the appropriate table or plot in the text can be displayed by calling the appropriate user-defined command.</dd>
+          
+          <dt>Macros</dt>
+          <dd>Macros are values computed from the lab's content and exported as LaTeX commands, removing the need to hard-code values into the text.
+                          Results can be refreshed by overwriting these macro definitions without having to change the paper.</dd>
+
+          
+          <dt>Distributed computing</dt>
+          <dd>The same lab instance can be started on multiple machines and be instructed to run different sets of experiments. Results are merged through network communication between these instances.</dd>
+          
+          <dt>Notebook export</dt>
+          <dd>A lab's results can be exported as a zip bundle made of static, interlinked HTML files, creating an interactive "notebook" that can be used to explore the results offline. When run in batch mode, LabPal can be incorporated into a reproducible environment, such as a <a href="https://codeocean.com">Code Ocean</a> "capsule".</dd>
+          
+          <dt>Multi-dimensional iteration with regions</dt>
+          <dd>LabPal provides objects called <a href="https://liflab.gitbook.io/labpal-user-manual/regions">regions</a>, which represent multi-dimensional ranges of parameter values. Regions can be used to filter experiments, or to iterate over combinations of input parameters having arbitrary shapes (not just hyperrectangles!). This makes it easy to create tables and plots from the same set of experiments by varying the independent variables.</dd>
+          </dl>
+          
+        </div>
+      </div> <!-- /row -->
+
+  </div></div>                        
+  <!-- Content End -->
+  
+  
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="span8">
+          <h3>About LabPal</h3>
+          LabPal is developed by <a href="http://liflab.ca/">Laboratoire d'informatique formelle</a><br/>
+          Université du Québec à Chicoutimi<br>
+          Chicoutimi, Québec G7H 2B1<br>
+          Canada<br>
+          <br>
+          <i class="icon-phone"></i>+01 418 545 5011<br>
+          <i class="icon-envelope"></i><a href="mailto:shalle@acm.org">shalle@acm.org</a><br>
+          <i class="icon-home"></i><a href="http://www.liflab.ca">liflab.ca</a>
+          
+          <div class="row space40"></div>  
+
+          <a href="#" class="social-network sn2 behance"></a>
+          <a href="#" class="social-network sn2 facebook"></a>
+          <a href="#" class="social-network sn2 pinterest"></a>
+          <a href="#" class="social-network sn2 flickr"></a>
+          <a href="#" class="social-network sn2 dribbble"></a>
+          <a href="#" class="social-network sn2 lastfm"></a>
+          <a href="#" class="social-network sn2 forrst"></a>
+          <a href="#" class="social-network sn2 xing"></a>      
+        </div>
+      </div>
+      
+      <div class="row space50"></div>
+      <div class="row">
+        <div class="span6">
+          <div class="logo-footer">
+            Design by <a href="https://www.freshdesignweb.com">freshDesignweb</a>
+          </div>                       
+        </div>
+        <div class="span6 right">
+          &copy; 2020. All rights reserved.
+        </div>
+      </div>
+
+    </div>
+  </footer>
+  <!-- Footer End -->
+
+  <!-- JavaScripts -->
+  <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script> 
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>  
+  <script type="text/javascript" src="js/functions.js"></script>
+  <script type="text/javascript" src="js/jquery.isotope.min.js"></script>
+  <script type="text/javascript" defer src="js/jquery.flexslider.js"></script>
+
+</body>
+</html>
+  

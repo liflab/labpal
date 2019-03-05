@@ -1,22 +1,47 @@
-<!DOCTYPE HTML>
-<!DOCTYPE html><html lang="en-us">
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html class="not-ie" lang="en"> <!--<![endif]-->
+<!--
+	ucorpora by freshdesignweb.com
+	Twitter: https://twitter.com/freshdesignweb
+	https://www.freshdesignweb.com/ucorpora/
+-->
 <head>
-<link href="http://gmpg.org/xfn/11" rel="profile">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<!-- Enable responsiveness on mobile devices--><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<meta name="author" content="Sylvain Hall&eacute;">
-<title>Easily run experiments on a computer - LabPal</title>
-<!-- CSS --><link rel="stylesheet" media="screen" href="css/poole.css">
-<link rel="stylesheet" media="screen,print" href="css/syntax.css">
-<link rel="stylesheet" media="screen" href="css/lanyon.css">
-<link rel="stylesheet" media="screen" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
-<link rel="stylesheet" media="screen" href="css/custom.css">
-<link rel="stylesheet" media="print" href="css/print.css">
-<!-- Icons --><link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-precomposed.png">
-<link rel="shortcut icon" href="favicon.ico">
-<!-- Syntax highlighting --><link rel="stylesheet" href="assets/js/styles/default.css">
-<script src="assets/js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script><!-- RSS --><!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> --><!-- Piwik --><script type="text/javascript">
+	<!-- Basic Meta Tags -->
+  <meta charset="utf-8">
+  <title>Home - LabPal</title>
+	<meta name="description" content="LabPal is a Java library that simplifies the execution of computer experiments and the processing of its results">
+	<meta name="keywords" content="LabPal, experiments, reproducible, reproducibility, artifacts, reusability, benchmark, open science, artifact evaluation, batch, lab, plotting, interactive articles">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--[if (gte IE 9)|!(IE)]>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <![endif]--> 
+
+  <!-- Favicon -->
+  <link href="img/favicon.ico" rel="icon" type="image/png">
+
+  <!-- Styles -->
+  <link href="css/styles.css" rel="stylesheet">
+  <link href="css/bootstrap-override.css" rel="stylesheet">
+
+  <!-- Font Avesome Styles -->
+  <link href="css/font-awesome/font-awesome.css" rel="stylesheet">
+	<!--[if IE 7]>
+		<link href="css/font-awesome/font-awesome-ie7.min.css" rel="stylesheet">
+	<![endif]-->
+
+  <!-- FlexSlider Style -->
+  <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen">
+
+	<!-- Internet Explorer condition - HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->   
+
+<!-- Piwik --><script type="text/javascript">
   var _paq = _paq || [];
   // tracker methods like "setCustomDimension" should be called before "trackPageView"
   _paq.push(['trackPageView']);
@@ -29,175 +54,193 @@
     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
   })();
 </script><!-- End Piwik Code -->
-</head>
-<body class="layout-reverse theme-base-0e">
+</head>       
+<body>
+  <!-- Header -->
+  <header id="header">
+    <div class="container">
+      <div class="row t-container">
 
-    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
-     styles, `#sidebar-checkbox` for behavior. -->
-<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked><!-- Toggleable sidebar --><div class="sidebar" id="sidebar">
-  <div class="sidebar-item">
-  <img src="images/labpal-175.png" alt="LabPal"><p>LabPal is a library for running experiments on a computer and processing their results.</p>
+        <!-- Logo -->
+        <div class="span3">
+          <div class="logo">
+            <a href="index.html"><img src="img/logo-header.png" alt=""></a>
+          </div>            
+        </div>
+
+        <div class="span9">
+          <div class="row space60"></div>
+             <nav id="nav" role="navigation">
+               	<a href="#nav" title="Show navigation">Show navigation</a>
+	            <a href="#" title="Hide navigation">Hide navigation</a>
+	            <ul class="clearfix">
+	           	<li class="active"><a href="index.html" title="">Home</a></li>
+                <li><a href="quick-tutorial.html" title="">Quick tutorial</a></li>
+                <li><a href="features.html" title="">Features</a></li>
+                <li><a href="resources.html" title=""><span>Resources</span></a>
+                  <ul>
+                  <li><a href="documentation.html" title="">Documentation</a></li>
+                  <li><a href="videos.html" title="">Videos</a></li>
+                  <li><a href="examples.html" title="">Examples</a></li>
+                  </ul>
+                </li>
+                <li><a href="download.html" title="">Download</a>
+               </li>
+	           </ul>
+          </nav>
+         </div> 
+      </div>                                        
+       <div class="row space40"></div>
+          <div class="slider1 flexslider">  <!-- Slider -->
+            <ul class="slides">
+            		<li>
+    	    	    <img src="img/slider/4.jpg" alt="">
+    	    		</li>
+    	    		<li>
+    	    	    <img src="img/slider/5.jpg" alt="">
+    	    		</li>
+              		<li>
+    	    	    <img src="img/slider/1.jpg" alt="">
+    	    		</li>
+    	    		<li>
+    	    	    <img src="img/slider/2.jpg" alt="">
+    	    		</li>
+    	    		<li>
+    	    	    <img src="img/slider/3.jpg" alt="">
+    	    		</li>
+            </ul>
+          </div>  <!-- Slider End -->
+  </div> 
+</header>
+  <!-- Header End -->
+  <!-- Content -->
+  <div id="content">
+    <div class="container">
+       <div class="f-center">
+              <h2>Easily run experiments on a computer</h2>
+              <div class="head-info">
+                <p>To run experiments on a computer, you probably already write command-line scripts for various tasks: generating your data, saving it into text files, process and display them as plots or tables to include in a paper or a presentation.
+But soon enough, your handful of "quick and dirty" batch files becomes a bunch of arcane, poorly documented scripts that generate and pass around various kinds of obscure temporary files.
+LabPal is a Java library that allows you to quickly setup an environment for running these experiments, collating their results and processing them in various ways.</p>
+            </div>  
+       </div>
+       <!--<div class="f-hr"></div>-->
+      <div class="row space40"></div>
+      
+      <!-- Typography Row -->
+          <div class="row t-row">
+            <!-- Line -->
+            <div class="span12"><hr></div>
+            <div class="span9">
+              <h3>Start running experiments in minutes; it is free and open source</h3>
+            </div>
+            <div class="span3">
+              <!-- Button -->
+              <a href="download.html">
+              <div class="btn btn-blue f-right">
+                <!-- Title -->
+                <h3><i class="icon-signin hidden-tablet"></i> Download</h3>
+              </div>
+              </a>
+            </div>
+            <div class="space30 visible-phone"></div>
+            <!-- Line -->
+            <div class="span12"><hr></div>
+          </div>
+          <!-- Typography Row End-->
+      
+      
+      <div class="row">
+        <div class="span12">
+          <div class="row">
+            <!-- Service Container --> 
+            <div class="span4">
+              <!-- Service Icon --> 
+              <div class="ic-1"><i class="icon-lightbulb"></i></div>
+              <!-- Service Title --> 
+              <div class="title-1"><h4>Eliminate boilerplate code</h4></div>
+              <!-- Service Content --> 
+              <div class="text-1"> 
+                Design experiments at a high level of abstraction. Create, transform and manipulate data tables without the tedious parsing and shuffling around of temporary CSV files. Create plots from tables and export them to a variety of formats in a few lines of code.
+              </div>
+            </div>
+            <!-- Service Container End --> 
+            <div class="span4">
+              <div class="ic-1"><i class="icon-resize-small"></i></div>
+              <div class="title-1"><h4>Provenance tracking</h4></div>
+              <div class="text-1">         
+                Keep track of each unique datapoint generated by an experiment. Explore plots and tables interactively. Display the complete chain of transformations leading from raw data to any individual value computed by your lab. <em>No extra code needed.</em>
+              </div>
+            </div>
+            <div class="span4">
+              <div class="ic-1"><i class="icon-eye-open"></i></div>
+              <div class="title-1"><h4>Compatible with Code Ocean</h4></div>
+              <div class="text-1">
+                Bundle your experiments in a single stand-alone executable JAR file. Alternately, create a capsule in Code Ocean that runs your lab and exports all its data into a folder of static files: HTML, CSV, PDF, LaTeX.
+              </div>
+            </div>    
+          </div>   
+        </div>   
+      </div>
+
+      <div class="space40"></div>  
+                        
+      <div class="space50"></div> 
+       
+    </div>
   </div>
+  <!-- Content End -->
+  
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="span8">
+          <h3>About LabPal</h3>
+          LabPal is developed by <a href="http://liflab.ca/">Laboratoire d'informatique formelle</a><br/>
+          Université du Québec à Chicoutimi<br>
+          Chicoutimi, Québec G7H 2B1<br>
+          Canada<br>
+          <br>
+          <i class="icon-phone"></i>+01 418 545 5011<br>
+          <i class="icon-envelope"></i><a href="mailto:shalle@acm.org">shalle@acm.org</a><br>
+          <i class="icon-home"></i><a href="http://www.liflab.ca">liflab.ca</a>
+          
+          <div class="row space40"></div>  
 
-  <nav class="sidebar-nav"><a class="sidebar-nav-item" href="">Home</a>
-    <a class="sidebar-nav-item" href="manual/quick-tutorial.html">Quick tutorial</a>
-    <a class="sidebar-nav-item" href="videos.html">Videos</a>
-    <a class="sidebar-nav-item" href="https://www.gitbook.com/read/book/liflab/labpal-user-manual">User manual</a>
-    <a class="sidebar-nav-item" href="manual/index.html">Resources and documentation</a>
-    <a class="sidebar-nav-item" href="https://github.com/liflab/labpal/releases/latest">Download</a>
-    <a class="sidebar-nav-item" href="https://github.com/liflab/labpal">GitHub project</a>
-    <span class="sidebar-nav-item">Currently v2.8</span>
-  </nav><div class="sidebar-item">
-    <p>
-      &copy; 2014-2017 Sylvain Hall&eacute;. All rights reserved.
-    </p>
-  </div>
-</div>
-
-    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
-         content to avoid any CSS collisions with our real content. -->
-    <div class="wrap">
-      <div class="masthead">
-        <div class="container">
-          <h3 class="masthead-title">
-            <a href="" title="Home">LabPal</a>
-            <small>Run experiments on a computer</small>
-          </h3>
+          <a href="#" class="social-network sn2 behance"></a>
+          <a href="#" class="social-network sn2 facebook"></a>
+          <a href="#" class="social-network sn2 pinterest"></a>
+          <a href="#" class="social-network sn2 flickr"></a>
+          <a href="#" class="social-network sn2 dribbble"></a>
+          <a href="#" class="social-network sn2 lastfm"></a>
+          <a href="#" class="social-network sn2 forrst"></a>
+          <a href="#" class="social-network sn2 xing"></a>      
+        </div>
+      </div>
+      
+      <div class="row space50"></div>
+      <div class="row">
+        <div class="span6">
+          <div class="logo-footer">
+            Design by <a href="https://www.freshdesignweb.com">freshDesignweb</a>
+          </div>                       
+        </div>
+        <div class="span6 right">
+          &copy; 2020. All rights reserved.
         </div>
       </div>
 
-      <div class="container content">
-        <h2>Easily run experiments on a computer</h2>        
-
-<p>If you are doing research in Computer Science, it is very likely that every now and then, you need to run experiments on your computer. LabPal is a Java library that allows you to quickly setup an environment for running these experiments, collating their results and processing them in various ways: generating tables, data files, plots, etc.</p>
-
-<h3>Features</h3>
-
-<ul><li>All your experimental setup (including your code, its input files and library dependencies) can be bundled into a <strong>single, runnable JAR</strong> file, making it easy for anybody to download and re-run your experiments.</li>
-<li>The runnable JAR acts as a <strong>web server</strong>; when launched, a user can see all the experiments and control their execution using a web browser.</li>
-<li>Automated generation of PDF and PNG <strong>plots</strong> (using <a href="http://trac.erichseifert.de/gral">GRAL</a> or <a href="http://gnuplot.info">Gnuplot</a>) and <strong>tables</strong> (in beautified LaTeX, HTML or CSV).</li>
-<li>Each running experiment can update a visual <strong>progress bar</strong>; LabPal can even estimate and show the time remaining before they complete.</li>
-<li>A set of partially executed experiments can be saved to disk, then <strong>reloaded and resumed</strong> at a later time (or even on a different machine).</li>
-</ul><p>All these features are available in less than <strong>30 lines</strong> of Java code. See the example below!</p>
-
-<h3>Why use LabPal?</h3>
-
-<p>To run experiments on a computer, you probably already write command-line scripts for various tasks: generating your data, saving it into text files, process and display them as plots or tables to include in a paper or a presentation. But soon enough, your handful of "quick and dirty" batch files becomes a bunch of arcane, poorly documented scripts that generate and pass around various kinds of obscure temporary files. This situation brings two important problems in terms of research methodology:</p>
-
-<ul><li><p><strong>Problem 1: no one can reproduce your experiments.</strong> Too much cleaning up would be required to your setup before anybody else could understand how it works, so chances are you'll never make your scripts and data publicly available.</p></li>
-<li><p><strong>Problem 2: you waste your time.</strong> Most of your batch and data files are so specific to your experiments that even yourself are unlikely to reuse them on your next project; you'll start from scratch instead. This is not a very productive use of your time.</p></li>
-</ul><h3>Learn LabPal in five minutes</h3>
-
-<p>LabPal is easy enough to use that you can get up and running in a couple of minutes. Below is a minimal, but <strong>complete</strong> set of experiments for LabPal in less than 30 lines of code:</p>
-
-<pre><code>class MyLaboratory extends Laboratory {
-
-  public void setup() {
-    ExperimentTable t = new ExperimentTable("Number", "Time");
-    for (long n : new long[]{22602052667l, 42602051897l,
-      63612552733l, 84612554431l})
-      add(new MyExperiment(n), t);
-    add(t).add(new Scatterplot(t));
-  }
-
-  class MyExperiment extends Experiment {
-    public MyExperiment(long n) {
-      setInput("Number", n);
-    }
-    
-    public void execute() {
-      BigInteger n = new BigInteger(Long.toString(readLong("Number")));
-      long start = System.nanoTime();
-      boolean b = n.isProbablePrime(1);
-      long end = System.nanoTime();
-      write("Time", end - start);
-    }
-  }
-  
-  public static void main(String[] args) {
-    initialize(args, MyLaboratory.class);
-  }
-}
-</code>
-</pre>
-
-<p>In a nutshell:</p>
-
-<ul><li>Method <code>setup</code> creates a new <em>laboratory</em>, where we create a few <em>experiments</em> with different input parameters, assocaite them to a data <em>table</em>, and create a <em>plot</em> which will be drawn from the table.</li>
-<li>When instantiated, our experiments declare a number as an input parameter. When executed, the experiment reads this number, checks if it is prime, and writes as an output parameter the time it has taken to do that.</li>
-</ul><p>What do we get in exchange for these 30 lines of code? Compile and run this file using the <code>--web</code> command-line argument. You should see a message telling you to visit <code>http://localhost:21212/index</code> in your browser.</p>
-
-<p>If you go there, you'll see something like this:</p>
-
-<p>
-  <a href="index.png" title="Click to zoom">
-    <img src="index.png" alt="Home page" width="400"></a>
-</p>
-
-<p>The web interface contains a few pages, which you can access through the buttons at the top. Go to the <em>Experiments</em> page; there you see the list of the experiments that have been added to the lab, with the "Number" parameter that was assigned to each. The "thumbs up" icon indicates that they are ready to run.</p>
-
-<p>
-  <a href="experiments-before.png" title="Click to zoom">
-    <img src="experiments-before-crop.png" alt="Experiments page"></a>
-</p>
-
-<p>Select them all by clicking on the topmost checkbox, and then click on the <em>Add to queue</em> button at the bottom. You have now put these experiments in the queue, waiting to be executed. Now visit the <em>Lab assistant</em> page: this is where you manage this queue.</p>
-
-<p>
-  <a href="assistant.png" title="Click to zoom">
-    <img src="assistant-crop.png" alt="Assistant page"></a>
-</p>
-
-<p>Click on <em>Start the assistant</em> to launch the batch execution of all the experiments you selected. These experiments run very quickly; if you go to the to the <em>Status</em> page, you'll see that they are all done:</p>
-
-<p>
-  <a href="status.png" title="Click to zoom">
-    <img src="status.png" alt="Status page" width="400"></a>
-</p>
-
-<p>The experiments have produced results, which we have put in a table. Go to the <em>Tables</em> page, and click on the (only) table you see there, called "Table 1". There you see the results of the experiments:</p>
-
-<p>
-  <a href="table.png" title="Click to zoom">
-    <img src="table-crop.png" alt="Table page"></a>
-</p>
-
-<p>In the tables page, note that you can also export the contents of that table in various formats (HTML, CSV, and LaTeX).</p>
-
-<p>Finally, go to the <em>Plots</em> page to see the plot that has been created from that table:</p>
-
-<p>
-  <a href="plots.png" title="Click to zoom">
-    <img src="plots.png" alt="Plots page" width="400"></a>
-</p>
-
-<p>You see the plot that was created; click on it to view it full size. You can also export the plot as a PDF file; a button at the top also offers you the option to bundle all the available plots into a single, multi-page PDF.</p>
-
-<h3>That's it! Or not...</h3>
-
-<p>These are just some of the features you get for writing these 30 lines of code. Among other things you get for free:</p>
-
-<ul><li>If you created your lab using our <a href="https://github.com/liflab/labpal-project">template project</a>, you can use Ant to compile and generate a <strong>stand-alone JAR</strong> file of your lab you can give to anybody so they can run these experiments by themselves (just type <code>ant</code> and you are done).</li>
-<li>For a few more lines of code, the input/output parameters can come with a small <strong>textual description</strong> that is displayed in the web interface, so that a user can understand the meaning of each data element. You can do the same with the lab itself, and each experiment it contains.</li>
-<li>You can perform transformations to the tables before plotting them, and also customize the display of your plots (scales, colors, labels) very easily.</li>
-</ul><h3>I want to use LabPal!</h3>
-
-<ul><li>Just <a href="https://github.com/liflab/labpal/releases/latest">download the latest release</a> and include it in your classpath.</li>
-<li>Or download our <a href="https://github.com/liflab/labpal-project">template project</a> that includes a few extra features (like a boilerplate Readme and Ant build script).</li>
-</ul><p>If you want to know more about LabPal's features:</p>
-
-<ul><li>Read the short <a href="manual/quick-tutorial.html">tutorial</a></li>
-<li>Look at our <a href="https://github.com/liflab/labpal/tree/master/Source/Examples/src">lab examples</a> to learn how to use various features</li>
-<li>Look at our slightly longer <a href="manual/">instructions</a></li>
-<li>Consult the online <a href="doc/">API documentation</a></li>
-</ul><h3>About LabPal</h3>
-
-<p>LabPal was developed by <a href="http://leduotang.ca/sylvain">Sylvain Hall&eacute;</a>, Associate Processor at <a href="http://www.uqac.ca">Universit&eacute; du Qu&eacute;bec &agrave; Chicoutimi</a>, Canada. Pr. Hall&eacute; is also the head of <a href="http://liflab.ca">LIF</a>, a research lab where LabPal is extensively used for the processing of experimental results.</p>
-
-<!-- :wrap=soft:mode=markdown: -->      </div>
     </div>
+  </footer>
+  <!-- Footer End -->
 
-    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+  <!-- JavaScripts -->
+  <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script> 
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>  
+  <script type="text/javascript" src="js/functions.js"></script>
+  <script type="text/javascript" defer src="js/jquery.flexslider.js"></script>
 
-  </body>
+</body>
 </html>
+  

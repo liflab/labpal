@@ -1,22 +1,46 @@
-<!DOCTYPE HTML>
-<!DOCTYPE html><html lang="en-us">
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html class="not-ie" lang="en"> <!--<![endif]-->
+<!--
+	ucorpora by freshdesignweb.com
+	Twitter: https://twitter.com/freshdesignweb
+	https://www.freshdesignweb.com/ucorpora/
+-->
 <head>
-<link href="http://gmpg.org/xfn/11" rel="profile">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<!-- Enable responsiveness on mobile devices--><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<meta name="author" content="Sylvain Hall&eacute;">
-<title>Videos - LabPal</title>
-<!-- CSS --><link rel="stylesheet" media="screen" href="css/poole.css">
-<link rel="stylesheet" media="screen,print" href="css/syntax.css">
-<link rel="stylesheet" media="screen" href="css/lanyon.css">
-<link rel="stylesheet" media="screen" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
-<link rel="stylesheet" media="screen" href="css/custom.css">
-<link rel="stylesheet" media="print" href="css/print.css">
-<!-- Icons --><link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-precomposed.png">
-<link rel="shortcut icon" href="favicon.ico">
-<!-- Syntax highlighting --><link rel="stylesheet" href="assets/js/styles/default.css">
-<script src="assets/js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script><!-- RSS --><!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"> --><!-- Piwik --><script type="text/javascript">
+	<!-- Basic Meta Tags -->
+  <meta charset="utf-8">
+  <title>Videos - LabPal</title>
+	<meta name="description" content="LabPal is a Java library that simplifies the execution of computer experiments and the processing of its results">
+	<meta name="keywords" content="LabPal, experiments, reproducible, reproducibility, artifacts, reusability, benchmark, open science, artifact evaluation, batch, lab, plotting, interactive articles">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--[if (gte IE 9)|!(IE)]>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <![endif]--> 
+
+  <!-- Favicon -->
+  <link href="img/favicon.ico" rel="icon" type="image/png">
+
+  <!-- Styles -->
+  <link href="css/styles.css" rel="stylesheet">
+  <link href="css/bootstrap-override.css" rel="stylesheet">
+
+  <!-- Font Avesome Styles -->
+  <link href="css/font-awesome/font-awesome.css" rel="stylesheet">
+	<!--[if IE 7]>
+		<link href="css/font-awesome/font-awesome-ie7.min.css" rel="stylesheet">
+	<![endif]-->
+
+  <!-- FlexSlider Style -->
+  <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen">
+
+	<!-- Internet Explorer condition - HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->   
+<!-- Piwik --><script type="text/javascript">
   var _paq = _paq || [];
   // tracker methods like "setCustomDimension" should be called before "trackPageView"
   _paq.push(['trackPageView']);
@@ -29,54 +53,137 @@
     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
   })();
 </script><!-- End Piwik Code -->
-</head>
-<body class="layout-reverse theme-base-0e">
+</head>       
+<body>
+  <!-- Header -->
+  <header id="header">
+    <div class="container">
+      <div class="row t-container">
 
-    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
-     styles, `#sidebar-checkbox` for behavior. -->
-<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked><!-- Toggleable sidebar --><div class="sidebar" id="sidebar">
-  <div class="sidebar-item">
-  <img src="images/labpal-175.png" alt="LabPal"><p>LabPal is a library for running experiments on a computer and processing their results.</p>
-  </div>
+        <!-- Logo -->
+        <div class="span3">
+          <div class="logo">
+            <a href="index.html"><img src="img/logo-header.png" alt=""></a>
+          </div>            
+        </div>
 
-  <nav class="sidebar-nav"><a class="sidebar-nav-item" href="">Home</a>
-    <a class="sidebar-nav-item" href="manual/quick-tutorial.html">Quick tutorial</a>
-    <a class="sidebar-nav-item" href="videos.html">Videos</a>
-    <a class="sidebar-nav-item" href="https://www.gitbook.com/read/book/liflab/labpal-user-manual">User manual</a>
-    <a class="sidebar-nav-item" href="manual/index.html">Resources and documentation</a>
-    <a class="sidebar-nav-item" href="https://github.com/liflab/labpal/releases/latest">Download</a>
-    <a class="sidebar-nav-item" href="https://github.com/liflab/labpal">GitHub project</a>
-    <span class="sidebar-nav-item">Currently v2.8</span>
-  </nav><div class="sidebar-item">
-    <p>
-      &copy; 2014-2017 Sylvain Hall&eacute;. All rights reserved.
-    </p>
-  </div>
-</div>
+        <div class="span9">
+          <div class="row space60"></div>
+             <nav id="nav" role="navigation">
+               	<a href="#nav" title="Show navigation">Show navigation</a>
+	            <a href="#" title="Hide navigation">Hide navigation</a>
+	            <ul class="clearfix">
+	           	<li><a href="index.html" title="">Home</a></li>
+                <li><a href="quick-tutorial.html" title="">Quick tutorial</a></li>
+                <li><a href="features.html" title="">Features</a></li>
+                <li class="active"><a href="resources.html" title=""><span>Resources</span></a>
+                  <ul>
+                  <li><a href="documentation.html" title="">Documentation</a></li>
+                  <li class="active"><a href="videos.html" title="">Videos</a></li>
+                  <li><a href="examples.html" title="">Examples</a></li>
+                  </ul>
+                </li>
+                <li><a href="download.html" title="">Download</a>
+               </li>
+	           </ul>
+          </nav>
+         </div> 
+      </div> 
+       <div class="row space40"></div>
+  </div> 
+</header><!-- Header End -->
+<!-- Titlebar
+================================================== -->
+<section id="titlebar">
+	<!-- Container -->
+	<div class="container">
+	
+		<div class="eight columns">
+			<h3 class="left">Videos</h3>
+		</div>
+		
+		<div class="eight columns">
+			<nav id="breadcrumbs">
+				<ul>
+					<li>You are here:</li>
+					<li><a href="index.html">Home</a></li>
+					<li><a href="resources.html">Resources</a></li>
+					<li>Videos</li>
+				</ul>
+			</nav>
+		</div>
 
-    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
-         content to avoid any CSS collisions with our real content. -->
-    <div class="wrap">
-      <div class="masthead">
-        <div class="container">
-          <h3 class="masthead-title">
-            <a href="" title="Home">LabPal</a>
-            <small>Run experiments on a computer</small>
-          </h3>
+	</div>
+	<!-- Container / End -->
+</section>
+
+  <!-- Content -->
+  <div id="content">
+    <div class="container">
+
+      <div class="row">
+        <div class="span12">
+          <p>Here are a few videos that showcase the various features available in LabPal.</p>
+
+<iframe width="640" height="360" src="https://www.youtube.com/embed/videoseries?list=PL_hZ2Z4_Mqpin4Dd9Y9GRheLAlw23gGRf" frameborder="0" allowfullscreen="true"></iframe>
+   
+
+
+                          
+  <!-- Content End -->
+  </div> </div> </div> </div> </div> </div> </div>
+  
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="span8">
+          <h3>About LabPal</h3>
+          LabPal is developed by <a href="http://liflab.ca/">Laboratoire d'informatique formelle</a><br/>
+          Université du Québec à Chicoutimi<br>
+          Chicoutimi, Québec G7H 2B1<br>
+          Canada<br>
+          <br>
+          <i class="icon-phone"></i>+01 418 545 5011<br>
+          <i class="icon-envelope"></i><a href="mailto:shalle@acm.org">shalle@acm.org</a><br>
+          <i class="icon-home"></i><a href="http://www.liflab.ca">liflab.ca</a>
+          
+          <div class="row space40"></div>  
+
+          <a href="#" class="social-network sn2 behance"></a>
+          <a href="#" class="social-network sn2 facebook"></a>
+          <a href="#" class="social-network sn2 pinterest"></a>
+          <a href="#" class="social-network sn2 flickr"></a>
+          <a href="#" class="social-network sn2 dribbble"></a>
+          <a href="#" class="social-network sn2 lastfm"></a>
+          <a href="#" class="social-network sn2 forrst"></a>
+          <a href="#" class="social-network sn2 xing"></a>      
+        </div>
+      </div>
+      
+      <div class="row space50"></div>
+      <div class="row">
+        <div class="span6">
+          <div class="logo-footer">
+            Design by <a href="https://www.freshdesignweb.com">freshDesignweb</a>
+          </div>                       
+        </div>
+        <div class="span6 right">
+          &copy; 2020. All rights reserved.
         </div>
       </div>
 
-      <div class="container content">
-        <h2>Videos</h2>        
-
-<p>Here are a few videos that showcase the various features available in LabPal.</p>
-
-<iframe width="640" height="360" src="https://www.youtube.com/embed/videoseries?list=PL_hZ2Z4_Mqpin4Dd9Y9GRheLAlw23gGRf" frameborder="0" allowfullscreen="true"></iframe>
-
-<!-- :wrap=soft:mode=markdown: -->      </div>
     </div>
+  </footer>
+  <!-- Footer End -->
 
-    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+  <!-- JavaScripts -->
+  <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script> 
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>  
+  <script type="text/javascript" src="js/functions.js"></script>
+  <script type="text/javascript" src="js/jquery.isotope.min.js"></script>
+  <script type="text/javascript" defer src="js/jquery.flexslider.js"></script>
 
-  </body>
+</body>
 </html>
+  

@@ -135,7 +135,7 @@ public class Region
 	 */
 	public Region set(String name, Number value)
 	{
-		Region reg = new Region(this);
+		Region reg = getRegion(this);
 		reg.set(name, new JsonNumber(value));
 		return reg;
 	}
@@ -275,7 +275,7 @@ public class Region
 	 */
 	public Region project(String ... names)
 	{
-		Region r = new Region();
+		Region r = getEmptyRegion();
 		for (String name : names)
 		{
 			r.m_ranges.put(name, m_ranges.get(name));
@@ -414,7 +414,7 @@ public class Region
 		List<JsonElement> values = m_ranges.get(name);
 		for (JsonElement v : values)
 		{
-			Region new_r = new Region(this);
+			Region new_r = getRegion(this);
 			new_r.set(name, v);
 			for (Region r : new_r.all(index + 1, names))
 			{
@@ -505,4 +505,23 @@ public class Region
 	{
 	  return m_ranges.containsKey(name);
 	}
+	
+	/**
+	 * Gets a new instance of an empty region
+	 * @return The region
+	 */
+	protected Region getEmptyRegion()
+	{
+	  return new Region();
+	}
+	
+	 /**
+   * Gets a new instance of a region by copying from another
+   * @param r The region to copy from
+   * @return The region
+   */
+  protected Region getRegion(Region r)
+  {
+    return new Region(r);
+  }
 }

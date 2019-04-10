@@ -11,7 +11,7 @@
 <head>
 	<!-- Basic Meta Tags -->
   <meta charset="utf-8">
-  <title>Videos - LabPal</title>
+  <title>Screenshots - LabPal</title>
 	<meta name="description" content="LabPal is a Java library that simplifies the execution of computer experiments and the processing of its results">
 	<meta name="keywords" content="LabPal, experiments, reproducible, reproducibility, artifacts, reusability, benchmark, open science, artifact evaluation, batch, lab, plotting, interactive articles">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -79,8 +79,8 @@
                 <li class="active"><a href="resources.html" title=""><span>Resources</span></a>
                   <ul>
                   <li><a href="documentation.html" title="">Documentation</a></li>
-                  <li><a href="screenshots.html" title="">Screenshots</a></li>
-                  <li class="active"><a href="videos.html" title="">Videos</a></li>
+                  <li class="active"><a href="screenshots.html" title="">Screenshots</a></li>
+                  <li><a href="videos.html" title="">Videos</a></li>
                   <li><a href="examples.html" title="">Examples</a></li>
                   </ul>
                 </li>
@@ -100,7 +100,7 @@
 	<div class="container">
 	
 		<div class="eight columns">
-			<h3 class="left">Videos</h3>
+			<h3 class="left">Screenshots</h3>
 		</div>
 		
 		<div class="eight columns">
@@ -109,7 +109,7 @@
 					<li>You are here:</li>
 					<li><a href="index.html">Home</a></li>
 					<li><a href="resources.html">Resources</a></li>
-					<li>Videos</li>
+					<li>Screenshots</li>
 				</ul>
 			</nav>
 		</div>
@@ -121,15 +121,116 @@
   <!-- Content -->
   <div id="content">
     <div class="container">
+    
+    <ul>
+    <li><a href="#web">Stand-alone web interface</a></li>
+    <li><a href="#codeocean">Code Ocean integration</a></li>
+    </ul>
 
       <div class="row">
         <div class="span12">
-          <p>Here are a few videos that showcase the various features available in LabPal.</p>
+        <h4>Stand-alone web interface</h4><a name="web"></a>
+        <p>LabPal can run in stand-alone mode; it provides a friendly user interface to control experiments and view their results in a local web browser.</p>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="span6">
+			<figure>
+			<a href="img/screenshots/Experiments-crop.png"><img alt="Click to view full size image" src="img/screenshots/Experiments-crop.png" alt="Screenshot" style="max-width:70%"/></a>
+			<figcaption>The list of experiments. Each experiment can be individually queued, and its current status is shown with an icon.</figcaption>
+			</figure>
+        </div>
+        <div class="span6">
+			<figure>
+			<a href="img/screenshots/Table-crop.png"><img src="img/screenshots/Table-crop.png" alt="Screenshot" style="max-width:70%"/></a>
+			<figcaption>A table created by fetching parameters from a set of experiments. The table is dynamically updated when running experiments produce new data points.</figcaption>
+			</figure>
+        </div>
+      </div>
 
-<iframe width="640" height="360" src="https://www.youtube.com/embed/videoseries?list=PL_hZ2Z4_Mqpin4Dd9Y9GRheLAlw23gGRf" frameborder="0" allowfullscreen="true"></iframe>
+    <div class="row">
+        <div class="span6">
+        <figure>
+   <a href="img/screenshots/Plots-crop.png"><img src="img/screenshots/Plots-crop.png" alt="Screenshot" style="max-width:70%"/></a>
+   <figcaption>Various plots created by associating them to data tables. Each plot can be exported in various formats, including PDF and GnuPlot. The plots can also be exported as a multi-page PDF bundle.</figcaption>
+   </figure>
+        </div>
+        <div class="span6">
+        <figure>
+   <a href="img/screenshots/Table-explanation-crop.png"><img src="img/screenshots/Table-explanation-crop.png" alt="Screenshot" style="max-width:70%"/></a>
+   <figcaption>Tables are interactive. Clicking on a cell displays the <em>provenance tree</em> of this value.</figcaption>
+   </figure>
+        </div>
+   </div>
    
+   
+   
+    <div class="row">
+        <div class="span6">
+        <figure>
+   <a href="img/screenshots/provenance-graph.png"><img src="img/screenshots/provenance-graph.png" alt="Screenshot" style="max-width:70%"/></a>
+   <figcaption>A provenance tree, which shows how an individual data point (bottom) is computed from intermediate values. This tree is interactive; clicking on a node brings the user to the experiment or table containing a particular value.</figcaption>
+   </figure>
+        </div>
+        <div class="span6">
+        <figure>
+   <a href="img/screenshots/Table-highlight.png"><img src="img/screenshots/Table-highlight.png" alt="Screenshot" style="max-width:70%"/></a>
+   <figcaption>A cell in a table is highlighted after clicking on the corresponding node in a provenance tree.</figcaption>
+   </figure>
+        </div>
+   </div>
+   
+ <div class="row">
+        <div class="span6">
+        <figure>
+   <a href="img/screenshots/Experiment-highlight-crop.png"><img src="img/screenshots/Experiment-highlight-crop.png" alt="Screenshot" style="max-width:70%"/></a>
+   <figcaption>Data points can be traced back all the way to the individual experiment instance that produced each value contributing to the result.</figcaption>
+   </figure>
+        </div>
+        <div class="span6">
+        <figure>
+   <a href="img/screenshots/Linked_PDF.png"><img src="img/screenshots/Linked_PDF.png" alt="Screenshot" style="max-width:70%"/></a>
+   <figcaption>Tables can be exported to LaTeX. The resulting PDF keeps its interactive hyperlinks on table cells leading to the provenance tree of each cell.</figcaption>
+   </figure>
+        </div>
+   </div>
 
-
+   
+   <div class="row">
+        <div class="span12">
+        <h4>Code Ocean integration</h4><a name="codeocean"></a>
+        
+        <p>LabPal can also run inside the Code Ocean platform. When run in batch mode, all experiments are executed and
+        the plots, tables and other files are exported to a <tt>results</tt> folder that can be browsed interactively
+        using a static version of the web interface.</p>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="span6">
+        <figure>
+   <a href="img/screenshots/CO_plots.png"><img src="img/screenshots/CO_plots.png" alt="Screenshot" style="max-width:70%"/></a>
+   <figcaption>The plots produced by LabPal, viewed inside the Code Ocean interface.</figcaption>
+   </figure>
+        </div>
+        <div class="span6">
+        <figure>
+   <a href="img/screenshots/Linked_PDF.png"><img src="img/screenshots/CO_tree.png" alt="Screenshot" style="max-width:70%"/></a>
+   <figcaption>A provenance tree produced by LabPal, viewed inside the Code Ocean interface. As in the stand-alone interface,
+   nodes in this tree are clickable.</figcaption>
+   </figure>
+        </div>
+   </div>
+   
+   <div class="row">
+        <div class="span6">
+        <figure>
+   <a href="img/screenshots/CO_script.png"><img src="img/screenshots/CO_script.png" alt="Screenshot" style="max-width:70%"/></a>
+   <figcaption>Running LabPal within Code Ocean is as simple as writing a two-line start script.</figcaption>
+   </figure>
+        </div>
+   </div>
                           
   <!-- Content End -->
   </div> </div> </div> </div> </div> </div> </div>

@@ -26,7 +26,7 @@ import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import ca.uqac.lif.azrael.SerializerException;
+import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
@@ -103,7 +103,7 @@ public class LocalBatchRunner extends BatchRunner
       FileHelper.writeFromString(p.toFile(), lab);
       m_stdout.println("Lab status saved to " + p.toString());
     }
-    catch (SerializerException e)
+    catch (PrintException e)
     {
       m_stdout.println("Lab data could not be saved");
     }

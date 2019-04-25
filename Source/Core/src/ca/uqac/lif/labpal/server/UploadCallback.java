@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import ca.uqac.lif.azrael.SerializerException;
+import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.FileHelper;
@@ -78,7 +78,7 @@ public class UploadCallback extends WebCallback
       {
         new_lab = m_lab.getFromZip(lab_file_contents);
       }
-      catch (SerializerException e)
+      catch (ReadException e)
       {
         // Baaaad request
         doBadRequest(cbr, "The file's contents could not be loaded into the "
@@ -117,7 +117,7 @@ public class UploadCallback extends WebCallback
       {
         new_lab = m_lab.loadFromString(json);
       }
-      catch (SerializerException e)
+      catch (ReadException e)
       {
         // Baaaad request
         doBadRequest(cbr, "The file's contents could not be loaded into the "

@@ -1,5 +1,6 @@
 package ca.uqac.lif.labpal;
 
+import ca.uqac.lif.json.JsonBoolean;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
@@ -127,6 +128,10 @@ public abstract class Namer
     if (json_value instanceof JsonNumber)
     {
       return createFragment(dim_name, ((JsonNumber) json_value).numberValue());
+    }
+    else if (json_value instanceof JsonBoolean)
+    {
+      return createFragment(dim_name, ((JsonBoolean) json_value).toString());
     }
     else
     {

@@ -26,7 +26,7 @@
   <name>LabPal</name>
   
   <!-- The project's version number -->
-  <version>2.11.2</version>
+  <version>2.11.3</version>
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
@@ -80,9 +80,10 @@
       Azrael. Serialization library
       -->
       <name>Azrael</name>
-      <classname>ca.uqac.lif.azrael.Serializer</classname>
+      <classname>ca.uqac.lif.azrael.ObjectPrinter</classname>
       <files>
-        <zip>https://github.com/sylvainhalle/Azrael/releases/download/v0.7.3-alpha/azrael-0.7.3-alpha.zip</zip>
+        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v2.0/azrael-core.jar</jar>
+        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v2.0/azrael-json.jar</jar>
       </files>
 	<bundle>true</bundle>
     </dependency>

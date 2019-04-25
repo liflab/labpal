@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import ca.uqac.lif.azrael.SerializerException;
+import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.labpal.LabAssistant;
@@ -61,7 +61,7 @@ public class DownloadCallback extends WebCallback
     {
       lab_contents = m_lab.saveToString();
     }
-    catch (SerializerException e)
+    catch (PrintException e)
     {
       // Baaad request
       doBadRequest(response, "The lab's contents could not be saved");

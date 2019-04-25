@@ -20,7 +20,7 @@ package ca.uqac.lif.labpal.server;
 import java.io.IOException;
 import java.io.InputStream;
 
-import ca.uqac.lif.azrael.SerializerException;
+import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.LabAssistant;
@@ -60,7 +60,7 @@ public class MergeCallback extends WebCallback
       cbr.setContents("The contents of the request could not be read");
       return cbr;
     }
-    catch (SerializerException e)
+    catch (ReadException e)
     {
       cbr.setContents(e.getMessage());
       return cbr;

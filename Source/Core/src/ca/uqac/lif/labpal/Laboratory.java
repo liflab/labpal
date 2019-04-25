@@ -36,10 +36,12 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import ca.uqac.lif.azrael.GenericSerializer;
-import ca.uqac.lif.azrael.SerializerException;
-import ca.uqac.lif.azrael.json.JsonSerializer;
+import ca.uqac.lif.azrael.json.JsonPrinter;
+import ca.uqac.lif.azrael.json.JsonReader;
+import ca.uqac.lif.azrael.ObjectPrinter;
+import ca.uqac.lif.azrael.ObjectReader;
+import ca.uqac.lif.azrael.PrintException;
+import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonMap;
@@ -212,11 +214,16 @@ public abstract class Laboratory implements OwnershipManager
    * A counter for auto-incrementing experiment IDs
    */
   private transient int m_idCounter = 1;
-
+  
   /**
-   * The serializer used to save/load the assistant's status
+   * The serializer used to load the lab's status
    */
-  private transient JsonSerializer m_serializer;
+  private transient ObjectPrinter<JsonElement> m_printer;
+  
+  /**
+   * The serializer used to load the lab's status
+   */
+  private transient ObjectReader<JsonElement> m_reader;
 
   /**
    * The arguments parsed from the command line
@@ -275,8 +282,9 @@ public abstract class Laboratory implements OwnershipManager
     m_macros = new HashSet<Macro>();
     m_assistant = null;
     m_serializableClasses = new HashSet<Class<?>>();
-    m_serializer = new JsonSerializer();
-    m_serializer.addClassLoader(ca.uqac.lif.labpal.Laboratory.class.getClassLoader());
+    m_printer = new JsonPrinter();
+    m_reader = new JsonReader();
+    m_reader.addClassLoader(ca.uqac.lif.labpal.Laboratory.class.getClassLoader());
     m_reporter = new ResultReporter(this);
     m_filter = createFilter("");
     if (FileHelper.internalFileExists(getClass(), s_descriptionDefaultFilename))
@@ -678,12 +686,12 @@ public abstract class Laboratory implements OwnershipManager
    * @param s
    *          The JSON string with the assistant's state
    * @return The lab, or null if some error occurred
-   * @throws SerializerException
+   * @throws ReadException
    *           If the deserialization could not be done
    * @throws JsonParseException
    *           If the JSON parsing could not be done
    */
-  public Laboratory loadFromString(String s) throws SerializerException, JsonParseException
+  public Laboratory loadFromString(String s) throws ReadException, JsonParseException
   {
     JsonParser jp = new JsonParser();
     JsonElement je = jp.parse(s);
@@ -697,12 +705,12 @@ public abstract class Laboratory implements OwnershipManager
    * @param je
    *          The JSON element with the assistant's state
    * @return The lab, or null if some error occurred
-   * @throws SerializerException
+   * @throws ReadException
    *           If the deserialization could not be done
    */
-  public synchronized Laboratory loadFromJson(JsonElement je) throws SerializerException
+  public synchronized Laboratory loadFromJson(JsonElement je) throws ReadException
   {
-    Laboratory lab = (Laboratory) m_serializer.deserializeAs(je, this.getClass());
+    Laboratory lab = (Laboratory) m_reader.read(je);
     lab.m_isDeserialized = true;
     Table.resetCounter();
     Macro.resetCounter();
@@ -717,10 +725,10 @@ public abstract class Laboratory implements OwnershipManager
    * 
    * @return The JSON string with the assistant's state, or null if some error
    *         occurred
-   * @throws SerializerException Thrown if the serialization of the lab
+   * @throws PrintException Thrown if the serialization of the lab
    * could not be done for some reason
    */
-  public String saveToString() throws SerializerException
+  public String saveToString() throws PrintException
   {
     JsonElement je = saveToJson();
     if (je != null)
@@ -733,14 +741,14 @@ public abstract class Laboratory implements OwnershipManager
   /**
    * Saves the state of the lab to a JSON element
    * 
-   * @return The JSON element with the assistant's state, or null if some error
+   * @return The JSON element with the lab state, or null if some error
    *         occurred
    * @throws SerializerException Thrown if the serialization of the lab
    * could not be done for some reason
    */
-  public JsonElement saveToJson() throws SerializerException
+  public JsonElement saveToJson() throws PrintException
   {
-    JsonElement js_out = m_serializer.serializeAs(this, this.getClass());
+    JsonElement js_out = m_printer.print(this);
     return js_out;
   }
 
@@ -756,7 +764,7 @@ public abstract class Laboratory implements OwnershipManager
     if (clazz != null)
     {
       m_serializableClasses.add(clazz);
-      m_serializer.addClassLoader(clazz.getClassLoader());
+      m_reader.addClassLoader(clazz.getClassLoader());
     }
     return this;
   }
@@ -799,13 +807,13 @@ public abstract class Laboratory implements OwnershipManager
    *          The input stream
    * @return A new lab instance
    * @throws IOException Thrown if stream cannot be read
-   * @throws SerializerException Thrown if input stream does not contain
+   * @throws ReadException Thrown if input stream does not contain
    * a valid lab instance
    * @throws JsonParseException Thrown if input stream does not
    * contain valid JSON
    */
   public final Laboratory loadFromZip(InputStream is)
-      throws IOException, SerializerException, JsonParseException
+      throws IOException, ReadException, JsonParseException
   {
     ZipInputStream zis = new ZipInputStream(is);
     ZipEntry entry;
@@ -828,13 +836,13 @@ public abstract class Laboratory implements OwnershipManager
    * @param is
    *          The input stream
    * @return A new lab instance
-   * @throws SerializerException Thrown if input stream does not contain
+   * @throws ReadException Thrown if input stream does not contain
    * a valid lab instance
    * @throws JsonParseException Thrown if input stream does not
    * contain valid JSON
    */
   public final Laboratory loadFromJson(InputStream is)
-      throws SerializerException, JsonParseException
+      throws ReadException, JsonParseException
   {
     String json = FileHelper.readToString(is);
     return loadFromString(json);
@@ -870,7 +878,7 @@ public abstract class Laboratory implements OwnershipManager
         System.err.println("WARNING: file " + filename
             + " could not be read. An empty lab will be started instead.");
       }
-      catch (SerializerException e)
+      catch (ReadException e)
       {
         System.err
         .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
@@ -893,7 +901,7 @@ public abstract class Laboratory implements OwnershipManager
         System.err.println(
             "WARNING: file " + filename + " not found. An empty lab will be started instead.");
       }
-      catch (SerializerException e)
+      catch (ReadException e)
       {
         System.err
         .println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
@@ -1430,7 +1438,7 @@ public abstract class Laboratory implements OwnershipManager
    */
   public final Class<?> findClass(String name) throws ClassNotFoundException
   {
-    return m_serializer.findClass(name);
+    return m_reader.findClass(name);
   }
 
   /**
@@ -1683,7 +1691,7 @@ public abstract class Laboratory implements OwnershipManager
   protected static void showVersionInfo(AnsiPrinter out)
   {
     out.append(getCliHeader()).append("\n");
-    out.append("Azrael version:   ").append(GenericSerializer.getVersionString()).append("\n");
+    out.append("Azrael version:   ").append(ObjectPrinter.getVersionString()).append("\n");
     out.append("Jerrydog version: ").append(Server.getVersionString()).append("\n");
     out.append("MTNP version:     ").append(DataFormatter.getVersionString()).append("\n");
   }
@@ -1717,7 +1725,7 @@ public abstract class Laboratory implements OwnershipManager
         System.err.println(
             "WARNING: lab data could not be loaded from internal file.\nAn empty lab will be started instead.");
       }
-      catch (SerializerException e)
+      catch (ReadException e)
       {
         System.err.println(
             "WARNING: lab data could not be loaded from internal file.\nAn empty lab will be started instead.");
@@ -1807,10 +1815,10 @@ public abstract class Laboratory implements OwnershipManager
    * @return The byte array with the contents of the zip file
    * @throws IOException
    *           Thrown if the creation of the zip failed for some reason
-   * @throws SerializerException
+   * @throws PrintException
    *           Thrown if the serialization of the lab failed for some reason
    */
-  public byte[] saveToZip() throws IOException, SerializerException
+  public byte[] saveToZip() throws IOException, PrintException
   {
     String filename = Server.urlEncode(getTitle());
     String lab_contents = saveToString();
@@ -1831,13 +1839,13 @@ public abstract class Laboratory implements OwnershipManager
    * @param lab_file_contents An array of bytes containing the zip file
    * @return The lab
    * @throws IOException Thrown if the zip file cannot be read
-   * @throws SerializerException Thrown if input stream does not contain
+   * @throws ReadException Thrown if input stream does not contain
    * a valid lab instance
    * @throws JsonParseException Thrown if input stream does not
    * contain valid JSON
    */
   public Laboratory getFromZip(byte[] lab_file_contents)
-      throws IOException, SerializerException, JsonParseException
+      throws IOException, ReadException, JsonParseException
   {
     ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(lab_file_contents));
     ZipEntry entry;

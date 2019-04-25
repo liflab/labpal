@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import ca.uqac.lif.azrael.SerializerException;
+import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.labpal.server.MergeCallback;
 
 /**
@@ -213,7 +213,7 @@ public class ResultReporter implements Runnable
 		{
 			throw new ReporterException(e);
 		}
-		catch (SerializerException e)
+		catch (PrintException e)
     {
       throw new ReporterException(e);
     }

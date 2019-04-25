@@ -21,8 +21,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import ca.uqac.lif.azrael.SerializerException;
+import ca.uqac.lif.azrael.PrintException;
+import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Experiment.Status;
@@ -102,7 +102,7 @@ public class LabPalTui
 			{
 				m_lab = lab.loadFromString(contents);
 			} 
-			catch (SerializerException e) 
+			catch (ReadException e) 
 			{
 			} 
 			catch (JsonParseException e) 
@@ -314,7 +314,7 @@ public class LabPalTui
 			  FileHelper.writeFromString(new File(filename), json_string);
 	      printer.print("Wrote " + json_string.length() + " bytes\n");
 			}
-			catch (SerializerException e)
+			catch (PrintException e)
 			{
 			  printer.print("Could not save the lab's contents");
 			}

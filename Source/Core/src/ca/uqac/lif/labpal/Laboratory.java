@@ -98,7 +98,7 @@ public abstract class Laboratory implements OwnershipManager
   /**
    * The revision version number
    */
-  private static final transient int s_revisionVersionNumber = 2;
+  private static final transient int s_revisionVersionNumber = 3;
 
   /**
    * The set of experiments this lab has access to

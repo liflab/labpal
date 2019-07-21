@@ -287,6 +287,11 @@ public class ExperimentPageCallback extends TemplatePageCallback
       }
       out.append("</table>\n");
     }
+    else
+    {
+      // Fallback for unknown types 
+      out.append(e.toString());
+    }
     return out;
   }
 

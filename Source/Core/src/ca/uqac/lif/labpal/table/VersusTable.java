@@ -117,6 +117,7 @@ public class VersusTable extends Table
 			te.put(m_captionY, y);
 			te.addDependency(m_captionX, new ExperimentValue(pair.getExperimentX(), m_parameter));
 			te.addDependency(m_captionY, new ExperimentValue(pair.getExperimentY(), m_parameter));
+			table.add(te);
 		}
 		return table;
 	}

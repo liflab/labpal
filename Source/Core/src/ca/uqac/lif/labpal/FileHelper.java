@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2019 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -447,8 +447,7 @@ public class FileHelper
 	/**
 	 * List directory contents for a resource folder. Not recursive.
 	 * This is basically a brute-force implementation.
-	 * Works for regular files and also JARs.
-	 * @author Greg Briggs
+	 * Works for regular files and also JARs. Original code by Greg Briggs.
 	 * @param clazz Any java class that lives in the same place as the resources you want.
 	 * @param path Should end with "/", but not start with one.
 	 * @param glob The pattern to match
@@ -462,8 +461,7 @@ public class FileHelper
 	/**
 	 * List directory contents for a resource folder. Not recursive.
 	 * This is basically a brute-force implementation.
-	 * Works for regular files and also JARs.
-	 * @author Greg Briggs
+	 * Works for regular files and also JARs. Original code by Greg Briggs.
 	 * @param clazz Any java class that lives in the same place as the resources you want.
 	 * @param path Should end with "/", but not start with one.
 	 * @param glob The pattern to match

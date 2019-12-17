@@ -21,8 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -66,7 +64,7 @@ public class LocalBatchRunner extends BatchRunner
         ze = zis.getNextEntry();
         continue;
       }
-      String out_filename = Paths.get(m_path).toString() + FileHelper.SLASH + filename;
+      String out_filename = m_path + FileHelper.SLASH + filename;
       if (ze.isDirectory())
       {
         File f = new File(out_filename);
@@ -99,9 +97,10 @@ public class LocalBatchRunner extends BatchRunner
     {
       JsonMap jm = (JsonMap) m_lab.saveToJson();
       String lab = jm.toString("", false);
-      Path p = Paths.get(m_path, "Lab.json");
-      FileHelper.writeFromString(p.toFile(), lab);
-      m_stdout.println("Lab status saved to " + p.toString());
+      String filename = m_path + FileHelper.SLASH + "Lab.json";
+      File f = new File(filename);
+      FileHelper.writeFromString(f, lab);
+      m_stdout.println("Lab status saved to " + filename);
     }
     catch (PrintException e)
     {

@@ -337,14 +337,14 @@ public class ExperimentsPageCallback extends TemplatePageCallback
   /**
    * Performs the "queue" action on every experiment selected in the input form
    * 
-   * @see LabAssistant#queue(Experiment)
+   * @see LabAssistant#queue(Experiment...)
    * @param params
    *          The input parameters of the HTML form
    * @return A message indicating the success of the operation
    */
   protected String queue(Map<String, String> params)
   {
-    int queued = 0;
+    List<Experiment> experiments = new ArrayList<Experiment>();
     for (String k : params.keySet())
     {
       Matcher mat = s_pattern.matcher(k);
@@ -354,12 +354,12 @@ public class ExperimentsPageCallback extends TemplatePageCallback
         Experiment e = m_lab.getExperiment(exp_id);
         if (e != null)
         {
-          m_assistant.queue(e);
-          queued++;
+        	experiments.add(e);
         }
       }
     }
-    String out = "<p class=\"message info\"><span>" + queued + " experiment(s) added to the queue";
+    m_assistant.queue(experiments);
+    String out = "<p class=\"message info\"><span>" + experiments.size() + " experiment(s) added to the queue";
     if (!m_assistant.isRunning())
     {
       out += " <a href=\"/assistant/start\">Start the assistant</a>";

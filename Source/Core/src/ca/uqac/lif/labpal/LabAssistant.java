@@ -26,7 +26,7 @@ import ca.uqac.lif.labpal.ResultReporter.ReporterException;
  * A lab assistant is in charge of running a set of experiments according
  * to a queue.
  * <p>
- * Typically, you add new experiments with {@link #queue(Experiment)} and
+ * Typically, you add new experiments with {@link #queue(Experiment...)} and
  * remove them from the queue with {@link #unqueue(Experiment)}. You can
  * instruct the lab assistant to start running the experiments in its queue
  * with {@link #run()}, and can interrupt its operation with {@link #stop()}.
@@ -112,11 +112,18 @@ public abstract class LabAssistant implements Runnable
 	public abstract LabAssistant unqueue(int id);
 	
 	/**
-	 * Adds an experiment at the end of the queue
-	 * @param e The experiment
+	 * Adds experiments at the end of the queue
+	 * @param experiments The experiments
 	 * @return This assistant
 	 */
-	public abstract LabAssistant queue(Experiment e);
+	public abstract LabAssistant queue(Experiment ... experiments);
+	
+	/**
+	 * Adds experiments at the end of the queue
+	 * @param experiments The experiments
+	 * @return This assistant
+	 */
+	public abstract LabAssistant queue(List<Experiment> experiments);
 	
 	/**
 	 * Checks whether an experiment is queued

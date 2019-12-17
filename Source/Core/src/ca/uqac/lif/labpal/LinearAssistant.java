@@ -210,13 +210,31 @@ public class LinearAssistant extends LabAssistant
 	}
 	
 	@Override
-	public LabAssistant queue(Experiment e)
+	public LabAssistant queue(Experiment ... experiments)
 	{
 		m_queueLock.lock();
-		m_queue.add(e);
+		for (Experiment e : experiments)
+		{
+			m_queue.add(e);
+			e.setWhoRan(m_name);
+			e.setQueueStatus(QueueStatus.QUEUED);
+		}
 		m_queueLock.unlock();
-		e.setWhoRan(m_name);
-		e.setQueueStatus(QueueStatus.QUEUED);
+		reportResults();
+		return this;
+	}
+	
+	@Override
+	public LabAssistant queue(List<Experiment> experiments)
+	{
+		m_queueLock.lock();
+		for (Experiment e : experiments)
+		{
+			m_queue.add(e);
+			e.setWhoRan(m_name);
+			e.setQueueStatus(QueueStatus.QUEUED);
+		}
+		m_queueLock.unlock();
 		reportResults();
 		return this;
 	}

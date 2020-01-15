@@ -93,7 +93,7 @@ public class AllPlotsCallback extends WebCallback
       File tmp_file = File.createTempFile("plot", ".pdf");
       tmp_file.deleteOnExit();
       FileOutputStream fos = new FileOutputStream(tmp_file);
-      if (image == null || image.length > 0)
+      if (image == null || image.length == 0)
       {
     	  // Substitute plot for a blank image
     	  image = Plot.s_blankImagePdf;

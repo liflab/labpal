@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2019 Sylvain Hallé
+  Copyright (C) 2015-2020 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -90,19 +90,19 @@ public class AllPlotsCallback extends WebCallback
       Plot plot = m_lab.getPlot(id);
       // Get plot's image and write to temporary file
       byte[] image = plot.getImage(Plot.ImageType.PDF, with_captions);
-
-      if (image != null && image.length > 0)
+      File tmp_file = File.createTempFile("plot", ".pdf");
+      tmp_file.deleteOnExit();
+      FileOutputStream fos = new FileOutputStream(tmp_file);
+      if (image == null || image.length > 0)
       {
-        // Do something only if the plot produced a non-zero-sized file
-        File tmp_file = File.createTempFile("plot", ".pdf");
-        tmp_file.deleteOnExit();
-        FileOutputStream fos = new FileOutputStream(tmp_file);
-        fos.write(image, 0, image.length);
-        fos.flush();
-        fos.close();
-        String filename = tmp_file.getPath();
-        filenames.add(filename);
+    	  // Substitute plot for a blank image
+    	  image = Plot.s_blankImagePdf;
       }
+      fos.write(image, 0, image.length);
+      fos.flush();
+      fos.close();
+      String filename = tmp_file.getPath();
+      filenames.add(filename);
     }
     String[] tab = filenames.toArray(new String[filenames.size()]);
     byte[] file_contents = FileHelper.mergePdf(File.createTempFile("plots", ".pdf").getPath(),

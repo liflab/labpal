@@ -104,7 +104,7 @@ public class Region
 	 * @param name The name of the dimension
 	 * @param value The value to set for this dimension
 	 */
-	protected void set(String name, JsonElement value)
+	public void set(String name, JsonElement value)
 	{
 		List<JsonElement> new_list = new ArrayList<JsonElement>(1);
 		new_list.add(value);

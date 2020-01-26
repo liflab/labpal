@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import ca.uqac.lif.json.JsonBoolean;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNumber;
@@ -238,6 +238,10 @@ public class ExperimentTable extends Table
 		{
 			return PrimitiveValue.getInstance(((JsonString) e).stringValue());
 		}
+		if (e instanceof JsonBoolean)
+    {
+      return PrimitiveValue.getInstance(((JsonBoolean) e).boolValue());
+    }
 		return null;
 		
 	}

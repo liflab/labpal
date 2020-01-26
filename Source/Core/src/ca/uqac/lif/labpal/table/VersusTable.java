@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2020 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ca.uqac.lif.json.JsonNull;
+import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
 import ca.uqac.lif.mtnp.table.Table;
@@ -113,8 +114,22 @@ public class VersusTable extends Table
 				continue;
 			}
 			TableEntry te = new TableEntry();
-			te.put(m_captionX, x);
-			te.put(m_captionY, y);
+			if (x instanceof JsonNumber)
+			{
+			  te.put(m_captionX, ((JsonNumber) x).numberValue());
+			}
+			else
+			{
+			  te.put(m_captionX, x);
+			}
+			if (y instanceof JsonNumber)
+      {
+        te.put(m_captionY, ((JsonNumber) y).numberValue());
+      }
+      else
+      {
+        te.put(m_captionY, y);
+      }
 			te.addDependency(m_captionX, new ExperimentValue(pair.getExperimentX(), m_parameter));
 			te.addDependency(m_captionY, new ExperimentValue(pair.getExperimentY(), m_parameter));
 			table.add(te);

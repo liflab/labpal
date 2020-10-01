@@ -743,7 +743,7 @@ public abstract class Laboratory implements OwnershipManager
    * 
    * @return The JSON element with the lab state, or null if some error
    *         occurred
-   * @throws SerializerException Thrown if the serialization of the lab
+   * @throws PrintException Thrown if the serialization of the lab
    * could not be done for some reason
    */
   public JsonElement saveToJson() throws PrintException
@@ -1272,7 +1272,8 @@ public abstract class Laboratory implements OwnershipManager
   {
     String out = "";
     out += "LabPal " + formatVersion() + " - A versatile environment for running experiments\n";
-    out += "(C) 2014-2019 Laboratoire d'informatique formelle\nUniversité du Québec à Chicoutimi, Canada\n";
+    out += "(C) 2014-2020 Laboratoire d'informatique formelle\nUniversité du Québec à Chicoutimi, Canada\n";
+    out += "https://liflab.github.io/labpal\n";
     return out;
   }
 

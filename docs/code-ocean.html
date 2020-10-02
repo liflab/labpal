@@ -164,8 +164,65 @@
           are called <em>runs</em>, which have a unique number and a date).</p>
           
           <h4>Browsing the results</h4>
+         
+          <p>When the lab is executed, all the experiments it contains are run in batch, one after the
+          other. Once they are done, their results are exported as a set of static files that form a
+          "notebook". The notebook files appear under the <i>Run</i> list entry on the right. For
+          example, in the screenshot above, you can see a list of folders and files under the entry
+          called <i>Run 1597920</i>.</p>
           
-          <p></p>
+          <ul>
+          <li><tt>index.html</tt>  gives a short description of the lab and the experiments it contains.</li>
+          <li><tt>tables.html</tt> gives the list of all data tables produced by the lab. The <tt>table</tt>
+          folder contains each table in HTML, LaTeX, and CSV.</li>
+          <li><tt>plots.html</tt> gives the list of all plots produced by the lab. The <tt>plot</tt> folder contains
+          each plot in Gnuplot, PNG and PDF.</li>
+          <li><tt>macros.html</tt> gives the list of all macros produced by the lab and their computed values.</li>
+          </ul>
+          
+          <p>Your entry point to the lab's results should be <strong><tt>index.html</tt></strong>.
+          Click on this file in the right-hand side pane; this will open a new tab in the capsule's
+          browser, showing the index page of the LabPal interface.</p>
+          
+          <p><img src="img/screenshots/CO_LP_index.png" alt="LabPal's index page" /></p>
+          
+          <p>From this point on, you are exploring the results produced by the lab from within
+          the Code Ocean browser.</p>
+          
+          <h5>Viewing plots</h5>
+          
+          <p>Clicking on the <i>Plots</i> button in the
+          LabPal interface brings the summary of all plots:</p>
+          
+          <p><img src="img/screenshots/CO_LP_plots.png" alt="LabPal's plots page" /></p>
+          
+          <p>Clicking on a plot brings an enlarged picture of that plot; clicking on the
+          <i>Table</i> button under a plot shows the data table from which the plot has been
+          created.</p>
+          
+          <h5>Viewing tables</h5>
+          
+          <p>Tables are two-dimensional arrays whose content is obtained by fetching
+          parameters and values from a set of experiments. They can be imported in a paper
+          directly, or be used as the source for a plot. Clicking on the <i>Tables</i>
+          button shows the list of all tables produced by the execution of the lab:</p>
+          
+          <p><img src="img/screenshots/CO_LP_tables.png" alt="LabPal's tables page" /></p>
+          
+          <p>Each table has a unique ID, a descriptive title, and a "nickname".
+          Clicking on a table shows its contents in the browser. Should you wish to
+          download the contents of a table, you can look in the <tt>table</tt> folder
+          of the capsule's right pane, and fetch the files corresponding to the table's
+          ID, either in CSV, HTML or LaTeX format:</p>
+          
+          <p><img style="max-width: 400px" src="img/screenshots/CO_table_dl.png" alt="The table folder" /></p>
+          
+          <h5>Viewing macros</h5>
+          
+          <p>Macros are values (either strings or numbers) computed from the contents of
+          experiments.</p>
+          
+          <p><img src="img/screenshots/CO_LP_macros.png" alt="LabPal's macros page" /></p>
           
         </div>
       </div>

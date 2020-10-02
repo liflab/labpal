@@ -131,9 +131,42 @@
     <div class="container">
       <div class="row">
         <div class="span12">
-          <p>LabPal has been under development for more than four years, and comes with detailed documentation and API reference.</p>
+          <p>In this short tutorial, you will learn how to use an instance of LabPal hosted in a Code Ocean compute capsule.
+          This document is especially aimed at referees of conferences and journals whose task is to review an
+          artifact and ensure the results provided in a submitted paper are reproducible.</p>
+          
+          <p>First, let us recall that <a href="https://codeocean.com/">Code Ocean</a> is a platform that hosts self-contained pieces of
+          code and data that are called <em>capsules</em>. Capsules can be executed and produce results in the form of
+          various data files; what is more, the platform keeps track of each of these executions in a log, such that
+          anybody can unambiguously refer to the results of a specific run of the capsule and examine the complete
+          execution that produced them, including source code.</p>
+          
+          <p>On top of this, <a href="https://liflab.github.io/labpal">LabPal</a> is a Java library that helps
+          structuring and coordinating the execution of computational experiments. Its aim is to reduce the amount
+          of low-level scripting necessary to run programs, process data, generate tables and plots, and include
+          these results inside a research publication. This is done by creating a high-level object called a
+          <tt>Laboratory</tt>, inside which are added multiple instances of various <tt>Experiment</tt>s, each
+          taking input parameters and producing output results. (For a detailed description of how to create a lab,
+          please have a look at the <a href="quick-tutorial.html">quick tutorial</a>.)</p>
+          
+          <h4>The Code Ocean interface</h4>
+          
+          <p>The screenshot below is what you should normally see when opening a compute capsule
+          that uses LabPal.</p>
           
           <p><img src="img/screenshots/CO_gui.png" alt="Code Ocean interface" /></p>
+          
+          <p>The panel on the left shows various folders containing both the data input files used
+          by the lab, as well as the Java source files that make up the lab itself. The center panel
+          displays a description of the lab, and will also be used to browse through the results
+          it produces. Finally, the panel on the right shows the history of modifications of the
+          compute capsule, as well as the history of all the occasions where it was executed (these
+          are called <em>runs</em>, which have a unique number and a date).</p>
+          
+          <h4>Browsing the results</h4>
+          
+          <p></p>
+          
         </div>
       </div>
       <div class="row space50"></div>  

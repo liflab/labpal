@@ -89,7 +89,16 @@ public class AllPlotsCallback extends WebCallback
     {
       Plot plot = m_lab.getPlot(id);
       // Get plot's image and write to temporary file
-      byte[] image = plot.getImage(Plot.ImageType.PDF, with_captions);
+      byte[] image;
+      try
+      {
+      	// Avoid failure of producing the PDF because of a faulty plot
+      	image = plot.getImage(Plot.ImageType.PDF, with_captions);
+      }
+      catch (Exception e)
+      {
+      	image = null;
+      }
       File tmp_file = File.createTempFile("plot", ".pdf");
       tmp_file.deleteOnExit();
       FileOutputStream fos = new FileOutputStream(tmp_file);

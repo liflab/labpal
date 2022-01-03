@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2019 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -170,6 +170,10 @@ public class ResultReporter implements Runnable
 	 */
 	public synchronized String reportResults() throws ReporterException
 	{
+	  if (m_reportHost == null)
+	  {
+	    return null;
+	  }
 		HttpURLConnection connection = null;
 		StringBuilder response = new StringBuilder();
 		try

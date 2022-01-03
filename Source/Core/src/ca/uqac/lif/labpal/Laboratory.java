@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2020 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ public abstract class Laboratory implements OwnershipManager
   /**
    * The revision version number
    */
-  private static final transient int s_revisionVersionNumber = 8;
+  private static final transient int s_revisionVersionNumber = 10;
 
   /**
    * The set of experiments this lab has access to
@@ -1272,7 +1272,7 @@ public abstract class Laboratory implements OwnershipManager
   {
     String out = "";
     out += "LabPal " + formatVersion() + " - A versatile environment for running experiments\n";
-    out += "(C) 2014-2020 Laboratoire d'informatique formelle\nUniversité du Québec à Chicoutimi, Canada\n";
+    out += "(C) 2014-2022 Laboratoire d'informatique formelle\nUniversité du Québec à Chicoutimi, Canada\n";
     out += "https://liflab.github.io/labpal\n";
     return out;
   }

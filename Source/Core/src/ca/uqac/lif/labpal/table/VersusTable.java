@@ -201,5 +201,10 @@ public class VersusTable extends Table
 		}
 		return new ExperimentValue(pair.getExperimentY(), m_parameter);
 	}
+	
+	public VersusTable duplicate(boolean with_state)
+	{
+	  return null;
+	}
 
 }

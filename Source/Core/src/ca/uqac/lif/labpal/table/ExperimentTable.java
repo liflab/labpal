@@ -245,5 +245,10 @@ public class ExperimentTable extends Table
 		return null;
 		
 	}
+	
+	public ExperimentTable duplicate(boolean with_state)
+	{
+	  return null;
+	}
 
 }

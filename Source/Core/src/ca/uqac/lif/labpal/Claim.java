@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
+
 /**
  * An object that checks an assertion on the contents of a lab.
  * A claim can be a conclusion on the lab's results that one want to
@@ -41,7 +43,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * 
  * @author Sylvain Hallé
  */
-public abstract class Claim 
+public abstract class Claim implements ExplanationQueryable 
 {
 	/**
 	 * The lab on which this claim operates

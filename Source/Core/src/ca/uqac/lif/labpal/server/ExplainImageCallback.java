@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2019 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,11 +24,11 @@ import com.sun.net.httpserver.HttpExchange;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.jerrydog.Server;
-import ca.uqac.lif.labpal.GraphvizRenderer;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.provenance.DotProvenanceTreeRenderer;
-import ca.uqac.lif.petitpoucet.ProvenanceNode;
+import ca.uqac.lif.labpal.provenance.GraphViewer;
+import ca.uqac.lif.petitpoucet.PartNode;
+import ca.uqac.lif.spreadsheet.plot.PlotFormat;
 
 /**
  * Callback producing an image explaining the provenance of a data point, as an
@@ -60,7 +60,7 @@ public class ExplainImageCallback extends WebCallback
     CallbackResponse response = new CallbackResponse(t);
     Map<String,String> params = getParameters(t);
     String datapoint_id = params.get("id");
-    ProvenanceNode node = m_lab.getDataTracker().explain(datapoint_id);
+    PartNode node = m_lab.getExplanation(datapoint_id);
     if (node == null)
     {
       response.setContents(
@@ -68,8 +68,8 @@ public class ExplainImageCallback extends WebCallback
       response.setCode(CallbackResponse.HTTP_NOT_FOUND);
       return response;
     }
-    DotProvenanceTreeRenderer renderer = new DotProvenanceTreeRenderer();
-    if (!GraphvizRenderer.s_dotPresent)
+    GraphViewer renderer = new GraphViewer();
+    if (!GraphViewer.s_dotPresent)
     {
       // Asking for an image, but DOT not available: stop right here
       response.setContents(
@@ -77,14 +77,15 @@ public class ExplainImageCallback extends WebCallback
       response.setCode(CallbackResponse.HTTP_NOT_FOUND);
       return response;
     }
-    String extension = "svg";
+    PlotFormat format = PlotFormat.SVG;
     response.setContentType("image/svg+xml");
     if (params.containsKey("format") && params.get("format").compareToIgnoreCase("pdf") == 0)
     {
       response.setContentType(ContentType.PDF);
-      extension = "pdf";
+      format = PlotFormat.PDF;
     }
-    byte[] image = renderer.toImage(node, extension);
+    String extension = format.getExtension();
+    byte[] image = renderer.toImage(node, format, true);
     if (image == null)
     {
       response.setContents(

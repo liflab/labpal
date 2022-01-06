@@ -30,6 +30,7 @@ import ca.uqac.lif.labpal.Claim;
 import ca.uqac.lif.labpal.Claim.Explanation;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.petitpoucet.PartNode;
 
 /**
  * Callback to display the details of one specific experiment.
@@ -127,7 +128,7 @@ public class ClaimCallback extends TemplatePageCallback
       out.append("<ul>\n");
       for (Object o : objects)
       {
-        if (o instanceof NodeFunction)
+        /*if (o instanceof PartNode)
         {
           NodeFunction dv = (NodeFunction) o;
           out.append("<li class=\"explanation-").append(ExplainCallback.getDataPointIconClass(dv))
@@ -136,15 +137,15 @@ public class ClaimCallback extends TemplatePageCallback
               .append(dv.getDataPointId()).append("</a>");
           ;
           out.append("</li>");
-        }
-        else if (o instanceof ProvenanceNode)
+        }*/
+        //else 
+      	if (o instanceof PartNode)
         {
-          ProvenanceNode pn = (ProvenanceNode) o;
+        	PartNode pn = (PartNode) o;
           out.append("<li class=\"explanation-")
-              .append(ExplainCallback.getDataPointIconClass(pn.getNodeFunction())).append("\">");
+              .append(ExplainCallback.getDataPointIconClass(pn)).append("\">");
           out.append("<a href=\"").append(ExplainCallback.getDataPointUrl(pn)).append("\">")
               .append(pn).append("</a>");
-          ;
           out.append("</li>");
         }
       }

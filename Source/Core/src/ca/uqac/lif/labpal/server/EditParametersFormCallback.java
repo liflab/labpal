@@ -249,7 +249,7 @@ public class EditParametersFormCallback extends TemplatePageCallback
     String[] ids = highlight.split(",");
     for (String id : ids)
     {
-      String[] parts = id.split(Pattern.quote(NodeFunction.s_separator));
+      String[] parts = id.split(Pattern.quote(":"));
       to_highlight.add(parts[1]);
     }
     return to_highlight;

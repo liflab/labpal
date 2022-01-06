@@ -43,7 +43,6 @@ import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.LabPalTui;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.petitpoucet.NodeFunction;
 
 /**
  * Callback to display the details of one specific experiment.
@@ -64,7 +63,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
    * datapoint ID in {@link #getKeysToHighlight(String)}
    */
   protected static final Pattern s_highlightKeyPattern = Pattern
-      .compile("^.*?" + Pattern.quote(NodeFunction.s_separator) + "(.*)$");
+      .compile("^.*?" + Pattern.quote(":") + "(.*)$");
 
   /**
    * Creates a new callback for the "Experiments" page.
@@ -228,7 +227,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
       int el_cnt = 0;
       for (JsonElement v : (JsonList) e)
       {
-        String path_append = path + NodeFunction.s_separator + el_cnt;
+        String path_append = path + ":" + el_cnt;
         String css_class_key = "";
         String css_class_value = "";
         if (containsExactly(to_highlight, path_append))

@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2017 Sylvain Hallé
+  Copyright (C) 2014-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.petitpoucet.ProvenanceNode;
+import ca.uqac.lif.petitpoucet.PartNode;
 
 /**
  * Callback for to find a data point by its LDI
@@ -52,7 +52,7 @@ public class FindFormCallback extends WebCallback
     if (params.containsKey("id"))
     {
       String datapoint_id = params.get("id");
-      ProvenanceNode pn = m_lab.getDataTracker().explain(datapoint_id);
+      PartNode pn = m_lab.getExplanation(datapoint_id);
       if (pn == null)
       {
         response.setCode(CallbackResponse.HTTP_NOT_FOUND);

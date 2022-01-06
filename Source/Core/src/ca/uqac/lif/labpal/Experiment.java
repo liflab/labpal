@@ -32,9 +32,6 @@ import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonPath;
 import ca.uqac.lif.json.JsonString;
-import ca.uqac.lif.labpal.provenance.ExperimentValue;
-import ca.uqac.lif.petitpoucet.DataOwner;
-import ca.uqac.lif.petitpoucet.NodeFunction;
 
 /**
  * An experiment is a runnable process that takes input parameters and produces
@@ -42,7 +39,8 @@ import ca.uqac.lif.petitpoucet.NodeFunction;
  * 
  * @author Sylvain Hallé
  */
-public abstract class Experiment implements Runnable, DataOwner {
+public abstract class Experiment implements Runnable
+{
 	/**
 	 * The status of the experiment
 	 */
@@ -1081,24 +1079,6 @@ public abstract class Experiment implements Runnable, DataOwner {
 	 */
 	public void validate() {
 		// Do nothing
-	}
-
-	@Override
-	public final NodeFunction dependsOn(String id) {
-		return ExperimentValue.dependsOn(this, id);
-	}
-
-	public final NodeFunction dependsOnKey(String key) {
-		return new ExperimentValue(this, key);
-	}
-
-	public final NodeFunction dependsOnCell(String key, int position) {
-		return new ExperimentValue(this, key, position);
-	}
-
-	@Override
-	public Experiment getOwner() {
-		return this;
 	}
 
 	/**

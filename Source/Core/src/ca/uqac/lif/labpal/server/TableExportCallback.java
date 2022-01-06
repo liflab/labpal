@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -28,9 +30,10 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.table.Table;
-import ca.uqac.lif.mtnp.table.TempTable;
-import ca.uqac.lif.mtnp.table.rendering.LatexTableRenderer;
+import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.CsvTableRenderer;
+import ca.uqac.lif.labpal.table.LatexTableRenderer;
+import ca.uqac.lif.spreadsheet.AnsiSpreadsheetPrinter;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -68,12 +71,13 @@ public class TableExportCallback extends WebCallback
       response.setCode(CallbackResponse.HTTP_NOT_FOUND);
       return response;
     }
-    TempTable d_tab = tab.getDataTable();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(baos);
     if (params.get("format").compareToIgnoreCase("tex") == 0)
     {
-      LatexTableRenderer renderer = new LatexTableRenderer(tab);
-      String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
-      response.setContents(contents);
+    	LatexTableRenderer renderer = new LatexTableRenderer(tab);
+      renderer.render(ps);
+      response.setContents(baos.toString());
       response.setCode(CallbackResponse.HTTP_OK);
       response.setContentType("application/x-latex");
       if (params.containsKey("dl"))
@@ -84,7 +88,9 @@ public class TableExportCallback extends WebCallback
     }
     if (params.get("format").compareToIgnoreCase("html") == 0)
     {
-      response.setContents(d_tab.toHtml());
+    	HtmlTableRenderer renderer = new HtmlTableRenderer(tab);
+    	renderer.render(ps);
+      response.setContents(baos.toString());
       response.setCode(CallbackResponse.HTTP_OK);
       response.setContentType(ContentType.HTML);
       if (params.containsKey("dl"))
@@ -93,7 +99,10 @@ public class TableExportCallback extends WebCallback
       }
       return response;
     }
-    response.setContents(d_tab.toCsv());
+    AnsiSpreadsheetPrinter printer = new AnsiSpreadsheetPrinter();
+    printer.setColumnSeparator(",").setGroupCells(false);
+    printer.print(tab.getSpreadsheet(), ps);
+    response.setContents(baos.toString());
     response.setCode(CallbackResponse.HTTP_OK);
     response.setContentType(ContentType.TEXT);
     if (params.containsKey("dl"))
@@ -110,21 +119,24 @@ public class TableExportCallback extends WebCallback
     for (int id : ids)
     {
       Table tab = m_lab.getTable(id);
-      TempTable d_tab = tab.getDataTable();
       {
         // Latex
         LatexTableRenderer renderer = new LatexTableRenderer(tab);
-        String contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        renderer.render(new PrintStream(baos));
         ZipEntry ze = new ZipEntry("table/" + id + ".tex");
         zos.putNextEntry(ze);
-        zos.write(contents.getBytes());
+        zos.write(baos.toByteArray());
         zos.closeEntry();
       }
       {
         // CSV
         ZipEntry ze = new ZipEntry("table/" + id + ".csv");
         zos.putNextEntry(ze);
-        zos.write(d_tab.toCsv().getBytes());
+        CsvTableRenderer renderer = new CsvTableRenderer(tab);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        renderer.render(new PrintStream(baos));
+        zos.write(baos.toByteArray());
         zos.closeEntry();
       }
     }

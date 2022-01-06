@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2019 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.server.LabPalServer;
-import ca.uqac.lif.mtnp.plot.gnuplot.GnuPlot;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**
@@ -126,7 +126,7 @@ public abstract class BatchRunner
    */
   protected void checkDependencies()
   {
-    if (!GnuPlot.isGnuplotPresent())
+    if (!Gnuplot.isGnuplotPresent())
     {
       m_stdout.print("\nWarning: Gnuplot was not found on your system");
     }

@@ -27,7 +27,7 @@ import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.table.rendering.LatexTableRenderer;
+import ca.uqac.lif.labpal.table.LatexTableRenderer;
 
 /**
  * A collection of named data points computed in a single pass
@@ -140,8 +140,9 @@ public abstract class MacroMap extends Macro
 	{
 		StringBuilder out = new StringBuilder();
 		Map<String,JsonElement> values = getValues();
-		for (String name : m_names)
+		for (int i = 0; i < m_names.size(); i++)
 		{
+			String name = m_names.get(i);
 			JsonElement value = values.get(name);
 			String description = getDescription(name);
 			if (with_comments)
@@ -149,7 +150,7 @@ public abstract class MacroMap extends Macro
 				out.append("% ").append(name).append(FileHelper.CRLF);
 				out.append("% ").append(description).append(FileHelper.CRLF);
 			}
-			out.append("\\newcommand{\\").append(name).append("}{\\href{").append(MacroNode.getDatapointId(this, name)).append("}{");
+			out.append("\\newcommand{\\").append(name).append("}{\\href{").append("M" + m_id + ":" + i).append("}{");
 			if (value instanceof JsonString)
 			{
 				out.append(LatexTableRenderer.escape(((JsonString) value).stringValue()));

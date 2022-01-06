@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,22 +21,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import ca.uqac.lif.json.JsonBoolean;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.Experiment;
-import ca.uqac.lif.labpal.provenance.ExperimentValue;
-import ca.uqac.lif.petitpoucet.NodeFunction;
-import ca.uqac.lif.mtnp.table.PrimitiveValue;
-import ca.uqac.lif.mtnp.table.Table;
-import ca.uqac.lif.mtnp.table.TableEntry;
-import ca.uqac.lif.mtnp.table.TempTable;
+import ca.uqac.lif.labpal.ExperimentValue;
+import ca.uqac.lif.petitpoucet.ComposedPart;
+import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.Part;
+import ca.uqac.lif.petitpoucet.PartNode;
+import ca.uqac.lif.petitpoucet.function.vector.NthElement;
+import ca.uqac.lif.spreadsheet.Cell;
+import ca.uqac.lif.spreadsheet.Spreadsheet;
 
 /**
- * Table whose rows and columns are populated from the parameters of a set
- * of experiments
+ * A table that produces a spreadsheet by extracting parameter values out of
+ * a list of experiments.
  * @author Sylvain Hallé
  */
 public class ExperimentTable extends Table
@@ -47,15 +50,22 @@ public class ExperimentTable extends Table
 	 * same order every time. Otherwise, the <i>n</i>-th "row" of the
 	 * table would not always refer to the same data point.
 	 */
-	public List<Experiment> m_experiments;
+	protected List<Experiment> m_experiments;
 
 	/**
 	 * The dimensions of this table
 	 */
-	public String[] m_dimensions;
+	protected String[] m_dimensions;
 
 	/**
+	 * A list associating each row of the last computed spreadsheet to the
+	 * value and lineage information of each cell.
+	 */
+	protected List<TableEntry> m_lastEntries;
+	
+	/**
 	 * Creates an empty table with a given list of column names
+	 * @param id The unique ID given to this table
 	 * @param dimensions The column names
 	 */
 	public ExperimentTable(String ... dimensions)
@@ -63,7 +73,8 @@ public class ExperimentTable extends Table
 		super();
 		m_experiments = new ArrayList<Experiment>();
 		m_dimensions = dimensions;
-	}	
+		m_lastEntries = null;
+	}
 
 	/**
 	 * Adds a new experiment to the table
@@ -77,55 +88,37 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public TempTable getDataTable(boolean temporary)
+	public Spreadsheet getSpreadsheet()
 	{
-		return getDataTable(temporary, m_dimensions);
-	}
-
-	@Override
-	protected TempTable getDataTable(boolean temporary, String ... ordering)
-	{
-		TempTable mt;
-		if (temporary)
-		{
-			mt = new TempTable(getId(), ordering);
-			mt.setId(getId());
-		}
-		else
-		{
-			mt = new TempTable(getId(), ordering);
-		}
 		int row_nb = 0;
+		m_lastEntries = new ArrayList<TableEntry>();
 		for (Experiment e : m_experiments)
 		{
-			List<TableEntry> entries = getEntries(false, e, row_nb, ordering);
-			mt.addAll(entries);
+			List<TableEntry> entries = getEntries(false, e, m_dimensions);
+			m_lastEntries.addAll(entries);
 			row_nb += entries.size();
 		}
-		return mt;
-	}
-
-	/**
-	 * Counts the distinct table entries contained in this experiment.
-	 * @param e The experiment
-	 * @param dimensions The columns to consider when expanding
-	 * @return The number of table entries
-	 */
-	public int getEntryCount(Experiment e, String ... dimensions)
-	{
-		// We start at 1, since an experiment with no lists still counts for
-		// one data point
-		int max_len = 1;
-		for (String col_name : dimensions)
+		Spreadsheet out = new Spreadsheet(m_dimensions.length, row_nb + 1);
+		for (int col = 0; col < m_dimensions.length; col++)
 		{
-			Object o = readExperiment(e, col_name);
-			if (o instanceof JsonList)
+			out.set(col, 0, m_dimensions[col]);
+		}
+		for (int row = 0; row < row_nb; row++)
+		{
+			TableEntry te = m_lastEntries.get(row);
+			for (int col = 0; col < m_dimensions.length; col++)
 			{
-				max_len = Math.max(max_len, ((JsonList) o).size());
-
+				if (!te.containsKey(m_dimensions[col]))
+				{
+					out.set(col, row + 1, null);
+				}
+				else
+				{
+					out.set(col, row + 1, te.get(m_dimensions[col]).getValue());
+				}
 			}
 		}
-		return max_len;
+		return out;
 	}
 
 	/**
@@ -136,13 +129,11 @@ public class ExperimentTable extends Table
 	 * @param temporary Set to <tt>true</tt> if the table is a temporary
 	 * table, i.e. a table that is not associated with the lab
 	 * @param e The experiment
-	 * @param row_start Unused; will likely be deprecated in a future
-	 * version
 	 * @param dimensions The columns to consider when expanding
 	 * @return A list of table entries corresponding to the data
 	 *   points in the experiment
 	 */
-	public List<TableEntry> getEntries(boolean temporary, Experiment e, int row_start, String ... dimensions)
+	protected List<TableEntry> getEntries(boolean temporary, Experiment e, String ... dimensions)
 	{
 		List<TableEntry> entries = new ArrayList<TableEntry>();
 		List<String> scalar_columns = new ArrayList<String>();
@@ -173,7 +164,7 @@ public class ExperimentTable extends Table
 				JsonElement elem = readExperiment(e, col_name);
 				if (elem != null)
 				{
-					te.put(col_name, jsonToPrimitive(elem), new ExperimentValue(e, col_name));
+					te.put(col_name, jsonToPrimitive(elem), new ExperimentValue(col_name), e);
 				}
 				else
 				{
@@ -191,7 +182,7 @@ public class ExperimentTable extends Table
 					JsonElement elem = list.get(i);
 					if (elem != null)
 					{
-						te.put(key, jsonToPrimitive(elem), new ExperimentValue(e, key, i));
+						te.put(key, jsonToPrimitive(elem), ComposedPart.compose(new NthElement(i), new ExperimentValue(key)), e);
 					}
 					else
 					{
@@ -209,6 +200,60 @@ public class ExperimentTable extends Table
 		return entries;
 	}
 
+	@Override
+	public PartNode getExplanation(Part d, NodeFactory f)
+	{
+		PartNode root = f.getPartNode(d, this);
+		Cell c = Cell.mentionedCell(d);
+		if (m_lastEntries == null || c == null)
+		{
+			root.addChild(f.getUnknownNode());
+			return root;
+		}
+		int row = c.getRow(), col = c.getColumn();
+		if (row < 1 || row > m_lastEntries.size() || col < 0 || col >= m_dimensions.length)
+		{
+			// This cell does not exist or is in row 0 (headers)
+			root.addChild(f.getUnknownNode());
+			return root;
+		}
+		TableEntry te = m_lastEntries.get(row - 1); // -1 since 1st row is headers
+		String key = m_dimensions[col];
+		if (!te.containsKey(key))
+		{
+			// No registered association
+			root.addChild(f.getUnknownNode());
+			return root;
+		}
+		TrackedValue tv = te.get(key);
+		PartNode child = f.getPartNode(tv.getPart(), tv.getSubject());
+		root.addChild(child);
+		return root;
+	}
+
+	/**
+	 * Converts a JsonElement into a primitive type.
+	 * @param e The element
+	 * @return The converted element
+	 */
+	public static Object jsonToPrimitive(JsonElement e)
+	{
+		if (e instanceof JsonNumber)
+		{
+			return ((JsonNumber) e).numberValue();
+		}
+		if (e instanceof JsonString)
+		{
+			return ((JsonString) e).stringValue();
+		}
+		if (e instanceof JsonBoolean)
+		{
+			return ((JsonBoolean) e).boolValue();
+		}
+		return null;
+
+	}
+
 	/**
 	 * Reads data from an experiment. Override this method to transform the
 	 * data from an experiment before putting it in the table.
@@ -216,39 +261,25 @@ public class ExperimentTable extends Table
 	 * @param key The key to read from the experiment
 	 * @return The value
 	 */
-	public JsonElement readExperiment(Experiment e, String key)
+	protected static JsonElement readExperiment(Experiment e, String key)
 	{
 		return e.read(key);
 	}
 
-	@Override
-	public NodeFunction getDependency(int row, int col)
+	/**
+	 * A map associating each column name with a tracked value.
+	 */
+	protected static class TableEntry extends HashMap<Object,TrackedValue>
 	{
-		TempTable dt = getDataTable(false);
-		return dt.getDependency(row, col);
-	}
-	
-	public static PrimitiveValue jsonToPrimitive(JsonElement e)
-	{
-		if (e instanceof JsonNumber)
-		{
-			return PrimitiveValue.getInstance(((JsonNumber) e).numberValue());
-		}
-		if (e instanceof JsonString)
-		{
-			return PrimitiveValue.getInstance(((JsonString) e).stringValue());
-		}
-		if (e instanceof JsonBoolean)
-    {
-      return PrimitiveValue.getInstance(((JsonBoolean) e).boolValue());
-    }
-		return null;
-		
-	}
-	
-	public ExperimentTable duplicate(boolean with_state)
-	{
-	  return null;
-	}
+		/**
+		 * Dummy UID.
+		 */
+		private static final long serialVersionUID = 1L;
 
+		public void put(Object key, Object value, Part p, Object subject)
+		{
+			put(key, new TrackedValue(value, p, subject));
+		}
+
+	}
 }

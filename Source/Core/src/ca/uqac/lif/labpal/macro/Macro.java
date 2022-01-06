@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2017 Sylvain Hallé
+  Copyright (C) 2014-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,14 +21,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.petitpoucet.NodeFunction;
-import ca.uqac.lif.petitpoucet.UndefinedDependency;
+import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.Part;
+import ca.uqac.lif.petitpoucet.PartNode;
+import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 
 /**
  * Basic class for representing macros
  * @author Sylvain Hallé
  */
-public abstract class Macro 
+public abstract class Macro implements ExplanationQueryable
 {
 	/**
 	 * The macro's ID
@@ -97,12 +99,7 @@ public abstract class Macro
 	 * @return The string defining the command
 	 */
 	public abstract String toLatex(boolean with_comments);
-
-	public NodeFunction getDependency()
-	{
-		return UndefinedDependency.instance;
-	}
-	
+		
 	/**
 	 * Resets the ID counter for macros
 	 */
@@ -112,4 +109,19 @@ public abstract class Macro
 		s_idCounter = 1;
 		s_counterLock.unlock();
 	}
+	
+	@Override
+	public PartNode getExplanation(Part d)
+	{
+		return getExplanation(d, NodeFactory.getFactory());
+	}
+
+	@Override
+	public PartNode getExplanation(Part d, NodeFactory f)
+	{
+		PartNode root = f.getPartNode(d, this);
+		root.addChild(f.getUnknownNode());
+		return root;
+	}
+
 }

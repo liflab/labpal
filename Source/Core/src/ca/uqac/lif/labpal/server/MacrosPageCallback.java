@@ -32,7 +32,6 @@ import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.macro.MacroMap;
-import ca.uqac.lif.labpal.macro.MacroNode;
 import ca.uqac.lif.labpal.macro.MacroScalar;
 
 /**
@@ -94,7 +93,7 @@ public class MacrosPageCallback extends TemplatePageCallback
       {
         MacroScalar ms = (MacroScalar) m;
         String css_class = "";
-        String dp_id = MacroNode.getDatapointId(ms, "");
+        String dp_id = "M" + ms.getId();
         if (to_highlight.contains(dp_id))
         {
           css_class = " class=\"highlighted\"";
@@ -112,10 +111,11 @@ public class MacrosPageCallback extends TemplatePageCallback
         MacroMap mm = (MacroMap) m;
         List<String> names = mm.getNames();
         Map<String, JsonElement> values = mm.getValues();
-        for (String name : names)
+        for (int i = 0; i < names.size(); i++)
         {
+        	String name  = names.get(i);
           String css_class = "";
-          String dp_id = MacroNode.getDatapointId(mm, name);
+          String dp_id = "M" + mm.getId() + ":" + i;
           if (to_highlight.contains(dp_id))
           {
             css_class = " class=\"highlighted\"";

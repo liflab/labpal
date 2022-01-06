@@ -29,9 +29,10 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.plot.Plot;
-import ca.uqac.lif.mtnp.plot.Plot.ImageType;
-import ca.uqac.lif.mtnp.plot.gnuplot.GnuPlot;
+import ca.uqac.lif.labpal.plot.LabPalGnuplot;
+import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.spreadsheet.plot.PlotFormat;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -72,36 +73,36 @@ public class PlotImageCallback extends WebCallback
     {
       plot_id = Integer.parseInt(params.get("id"));
     }
-    Plot p = m_lab.getPlot(plot_id);
+    LabPalPlot p = m_lab.getPlot(plot_id);
     if (p == null)
     {
       response.setCode(CallbackResponse.HTTP_NOT_FOUND);
       return response;
     }
     if (params.containsKey("format") && params.get("format").compareToIgnoreCase("gp") == 0
-        && p instanceof GnuPlot)
+        && p instanceof LabPalGnuplot)
     {
-      response.setContents(((GnuPlot) p).toGnuplot(ImageType.PDF, m_lab.getTitle(), true));
+      response.setContents(((LabPalGnuplot) p).toGnuplot(PlotFormat.PDF, m_lab.getTitle(), true));
       response.setCode(CallbackResponse.HTTP_OK);
       response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
       return response;
     }
-    if (!GnuPlot.isGnuplotPresent())
+    if (!Gnuplot.isGnuplotPresent())
     {
       // Asking for an image, but Gnuplot not available: stop right here
       response.setCode(CallbackResponse.HTTP_NOT_FOUND);
       return response;
     }
-    ImageType term = ImageType.PNG;
+    PlotFormat term = PlotFormat.PNG;
     response.setContentType(ContentType.PNG);
     if (params.containsKey("format") && params.get("format").compareToIgnoreCase("pdf") == 0)
     {
-      term = ImageType.PDF;
+      term = PlotFormat.PDF;
       response.setContentType(ContentType.PDF);
     }
     if (params.containsKey("format") && params.get("format").compareToIgnoreCase("dumb") == 0)
     {
-      term = ImageType.DUMB;
+      term = Gnuplot.DUMB;
       response.setContentType(ContentType.TEXT);
     }
     byte[] image = p.getImage(term);
@@ -114,7 +115,7 @@ public class PlotImageCallback extends WebCallback
     response.setCode(CallbackResponse.HTTP_OK);
     if (params.containsKey("dl"))
     {
-      response.setAttachment(Server.urlEncode(p.getTitle() + "." + Plot.getTypeExtension(term)));
+      response.setAttachment(Server.urlEncode(p.getTitle() + "." + term.getExtension()));
     }
     return response;
   }
@@ -130,23 +131,23 @@ public class PlotImageCallback extends WebCallback
    */
   public byte[] exportTo(int plot_id, String format)
   {
-    Plot p = m_lab.getPlot(plot_id);
+    LabPalPlot p = m_lab.getPlot(plot_id);
     byte[] image = null;
     if (format.compareToIgnoreCase("png") == 0)
     {
-      image = p.getImage(ImageType.PNG);
+      image = p.getImage(PlotFormat.PNG);
     }
     else if (format.compareToIgnoreCase("pdf") == 0)
     {
-      image = p.getImage(ImageType.PDF);
+      image = p.getImage(PlotFormat.PDF);
     }
-    else if (format.compareToIgnoreCase("dumb") == 0 && p instanceof GnuPlot)
+    else if (format.compareToIgnoreCase("dumb") == 0 && p instanceof LabPalGnuplot)
     {
-      image = p.getImage(ImageType.DUMB);
+      image = p.getImage(Gnuplot.DUMB);
     }
-    else if (format.compareToIgnoreCase("gp") == 0 && p instanceof GnuPlot)
+    else if (format.compareToIgnoreCase("gp") == 0 && p instanceof LabPalGnuplot)
     {
-      image = ((GnuPlot) p).toGnuplot(ImageType.PDF, m_lab.getTitle(), true).getBytes();
+      image = ((LabPalGnuplot) p).toGnuplot(PlotFormat.PDF, m_lab.getTitle(), true).getBytes();
     }
     return image;
   }

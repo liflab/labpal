@@ -55,27 +55,23 @@ import ca.uqac.lif.labpal.export.BatchRunner;
 import ca.uqac.lif.labpal.export.CodeOceanRunner;
 import ca.uqac.lif.labpal.export.LocalBatchRunner;
 import ca.uqac.lif.labpal.macro.Macro;
-import ca.uqac.lif.labpal.provenance.DataTracker;
 import ca.uqac.lif.labpal.server.HomePageCallback;
 import ca.uqac.lif.labpal.server.HttpUtilities;
 import ca.uqac.lif.labpal.server.LabPalServer;
 import ca.uqac.lif.labpal.server.WebCallback;
+import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.mtnp.DataFormatter;
-import ca.uqac.lif.mtnp.plot.Plot;
-import ca.uqac.lif.mtnp.table.Table;
-import ca.uqac.lif.mtnp.table.TransformedTable;
-import ca.uqac.lif.petitpoucet.OwnershipManager;
+import ca.uqac.lif.labpal.plot.LabPalPlot;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**
- * A set of experiments, tables and plots. The lab is controlled by a lab
+ * A set of experiments, tables and LabPalPlots. The lab is controlled by a lab
  * assistant, which is responsible for running the experiments, populating the
- * tables and drawing the plots.
+ * tables and drawing the LabPalPlots.
  * 
  * @author Sylvain Hallé
  */
-public abstract class Laboratory implements OwnershipManager
+public abstract class Laboratory
 {
   /* Return codes */
   public static transient int ERR_OK = 0;
@@ -106,9 +102,9 @@ public abstract class Laboratory implements OwnershipManager
   private HashSet<Experiment> m_experiments;
 
   /**
-   * The set of plots associated with this lab
+   * The set of LabPalPlots associated with this lab
    */
-  private transient HashSet<Plot> m_plots;
+  private transient HashSet<LabPalPlot> m_plots;
 
   /**
    * The set of tables associated to this lab
@@ -134,11 +130,6 @@ public abstract class Laboratory implements OwnershipManager
    * The hostname of the machine running the lab
    */
   private String m_hostName = guessHostName();
-
-  /**
-   * A data tracker for generating provenance info
-   */
-  private transient DataTracker m_dataTracker;
 
   /**
    * A DOI assigned to this lab artifact, if any
@@ -275,8 +266,7 @@ public abstract class Laboratory implements OwnershipManager
     m_experiments = new HashSet<Experiment>();
     m_claims = new ArrayList<Claim>();
     m_claimStatus = new HashMap<Integer, Claim.Result>();
-    m_dataTracker = new DataTracker(this);
-    m_plots = new HashSet<Plot>();
+    m_plots = new HashSet<LabPalPlot>();
     m_tables = new HashSet<Table>();
     m_groups = new HashSet<Group>();
     m_macros = new HashSet<Macro>();
@@ -426,15 +416,15 @@ public abstract class Laboratory implements OwnershipManager
   }
 
   /**
-   * Assigns plots to this lab
+   * Assigns LabPalPlots to this lab
    * 
-   * @param plots
-   *          The plots
+   * @param LabPalPlots
+   *          The LabPalPlots
    * @return This lab
    */
-  public Laboratory add(Plot... plots)
+  public Laboratory add(LabPalPlot... LabPalPlots)
   {
-    for (Plot p : plots)
+    for (LabPalPlot p : LabPalPlots)
     {
       m_plots.add(p);
     }
@@ -453,10 +443,6 @@ public abstract class Laboratory implements OwnershipManager
     for (Table t : tables)
     {
       m_tables.add(t);
-      if (t instanceof TransformedTable)
-      {
-        addInternalTable((TransformedTable) t);
-      }
     }
     return this;
   }
@@ -495,33 +481,14 @@ public abstract class Laboratory implements OwnershipManager
   }
 
   /**
-   * Adds the arguments of a transformed table
-   * 
-   * @param table The table
-   */
-  protected void addInternalTable(TransformedTable table)
-  {
-    Set<Integer> table_ids = getTableIds();
-    for (Table t : table.getInputTables())
-    {
-      if (!table_ids.contains(t.getId()))
-      {
-        // Add table to lab but make it invisible
-        t.setShowInList(false);
-        add(t);
-      }
-    }
-  }
-
-  /**
-   * Gets the IDs of all the plots for this lab assistant
+   * Gets the IDs of all the LabPalPlots for this lab assistant
    * 
    * @return The set of IDs
    */
   public Set<Integer> getPlotIds()
   {
     Set<Integer> ids = new HashSet<Integer>();
-    for (Plot p : m_plots)
+    for (LabPalPlot p : m_plots)
     {
       ids.add(p.getId());
     }
@@ -559,15 +526,15 @@ public abstract class Laboratory implements OwnershipManager
   }
 
   /**
-   * Gets the plot with given ID
+   * Gets the LabPalPlot with given ID
    * 
    * @param id
    *          The ID
-   * @return The plot, null if not found
+   * @return The LabPalPlot, null if not found
    */
-  public Plot getPlot(int id)
+  public LabPalPlot getPlot(int id)
   {
-    for (Plot p : m_plots)
+    for (LabPalPlot p : m_plots)
     {
       if (p.getId() == id)
       {
@@ -714,7 +681,7 @@ public abstract class Laboratory implements OwnershipManager
     lab.m_isDeserialized = true;
     Table.resetCounter();
     Macro.resetCounter();
-    Plot.resetCounter();
+    LabPalPlot.resetCounter();
     lab.setup();
     lab.m_isDeserialized = false;
     return lab;
@@ -967,7 +934,8 @@ public abstract class Laboratory implements OwnershipManager
     return initialize(args, clazz, new LinearAssistant());
   }
 
-  public static final int initialize(String[] args, Class<? extends Laboratory> clazz,
+  @SuppressWarnings("deprecation")
+	public static final int initialize(String[] args, Class<? extends Laboratory> clazz,
       final LabAssistant assistant)
   {
 
@@ -1207,7 +1175,7 @@ public abstract class Laboratory implements OwnershipManager
   }
 
   /**
-   * Sets up the experiments and plots that this lab will contain. You
+   * Sets up the experiments and LabPalPlots that this lab will contain. You
    * <em>must</em> implement this method and add at least one experiment
    * (otherwise there won't be anything to do with your lab).
    */
@@ -1601,16 +1569,6 @@ public abstract class Laboratory implements OwnershipManager
   }
 
   /**
-   * Gets the instance of the data tracker used for provenance information
-   * 
-   * @return The data tracker
-   */
-  public DataTracker getDataTracker()
-  {
-    return m_dataTracker;
-  }
-
-  /**
    * Queues all the experiments and starts the assistant
    */
   public void startAll()
@@ -1664,7 +1622,6 @@ public abstract class Laboratory implements OwnershipManager
     return null;
   }
 
-  @Override
   public Object getObjectWithId(String id)
   {
     if (id == null || id.isEmpty())
@@ -1694,7 +1651,6 @@ public abstract class Laboratory implements OwnershipManager
     out.append(getCliHeader()).append("\n");
     out.append("Azrael version:   ").append(ObjectPrinter.getVersionString()).append("\n");
     out.append("Jerrydog version: ").append(Server.getVersionString()).append("\n");
-    out.append("MTNP version:     ").append(DataFormatter.getVersionString()).append("\n");
   }
 
   /**

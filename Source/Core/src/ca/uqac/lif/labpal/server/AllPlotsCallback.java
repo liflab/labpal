@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2020 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,9 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.plot.Plot;
+import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.spreadsheet.plot.PlotFormat;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
 
 /**
  * Callback to download all plots as a single, multi-page PDF file. This
@@ -87,13 +89,13 @@ public class AllPlotsCallback extends WebCallback
     List<String> filenames = new ArrayList<String>();
     for (int id : m_lab.getPlotIds())
     {
-      Plot plot = m_lab.getPlot(id);
+      LabPalPlot plot = m_lab.getPlot(id);
       // Get plot's image and write to temporary file
       byte[] image;
       try
       {
       	// Avoid failure of producing the PDF because of a faulty plot
-      	image = plot.getImage(Plot.ImageType.PDF, with_captions);
+      	image = plot.getImage(PlotFormat.PDF, with_captions);
       }
       catch (Exception e)
       {
@@ -105,7 +107,7 @@ public class AllPlotsCallback extends WebCallback
       if (image == null || image.length == 0)
       {
     	  // Substitute plot for a blank image
-    	  image = Plot.s_blankImagePdf;
+    	  image = Gnuplot.s_blankImagePdf;
       }
       fos.write(image, 0, image.length);
       fos.flush();

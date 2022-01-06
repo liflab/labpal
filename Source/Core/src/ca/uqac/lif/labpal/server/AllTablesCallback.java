@@ -17,7 +17,9 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -28,9 +30,8 @@ import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.table.HardTable;
-import ca.uqac.lif.mtnp.table.Table;
-import ca.uqac.lif.mtnp.table.rendering.LatexTableRenderer;
+import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.LatexTableRenderer;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -99,8 +100,9 @@ public class AllTablesCallback extends WebCallback
         box_name += id;
       }
       box_name = LatexTableRenderer.formatName(box_name);
-      HardTable d_tab = tab.getDataTable();
-      String tab_contents = renderer.render(d_tab.getTree(), d_tab.getColumnNames());
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      renderer.render(new PrintStream(baos));
+      String tab_contents = baos.toString();
       out.append("% ----------------------").append(FileHelper.CRLF).append("% Table: ")
           .append(box_name).append(FileHelper.CRLF).append("% ")
           .append(LatexTableRenderer.formatName(tab.getTitle())).append(FileHelper.CRLF);

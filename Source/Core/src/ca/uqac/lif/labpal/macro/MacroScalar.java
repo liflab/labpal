@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2017 Sylvain Hallé
+  Copyright (C) 2014-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import ca.uqac.lif.json.JsonNull;
 import ca.uqac.lif.json.JsonString;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.table.rendering.LatexTableRenderer;
+import ca.uqac.lif.labpal.table.LatexTableRenderer;
 
 /**
  * A named, user-defined data point computed from the contents of a
@@ -132,7 +132,7 @@ public class MacroScalar extends Macro
 			out.append("% ").append(m_description).append(FileHelper.CRLF);
 		}
 		JsonElement value = getValue();
-		out.append("\\newcommand{\\").append(m_name).append("}{\\href{").append(MacroNode.getDatapointId(this, "")).append("}{");
+		out.append("\\newcommand{\\").append(m_name).append("}{\\href{").append("M" + m_id).append("}{");
 		if (value instanceof JsonString)
 		{
 			out.append(LatexTableRenderer.escape(((JsonString) value).stringValue()));

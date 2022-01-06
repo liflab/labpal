@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,12 +32,8 @@ import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.table.HardTable;
-import ca.uqac.lif.mtnp.table.Table;
-import ca.uqac.lif.mtnp.table.Table.CellCoordinate;
-import ca.uqac.lif.mtnp.table.TableCellNode;
-import ca.uqac.lif.mtnp.table.rendering.HtmlTableNodeRenderer;
-import ca.uqac.lif.mtnp.table.rendering.PlainTableRenderer;
+import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.spreadsheet.Cell;
 
 /**
  * Callback producing a file from one of the lab's tables, in various formats.
@@ -77,31 +75,22 @@ public class TablePageCallback extends TemplatePageCallback
       tab_id = Integer.parseInt(params.get("id"));
     }
     Table tab = m_lab.getTable(tab_id);
-    if (tab == null)
-    {
-      return "";
-    }
-    HardTable tbl = tab.getDataTable();
     String highlight = "";
-    String table_html = "";
     if (params.containsKey("highlight"))
     {
       // If cells have to be highlighted, display the table without
       // sorting the cells
       highlight = params.get("highlight");
     }
-    if (s_renderPlain && params.containsKey("highlight"))
+    HtmlTableRenderer renderer = new HtmlTableRenderer(tab);
+    if (params.containsKey("highlight"))
     {
-      PlainTableRenderer renderer = new PlainTableRenderer(tab, getCellsToHighlight(highlight));
-      table_html = renderer.render();
+    	renderer.highlight(getCellsToHighlight(params.get(highlight)));
     }
-    else
-    {
-      HtmlTableNodeRenderer renderer = new HtmlTableNodeRenderer(tab,
-          getCellsToHighlight(highlight));
-      renderer.setExplainUrlPrefix("../explain");
-      table_html = renderer.render(tbl.getTree(), tbl.getColumnNames());
-    }
+    renderer.setExplainUrlPrefix("../explain");
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    renderer.render(new PrintStream(baos));
+    String table_html = baos.toString();
     s = s.replaceAll("\\{%TITLE%\\}", Matcher.quoteReplacement(tab.getTitle()));
     s = s.replaceAll("\\{%TABLE%\\}", Matcher.quoteReplacement(table_html));
     String desc = tab.getDescription();
@@ -118,19 +107,18 @@ public class TablePageCallback extends TemplatePageCallback
     return s;
   }
 
-  protected Set<CellCoordinate> getCellsToHighlight(String highlight)
+  protected Set<Cell> getCellsToHighlight(String highlight)
   {
-    // TODO: we should call TableCellNode to get the x,y coordinates of a datapoint
-    Set<CellCoordinate> to_highlight = new HashSet<CellCoordinate>();
+    Set<Cell> to_highlight = new HashSet<Cell>();
     String[] ids = highlight.split(",");
     for (String id : ids)
     {
       if (id.trim().isEmpty())
         continue;
-      String[] parts = id.split(Pattern.quote(TableCellNode.s_separator));
+      String[] parts = id.split(Pattern.quote(","));
       int row = Integer.parseInt(parts[1]);
       int col = Integer.parseInt(parts[2]);
-      to_highlight.add(new Table.CellCoordinate(row, col));
+      to_highlight.add(Cell.get(col, row));
     }
     return to_highlight;
   }

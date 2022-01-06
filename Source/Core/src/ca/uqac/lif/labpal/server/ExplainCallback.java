@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2019 Sylvain Hallé
+  Copyright (C) 2014-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,12 +35,12 @@ import ca.uqac.lif.labpal.macro.MacroNode;
 import ca.uqac.lif.mtnp.plot.PlotNode;
 import ca.uqac.lif.petitpoucet.AggregateFunction;
 import ca.uqac.lif.labpal.provenance.DotProvenanceTreeRenderer;
-import ca.uqac.lif.labpal.provenance.ExperimentValue;
+import ca.uqac.lif.labpal.ExperimentValue;
 import ca.uqac.lif.petitpoucet.NodeFunction;
 import ca.uqac.lif.petitpoucet.ProvenanceNode;
 import ca.uqac.lif.mtnp.table.HardTable;
 import ca.uqac.lif.mtnp.table.PrimitiveValue;
-import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.mtnp.table.TableCellNode;
 import ca.uqac.lif.mtnp.table.TableFunctionNode;
 import ca.uqac.lif.mtnp.table.TableNode;

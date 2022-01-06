@@ -35,7 +35,6 @@ import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LabPalTui;
-import ca.uqac.lif.petitpoucet.NodeFunction;
 
 /**
  * Callback showing a form to edit the parameters of one specific experiment.

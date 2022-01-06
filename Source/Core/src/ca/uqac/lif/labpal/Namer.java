@@ -4,8 +4,8 @@ import ca.uqac.lif.json.JsonBoolean;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.json.JsonString;
-import ca.uqac.lif.mtnp.plot.Plot;
-import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.labpal.table.Table;
 
 /**
  * Object that automatically builds a description for a table or plot object,
@@ -46,7 +46,7 @@ public abstract class Namer
    * @param prefix A prefix to append at the beginning of the name
    * @param suffix A suffix to append at the end of the name
    */
-  public void setNickname(Plot p, Region r, String prefix, String suffix)
+  public void setNickname(LabPalPlot p, Region r, String prefix, String suffix)
   {
     p.setNickname(buildName(r, prefix, suffix));
   }
@@ -58,7 +58,7 @@ public abstract class Namer
    * @param prefix A prefix to append at the beginning of the name
    * @param suffix A suffix to append at the end of the name
    */
-  public void setTitle(Plot p, Region r, String prefix, String suffix)
+  public void setTitle(LabPalPlot p, Region r, String prefix, String suffix)
   {
     p.setTitle(buildName(r, prefix, suffix));
   }

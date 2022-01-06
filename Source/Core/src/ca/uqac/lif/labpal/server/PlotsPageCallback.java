@@ -27,9 +27,10 @@ import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.plot.Plot;
-import ca.uqac.lif.mtnp.plot.gnuplot.GnuPlot;
-import ca.uqac.lif.mtnp.table.Table;
+import ca.uqac.lif.labpal.plot.LabPalGnuplot;
+import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
 
 /**
  * Callback showing a list of plots
@@ -52,7 +53,7 @@ public class PlotsPageCallback extends TemplatePageCallback
   {
     String out = page.replaceAll("\\{%TITLE%\\}", "Plots");
     out = out.replaceAll("\\{%FAVICON%\\}", getFavicon(IconType.GRAPH));
-    if (GnuPlot.isGnuplotPresent())
+    if (Gnuplot.isGnuplotPresent())
     {
       out = out.replaceAll("\\{%PLOTS%\\}", getPlots());
       // if (AllPlotsCallback.s_pdftkPresent)
@@ -85,7 +86,7 @@ public class PlotsPageCallback extends TemplatePageCallback
     Collections.sort(ids);
     for (int id : ids)
     {
-      Plot plot = m_lab.getPlot(id);
+      LabPalPlot plot = m_lab.getPlot(id);
       Table t = plot.getTable();
       out.append("<div class=\"plot\">\n");
       out.append("<a href=\"plot/").append(id)
@@ -93,7 +94,7 @@ public class PlotsPageCallback extends TemplatePageCallback
       out.append("<img src=\"plot/").append(id)
           .append("\" alt=\"" + htmlEscape(plot.getNickname()) + "\" /></a>\n");
       out.append("<div><ul>");
-      if (plot instanceof GnuPlot)
+      if (plot instanceof LabPalGnuplot)
       {
         out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot/").append(id)
             .append("?format=gp&amp;dl=1\" title=\"Download as GnuPlot source file\">GP</a></li>");

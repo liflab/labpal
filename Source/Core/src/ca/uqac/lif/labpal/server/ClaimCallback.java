@@ -30,8 +30,6 @@ import ca.uqac.lif.labpal.Claim;
 import ca.uqac.lif.labpal.Claim.Explanation;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.petitpoucet.NodeFunction;
-import ca.uqac.lif.petitpoucet.ProvenanceNode;
 
 /**
  * Callback to display the details of one specific experiment.

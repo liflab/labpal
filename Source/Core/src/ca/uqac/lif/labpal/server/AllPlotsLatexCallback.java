@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,10 +28,9 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.plot.Plot;
-import ca.uqac.lif.mtnp.plot.PlotNode;
-import ca.uqac.lif.mtnp.table.Table;
-import ca.uqac.lif.mtnp.table.rendering.LatexTableRenderer;
+import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.LatexTableRenderer;
 
 /**
  * Callback to download a LaTeX file defining a unique command for each plot of
@@ -82,7 +81,7 @@ public class AllPlotsLatexCallback extends TemplatePageCallback
     for (int id : m_lab.getPlotIds())
     {
       page_nb++;
-      Plot plot = m_lab.getPlot(id);
+      LabPalPlot plot = m_lab.getPlot(id);
       Table tab = plot.getTable();
       String box_name = plot.getTitle();
       if (!plot.getNickname().isEmpty())
@@ -104,7 +103,7 @@ public class AllPlotsLatexCallback extends TemplatePageCallback
       out.append("% ----------------------").append(FileHelper.CRLF);
       out.append("\\newsavebox{\\").append(box_name).append("}").append(FileHelper.CRLF);
       out.append("\\begin{lrbox}{\\").append(box_name).append("}").append(FileHelper.CRLF);
-      out.append("\\href{").append(PlotNode.getDataPointId(plot)).append("}{");
+      out.append("\\href{").append("P" + plot.getId()).append("}{");
       out.append("\\includegraphics[page=").append(page_nb).append(",width=\\linewidth]{")
           .append(plots_filename).append("}");
       out.append("}");

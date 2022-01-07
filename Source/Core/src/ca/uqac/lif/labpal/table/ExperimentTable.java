@@ -282,4 +282,11 @@ public class ExperimentTable extends Table
 		}
 
 	}
+
+	@Override
+	public Table dependsOn(int col, int row)
+	{
+		// An experiment table does not depend on another table
+		return null;
+	}
 }

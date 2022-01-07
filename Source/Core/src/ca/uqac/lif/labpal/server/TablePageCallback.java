@@ -115,7 +115,7 @@ public class TablePageCallback extends TemplatePageCallback
     {
       if (id.trim().isEmpty())
         continue;
-      String[] parts = id.split(Pattern.quote(","));
+      String[] parts = id.split(Pattern.quote(":"));
       int row = Integer.parseInt(parts[1]);
       int col = Integer.parseInt(parts[2]);
       to_highlight.add(Cell.get(col, row));

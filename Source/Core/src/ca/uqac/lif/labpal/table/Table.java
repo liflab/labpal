@@ -159,6 +159,16 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 * @return The spreadsheet
 	 */
 	/*@ null @*/ public abstract Spreadsheet getSpreadsheet();
+	
+	/**
+	 * Gets the table on which a cell of the spreadsheet immediately depends
+	 * on.
+	 * @param col The cell's column
+	 * @param row The cell's row
+	 * @return Another table, or <tt>null</tt> if the cell does not depend on another
+	 * table
+	 */
+	/*@ null @*/ public abstract Table dependsOn(int col, int row);
 
 	@Override
 	protected Object[] getValue(Object... inputs) throws InvalidNumberOfArgumentsException

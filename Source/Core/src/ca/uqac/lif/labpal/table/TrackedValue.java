@@ -81,4 +81,21 @@ public class TrackedValue implements ExplanationQueryable
 		}
 		return m_value.toString();
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return m_subject.hashCode() + m_provenance.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == null || !(o instanceof TrackedValue))
+		{
+			return false;
+		}
+		TrackedValue tv = (TrackedValue) o;
+		return m_subject.equals(tv.m_subject) && m_provenance.equals(tv.m_provenance);
+	}
 }

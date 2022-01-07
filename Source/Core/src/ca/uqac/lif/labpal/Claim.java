@@ -24,6 +24,12 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ca.uqac.lif.dag.LabelledNode;
+import ca.uqac.lif.labpal.provenance.TrackedValue;
+import ca.uqac.lif.petitpoucet.AndNode;
+import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.Part;
+import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 
 /**
@@ -205,6 +211,54 @@ public abstract class Claim implements ExplanationQueryable
 		return m_id;
 	}
 	
+	protected static LabelledNode getExplanation(Explanation e, NodeFactory f)
+	{
+		List<TrackedValue> objs = e.getObjects();
+		if (objs.isEmpty())
+		{
+			return null;
+		}
+		if (objs.size() == 1)
+		{
+			TrackedValue tv = objs.get(0);
+			return f.getPartNode(tv.getPart(), tv.getSubject());
+		}
+		AndNode and = f.getAndNode();
+		for (TrackedValue tv : objs)
+		{
+			and.addChild(f.getPartNode(tv.getPart(), tv.getSubject()));
+		}
+		return and;
+	}
+	
+	@Override
+	public PartNode getExplanation(Part d, NodeFactory f)
+	{
+		PartNode root = f.getPartNode(d, this);
+		LabelledNode to_add = root;
+		if (m_explanations.size() > 1)
+		{
+			AndNode and = f.getAndNode();
+			root.addChild(and);
+			to_add = and;
+		}
+		for (Explanation e : m_explanations)
+		{
+			LabelledNode ln = getExplanation(e, f);
+			if (ln != null)
+			{
+				to_add.addChild(ln);
+			}
+		}
+		return root;
+	}
+	
+	@Override
+	public PartNode getExplanation(Part d)
+	{
+		return getExplanation(d, NodeFactory.getFactory());
+	}
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -231,7 +285,7 @@ public abstract class Claim implements ExplanationQueryable
 		 * A set of objects (tables, experiments or plots) involved in the
 		 * falsehood of a claim
 		 */
-		protected List<Object> m_faultyObjects;
+		protected List<TrackedValue> m_faultyObjects;
 		
 		/**
 		 * A textual description of the explanation
@@ -245,7 +299,7 @@ public abstract class Claim implements ExplanationQueryable
 		public Explanation(String description)
 		{
 			super();
-			m_faultyObjects = new ArrayList<Object>();
+			m_faultyObjects = new ArrayList<TrackedValue>();
 			m_description = description;
 		}
 		
@@ -254,9 +308,9 @@ public abstract class Claim implements ExplanationQueryable
 		 * @param objects The objects to add
 		 * @return This explanation
 		 */
-		public Explanation add(Object ... objects)
+		public Explanation add(TrackedValue ... objects)
 		{
-			for (Object o : objects)
+			for (TrackedValue o : objects)
 			{
 				m_faultyObjects.add(o);
 			}
@@ -282,7 +336,7 @@ public abstract class Claim implements ExplanationQueryable
 		 * Gets the objects associated to this explanation
 		 * @return The objects
 		 */
-		public List<Object> getObjects()
+		public List<TrackedValue> getObjects()
 		{
 			return m_faultyObjects;
 		}

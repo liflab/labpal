@@ -2,8 +2,9 @@ package primes;
 
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.mtnp.plot.gral.Scatterplot;
+import ca.uqac.lif.labpal.plot.LabPalGnuplot;
+import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
 /**
@@ -22,8 +23,7 @@ public class PrimeLabSimple extends Laboratory
 			add(exp_td);
 			table.add(exp_td);
 		}
-		Scatterplot plot = new Scatterplot(table);
-		plot.setLogscale(Axis.X);
+		LabPalGnuplot plot = new LabPalGnuplot(table, new GnuplotScatterplot().setLogscale(Axis.X));
 		add(plot);
 	}
 	

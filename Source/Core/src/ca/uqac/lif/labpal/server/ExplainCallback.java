@@ -32,6 +32,7 @@ import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.plot.LabPalPlot;
 import ca.uqac.lif.labpal.provenance.GraphViewer;
+import ca.uqac.lif.labpal.provenance.TrackedValue;
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.dag.Pin;
 import ca.uqac.lif.labpal.Claim;
@@ -46,7 +47,6 @@ import ca.uqac.lif.spreadsheet.Spreadsheet;
 import ca.uqac.lif.spreadsheet.plot.Plot;
 import ca.uqac.lif.spreadsheet.plot.PlotFormat;
 import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.TrackedValue;
 
 /**
  * Callback producing a provenance tree from one of the lab's data points.

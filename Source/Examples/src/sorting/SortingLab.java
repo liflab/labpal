@@ -19,13 +19,13 @@ package sorting;
 
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.ConstantNumberMacro;
-import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.mtnp.plot.gnuplot.ClusteredHistogram;
-import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
-import ca.uqac.lif.mtnp.table.ColumnSum;
-import ca.uqac.lif.mtnp.table.ExpandAsColumns;
+import ca.uqac.lif.labpal.plot.LabPalGnuplot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.mtnp.table.TransformedTable;
+import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
+import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotHistogram;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotScatterplot;
 
 /**
  * This is an example of a lab that creates experiments to compare
@@ -62,16 +62,14 @@ public class SortingLab extends Laboratory
 		}
 		
 		// Prepare a plot from the results of the table
-		TransformedTable t_table = new TransformedTable(ExpandAsColumns.get("name", "time"), table);
+		TransformedTable t_table = new TransformedTable(new ExpandAsColumns("name", "time"), table);
 		t_table.setTitle("Sorting time per algorithm").setNickname("sorttimealg");
 		add(t_table);
-		Scatterplot plot = new Scatterplot(t_table);
-		plot.setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)");
-		plot.withLines().setNickname("sortplot");
+		LabPalGnuplot plot = new LabPalGnuplot(t_table, new GnuplotScatterplot().setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)").withLines());
+		plot.setNickname("sortplot");
 		add(plot);
-		ClusteredHistogram c_plot = new ClusteredHistogram(t_table);
-		c_plot.setTitle("Sorting time for each array").setNickname("sorthisto");
-		c_plot.setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)");
+		LabPalGnuplot c_plot = new LabPalGnuplot(t_table, new GnuplotHistogram().setTitle("Sorting time for each array").setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)"));
+		c_plot.setNickname("sorthisto");
 		add(c_plot);
 		
 		// Just for fun, create another plot with the sum of all sorting
@@ -79,8 +77,7 @@ public class SortingLab extends Laboratory
 		TransformedTable p_table = new TransformedTable(ColumnSum.get(), t_table);
 		p_table.setTitle("Cumulative sorting time").setNickname("sumtime");
 		add(p_table);
-		ClusteredHistogram p_plot = new ClusteredHistogram(p_table);
-		c_plot.setCaption(Axis.X, "Total size").setCaption(Axis.Y, "Time (ms)");
+		LabPalGnuplot p_plot = new LabPalGnuplot(p_table, new GnuplotHistogram().setCaption(Axis.X, "Total size").setCaption(Axis.Y, "Time (ms)"));
 		add(p_plot);
 		
 		// Create a few macros showing summary information

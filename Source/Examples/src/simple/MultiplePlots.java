@@ -1,14 +1,15 @@
 package simple;
 
-import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.mtnp.plot.gnuplot.ClusteredHistogram;
-import ca.uqac.lif.mtnp.plot.gral.Scatterplot;
+import ca.uqac.lif.spreadsheet.functions.Merge;
+import ca.uqac.lif.spreadsheet.functions.RenameColumn;
+import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotHistogram;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.plot.LabPalGnuplot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.mtnp.table.Join;
-import ca.uqac.lif.mtnp.table.RenameColumns;
-import ca.uqac.lif.mtnp.table.Table;
-import ca.uqac.lif.mtnp.table.TransformedTable;
+import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TransformedTable;
 
 /**
  * Create data series from multiple experiments and plot them in the same
@@ -35,20 +36,21 @@ public class MultiplePlots extends Laboratory
 		
 		// Prepare a plot from the "y" values of both types of experiments
 		final Table table1 = new TransformedTable(
-				new Join("a"),
-				new TransformedTable(new RenameColumns("a", "Experiment A"), table_exp_a),
-				new TransformedTable(new RenameColumns("b", "Experiment B"), table_exp_b)
+				new Merge(),
+				new TransformedTable(new RenameColumn("a", "Experiment A"), table_exp_a),
+				new TransformedTable(new RenameColumn("b", "Experiment B"), table_exp_b)
 				);
 		table1.setTitle("Comparison of Experiment A and Experiment B");
 		add(table1);
-		Scatterplot plot = new Scatterplot(table1);
-		plot.setCaption(Axis.X, "Value of a").setCaption(Axis.Y, "Value of y");
-		plot.withLines().withPoints();
+		LabPalGnuplot plot = new LabPalGnuplot(table1, new GnuplotScatterplot()
+				.setCaption(Axis.X, "Value of a")
+				.setCaption(Axis.Y, "Value of y")
+				.withLines().withPoints());
 		add(plot);
 		
 		// Same data, displayed as a histogram. This graph requires Gnuplot
-		ClusteredHistogram histogram = new ClusteredHistogram(table1);
-		histogram.setCaption(Axis.X, "Value of a").setCaption(Axis.Y, "Value of y");
+		LabPalGnuplot histogram = new LabPalGnuplot(table1, new GnuplotHistogram()
+				.setCaption(Axis.X, "Value of a").setCaption(Axis.Y, "Value of y"));
 		add(histogram);
 	}
 	

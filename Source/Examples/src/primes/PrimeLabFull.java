@@ -10,13 +10,17 @@ import ca.uqac.lif.labpal.CliParser.Argument;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.ExperimentException;
+import ca.uqac.lif.labpal.ExperimentValue;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.provenance.ExperimentValue;
-import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.mtnp.plot.gral.Scatterplot;
-import ca.uqac.lif.mtnp.table.ExpandAsColumns;
-import ca.uqac.lif.petitpoucet.ProvenanceNode;
+import ca.uqac.lif.labpal.plot.LabPalGnuplot;
+import ca.uqac.lif.labpal.provenance.TrackedValue;
+import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
+import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.petitpoucet.ComposedPart;
+import ca.uqac.lif.petitpoucet.function.vector.NthElement;
 
 /**
  * Compares various methods for checking if a number is prime.
@@ -78,8 +82,9 @@ public class PrimeLabFull extends Laboratory
 		add(new MonotonicIncreaseClaim(exp_es));
 
 		// Create a plot, performing a transformation of the table before
-		Scatterplot plot = new Scatterplot(table, new ExpandAsColumns("Method", "Duration"));
-		plot.setLogscale(Axis.X).setCaption(Axis.Y, "Duration (us)");
+		TransformedTable t_table = new TransformedTable(new ExpandAsColumns("Method", "Duration"), table);
+		LabPalGnuplot plot = new LabPalGnuplot(t_table, new GnuplotScatterplot()
+				.setLogscale(Axis.X).setCaption(Axis.Y, "Duration (us)"));
 		add(plot);
 	}
 
@@ -300,7 +305,8 @@ public class PrimeLabFull extends Laboratory
 					{
 						r = Result.WARNING;
 						Explanation exp = new Explanation("The time to check primality of number at position " + pos + " is smaller than the time to check primality of number at position " + (pos-1));
-						exp.add(new ProvenanceNode(new ExperimentValue(m_experiment, PrimeExperiment.DURATION, pos - 1)), new ProvenanceNode(new ExperimentValue(m_experiment, PrimeExperiment.DURATION, pos)));
+						exp.add(new TrackedValue(null, ComposedPart.compose(new NthElement(pos - 1), new ExperimentValue(PrimeExperiment.DURATION)), m_experiment));
+						exp.add(new TrackedValue(null, ComposedPart.compose(new NthElement(pos), new ExperimentValue(PrimeExperiment.DURATION)), m_experiment));
 						addExplanation(exp);
 					}
 				}

@@ -65,7 +65,6 @@ import ca.uqac.lif.labpal.server.HttpUtilities;
 import ca.uqac.lif.labpal.server.LabPalServer;
 import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.labpal.table.TrackedValue;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
@@ -75,6 +74,7 @@ import ca.uqac.lif.petitpoucet.function.vector.NthElement;
 import ca.uqac.lif.spreadsheet.Cell;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.labpal.provenance.TrackedValue;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**

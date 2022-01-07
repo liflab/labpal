@@ -32,7 +32,7 @@ import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
  */
 public class LabPalGnuplot extends LabPalPlot
 {
-	protected LabPalGnuplot(Table t, Plot p)
+	public LabPalGnuplot(Table t, Plot p)
 	{
 		super(t, p);
 	}

@@ -19,12 +19,12 @@ package browser;
 
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.mtnp.plot.gnuplot.ClusteredHistogram;
-import ca.uqac.lif.mtnp.plot.gral.PieChart;
-import ca.uqac.lif.mtnp.table.ExpandAsColumns;
+import ca.uqac.lif.labpal.plot.LabPalGnuplot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.mtnp.table.TransformedTable;
+import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
+import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotHistogram;
 
 /**
  * Perform a transformation on a table before plotting it.
@@ -66,15 +66,14 @@ public class TransformLab extends Laboratory
 		// Create a histogram
 		TransformedTable tt = new TransformedTable(new ExpandAsColumns("market", "share"), et);
 		add(tt);
-		ClusteredHistogram plot = new ClusteredHistogram(tt);
-		plot.setTitle("My bar plot");
-		plot.setCaption(Axis.X, "Browser").setCaption(Axis.Y, "Share");
+		LabPalGnuplot plot = new LabPalGnuplot(tt, new GnuplotHistogram()
+				.setTitle("My bar plot")
+				.setCaption(Axis.X, "Browser").setCaption(Axis.Y, "Share"));
 		add(plot);
 		
 		// Create a stacked bar plot
-		ClusteredHistogram stacked_plot = new ClusteredHistogram(et, new ExpandAsColumns("market", "share"));
-		stacked_plot.rowStacked();
-		stacked_plot.setTitle("My stacked plot");
+		LabPalGnuplot stacked_plot = new LabPalGnuplot(tt, new GnuplotHistogram()
+				.rowStacked().setTitle("My stacked plot"));
 		add(stacked_plot);
 		
 		// Create a pie chart

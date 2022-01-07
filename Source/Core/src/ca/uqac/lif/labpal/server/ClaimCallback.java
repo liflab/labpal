@@ -28,6 +28,7 @@ import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.Claim;
 import ca.uqac.lif.labpal.Claim.Explanation;
+import ca.uqac.lif.labpal.provenance.TrackedValue;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.petitpoucet.PartNode;
@@ -122,7 +123,7 @@ public class ClaimCallback extends TemplatePageCallback
   {
     StringBuilder out = new StringBuilder();
     out.append("<div class=\"explanation-text\">").append(exp.getDescription()).append("</div>");
-    List<Object> objects = exp.getObjects();
+    List<TrackedValue> objects = exp.getObjects();
     if (!objects.isEmpty())
     {
       out.append("<ul>\n");

@@ -17,9 +17,10 @@
  */
 package simple;
 
-import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
-import ca.uqac.lif.mtnp.plot.gral.Scatterplot;
+import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
+import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.plot.LabPalGnuplot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
 /**
@@ -49,10 +50,11 @@ public class SimpleLab extends Laboratory
 		}
 		
 		// Prepare a scatterplot from the table
-		Scatterplot plot = new Scatterplot(table);
-		plot.setTitle("A scatterplot");
-		plot.setCaption(Axis.X, "Value of a").setCaption(Axis.Y, "Value of y");
-		plot.withLines().withPoints();
+		LabPalGnuplot plot = new LabPalGnuplot(table, new GnuplotScatterplot()
+				.setTitle("A scatterplot")
+				.setCaption(Axis.X, "Value of a")
+				.setCaption(Axis.Y, "Value of y")
+				.withLines().withPoints());
 		add(plot); // Add to lab
 	}
 	

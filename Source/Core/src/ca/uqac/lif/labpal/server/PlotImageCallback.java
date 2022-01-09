@@ -29,10 +29,10 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.LabPalGnuplot;
-import ca.uqac.lif.labpal.plot.LabPalPlot;
-import ca.uqac.lif.spreadsheet.plot.PlotFormat;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.spreadsheet.chart.ChartFormat;
+import ca.uqac.lif.spreadsheet.chart.UnsupportedPlotFormatException;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -53,164 +53,174 @@ import com.sun.net.httpserver.HttpExchange;
  */
 public class PlotImageCallback extends WebCallback
 {
-  public PlotImageCallback(Laboratory lab, LabAssistant assistant)
-  {
-    super("/plot", lab, assistant);
-  }
+	public PlotImageCallback(Laboratory lab, LabAssistant assistant)
+	{
+		super("/plot", lab, assistant);
+	}
 
-  @Override
-  public CallbackResponse process(HttpExchange t)
-  {
-    CallbackResponse response = new CallbackResponse(t);
-    Map<String, String> params = getParameters(t);
-    List<String> path_parts = getParametersFromPath(params);
-    int plot_id = -1;
-    if (!path_parts.isEmpty())
-    {
-      plot_id = Integer.parseInt(path_parts.get(0));
-    }
-    else if (params.containsKey("id"))
-    {
-      plot_id = Integer.parseInt(params.get("id"));
-    }
-    LabPalPlot p = m_lab.getPlot(plot_id);
-    if (p == null)
-    {
-      response.setCode(CallbackResponse.HTTP_NOT_FOUND);
-      return response;
-    }
-    if (params.containsKey("format") && params.get("format").compareToIgnoreCase("gp") == 0
-        && p instanceof LabPalGnuplot)
-    {
-      response.setContents(((LabPalGnuplot) p).toGnuplot(PlotFormat.PDF, m_lab.getTitle(), true));
-      response.setCode(CallbackResponse.HTTP_OK);
-      response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
-      return response;
-    }
-    if (!Gnuplot.isGnuplotPresent())
-    {
-      // Asking for an image, but Gnuplot not available: stop right here
-      response.setCode(CallbackResponse.HTTP_NOT_FOUND);
-      return response;
-    }
-    PlotFormat term = PlotFormat.PNG;
-    response.setContentType(ContentType.PNG);
-    if (params.containsKey("format") && params.get("format").compareToIgnoreCase("pdf") == 0)
-    {
-      term = PlotFormat.PDF;
-      response.setContentType(ContentType.PDF);
-    }
-    if (params.containsKey("format") && params.get("format").compareToIgnoreCase("dumb") == 0)
-    {
-      term = Gnuplot.DUMB;
-      response.setContentType(ContentType.TEXT);
-    }
-    byte[] image = p.getImage(term);
-    if (image == null)
-    {
-      response.setCode(CallbackResponse.HTTP_NOT_FOUND);
-      return response;
-    }
-    response.setContents(image);
-    response.setCode(CallbackResponse.HTTP_OK);
-    if (params.containsKey("dl"))
-    {
-      response.setAttachment(Server.urlEncode(p.getTitle() + "." + term.getExtension()));
-    }
-    return response;
-  }
+	@Override
+	public CallbackResponse process(HttpExchange t)
+	{
+		CallbackResponse response = new CallbackResponse(t);
+		Map<String, String> params = getParameters(t);
+		List<String> path_parts = getParametersFromPath(params);
+		int plot_id = -1;
+		if (!path_parts.isEmpty())
+		{
+			plot_id = Integer.parseInt(path_parts.get(0));
+		}
+		else if (params.containsKey("id"))
+		{
+			plot_id = Integer.parseInt(params.get("id"));
+		}
+		Plot p = m_lab.getPlot(plot_id);
+		if (p == null)
+		{
+			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+			return response;
+		}
+		if (params.containsKey("format") && params.get("format").compareToIgnoreCase("gp") == 0)
+		{
+			String plot_contents = p.toGnuplot(ChartFormat.PDF, m_lab.getTitle(), true);
+			if (plot_contents != null)
+			{
+				response.setContents(plot_contents);
+				response.setCode(CallbackResponse.HTTP_OK);
+				response.setAttachment(Server.urlEncode(p.getTitle() + ".gp"));
+				return response;
+			}
+		}
+		if (!Gnuplot.isGnuplotPresent())
+		{
+			// Asking for an image, but Gnuplot not available: stop right here
+			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+			return response;
+		}
+		ChartFormat term = ChartFormat.PNG;
+		response.setContentType(ContentType.PNG);
+		if (params.containsKey("format") && params.get("format").compareToIgnoreCase("pdf") == 0)
+		{
+			term = ChartFormat.PDF;
+			response.setContentType(ContentType.PDF);
+		}
+		if (params.containsKey("format") && params.get("format").compareToIgnoreCase("dumb") == 0)
+		{
+			term = Gnuplot.DUMB;
+			response.setContentType(ContentType.TEXT);
+		}
+		byte[] image = p.getImage(term);
+		if (image == null)
+		{
+			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
+			return response;
+		}
+		response.setContents(image);
+		response.setCode(CallbackResponse.HTTP_OK);
+		if (params.containsKey("dl"))
+		{
+			response.setAttachment(Server.urlEncode(p.getTitle() + "." + term.getExtension()));
+		}
+		return response;
+	}
 
-  /**
-   * Gets the image file corresponding to a plot in the given format
-   * 
-   * @param plot_id
-   *          The ID of the plot to display
-   * @param format
-   *          The image file format (png, pdf, dumb or gp)
-   * @return An array of bytes containing the image
-   */
-  public byte[] exportTo(int plot_id, String format)
-  {
-    LabPalPlot p = m_lab.getPlot(plot_id);
-    byte[] image = null;
-    if (format.compareToIgnoreCase("png") == 0)
-    {
-      image = p.getImage(PlotFormat.PNG);
-    }
-    else if (format.compareToIgnoreCase("pdf") == 0)
-    {
-      image = p.getImage(PlotFormat.PDF);
-    }
-    else if (format.compareToIgnoreCase("dumb") == 0 && p instanceof LabPalGnuplot)
-    {
-      image = p.getImage(Gnuplot.DUMB);
-    }
-    else if (format.compareToIgnoreCase("gp") == 0 && p instanceof LabPalGnuplot)
-    {
-      image = ((LabPalGnuplot) p).toGnuplot(PlotFormat.PDF, m_lab.getTitle(), true).getBytes();
-    }
-    return image;
-  }
+	/**
+	 * Gets the image file corresponding to a plot in the given format
+	 * 
+	 * @param plot_id
+	 *          The ID of the plot to display
+	 * @param format
+	 *          The image file format (png, pdf, dumb or gp)
+	 * @return An array of bytes containing the image
+	 */
+	public byte[] exportTo(int plot_id, String format)
+	{
+		Plot p = m_lab.getPlot(plot_id);
+		byte[] image = null;
+		try
+		{
+			if (format.compareToIgnoreCase("png") == 0)
+			{
+				image = p.getImage(ChartFormat.PNG);
+			}
+			else if (format.compareToIgnoreCase("pdf") == 0)
+			{
+				image = p.getImage(ChartFormat.PDF);
+			}
+			else if (format.compareToIgnoreCase("dumb") == 0)
+			{
+				image = p.getImage(Gnuplot.DUMB);
+			}
+			else if (format.compareToIgnoreCase("gp") == 0 && p.supportsGnuplot())
+			{
+				image = p.toGnuplot(ChartFormat.PDF, m_lab.getTitle(), true).getBytes();
+			}
+		}
+		catch (UnsupportedPlotFormatException e)
+		{
+			// Do nothing; image format not supported
+		}
+		return image;
+	}
 
-  @Override
-  public void addToZipBundle(ZipOutputStream zos) throws IOException
-  {
-    String filename;
-    // Plots in various formats
-    Set<Integer> ids = m_lab.getPlotIds();
-    byte[] byte_contents;
-    for (int id : ids) // PNG
-    {
-      byte_contents = exportTo(id, "png");
-      if (byte_contents == null)
-      {
-        continue;
-      }
-      filename = "plot/" + id + ".png";
-      ZipEntry ze = new ZipEntry(filename);
-      zos.putNextEntry(ze);
-      zos.write(byte_contents);
-      zos.closeEntry();
-    }
-    for (int id : ids) // PDF
-    {
-      byte_contents = exportTo(id, "pdf");
-      if (byte_contents == null)
-      {
-        continue;
-      }
-      filename = "plot/" + id + ".pdf";
-      ZipEntry ze = new ZipEntry(filename);
-      zos.putNextEntry(ze);
-      zos.write(byte_contents);
-      zos.closeEntry();
-    }
-    for (int id : ids) // DUMB
-    {
-      byte_contents = exportTo(id, "dumb");
-      if (byte_contents == null)
-      {
-        continue;
-      }
-      filename = "plot/" + id + ".txt";
-      ZipEntry ze = new ZipEntry(filename);
-      zos.putNextEntry(ze);
-      zos.write(byte_contents);
-      zos.closeEntry();
-    }
-    for (int id : ids) // GP
-    {
-      byte_contents = exportTo(id, "gp");
-      if (byte_contents == null)
-      {
-        continue;
-      }
-      filename = "plot/" + id + ".gp";
-      ZipEntry ze = new ZipEntry(filename);
-      zos.putNextEntry(ze);
-      zos.write(byte_contents);
-      zos.closeEntry();
-    }
-  }
+	@Override
+	public void addToZipBundle(ZipOutputStream zos) throws IOException
+	{
+		String filename;
+		// Plots in various formats
+		Set<Integer> ids = m_lab.getPlotIds();
+		byte[] byte_contents;
+		for (int id : ids) // PNG
+		{
+			byte_contents = exportTo(id, "png");
+			if (byte_contents == null)
+			{
+				continue;
+			}
+			filename = "plot/" + id + ".png";
+			ZipEntry ze = new ZipEntry(filename);
+			zos.putNextEntry(ze);
+			zos.write(byte_contents);
+			zos.closeEntry();
+		}
+		for (int id : ids) // PDF
+		{
+			byte_contents = exportTo(id, "pdf");
+			if (byte_contents == null)
+			{
+				continue;
+			}
+			filename = "plot/" + id + ".pdf";
+			ZipEntry ze = new ZipEntry(filename);
+			zos.putNextEntry(ze);
+			zos.write(byte_contents);
+			zos.closeEntry();
+		}
+		for (int id : ids) // DUMB
+		{
+			byte_contents = exportTo(id, "dumb");
+			if (byte_contents == null)
+			{
+				continue;
+			}
+			filename = "plot/" + id + ".txt";
+			ZipEntry ze = new ZipEntry(filename);
+			zos.putNextEntry(ze);
+			zos.write(byte_contents);
+			zos.closeEntry();
+		}
+		for (int id : ids) // GP
+		{
+			byte_contents = exportTo(id, "gp");
+			if (byte_contents == null)
+			{
+				continue;
+			}
+			filename = "plot/" + id + ".gp";
+			ZipEntry ze = new ZipEntry(filename);
+			zos.putNextEntry(ze);
+			zos.write(byte_contents);
+			zos.closeEntry();
+		}
+	}
 
 }

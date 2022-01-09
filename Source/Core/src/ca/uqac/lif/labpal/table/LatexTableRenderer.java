@@ -22,10 +22,27 @@ import java.io.PrintStream;
 import ca.uqac.lif.spreadsheet.Spreadsheet;
 import ca.uqac.lif.spreadsheet.StructuredSpreadsheetPrinter;
 
+/**
+ * Renders the spreadsheet produced by a table as LaTeX markup.
+ * @author Sylvain Hallé
+ */
 public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 {
+	/**
+	 * The table to render as LaTeX markup.
+	 */
 	protected Table m_table;
 	
+	/**
+	 * A flag indicating whether each cell should be surrounded by a hyperlink
+	 * with that cell's datapoint ID.
+	 */
+	protected boolean m_withHyperlinks = true;
+	
+	/**
+	 * Creates a new LaTeX table renderer.
+	 * @param t The table to render as LaTeX markup
+	 */
 	public LatexTableRenderer(Table t)
 	{
 		super();
@@ -42,7 +59,7 @@ public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 	protected void printTableStart(Spreadsheet s, PrintStream ps)
 	{
 		String table_type = m_mergeCells ? "longtable" : "table";
-		ps.print("\\begin{" + table_type + "}{");
+		ps.print("\\begin{" + table_type + "}{|");
 		for (int i = 0; i < s.getWidth(); i++)
 		{
 			if (i > 0)
@@ -51,12 +68,14 @@ public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 			}
 			ps.print("c");
 		}
-		ps.println("}");
+		ps.println("|}");
+		ps.println("\\hline");
 	}
 
 	@Override
 	protected void printTableEnd(Spreadsheet s, PrintStream ps)
 	{
+		ps.println("\\hline");
 		String table_type = m_mergeCells ? "longtable" : "table";
 		ps.print("\\end{" + table_type + "}");
 	}
@@ -93,7 +112,17 @@ public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 			{
 				ps.print("\\textbf{");
 			}
+			if (m_withHyperlinks)
+			{
+				ps.print("\\href{");
+				ps.print("T" + m_table.getId() + "." + row + "." + col);
+				ps.print("}{");
+			}
 			ps.print(escape(o.toString()));
+			if (m_withHyperlinks)
+			{
+				ps.print("}");
+			}
 			if (row == 0)
 			{
 				ps.print("}");

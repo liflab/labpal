@@ -24,7 +24,7 @@ import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.server.LabPalServer;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 import ca.uqac.lif.tui.AnsiPrinter;
 
 /**

@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,12 +19,13 @@ package browser;
 
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.LabPalGnuplot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.spreadsheet.chart.Chart.Axis;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotHistogram;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotPieChart;
 import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
-import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotHistogram;
 
 /**
  * Perform a transformation on a table before plotting it.
@@ -66,18 +67,18 @@ public class TransformLab extends Laboratory
 		// Create a histogram
 		TransformedTable tt = new TransformedTable(new ExpandAsColumns("market", "share"), et);
 		add(tt);
-		LabPalGnuplot plot = new LabPalGnuplot(tt, new GnuplotHistogram()
+		Plot plot = new Plot(tt, new GnuplotHistogram()
 				.setTitle("My bar plot")
 				.setCaption(Axis.X, "Browser").setCaption(Axis.Y, "Share"));
 		add(plot);
 		
 		// Create a stacked bar plot
-		LabPalGnuplot stacked_plot = new LabPalGnuplot(tt, new GnuplotHistogram()
+		Plot stacked_plot = new Plot(tt, new GnuplotHistogram()
 				.rowStacked().setTitle("My stacked plot"));
 		add(stacked_plot);
 		
 		// Create a pie chart
-		PieChart pie = new PieChart(pc_et);
+		Plot pie = new Plot(pc_et, new GnuplotPieChart());
 		add(pie);
 		
 	}

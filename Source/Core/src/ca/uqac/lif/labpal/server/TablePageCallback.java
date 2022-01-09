@@ -85,7 +85,7 @@ public class TablePageCallback extends TemplatePageCallback
     HtmlTableRenderer renderer = new HtmlTableRenderer(tab);
     if (params.containsKey("highlight"))
     {
-    	renderer.highlight(getCellsToHighlight(params.get(highlight)));
+    	renderer.highlight(getCellsToHighlight(highlight));
     }
     renderer.setExplainUrlPrefix("../explain");
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -110,14 +110,18 @@ public class TablePageCallback extends TemplatePageCallback
   protected Set<Cell> getCellsToHighlight(String highlight)
   {
     Set<Cell> to_highlight = new HashSet<Cell>();
+    if (highlight == null)
+    {
+    	return to_highlight;
+    }
     String[] ids = highlight.split(",");
     for (String id : ids)
     {
       if (id.trim().isEmpty())
         continue;
-      String[] parts = id.split(Pattern.quote(":"));
-      int row = Integer.parseInt(parts[1]);
-      int col = Integer.parseInt(parts[2]);
+      String[] parts = id.split(Pattern.quote("."));
+      int row = Integer.parseInt(parts[0]);
+      int col = Integer.parseInt(parts[1]);
       to_highlight.add(Cell.get(col, row));
     }
     return to_highlight;

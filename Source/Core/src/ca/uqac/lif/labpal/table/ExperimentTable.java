@@ -89,7 +89,7 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public Spreadsheet getSpreadsheet()
+	protected Spreadsheet calculateSpreadsheet()
 	{
 		int row_nb = 0;
 		m_lastEntries = new ArrayList<TableEntry>();
@@ -202,7 +202,7 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public PartNode getExplanation(Part d, NodeFactory f)
+	protected PartNode explain(Part d, NodeFactory f)
 	{
 		PartNode root = f.getPartNode(d, this);
 		Cell c = Cell.mentionedCell(d);

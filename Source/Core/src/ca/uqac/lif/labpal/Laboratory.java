@@ -65,6 +65,7 @@ import ca.uqac.lif.labpal.server.HttpUtilities;
 import ca.uqac.lif.labpal.server.LabPalServer;
 import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.petitpoucet.ComposedPart;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
@@ -73,7 +74,7 @@ import ca.uqac.lif.petitpoucet.function.NthOutput;
 import ca.uqac.lif.petitpoucet.function.vector.NthElement;
 import ca.uqac.lif.spreadsheet.Cell;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.provenance.TrackedValue;
 import ca.uqac.lif.tui.AnsiPrinter;
 
@@ -117,7 +118,7 @@ public abstract class Laboratory implements ExplanationQueryable
 	/**
 	 * The set of LabPalPlots associated with this lab
 	 */
-	private transient HashSet<LabPalPlot> m_plots;
+	private transient HashSet<Plot> m_plots;
 
 	/**
 	 * The set of tables associated to this lab
@@ -279,7 +280,7 @@ public abstract class Laboratory implements ExplanationQueryable
 		m_experiments = new HashSet<Experiment>();
 		m_claims = new ArrayList<Claim>();
 		m_claimStatus = new HashMap<Integer, Claim.Result>();
-		m_plots = new HashSet<LabPalPlot>();
+		m_plots = new HashSet<Plot>();
 		m_tables = new HashSet<Table>();
 		m_groups = new HashSet<Group>();
 		m_macros = new HashSet<Macro>();
@@ -435,9 +436,9 @@ public abstract class Laboratory implements ExplanationQueryable
 	 *          The LabPalPlots
 	 * @return This lab
 	 */
-	public Laboratory add(LabPalPlot... LabPalPlots)
+	public Laboratory add(Plot... LabPalPlots)
 	{
-		for (LabPalPlot p : LabPalPlots)
+		for (Plot p : LabPalPlots)
 		{
 			m_plots.add(p);
 		}
@@ -501,7 +502,7 @@ public abstract class Laboratory implements ExplanationQueryable
 	public Set<Integer> getPlotIds()
 	{
 		Set<Integer> ids = new HashSet<Integer>();
-		for (LabPalPlot p : m_plots)
+		for (Plot p : m_plots)
 		{
 			ids.add(p.getId());
 		}
@@ -545,9 +546,9 @@ public abstract class Laboratory implements ExplanationQueryable
 	 *          The ID
 	 * @return The LabPalPlot, null if not found
 	 */
-	public LabPalPlot getPlot(int id)
+	public Plot getPlot(int id)
 	{
-		for (LabPalPlot p : m_plots)
+		for (Plot p : m_plots)
 		{
 			if (p.getId() == id)
 			{
@@ -694,7 +695,7 @@ public abstract class Laboratory implements ExplanationQueryable
 		lab.m_isDeserialized = true;
 		Table.resetCounter();
 		Macro.resetCounter();
-		LabPalPlot.resetCounter();
+		Plot.resetCounter();
 		lab.setup();
 		lab.m_isDeserialized = false;
 		return lab;
@@ -1983,7 +1984,7 @@ public abstract class Laboratory implements ExplanationQueryable
 		else if (parts[0].startsWith("P"))
 		{
 			// Plot
-			LabPalPlot subject = getPlot(id);
+			Plot subject = getPlot(id);
 			return new TrackedValue(null, Part.all, subject);
 		}
 		else if (parts[0].startsWith("M"))
@@ -2014,26 +2015,35 @@ public abstract class Laboratory implements ExplanationQueryable
 			return null;
 		}
 		NodeFactory f = NodeFactory.getFactory();
-		PartNode root = f.getPartNode(tv.getPart(), this);
+		Part root_part = null;
 		Part p = tv.getPart();
 		Object o = tv.getSubject();
 		LabelledNode child = null;
 		if (o instanceof Table)
 		{
 			child = ((Table) o).getExplanation(p);
+			root_part = ComposedPart.compose(p, new TableNumber(((Table) o).getId()));
 		}
 		else if (o instanceof Macro)
 		{
 			child = ((Macro) o).getExplanation(p);
+			root_part = ComposedPart.compose(p, new MacroNumber(((Macro) o).getId()));
 		}
-		else if (o instanceof LabPalPlot)
+		else if (o instanceof Plot)
 		{
-			child = ((LabPalPlot) o).getExplanation(p);
+			child = ((Plot) o).getExplanation(p);
+			root_part = ComposedPart.compose(p, new PlotNumber(((Plot) o).getId()));
+		}
+		else if (o instanceof Claim)
+		{
+			child = ((Plot) o).getExplanation(p);
+			root_part = ComposedPart.compose(p, new ClaimNumber(((Claim) o).getId()));
 		}
 		else
 		{
 			child = f.getUnknownNode();
 		}
+		PartNode root = f.getPartNode(root_part, this);
 		root.addChild(child);
 		return root;
 	}
@@ -2051,7 +2061,7 @@ public abstract class Laboratory implements ExplanationQueryable
 		int id = ((LaboratoryPart) head).getId();
 		if (head instanceof PlotNumber)
 		{
-			LabPalPlot o = getPlot(id);
+			Plot o = getPlot(id);
 			if (o != null)
 			{
 				root.addChild(o.getExplanation(d.tail(), f));

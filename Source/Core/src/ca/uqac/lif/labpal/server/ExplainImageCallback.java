@@ -28,7 +28,7 @@ import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.provenance.GraphViewer;
 import ca.uqac.lif.petitpoucet.PartNode;
-import ca.uqac.lif.spreadsheet.plot.PlotFormat;
+import ca.uqac.lif.spreadsheet.chart.ChartFormat;
 
 /**
  * Callback producing an image explaining the provenance of a data point, as an
@@ -77,15 +77,15 @@ public class ExplainImageCallback extends WebCallback
       response.setCode(CallbackResponse.HTTP_NOT_FOUND);
       return response;
     }
-    PlotFormat format = PlotFormat.SVG;
+    ChartFormat format = ChartFormat.SVG;
     response.setContentType("image/svg+xml");
     if (params.containsKey("format") && params.get("format").compareToIgnoreCase("pdf") == 0)
     {
       response.setContentType(ContentType.PDF);
-      format = PlotFormat.PDF;
+      format = ChartFormat.PDF;
     }
     String extension = format.getExtension();
-    byte[] image = renderer.toImage(node, format, true);
+    byte[] image = renderer.toImage(node, format, false);
     if (image == null)
     {
       response.setContents(

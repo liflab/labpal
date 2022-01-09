@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.labpal;
 
+import ca.uqac.lif.petitpoucet.ComposedPart;
 import ca.uqac.lif.petitpoucet.Part;
 
 /**
@@ -87,6 +88,32 @@ public class ExperimentValue implements Part
 			return 0;
 		}
 		return m_parameter.hashCode();
+	}
+	
+	/**
+	 * Retrieves the experiment value mentioned in a designator.
+	 * @param d The designator
+	 * @return The value, or null if no such value is mentioned
+	 */
+	public static ExperimentValue mentionedValue(Part d)
+	{
+		if (d instanceof ExperimentValue)
+		{
+			return (ExperimentValue) d;
+		}
+		if (d instanceof ComposedPart)
+		{
+			ComposedPart cd = (ComposedPart) d;
+			for (int i = 0; i < cd.size(); i++)
+			{
+				Part p = cd.get(i);
+				if (p instanceof ExperimentValue)
+				{
+					return (ExperimentValue) p;
+				}
+			}
+		}
+		return null;
 	}
 
 }

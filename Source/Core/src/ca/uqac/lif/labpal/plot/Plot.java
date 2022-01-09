@@ -19,33 +19,35 @@ package ca.uqac.lif.labpal.plot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 import ca.uqac.lif.petitpoucet.function.InvalidNumberOfArgumentsException;
 import ca.uqac.lif.spreadsheet.Spreadsheet;
-import ca.uqac.lif.spreadsheet.plot.Plot;
-import ca.uqac.lif.spreadsheet.plot.PlotFormat;
-import ca.uqac.lif.spreadsheet.plot.UnsupportedPlotFormatException;
+import ca.uqac.lif.spreadsheet.chart.Chart;
+import ca.uqac.lif.spreadsheet.chart.ChartFormat;
+import ca.uqac.lif.spreadsheet.chart.UnsupportedPlotFormatException;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 
 /**
- * A 0:1 function associated to a table, and which generates a picture from the
- * spreadsheet produced by that table.
+ * An association between a {@link Table} and a {@link Chart} that is used to
+ * generate a picture from experimental data.
  * @author Sylvain Hallé
  */
-public abstract class LabPalPlot extends AtomicFunction implements ExplanationQueryable
+public class Plot extends AtomicFunction implements ExplanationQueryable
 {
 	/**
 	 * A counter for LabPalPlot IDs.
 	 */
-	protected static int s_idCounter = 0;
-	
+	protected static int s_idCounter = 1;
+
 	/**
 	 * A unique ID given to the plot in the lab.
 	 */
 	protected int m_id;
-	
+
 	/**
 	 * The nickname given to this plot.
 	 */
@@ -55,43 +57,43 @@ public abstract class LabPalPlot extends AtomicFunction implements ExplanationQu
 	 * The description associated to this plot.
 	 */
 	protected String m_description;
-	
+
 	/**
 	 * The title of this plot.
 	 */
 	protected String m_title;
-	
+
 	/**
 	 * The table from which this plot is created.
 	 */
 	protected Table m_table;
-	
+
 	/**
-	 * The {@link Plot} object used to create an output.
+	 * The {@link Chart} object used to create an output.
 	 */
-	protected Plot m_plot;
-	
+	protected Chart m_plot;
+
 	/**
 	 * Resets the global LabPalPlot counter.
 	 */
 	public static void resetCounter()
 	{
-		s_idCounter = 0;
+		s_idCounter = 1;
 	}
 
-	public LabPalPlot(Table t, Plot p)
+	public Plot(Table t, Chart p)
 	{
 		this(s_idCounter++, t, p);
 	}
 
-	protected LabPalPlot(int id, Table t, Plot p)
+	protected Plot(int id, Table t, Chart p)
 	{
 		super(0, 1);
 		m_id = id;
 		m_table = t;
 		m_plot = p;
 	}
-	
+
 	/**
 	 * Gets the description associated to this LabPalPlot.
 	 * @return The description
@@ -105,12 +107,12 @@ public abstract class LabPalPlot extends AtomicFunction implements ExplanationQu
 	 * Sets the description associated to this LabPalPlot.
 	 * @param description The description
 	 */
-	public LabPalPlot setDescription(String description)
+	public Plot setDescription(String description)
 	{
 		m_description = description;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the description associated to this LabPalPlot.
 	 * @return The description
@@ -124,7 +126,7 @@ public abstract class LabPalPlot extends AtomicFunction implements ExplanationQu
 	 * Sets the description associated to this LabPalPlot.
 	 * @param title The description
 	 */
-	public LabPalPlot setTitle(String title)
+	public Plot setTitle(String title)
 	{
 		m_title = title;
 		return this;
@@ -144,7 +146,7 @@ public abstract class LabPalPlot extends AtomicFunction implements ExplanationQu
 	 * @param nickname The name
 	 * @return This LabPalPlot
 	 */
-	public LabPalPlot setNickname(String nickname)
+	public Plot setNickname(String nickname)
 	{
 		m_nickname = nickname;
 		return this;
@@ -158,7 +160,7 @@ public abstract class LabPalPlot extends AtomicFunction implements ExplanationQu
 	{
 		return m_id;
 	}
-	
+
 	/**
 	 * Gets the {@link Table} to which this plot is associated.
 	 * @return The table
@@ -168,18 +170,33 @@ public abstract class LabPalPlot extends AtomicFunction implements ExplanationQu
 		return m_table;
 	}
 	
-	@Override
-	protected Object[] getValue(Object... inputs) throws InvalidNumberOfArgumentsException
+	/**
+	 * Determines if the chart produced by this plot supports the Gnuplot
+	 * export format.
+	 */
+	/*@ pure @*/ public boolean supportsGnuplot()
 	{
-		return new Object[] {getImage(null)};
+		return m_plot instanceof Gnuplot;
 	}
-	
-	public byte[] getImage(PlotFormat format)
+
+	/**
+	 * Gets the image produced by this plot.
+	 * @param format The format of the image
+	 * @return The byte array with the contents of the image
+	 */
+	public byte[] getImage(ChartFormat format) throws UnsupportedPlotFormatException
 	{
 		return getImage(format, true);
 	}
-	
-	public byte[] getImage(PlotFormat format, boolean with_title)
+
+	/**
+	 * Gets the image produced by this plot.
+	 * @param format The format of the image
+	 * @param with_title Set to <tt>true</tt> to generate the plot with its
+	 * title, <tt>false</tt> to get only the plot
+	 * @return The byte array with the contents of the image
+	 */
+	public byte[] getImage(ChartFormat format, boolean with_title) throws UnsupportedPlotFormatException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Spreadsheet s = m_table.getSpreadsheet();
@@ -193,11 +210,6 @@ public abstract class LabPalPlot extends AtomicFunction implements ExplanationQu
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		catch (UnsupportedPlotFormatException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
@@ -205,4 +217,34 @@ public abstract class LabPalPlot extends AtomicFunction implements ExplanationQu
 		}
 		return null;
 	}
+
+	/**
+	 * Renders the plot as a GnuPlot output text file. This method only returns
+	 * a non-null value if the underlying chart is a descendant of
+	 * {@link Gnuplot}.
+	 * @param format The image format to which the GnuPlot file will export
+	 * @param plot_title The plot's title
+	 * @param with_title Set to <tt>true</tt> to generate the plot with its
+	 * title, <tt>false</tt> to get only the plot
+	 * @return The GnuPlot string, or <tt>null</tt>
+	 */
+	public String toGnuplot(ChartFormat format, String plot_title, boolean with_title)
+	{
+		if (!(m_plot instanceof Gnuplot))
+		{
+			return null;
+		}
+		Spreadsheet s = m_table.getSpreadsheet();
+		m_plot.setTitle(plot_title);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		((Gnuplot) m_plot).toGnuplot(new PrintStream(baos), s, format, with_title);
+		return baos.toString();
+	}
+
+	@Override
+	protected Object[] getValue(Object... inputs) throws InvalidNumberOfArgumentsException
+	{
+		return new Object[] {getImage(null)};
+	}
+
 }

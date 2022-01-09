@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
  */
 package simple;
 
-import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotScatterplot;
+import ca.uqac.lif.spreadsheet.chart.Chart.Axis;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.LabPalGnuplot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 
 /**
@@ -50,7 +50,7 @@ public class SimpleLab extends Laboratory
 		}
 		
 		// Prepare a scatterplot from the table
-		LabPalGnuplot plot = new LabPalGnuplot(table, new GnuplotScatterplot()
+		Plot plot = new Plot(table, new GnuplotScatterplot()
 				.setTitle("A scatterplot")
 				.setCaption(Axis.X, "Value of a")
 				.setCaption(Axis.Y, "Value of y")

@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2019 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,10 +26,9 @@ import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Experiment.Status;
-import ca.uqac.lif.labpal.plot.LabPalGnuplot;
-import ca.uqac.lif.labpal.plot.LabPalPlot;
-import ca.uqac.lif.spreadsheet.plot.PlotFormat;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.spreadsheet.chart.ChartFormat;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.tui.AnsiPrinter;
 import ca.uqac.lif.tui.AnsiPrinter.Color;
@@ -447,7 +446,7 @@ public class LabPalTui
 			for (int id : m_selectedPlots.keySet())
 			{
 				//Checkbox cb = m_selectedPlots.get(id);
-				LabPalPlot ex = m_lab.getPlot(id);
+				Plot ex = m_lab.getPlot(id);
 				printer.setForegroundColor(Color.LIGHT_GRAY);
 				printer.print(AnsiPrinter.padToLength(Integer.toString(ex.getId()), 3));
 				printer.resetColors();
@@ -499,7 +498,7 @@ public class LabPalTui
 			printer.print("Plot number: ");
 			String s_id = printer.readLine();
 			int id = Integer.parseInt(s_id);
-			LabPalPlot p = m_lab.getPlot(id);
+			Plot p = m_lab.getPlot(id);
 			if (p == null)
 			{
 				printer.print("This ID does not exist\n");
@@ -508,7 +507,7 @@ public class LabPalTui
 			doWithPlot(printer, p);
 		}
 		
-		protected abstract void doWithPlot(AnsiPrinter printer, LabPalPlot p);
+		protected abstract void doWithPlot(AnsiPrinter printer, Plot p);
 	}
 	
 	protected class ViewPlotMenuItem extends PlotMenuItem
@@ -519,7 +518,7 @@ public class LabPalTui
 		}
 
 		@Override
-		protected void doWithPlot(AnsiPrinter printer, LabPalPlot p)
+		protected void doWithPlot(AnsiPrinter printer, Plot p)
 		{
 			byte[] image = null;
 			image = p.getImage(Gnuplot.DUMB);
@@ -541,16 +540,15 @@ public class LabPalTui
 		}
 
 		@Override
-		protected void doWithPlot(AnsiPrinter printer, LabPalPlot plot)
+		protected void doWithPlot(AnsiPrinter printer, Plot plot)
 		{
-			if (!(plot instanceof LabPalGnuplot))
+			if (!plot.supportsGnuplot())
 			{
 				printer.print("This plot is not a GnuPlot graph");
 				return;
 			}
-			LabPalGnuplot p = (LabPalGnuplot) plot;
-			String gnuplot = p.toGnuplot(PlotFormat.PDF, m_lab.getTitle(), true);
-			String filename = p.getTitle() + ".gp";
+			String gnuplot = plot.toGnuplot(ChartFormat.PDF, m_lab.getTitle(), true);
+			String filename = plot.getTitle() + ".gp";
 			printer.print("Save to [" + filename + "] ");
 			String line = printer.readLine();
 			if (line == null)

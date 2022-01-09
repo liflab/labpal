@@ -33,9 +33,9 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.LabPalPlot;
-import ca.uqac.lif.spreadsheet.plot.PlotFormat;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.spreadsheet.chart.ChartFormat;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 
 /**
  * Callback to download all plots as a single, multi-page PDF file. This
@@ -89,13 +89,13 @@ public class AllPlotsCallback extends WebCallback
     List<String> filenames = new ArrayList<String>();
     for (int id : m_lab.getPlotIds())
     {
-      LabPalPlot plot = m_lab.getPlot(id);
+      Plot plot = m_lab.getPlot(id);
       // Get plot's image and write to temporary file
       byte[] image;
       try
       {
       	// Avoid failure of producing the PDF because of a faulty plot
-      	image = plot.getImage(PlotFormat.PDF, with_captions);
+      	image = plot.getImage(ChartFormat.PDF, with_captions);
       }
       catch (Exception e)
       {

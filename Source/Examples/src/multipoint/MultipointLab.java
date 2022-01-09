@@ -20,11 +20,11 @@ package multipoint;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.LabPalGnuplot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.spreadsheet.functions.BoxStats;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotScatterplot;
 
 /**
  * Create an experiment that generates multiple values for some of
@@ -56,7 +56,7 @@ public class MultipointLab extends Laboratory
 	{
 		ExperimentTable table = new ExperimentTable("a", "b");
 		add(table);
-		LabPalGnuplot plot = new LabPalGnuplot(table, new GnuplotScatterplot());
+		Plot plot = new Plot(table, new GnuplotScatterplot());
 		add(plot);
 		add(new MultipointExperiment(), table);
 		TransformedTable tt = new TransformedTable(new BoxStats(), table);

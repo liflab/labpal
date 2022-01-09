@@ -28,7 +28,7 @@ import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.LatexTableRenderer;
 
@@ -81,7 +81,7 @@ public class AllPlotsLatexCallback extends TemplatePageCallback
     for (int id : m_lab.getPlotIds())
     {
       page_nb++;
-      LabPalPlot plot = m_lab.getPlot(id);
+      Plot plot = m_lab.getPlot(id);
       Table tab = plot.getTable();
       String box_name = plot.getTitle();
       if (!plot.getNickname().isEmpty())

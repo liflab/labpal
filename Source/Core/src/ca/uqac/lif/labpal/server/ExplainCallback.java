@@ -30,7 +30,7 @@ import java.util.zip.ZipOutputStream;
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.Macro;
-import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.provenance.GraphViewer;
 import ca.uqac.lif.labpal.provenance.TrackedValue;
 import ca.uqac.lif.dag.Node;
@@ -39,13 +39,14 @@ import ca.uqac.lif.labpal.Claim;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.ExperimentValue;
 import ca.uqac.lif.petitpoucet.AndNode;
+import ca.uqac.lif.petitpoucet.OrNode;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.vector.NthElement;
 import ca.uqac.lif.spreadsheet.Cell;
 import ca.uqac.lif.spreadsheet.Spreadsheet;
-import ca.uqac.lif.spreadsheet.plot.Plot;
-import ca.uqac.lif.spreadsheet.plot.PlotFormat;
+import ca.uqac.lif.spreadsheet.chart.Chart;
+import ca.uqac.lif.spreadsheet.chart.ChartFormat;
 import ca.uqac.lif.labpal.table.Table;
 
 /**
@@ -99,7 +100,7 @@ public class ExplainCallback extends TemplatePageCallback
 	{
 		out.append(
 				"<li><div class=\"around-pulldown\"><div class=\"pulldown\"><a title=\"Click to see where this value comes from\" href=\"")
-		.append(htmlEscape(getDataPointUrl(node))).append("\">").append(node)
+		.append(htmlEscape(getDataPointUrl(node))).append("\">").append(renderNode(node))
 		.append("</a></div>\n");
 		List<Pin<? extends Node>> parents = node.getOutputLinks(0);
 		if (!parents.isEmpty())
@@ -112,6 +113,64 @@ public class ExplainCallback extends TemplatePageCallback
 			out.append("</ul></div></div>");
 		}
 		out.append("</li>\n");
+	}
+	
+	protected static String renderNode(Node node)
+	{
+		if (node instanceof PartNode)
+		{
+			return renderPartNode((PartNode) node);
+		}
+		else if (node instanceof AndNode)
+		{
+			return "And";
+		}
+		else if (node instanceof OrNode)
+		{
+			return "Or";
+		}
+		return "Unknown";
+	}
+	
+	protected static String renderPartNode(PartNode node)
+	{
+		StringBuilder out = new StringBuilder();
+		Part p = node.getPart();
+		out.append(p.toString()).append(" of ");
+		Object subject = node.getSubject();
+		if (subject instanceof Laboratory)
+		{
+			out.append("this lab");
+		}
+		else if (subject instanceof Experiment)
+		{
+			out.append("Experiment #").append(((Experiment) subject).getId());
+		}
+		else if (subject instanceof Table)
+		{
+			out.append("Table #").append(((Table) subject).getId());
+		}
+		else if (subject instanceof Plot)
+		{
+			out.append("Plot #").append(((Plot) subject).getId());
+		}
+		else if (subject instanceof Macro)
+		{
+			out.append("Macro #").append(((Macro) subject).getId());
+		}
+		else if (subject instanceof Claim)
+		{
+			out.append("Claim #").append(((Claim) subject).getId());
+		}
+		else if (subject == null)
+		{
+			out.append("null");
+		}
+		else
+		{
+			out.append(subject.toString());
+		}
+		return out.toString();
 	}
 
 	public static String getDataPointUrl(Node node)
@@ -147,9 +206,9 @@ public class ExplainCallback extends TemplatePageCallback
 				url += "&highlight=" + c.getRow() + ":" + c.getColumn();
 			}
 		}
-		else if (subject instanceof LabPalPlot)
+		else if (subject instanceof Plot)
 		{
-			url += "/plot?id=" + ((LabPalPlot) subject).getId();
+			url += "/plot?id=" + ((Plot) subject).getId();
 		}
 		else if (subject instanceof Experiment)
 		{
@@ -158,6 +217,12 @@ public class ExplainCallback extends TemplatePageCallback
 			{
 				ExperimentValue n = (ExperimentValue) part.head();
 				url += "&highlight=" + n.getParameter();
+				Part tail = part.tail();
+				if (tail != null && tail.head() instanceof NthElement)
+				{
+					NthElement elem = (NthElement) tail.head();
+					url += ":" + elem.getIndex();
+				}
 			}
 		}
 		else if (subject instanceof Claim)
@@ -207,7 +272,7 @@ public class ExplainCallback extends TemplatePageCallback
 		{
 			return "macro";
 		}
-		if (o instanceof Plot)
+		if (o instanceof Chart)
 		{
 			return "plot";
 		}
@@ -304,7 +369,7 @@ public class ExplainCallback extends TemplatePageCallback
 		PartNode p_node = m_lab.getExplanation(datapoint_id);
 		GraphViewer renderer = new GraphViewer();
 		// Render as SVG
-		byte[] image = renderer.toImage(p_node, PlotFormat.SVG, true);
+		byte[] image = renderer.toImage(p_node, ChartFormat.SVG, true);
 		String file_contents = new String(image);
 		// Change links in SVG
 		file_contents = createStaticLinks(file_contents);
@@ -324,7 +389,7 @@ public class ExplainCallback extends TemplatePageCallback
 			}
 		}
 		// Render as PNG
-		image = renderer.toImage(p_node, PlotFormat.PNG, true);
+		image = renderer.toImage(p_node, ChartFormat.PNG, true);
 		if (image != null)
 		{
 			ZipEntry ze = new ZipEntry("table/" + datapoint_id + ".png");

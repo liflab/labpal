@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,13 +19,14 @@ package sorting;
 
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.ConstantNumberMacro;
-import ca.uqac.lif.labpal.plot.LabPalGnuplot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.spreadsheet.chart.Chart.Axis;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotHistogram;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
+import ca.uqac.lif.spreadsheet.functions.ColumnSum;
 import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
-import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotHistogram;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotScatterplot;
 
 /**
  * This is an example of a lab that creates experiments to compare
@@ -65,19 +66,19 @@ public class SortingLab extends Laboratory
 		TransformedTable t_table = new TransformedTable(new ExpandAsColumns("name", "time"), table);
 		t_table.setTitle("Sorting time per algorithm").setNickname("sorttimealg");
 		add(t_table);
-		LabPalGnuplot plot = new LabPalGnuplot(t_table, new GnuplotScatterplot().setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)").withLines());
+		Plot plot = new Plot(t_table, new GnuplotScatterplot().setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)").withLines());
 		plot.setNickname("sortplot");
 		add(plot);
-		LabPalGnuplot c_plot = new LabPalGnuplot(t_table, new GnuplotHistogram().setTitle("Sorting time for each array").setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)"));
+		Plot c_plot = new Plot(t_table, new GnuplotHistogram().setTitle("Sorting time for each array").setCaption(Axis.X, "List size").setCaption(Axis.Y, "Time (ms)"));
 		c_plot.setNickname("sorthisto");
 		add(c_plot);
 		
 		// Just for fun, create another plot with the sum of all sorting
 		// times for each algorithm
-		TransformedTable p_table = new TransformedTable(ColumnSum.get(), t_table);
+		TransformedTable p_table = new TransformedTable(new ColumnSum(), t_table);
 		p_table.setTitle("Cumulative sorting time").setNickname("sumtime");
 		add(p_table);
-		LabPalGnuplot p_plot = new LabPalGnuplot(p_table, new GnuplotHistogram().setCaption(Axis.X, "Total size").setCaption(Axis.Y, "Time (ms)"));
+		Plot p_plot = new Plot(p_table, new GnuplotHistogram().setCaption(Axis.X, "Total size").setCaption(Axis.Y, "Time (ms)"));
 		add(p_plot);
 		
 		// Create a few macros showing summary information

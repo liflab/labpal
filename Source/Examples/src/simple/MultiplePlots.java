@@ -1,12 +1,12 @@
 package simple;
 
+import ca.uqac.lif.spreadsheet.chart.Chart.Axis;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotHistogram;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.spreadsheet.functions.Merge;
 import ca.uqac.lif.spreadsheet.functions.RenameColumn;
-import ca.uqac.lif.spreadsheet.plot.Plot.Axis;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotHistogram;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.LabPalGnuplot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.TransformedTable;
@@ -42,14 +42,14 @@ public class MultiplePlots extends Laboratory
 				);
 		table1.setTitle("Comparison of Experiment A and Experiment B");
 		add(table1);
-		LabPalGnuplot plot = new LabPalGnuplot(table1, new GnuplotScatterplot()
+		Plot plot = new Plot(table1, new GnuplotScatterplot()
 				.setCaption(Axis.X, "Value of a")
 				.setCaption(Axis.Y, "Value of y")
 				.withLines().withPoints());
 		add(plot);
 		
 		// Same data, displayed as a histogram. This graph requires Gnuplot
-		LabPalGnuplot histogram = new LabPalGnuplot(table1, new GnuplotHistogram()
+		Plot histogram = new Plot(table1, new GnuplotHistogram()
 				.setCaption(Axis.X, "Value of a").setCaption(Axis.Y, "Value of y"));
 		add(histogram);
 	}

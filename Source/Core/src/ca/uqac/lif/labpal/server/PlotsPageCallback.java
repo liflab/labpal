@@ -27,10 +27,9 @@ import java.util.zip.ZipOutputStream;
 
 import ca.uqac.lif.labpal.LabAssistant;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.LabPalGnuplot;
-import ca.uqac.lif.labpal.plot.LabPalPlot;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.Table;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.Gnuplot;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 
 /**
  * Callback showing a list of plots
@@ -86,7 +85,7 @@ public class PlotsPageCallback extends TemplatePageCallback
     Collections.sort(ids);
     for (int id : ids)
     {
-      LabPalPlot plot = m_lab.getPlot(id);
+      Plot plot = m_lab.getPlot(id);
       Table t = plot.getTable();
       out.append("<div class=\"plot\">\n");
       out.append("<a href=\"plot/").append(id)
@@ -94,7 +93,7 @@ public class PlotsPageCallback extends TemplatePageCallback
       out.append("<img src=\"plot/").append(id)
           .append("\" alt=\"" + htmlEscape(plot.getNickname()) + "\" /></a>\n");
       out.append("<div><ul>");
-      if (plot instanceof LabPalGnuplot)
+      if (plot.supportsGnuplot())
       {
         out.append("<li><a class=\"btn-24 btn-gp\" href=\"plot/").append(id)
             .append("?format=gp&amp;dl=1\" title=\"Download as GnuPlot source file\">GP</a></li>");

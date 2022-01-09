@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.labpal;
 
+import ca.uqac.lif.petitpoucet.ComposedPart;
 import ca.uqac.lif.petitpoucet.Part;
 
 /**
@@ -65,6 +66,32 @@ public abstract class LaboratoryPart implements Part
 	public int hashCode()
 	{
 		return m_id;
+	}
+	
+	/**
+	 * Retrieves the laboratory part mentioned in a designator.
+	 * @param d The designator
+	 * @return The lab part, or null if no such part is mentioned
+	 */
+	public static LaboratoryPart mentionedLaboratoryPart(Part d)
+	{
+		if (d instanceof LaboratoryPart)
+		{
+			return (LaboratoryPart) d;
+		}
+		if (d instanceof ComposedPart)
+		{
+			ComposedPart cd = (ComposedPart) d;
+			for (int i = 0; i < cd.size(); i++)
+			{
+				Part p = cd.get(i);
+				if (p instanceof LaboratoryPart)
+				{
+					return (LaboratoryPart) p;
+				}
+			}
+		}
+		return null;
 	}
 	
 	/**

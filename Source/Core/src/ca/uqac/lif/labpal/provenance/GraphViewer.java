@@ -17,7 +17,6 @@
  */
 package ca.uqac.lif.labpal.provenance;
 
-import java.awt.FlowLayout;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,22 +26,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import ca.uqac.lif.dag.Node;
+import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.ExperimentValue;
+import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.petitpoucet.GraphUtilities;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.Part.All;
 import ca.uqac.lif.petitpoucet.function.LineageDotRenderer;
+import ca.uqac.lif.petitpoucet.function.vector.NthElement;
+import ca.uqac.lif.spreadsheet.Cell;
 import ca.uqac.lif.spreadsheet.Spreadsheet;
-import ca.uqac.lif.spreadsheet.plot.Plot;
-import ca.uqac.lif.spreadsheet.plot.PlotFormat;
-import ca.uqac.lif.spreadsheet.plot.UnsupportedPlotFormatException;
-import ca.uqac.lif.spreadsheet.plots.gnuplot.CommandRunner;
+import ca.uqac.lif.spreadsheet.chart.ChartFormat;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.CommandRunner;
 
 /**
  * Utility methods to render and display explanation graphs.
@@ -50,7 +48,7 @@ import ca.uqac.lif.spreadsheet.plots.gnuplot.CommandRunner;
 public class GraphViewer
 {
 	public static final boolean s_dotPresent = isDotPresent();
-	
+
 	/**
 	 * Checks if DOT is present on the command line
 	 * @return {@code true} if present
@@ -64,39 +62,7 @@ public class GraphViewer
 		// Exception: dot returns 1 when called
 		return runner.getErrorCode() == 1;
 	}
-	
-	/**
-	 * Displays an explanation graph into a window. This method acts as a
-	 * primitive image viewer, used to display the result of the examples.
-	 * @param roots The roots of the graph to display
-	 * @param no_captions Set to {@code true} to hide non-leaf captions
-	 */
-	public void display(List<Node> roots, boolean no_captions)
-	{
-		BitmapJFrame window = new BitmapJFrame(toImage(roots, no_captions));
-		window.setVisible(true);
-	}
-	
-	/**
-	 * Displays an explanation graph into a window. This method acts as a
-	 * primitive image viewer, used to display the result of the examples.
-	 * @param roots The roots of the graph to display
-	 */
-	public void display(List<Node> roots)
-	{
-		display(roots, false);
-	}
-	
-	/**
-	 * Displays an explanation graph into a window. This method acts as a
-	 * primitive image viewer, used to display the result of the examples.
-	 * @param root The root of the graph to display
-	 */
-	public void display(Node root)
-	{
-		display((List<Node>) Arrays.asList(root), false);
-	}
-	
+
 	/**
 	 * Saves a graph to a file.
 	 * @param roots The roots of the graph to display
@@ -108,15 +74,15 @@ public class GraphViewer
 		File outputFile = new File(filename);
 		try (FileOutputStream outputStream = new FileOutputStream(outputFile))
 		{
-		    outputStream.write(toImage(roots, no_captions));
-		    outputStream.close();
+			outputStream.write(toImage(roots, no_captions));
+			outputStream.close();
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Saves a graph to a file.
 	 * @param root The root of the graph to display
@@ -127,7 +93,7 @@ public class GraphViewer
 	{
 		save(Arrays.asList(root), filename, no_captions);
 	}
-	
+
 	/**
 	 * Saves a graph to a file.
 	 * @param roots The roots of the graph to display
@@ -137,7 +103,7 @@ public class GraphViewer
 	{
 		save(roots, filename, false);
 	}
-	
+
 	/**
 	 * Renders a graph as a DOT file.
 	 * @param roots The roots of the graph to render
@@ -153,7 +119,7 @@ public class GraphViewer
 		renderer.render(ps);
 		return baos.toString();
 	}
-	
+
 	/**
 	 * Renders a graph as a DOT file.
 	 * @param root The root of the graph to render
@@ -166,7 +132,7 @@ public class GraphViewer
 		roots.add(root);
 		return toDot(roots, no_captions);
 	}
-	
+
 	/**
 	 * Renders a graph, calls DOT in the background and retrieves the binary
 	 * image it produces.
@@ -181,7 +147,7 @@ public class GraphViewer
 		runner.run();
 		return runner.getBytes();
 	}
-	
+
 	/**
 	 * Renders a graph, calls DOT in the background and retrieves the binary
 	 * image it produces.
@@ -191,9 +157,9 @@ public class GraphViewer
 	 */
 	public byte[] toImage(Node root, boolean no_captions)
 	{
-		return toImage(root, PlotFormat.PNG, no_captions);
+		return toImage(root, ChartFormat.PNG, no_captions);
 	}
-	
+
 	/**
 	 * Renders a graph, calls DOT in the background and retrieves the binary
 	 * image it produces.
@@ -202,79 +168,14 @@ public class GraphViewer
 	 * @param no_captions Set to {@code true} to hide non-leaf captions
 	 * @return An array of bytes containing the image to display
 	 */
-	public byte[] toImage(Node root, PlotFormat format, boolean no_captions)
+	public byte[] toImage(Node root, ChartFormat format, boolean no_captions)
 	{
 		String graph = toDot(root, no_captions);
 		CommandRunner runner = new CommandRunner(new String[] {"dot", "-T" + format.getExtension()}, graph);
 		runner.run();
 		return runner.getBytes();
 	}
-		
-	/**
-	 * Receives a byte array as an input, and shows it in a Swing
-	 * window as a picture.
-	 */
-	public static class BitmapJFrame extends JFrame
-	{
-		/**
-		 * Dummy UID
-		 */
-		private static final long serialVersionUID = 1L;
 
-		protected transient JFrame m_frame;
-
-		protected transient JLabel m_label;
-
-		public BitmapJFrame(byte[] image_bytes)
-		{
-			super("Graph");
-			JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			add(panel);
-			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			m_label = new JLabel();
-			panel.add(m_label);
-			ImageIcon icon = new ImageIcon(image_bytes); 
-			m_label.setIcon(icon);
-			pack();
-		}
-		
-		public BitmapJFrame(Plot p, Spreadsheet s)
-		{
-			this(getBytes(p, s));
-		}
-		
-		public BitmapJFrame display()
-		{
-			super.setVisible(true);
-			return this;
-		}
-		
-		/**
-		 * Gets the frame associated to the object
-		 * @return The frame
-		 */
-		public JFrame getFrame()
-		{
-		  return m_frame;
-		}
-		
-		protected static byte[] getBytes(Plot p, Spreadsheet s)
-		{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			try
-			{
-				p.render(baos, s);
-				return baos.toByteArray();
-			}
-			catch (IllegalArgumentException | UnsupportedPlotFormatException | IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return new byte[0];
-		}
-	}
-	
 	/**
 	 * A specialized {@link LineageDotRenderer} with special handling of
 	 * spreadsheets.
@@ -285,7 +186,7 @@ public class GraphViewer
 		{
 			super(roots);
 		}
-		
+
 		public SpreadsheetLineageDotRenderer(Node inner_start, String new_prefix, int nesting_level, boolean captions)
 		{
 			super(inner_start, new_prefix, nesting_level, captions);
@@ -295,12 +196,123 @@ public class GraphViewer
 		protected void renderPartNode(PrintStream ps, PartNode current, String n_id)
 		{
 			Object o = current.getSubject();
-			if (!(o instanceof Spreadsheet))
+			if (o instanceof Spreadsheet)
 			{
-				super.renderPartNode(ps, current, n_id);
+				renderSpreadsheetNode((Spreadsheet) o, ps, current, n_id);
 				return;
 			}
-			Spreadsheet sheet = (Spreadsheet) o;
+			else if (o instanceof Experiment)
+			{
+				renderExperimentNode((Experiment) o, ps, current, n_id);
+				return;
+			}
+			else if (o instanceof Table)
+			{
+				renderTableNode((Table) o, ps, current, n_id);
+				return;
+			}
+			else if (o instanceof Laboratory)
+			{
+				renderLabNode(ps, current, n_id);
+				return;
+			}
+			else
+			{
+				super.renderPartNode(ps, current, n_id);
+			}
+		}
+
+		protected void renderLabNode(PrintStream ps, PartNode current, String n_id)
+		{
+			Part d = current.getPart();
+			String color = getPartNodeColor(d);
+			if (m_noCaptions && ((!GraphUtilities.isLeaf(current) && !m_roots.contains(current)) || m_nestingLevel > 0))
+			{
+				ps.println(m_indent + n_id + " [height=0.25,shape=\"circle\",label=\"\",fillcolor=\"" + color + "\"];");
+			}
+			else
+			{
+				String message;
+				if (d instanceof All)
+				{
+					message = "this lab";
+				}
+				else
+				{
+					message = d.toString() + " of this lab";
+				}
+				ps.println(m_indent + n_id + " [height=0.25,label=<" + message + ">,fillcolor=\"" + color + "\"];");
+			}
+		}
+
+		protected void renderExperimentNode(Experiment e, PrintStream ps, PartNode current, String n_id)
+		{
+			Part d = current.getPart();
+			String color = getPartNodeColor(d);
+			if (m_noCaptions && ((!GraphUtilities.isLeaf(current) && !m_roots.contains(current)) || m_nestingLevel > 0))
+			{
+				ps.println(m_indent + n_id + " [height=0.25,shape=\"circle\",label=\"\",fillcolor=\"" + color + "\"];");
+			}
+			else
+			{
+				String message = "";
+				String url = "experiment?id=" + e.getId();
+				String highlight_string = "";
+				if (d instanceof All)
+				{
+					message = "Experiment " + e.getId();
+				}
+				else
+				{
+					message = d.toString() + " of " + "Experiment " + e.getId();
+					ExperimentValue mentioned = ExperimentValue.mentionedValue(d);
+					if (mentioned != null)
+					{
+						highlight_string = "&amp;highlight=" + mentioned.getParameter();
+						int elem_index = NthElement.mentionedElement(d);
+						if (elem_index >= 0)
+						{
+							highlight_string += ":" + elem_index;
+						}
+					}
+				}
+				ps.println(m_indent + n_id + " [height=0.25,label=<" + message + ">,href=\"" + url + highlight_string + "\",fillcolor=\"" + color + "\"];");
+			}			
+		}
+
+		protected void renderTableNode(Table t, PrintStream ps, PartNode current, String n_id)
+		{
+			Part d = current.getPart();
+			String color = getPartNodeColor(d);
+			if (m_noCaptions && ((!GraphUtilities.isLeaf(current) && !m_roots.contains(current)) || m_nestingLevel > 0))
+			{
+				ps.println(m_indent + n_id + " [height=0.25,shape=\"circle\",label=\"\",fillcolor=\"" + color + "\"];");
+			}
+			else
+			{
+				String message;
+				String url = "table?id=" + t.getId();
+				String highlight_string = "";
+				if (d instanceof All)
+				{
+					message = "Table " + t.getId();
+				}
+				else
+				{
+					Cell mentioned = Cell.mentionedCell(d);
+					if (mentioned != null)
+					{
+						highlight_string = "&amp;highlight=" + mentioned.getRow() + "." + mentioned.getColumn();
+					}
+					message = d.toString() + " of " + "Table " + t.getId();
+				}
+				ps.println(m_indent + n_id + " [height=0.25,label=<" + message + ">,href=\"" + url + highlight_string + "\",fillcolor=\"" + color + "\"];");
+			}			
+
+		}
+
+		protected void renderSpreadsheetNode(Spreadsheet sheet, PrintStream ps, PartNode current, String n_id)
+		{
 			Part d = current.getPart();
 			String color = getPartNodeColor(d);
 			if (m_noCaptions && ((!GraphUtilities.isLeaf(current) && !m_roots.contains(current)) || m_nestingLevel > 0))
@@ -319,15 +331,15 @@ public class GraphViewer
 					message = d.toString() + " of " + renderSpreadsheet(sheet);
 				}
 				ps.println(m_indent + n_id + " [height=0.25,label=<" + message + ">,fillcolor=\"" + color + "\"];");
-			}
+			}			
 		}
-		
+
 		@Override
 		protected LineageDotRenderer getSubRenderer(Node inner_start, String new_prefix, int nesting_level, boolean captions)
 		{
 			return new SpreadsheetLineageDotRenderer(inner_start, new_prefix, nesting_level, captions);
 		}
-		
+
 		protected static String renderSpreadsheet(Spreadsheet s)
 		{
 			String out = s.toString();

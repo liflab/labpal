@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2017 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -57,13 +56,6 @@ public class ExperimentPageCallback extends TemplatePageCallback
    * in {@link #formatDate(long)}
    */
   protected static final SimpleDateFormat s_dateFormat = new SimpleDateFormat();
-
-  /**
-   * A regex pattern object, used to split the "owner" part of the "path" in a
-   * datapoint ID in {@link #getKeysToHighlight(String)}
-   */
-  protected static final Pattern s_highlightKeyPattern = Pattern
-      .compile("^.*?" + Pattern.quote(":") + "(.*)$");
 
   /**
    * Creates a new callback for the "Experiments" page.
@@ -308,11 +300,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
     String[] ids = highlight.split(",");
     for (String id : ids)
     {
-      Matcher matcher = s_highlightKeyPattern.matcher(id);
-      if (matcher.find())
-      {
-        to_highlight.add(matcher.group(1));
-      }
+    	to_highlight.add(id);
     }
     return to_highlight;
   }

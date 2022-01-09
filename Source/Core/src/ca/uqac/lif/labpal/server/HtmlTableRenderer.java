@@ -43,7 +43,7 @@ public class HtmlTableRenderer extends HtmlSpreadsheetPrinter
 	/**
 	 * The table to render.
 	 */
-	protected Table m_table;
+	/*@ non_null @*/ protected Table m_table;
 	
 	/**
 	 * The prefix of the URL for the explanation of a value

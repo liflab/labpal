@@ -17,6 +17,9 @@
  */
 package ca.uqac.lif.labpal.table;
 
+import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.Part;
+import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 import ca.uqac.lif.petitpoucet.function.InvalidNumberOfArgumentsException;
@@ -31,7 +34,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	/**
 	 * A counter for table IDs.
 	 */
-	protected static int s_idCounter = 0;
+	protected static int s_idCounter = 1;
 
 	/**
 	 * A flag indicating whether this table should be displayed in the list of
@@ -42,12 +45,12 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	/**
 	 * The nickname given to this table.
 	 */
-	protected String m_nickname;
+	protected String m_nickname = "";
 
 	/**
 	 * The description associated to this table.
 	 */
-	protected String m_description;
+	protected String m_description = "";
 	
 	/**
 	 * The title of this table.
@@ -58,13 +61,19 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 * A unique ID given to the table in the lab.
 	 */
 	protected int m_id;
+	
+	/**
+	 * Whether the output spreadsheet for the table has already been computed
+	 * at least once.
+	 */
+	protected boolean m_calculated = false;
 
 	/**
 	 * Resets the global table counter.
 	 */
 	public static void resetCounter()
 	{
-		s_idCounter = 0;
+		s_idCounter = 1;
 	}
 
 	public Table()
@@ -103,6 +112,10 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 */
 	public String getTitle()
 	{
+		if (m_title == null)
+		{
+			return "Table " + m_id;
+		}
 		return m_title;
 	}
 
@@ -153,12 +166,23 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	{
 		return m_showsInList;
 	}
+	
+	/**
+	 * Gets the spreadsheet produced by this table.
+	 * @return The spreadsheet
+	 */
+	/*@ null @*/ public final Spreadsheet getSpreadsheet()
+	{
+		Spreadsheet s = calculateSpreadsheet();
+		m_calculated = true;
+		return s;
+	}
 
 	/**
 	 * Gets the spreadsheet produced by this table.
 	 * @return The spreadsheet
 	 */
-	/*@ null @*/ public abstract Spreadsheet getSpreadsheet();
+	/*@ null @*/ protected abstract Spreadsheet calculateSpreadsheet();
 	
 	/**
 	 * Gets the table on which a cell of the spreadsheet immediately depends
@@ -169,6 +193,18 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 * table
 	 */
 	/*@ null @*/ public abstract Table dependsOn(int col, int row);
+	
+	protected abstract PartNode explain(Part d, NodeFactory f);
+	
+	@Override
+	public final PartNode getExplanation(Part d, NodeFactory f)
+	{
+		if (!m_calculated)
+		{
+			getSpreadsheet();
+		}
+		return explain(d, f);
+	}
 
 	@Override
 	protected Object[] getValue(Object... inputs) throws InvalidNumberOfArgumentsException

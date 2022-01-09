@@ -252,6 +252,19 @@ public class ExplainCallback extends TemplatePageCallback
 		String url = "";
 		Part part = nf.getPart();
 		Object subject = nf.getSubject();
+		if (subject instanceof Laboratory)
+		{
+			for (Pin<? extends Node> pin : nf.getOutputLinks(0))
+			{
+				Node n = pin.getNode();
+				if (!(n instanceof PartNode))
+				{
+					continue;
+				}
+				return getPartNodeUrl((PartNode) n);
+			}
+			return "#";
+		}
 		if (subject instanceof Table)
 		{
 			url += "/table?id=" + ((Table) subject).getId();

@@ -114,7 +114,7 @@ public class ExplainCallback extends TemplatePageCallback
 		}
 		out.append("</li>\n");
 	}
-	
+
 	protected static String renderNode(Node node)
 	{
 		if (node instanceof PartNode)
@@ -131,7 +131,7 @@ public class ExplainCallback extends TemplatePageCallback
 		}
 		return "Unknown";
 	}
-	
+
 	protected static String renderPartNode(PartNode node)
 	{
 		StringBuilder out = new StringBuilder();
@@ -173,7 +173,28 @@ public class ExplainCallback extends TemplatePageCallback
 		return out.toString();
 	}
 
-	public static String getDataPointUrl(Node node)
+	/*@ null @*/ protected static PartNode fetchClosestLabPalObject(Node node)
+	{
+		if (node instanceof PartNode)
+		{
+			Object o = ((PartNode) node).getSubject();
+			if (o instanceof Laboratory || o instanceof Experiment || o instanceof Table || o instanceof Macro || o instanceof Plot)
+			{
+				return (PartNode) node;
+			}
+		}
+		for (Pin<? extends Node> pin : node.getOutputLinks(0))
+		{
+			PartNode n = fetchClosestLabPalObject(pin.getNode());
+			if (n != null)
+			{
+				return n;
+			}
+		}
+		return null;
+	}
+
+	/*@ non_null @*/ public static String getDataPointUrl(/*@ null @*/ Node node)
 	{
 		if (node instanceof PartNode)
 		{
@@ -185,11 +206,45 @@ public class ExplainCallback extends TemplatePageCallback
 		}
 		return "#";
 	}
-	
+
 	protected static String getAndNodeUrl(AndNode and)
 	{
-		// TODO
-		return "";
+		StringBuilder out = new StringBuilder();
+		boolean has_base = false, has_highlight = false;
+		for (Pin<? extends Node> pin : and.getOutputLinks(0))
+		{
+			Node child = pin.getNode();
+			Node lp_child = fetchClosestLabPalObject(child);
+			String url = getDataPointUrl(lp_child);
+			if (url.compareTo("#") == 0)
+			{
+				continue;
+			}
+			String[] parts = url.split("&");
+			if (!has_base)
+			{
+				out.append(parts[0]);
+				has_base = true;
+			}
+			for (int i = 1; i < parts.length; i++)
+			{
+				if (parts[i].startsWith("highlight"))
+				{
+					String ids = parts[i].substring(parts[i].indexOf("=") + 1);
+					if (!has_highlight)
+					{
+						out.append("&highlight=");
+						has_highlight = true;
+					}
+					else
+					{
+						out.append(",");
+					}
+					out.append(ids);
+				}
+			}
+		}
+		return out.toString();
 	}
 
 	protected static String getPartNodeUrl(PartNode nf)
@@ -200,10 +255,10 @@ public class ExplainCallback extends TemplatePageCallback
 		if (subject instanceof Table)
 		{
 			url += "/table?id=" + ((Table) subject).getId();
-			if (part.head() instanceof Cell)
+			Cell c = Cell.mentionedCell(part);
+			if (c != null)
 			{
-				Cell c = (Cell) part.head();
-				url += "&highlight=" + c.getRow() + ":" + c.getColumn();
+				url += "&highlight=" + c.getRow() + "." + c.getColumn();
 			}
 		}
 		else if (subject instanceof Plot)

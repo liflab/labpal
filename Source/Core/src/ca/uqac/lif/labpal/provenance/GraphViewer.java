@@ -30,7 +30,10 @@ import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.ExperimentValue;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.server.ExplainCallback;
+import ca.uqac.lif.labpal.server.TemplatePageCallback;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.petitpoucet.AndNode;
 import ca.uqac.lif.petitpoucet.GraphUtilities;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
@@ -190,6 +193,13 @@ public class GraphViewer
 		public SpreadsheetLineageDotRenderer(Node inner_start, String new_prefix, int nesting_level, boolean captions)
 		{
 			super(inner_start, new_prefix, nesting_level, captions);
+		}
+		
+		@Override
+		protected void renderAndNode(PrintStream ps, AndNode current, String n_id)
+		{
+			String url = TemplatePageCallback.htmlEscape(ExplainCallback.getDataPointUrl(current));
+			ps.println(m_indent + n_id + " [shape=\"circle\",label=<<font color='white'><b>∧</b></font>>,width=.25,fixedsize=\"true\",fillcolor=\"blue\",textcolor=\"white\",href=\"" + url + "\"];");
 		}
 
 		@Override

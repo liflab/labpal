@@ -8,6 +8,7 @@
 *.swp
 *.bak
 *.old
+*pid*.log
 
 # MacOS !#@$ files
 .DS_Store

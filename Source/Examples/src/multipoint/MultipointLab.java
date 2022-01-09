@@ -23,6 +23,7 @@ import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.TransformedTable;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotBoxPlot;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.spreadsheet.functions.BoxStats;
 
@@ -61,6 +62,8 @@ public class MultipointLab extends Laboratory
 		add(new MultipointExperiment(), table);
 		TransformedTable tt = new TransformedTable(new BoxStats(), table);
 		add(tt);
+		Plot boxplot = new Plot(tt, new GnuplotBoxPlot());
+		add(boxplot);
 	}
 
 	public static class MultipointExperiment extends Experiment 

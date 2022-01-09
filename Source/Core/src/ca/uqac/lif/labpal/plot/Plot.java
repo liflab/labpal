@@ -39,7 +39,7 @@ import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 public class Plot extends AtomicFunction implements ExplanationQueryable
 {
 	/**
-	 * A counter for LabPalPlot IDs.
+	 * A counter for plot IDs.
 	 */
 	protected static int s_idCounter = 1;
 
@@ -74,7 +74,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 	protected Chart m_plot;
 
 	/**
-	 * Resets the global LabPalPlot counter.
+	 * Resets the global plot counter.
 	 */
 	public static void resetCounter()
 	{
@@ -95,7 +95,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 	}
 
 	/**
-	 * Gets the description associated to this LabPalPlot.
+	 * Gets the description associated to this plot.
 	 * @return The description
 	 */
 	public String getDescription()
@@ -104,7 +104,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 	}
 
 	/**
-	 * Sets the description associated to this LabPalPlot.
+	 * Sets the description associated to this plot.
 	 * @param description The description
 	 */
 	public Plot setDescription(String description)
@@ -114,16 +114,20 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 	}
 
 	/**
-	 * Gets the description associated to this LabPalPlot.
+	 * Gets the description associated to this plot.
 	 * @return The description
 	 */
 	public String getTitle()
 	{
+		if (m_title == null)
+		{
+			return "Plot " + m_id;
+		}
 		return m_title;
 	}
 
 	/**
-	 * Sets the description associated to this LabPalPlot.
+	 * Sets the description associated to this plot.
 	 * @param title The description
 	 */
 	public Plot setTitle(String title)
@@ -133,7 +137,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 	}
 
 	/**
-	 * Gets the nickname given to this LabPalPlot.
+	 * Gets the nickname given to this plot.
 	 * @return The name
 	 */
 	public String getNickname()
@@ -142,9 +146,9 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 	}
 
 	/**
-	 * Gets the nickname given to this LabPalPlot.
+	 * Gets the nickname given to this plot.
 	 * @param nickname The name
-	 * @return This LabPalPlot
+	 * @return This plot
 	 */
 	public Plot setNickname(String nickname)
 	{
@@ -153,7 +157,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 	}
 
 	/**
-	 * Gets the unique ID of this LabPalPlot.
+	 * Gets the unique ID of this plot.
 	 * @return The id
 	 */
 	public int getId()

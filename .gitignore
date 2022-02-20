@@ -8,15 +8,16 @@
 *.swp
 *.bak
 *.old
+*.log
 
 # MacOS !#@$ files
 .DS_Store
 
 # Auto-generated folders
 /doc/
-/lib/
-/deps/
-/tests/
+**/lib/
+**/dep/
+**/tests/
 
 # Top-level jar, but not jars in subfolders (if any)
 *.jar

@@ -7,18 +7,31 @@ import org.junit.Test;
 import ca.uqac.lif.labpal.DummyExperiment;
 import ca.uqac.lif.labpal.assistant.Assistant;
 import ca.uqac.lif.labpal.assistant.AssistantRun;
+import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.Experiment.Status;
+import ca.uqac.lif.units.Time;
+import ca.uqac.lif.units.si.Second;
 
 /**
  * Unit tests for {@link Assistant} and {@link AssistantRun}.
  */
 public class AssistantTest 
 {
+	public static final Time t_20s = new Second(20);
+	
+	public static final Time t_750ms = new Second(0.75);
+	
+	public static final Time t_500ms = new Second(0.5);
+	                                                                       
+	public static final Time t_200ms = new Second(0.2);
+	
+	public static final Time t_0ms = new Second(0);
+	
 	@Test(timeout = 5000)
 	public void testQueueSingleThread1()
 	{
 		Assistant assistant = new Assistant();
-		DummyExperiment de1 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run = assistant.enqueue(de1);
 		run.join();
 		assertEquals(Status.DONE, de1.getStatus());
@@ -28,8 +41,8 @@ public class AssistantTest
 	public void testQueueSingleThread2()
 	{
 		Assistant assistant = new Assistant();
-		DummyExperiment de1 = new DummyExperiment(500, 0);
-		DummyExperiment de2 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de2 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run = assistant.enqueue(de1, de2);
 		run.join();
 		// Check that both experiments are done when join() returns
@@ -45,7 +58,7 @@ public class AssistantTest
 	public void testTimeoutSingleThread1()
 	{
 		Assistant assistant = new Assistant();
-		DummyExperiment de1 = new DummyExperiment(500, 200);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_200ms);
 		AssistantRun run = assistant.enqueue(de1);
 		run.join();
 		assertEquals(Status.TIMEOUT, de1.getStatus());
@@ -55,8 +68,8 @@ public class AssistantTest
 	public void testTimeoutSingleThread3()
 	{
 		Assistant assistant = new Assistant();
-		DummyExperiment de1 = new DummyExperiment(500, 20000);
-		DummyExperiment de2 = new DummyExperiment(500, 20000);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_20s);
+		Experiment de2 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_20s);
 		AssistantRun run = assistant.enqueue(de1, de2);
 		run.join();
 		assertEquals(Status.DONE, de1.getStatus());
@@ -67,8 +80,8 @@ public class AssistantTest
 	public void testTimeoutSingleThread2()
 	{
 		Assistant assistant = new Assistant();
-		DummyExperiment de2 = new DummyExperiment(500, 200);
-		DummyExperiment de3 = new DummyExperiment(500, 20000);
+		Experiment de2 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_200ms);
+		Experiment de3 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_20s);
 		AssistantRun run = assistant.enqueue(de2, de3);
 		run.join();
 		assertEquals(Status.TIMEOUT, de2.getStatus());
@@ -79,9 +92,9 @@ public class AssistantTest
 	public void testQueueMultipleThread1()
 	{
 		Assistant assistant = new Assistant().setExecutor(new QueuedThreadPoolExecutor(2));
-		DummyExperiment de1 = new DummyExperiment(500, 0);
-		DummyExperiment de2 = new DummyExperiment(750, 0);
-		DummyExperiment de3 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de2 = new DummyExperiment().setDuration(t_750ms).setTimeout(t_0ms);
+		Experiment de3 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run = assistant.enqueue(de1, de2, de3);
 		run.join();
 		// Check that both experiments are done when join() returns
@@ -102,7 +115,7 @@ public class AssistantTest
 	public void testSoftStopSingleThread1() throws InterruptedException
 	{
 		Assistant assistant = new Assistant();
-		DummyExperiment de1 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run = assistant.enqueue(de1);
 		run.join();
 		Thread.sleep(100); // Give the assistant some time to start the first experiment
@@ -115,7 +128,7 @@ public class AssistantTest
 	public void testHardStopSingleThread1() throws InterruptedException
 	{
 		Assistant assistant = new Assistant();
-		DummyExperiment de1 = new DummyExperiment(1500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(new Second(1.5)).setTimeout(t_0ms);
 		AssistantRun run = assistant.enqueue(de1);
 		Thread.sleep(100); // Give the assistant some time to start the first experiment 
 		run.stop(true);
@@ -127,9 +140,9 @@ public class AssistantTest
 	public void testSoftStopMultipleThread1() throws InterruptedException
 	{
 		Assistant assistant = new Assistant().setExecutor(new QueuedThreadPoolExecutor(2));
-		DummyExperiment de1 = new DummyExperiment(500, 0);
-		DummyExperiment de2 = new DummyExperiment(750, 0);
-		DummyExperiment de3 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de2 = new DummyExperiment().setDuration(t_750ms).setTimeout(t_0ms);
+		Experiment de3 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run = assistant.enqueue(de1, de2, de3);
 		Thread.sleep(200); // Give enough time only for de1 and de2 to start, and hence to complete
 		run.stop(false);
@@ -143,9 +156,9 @@ public class AssistantTest
 	public void testHardStopMultipleThread1() throws InterruptedException
 	{
 		Assistant assistant = new Assistant().setExecutor(new QueuedThreadPoolExecutor(2));
-		DummyExperiment de1 = new DummyExperiment(500, 0);
-		DummyExperiment de2 = new DummyExperiment(750, 0);
-		DummyExperiment de3 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de2 = new DummyExperiment().setDuration(t_750ms).setTimeout(t_0ms);
+		Experiment de3 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run = assistant.enqueue(de1, de2, de3);
 		Thread.sleep(200); // Give enough time only for de1 and de2 to start, and hence to be cancelled
 		run.stop(true);
@@ -159,7 +172,7 @@ public class AssistantTest
 	public void testTimeoutMultipleThread1()
 	{
 		Assistant assistant = new Assistant().setExecutor(new QueuedThreadPoolExecutor(2));
-		DummyExperiment de1 = new DummyExperiment(500, 200);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_200ms);
 		AssistantRun run = assistant.enqueue(de1);
 		run.join();
 		assertEquals(Status.TIMEOUT, de1.getStatus());
@@ -169,9 +182,9 @@ public class AssistantTest
 	public void testTimeoutMultipleThread2()
 	{
 		Assistant assistant = new Assistant().setExecutor(new QueuedThreadPoolExecutor(2));
-		DummyExperiment de1 = new DummyExperiment(500, 0);
-		DummyExperiment de2 = new DummyExperiment(500, 200);
-		DummyExperiment de3 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de2 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_200ms);
+		Experiment de3 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run = assistant.enqueue(de1, de2, de3);
 		run.join();
 		assertEquals(Status.DONE, de1.getStatus());
@@ -183,8 +196,8 @@ public class AssistantTest
 	public void testMultipleRunsSingleThread1()
 	{
 		Assistant assistant = new Assistant();
-		DummyExperiment de1 = new DummyExperiment(500, 0);
-		DummyExperiment de2 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de2 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run1 = assistant.enqueue(de1);
 		AssistantRun run2 = assistant.enqueue(de2);
 		run1.join();
@@ -197,8 +210,8 @@ public class AssistantTest
 	public void testMultipleRunsCancelSingleThread1() throws InterruptedException
 	{
 		Assistant assistant = new Assistant();
-		DummyExperiment de1 = new DummyExperiment(1000, 0);
-		DummyExperiment de2 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(new Second(1)).setTimeout(t_0ms);
+		Experiment de2 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run1 = assistant.enqueue(de1);
 		Thread.sleep(100);
 		AssistantRun run2 = assistant.enqueue(de2);
@@ -213,10 +226,10 @@ public class AssistantTest
 	public void testMultipleRunsMultiThread1()
 	{
 		Assistant assistant = new Assistant().setExecutor(new QueuedThreadPoolExecutor(2));
-		DummyExperiment de1 = new DummyExperiment(500, 0);
-		DummyExperiment de2 = new DummyExperiment(500, 0);
-		DummyExperiment de3 = new DummyExperiment(500, 0);
-		DummyExperiment de4 = new DummyExperiment(500, 0);
+		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de2 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de3 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de4 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run1 = assistant.enqueue(de1, de2);
 		AssistantRun run2 = assistant.enqueue(de3, de4);
 		run1.join();

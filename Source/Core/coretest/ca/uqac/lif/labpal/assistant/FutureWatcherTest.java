@@ -10,16 +10,27 @@ import org.junit.Test;
 
 import ca.uqac.lif.labpal.DummyExperiment;
 import ca.uqac.lif.labpal.assistant.FutureWatcher;
+import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.Experiment.Status;
+import ca.uqac.lif.units.Time;
+import ca.uqac.lif.units.si.Second;
 
 public class FutureWatcherTest 
 {
+	public static final Time t_500ms = new Second(0.5);
+	
+	public static final Time t_100ms = new Second(0.1);
+	
+	public static final Time t_50ms = new Second(0.05);
+	
+	public static final Time t_0ms = new Second(0);
+	
 	@Test
 	public void testTimeout1() throws InterruptedException
 	{
 		// Experiment runs to completion
 		ExecutorService executor = Executors.newSingleThreadExecutor();
-		DummyExperiment e = new DummyExperiment(100, 500);
+		Experiment e = new DummyExperiment().setDuration(t_100ms).setTimeout(t_500ms);
 		Future<?> f = executor.submit(e);
 		FutureWatcher w = new FutureWatcher(e, f);
 		Thread t = new Thread(w);
@@ -33,7 +44,7 @@ public class FutureWatcherTest
 	{
 		// Experiment times out and is stopped by FutureWatcher
 		ExecutorService executor = Executors.newSingleThreadExecutor();
-		DummyExperiment e = new DummyExperiment(100, 50);
+		Experiment e = new DummyExperiment().setDuration(t_500ms).setTimeout(t_50ms);
 		Future<?> f = executor.submit(e);
 		FutureWatcher w = new FutureWatcher(e, f);
 		Thread t = new Thread(w);
@@ -47,7 +58,7 @@ public class FutureWatcherTest
 	{
 		// Experiment is externally interrupted before it ends
 		ExecutorService executor = Executors.newSingleThreadExecutor();
-		DummyExperiment e = new DummyExperiment(500, 0);
+		Experiment e = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		Future<?> f = executor.submit(e);
 		FutureWatcher w = new FutureWatcher(e, f);
 		Thread t = new Thread(w);

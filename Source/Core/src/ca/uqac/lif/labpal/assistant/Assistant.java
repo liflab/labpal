@@ -19,6 +19,7 @@ package ca.uqac.lif.labpal.assistant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import ca.uqac.lif.labpal.experiment.Experiment;
+import ca.uqac.lif.labpal.experiment.Experiment.Status;
+import ca.uqac.lif.labpal.experiment.ExperimentGroup;
+import ca.uqac.lif.labpal.experiment.ExperimentSelector;
 
 /**
  * Coordinates the execution of batches of experiments from a given laboratory.
@@ -40,22 +44,27 @@ public class Assistant
 	/**
 	 * The executor used to execute runs sequentially.
 	 */
-	/*@ non_null @*/ protected ExecutorService m_runExecutor;
+	/*@ non_null @*/ protected transient ExecutorService m_runExecutor;
 	
 	/**
 	 * The executor used to execute experiments in each run.
 	 */
-	protected LabPalExecutorService m_executor;
+	protected transient LabPalExecutorService m_executor;
 
 	/**
 	 * The scheduler used to possibly reorder the experiments given for a run.
 	 */
-	/*@ null @*/ protected ExperimentScheduler m_scheduler;
+	/*@ null @*/ protected transient ExperimentScheduler m_scheduler;
 
 	/**
 	 * The list of runs produced by the assistant.
 	 */
-	/*@ non_null @*/ protected final List<AssistantRun> m_runs;
+	/*@ non_null @*/ protected final transient List<AssistantRun> m_runs;
+	
+	/**
+	 * A queue of experiments that have not yet been committed to a run.
+	 */
+	/*@ non_null @*/ protected final transient List<Experiment> m_queue;
 
 	/**
 	 * Creates a new assistant with default settings.
@@ -65,20 +74,95 @@ public class Assistant
 		super();
 		m_runExecutor = Executors.newSingleThreadExecutor();
 		m_runs = new ArrayList<AssistantRun>();
+		m_queue = new ArrayList<Experiment>();
+	}
+	
+	/**
+	 * Creates a new assistant with default settings and sets its
+	 * run executor.
+	 * @param service The LabPal executor service used to run
+	 * experiments
+	 */
+	public Assistant(/*@ non_null @*/ LabPalExecutorService service)
+	{
+		this();
+		m_executor = service;
+	}
+	
+	/**
+	 * Gets the contents of the assistant's queue.
+	 * @return The queue
+	 */
+	/*@ pure non_null @*/ public List<Experiment> getQueue()
+	{
+		return m_queue;
+	}
+	
+	/**
+	 * Adds a collection of experiments to the assistant's queue. If an
+	 * experiment in the collection is already present in the queue, it is not
+	 * added another time.
+	 * @param experiments The experiments to add
+	 * @return The number of experiments actually added to the queue
+	 */
+	/*@ non_null @*/ public int addToQueue(Collection<Experiment> experiments)
+	{
+		int added = 0;
+		for (Experiment e : experiments)
+		{
+			if (!m_queue.contains(e))
+			{
+				m_queue.add(e);
+				added++;
+			}
+		}
+		return added;
+	}
+	
+	/**
+	 * Gets the contents of the assistant's queue, exposed as an experiment
+	 * group.
+	 * @return The group
+	 */
+	/*@ pure non_null @*/ public ExperimentGroup getQueueAsGroup()
+	{
+		ExperimentGroup g = new ExperimentGroup("");
+		g.setId(-1);
+		g.add(m_queue);
+		return g;
 	}
 
 	/**
 	 * Adds experiments to be eventually executed in the next run of the
 	 * assistant.
 	 * @param experiments The experiments to add
+	 * @return The run corresponding to these experiments
 	 */
 	/*@ non_null @*/ public AssistantRun enqueue(Experiment ... experiments)
 	{
+		if (experiments == null || experiments.length == 0)
+		{
+			AssistantRun run = enqueue(m_queue);
+			m_queue.clear();
+			return run;
+		}
 		List<Experiment> ordered_list = sort(experiments);
 		RunRunnable rr = new RunRunnable(ordered_list, getExecutor());
 		Future<?> future = m_runExecutor.submit(rr);
 		AssistantRun run = new AssistantRun(rr, future);
 		m_runs.add(run);
+		return run;
+	}	
+	
+	/**
+	 * Adds experiments to be eventually executed in the next run of the
+	 * assistant from the assistant's current queue.
+	 * @return The run corresponding to these experiments
+	 */
+	/*@ non_null @*/ public AssistantRun enqueueCurrent()
+	{
+		AssistantRun run = enqueue(m_queue);
+		m_queue.clear();
 		return run;
 	}
 
@@ -86,8 +170,11 @@ public class Assistant
 	 * Adds experiments to be eventually executed in the next run of the
 	 * assistant.
 	 * @param experiments The experiments to add
+	 * @param The run instance corresponding to the execution of these
+	 * experiments
+	 * @return The run corresponding to these experiments
 	 */
-	/*@ non_null @*/ public AssistantRun enqueue(/*@ non_null @*/ List<Experiment> experiments)
+	/*@ non_null @*/ public AssistantRun enqueue(/*@ non_null @*/ Collection<Experiment> experiments)
 	{
 		List<Experiment> ordered_list = sort(experiments);
 		RunRunnable rr = new RunRunnable(ordered_list, getExecutor());
@@ -95,6 +182,23 @@ public class Assistant
 		AssistantRun run = new AssistantRun(rr, future);
 		m_runs.add(run);
 		return run;
+	}
+	
+	/**
+	 * Adds experiments to be eventually executed in the next run of the
+	 * assistant.
+	 * @param selector A list of experiment selectors
+	 * @param The run instance corresponding to the execution of these
+	 * experiments
+	 */
+	/*@ non_null @*/ public AssistantRun enqueue(ExperimentSelector ... selectors)
+	{
+		Set<Experiment> exps = new HashSet<Experiment>();
+		for (ExperimentSelector sel : selectors)
+		{
+			exps.addAll(sel.select());
+		}
+		return enqueue(exps);
 	}
 
 	/**
@@ -155,6 +259,24 @@ public class Assistant
 		}
 		return time;
 	}
+	
+	/**
+	 * Determines if an experiment is waiting to be executed.
+	 * @param e The experiment
+	 * @return <tt>true</tt> if the experiment is queued, <tt>false</tt>
+	 * otherwise
+	 */
+	public boolean isQueued(Experiment e)
+	{
+		for (AssistantRun run : m_runs)
+		{
+			if (run.isQueued(e))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Asks the scheduler to reorder the list of experiments to be executed by
@@ -167,11 +289,13 @@ public class Assistant
 
 	}
 
-	/*@ non_null @*/ protected List<Experiment> sort(List<Experiment> experiments)
+	/*@ non_null @*/ protected List<Experiment> sort(Collection<Experiment> experiments)
 	{
 		if (m_scheduler == null)
 		{
-			return experiments;
+			ArrayList<Experiment> list = new ArrayList<Experiment>(experiments.size());
+			list.addAll(experiments);
+			return list;
 		}
 		return m_scheduler.schedule(experiments);
 	}
@@ -202,6 +326,22 @@ public class Assistant
 			m_executor = executor;
 			m_startTime = -1;
 			m_endTime = -1;
+		}
+		
+		/**
+		 * Determines if an experiment is waiting to be executed.
+		 * @param e The experiment
+		 * @return <tt>true</tt> if the experiment is queued, <tt>false</tt>
+		 * otherwise
+		 */
+		public boolean isQueued(Experiment e)
+		{
+			if (!m_experiments.contains(e))
+			{
+				return false;
+			}
+			Experiment.Status s = e.getStatus();
+			return s == Status.READY || s == Status.UNINITIALIZED;
 		}
 
 		@Override
@@ -256,6 +396,15 @@ public class Assistant
 		{
 			Set<Experiment> running = new HashSet<Experiment>();
 			return running;
+		}
+		
+		/**
+		 * Gets the list of experiments that are included in this run.
+		 * @return The list of experiments
+		 */
+		/*@ pure non_null @*/ public List<Experiment> getExperiments()
+		{
+			return m_experiments;
 		}
 	}
 }

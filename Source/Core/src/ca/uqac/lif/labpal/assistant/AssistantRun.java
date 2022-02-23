@@ -26,6 +26,29 @@ import java.util.concurrent.Future;
 import ca.uqac.lif.labpal.assistant.Assistant.RunRunnable;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
+/**
+ * An object allowing control and monitoring over the execution of a batch
+ * of experiments. Assistant runs are objects returned by an {@link Assistant}
+ * on a call to {@link Assistant#enqueue(Experiment...) enqueue()}. Using an
+ * assistant run, it is possible to:
+ * <ul>
+ * <li>monitor the progress on the execution of experiments with
+ * {@link #getProgression()} and {@link #getExecutionTime()}</li>
+ * <li>get the set of currently running experiments with
+ * {@link #getRunningExperiments()}</li>
+ * <li>cancel the execution of a run using {@link #stop(boolean) stop()} or
+ * cancel the queueing of individual experiments in the run with
+ * {@link #cancel(Experiment...) cancel()}</li>
+ * </ul>
+ * Note that an assistant run can only be stopped, but not started. It is the
+ * <em>assistant</em>'s job to enqueue and manage the execution of individual
+ * runs. Also note that the contents of a run (i.e. the experiments it
+ * contains) cannot be modified or reordered. 
+ * 
+ * @since 3.0
+ * 
+ * @author Sylvain Hallé
+ */
 public class AssistantRun 
 {
 	/**
@@ -67,6 +90,41 @@ public class AssistantRun
 	}
 	
 	/**
+	 * Determines if an experiment is waiting to be executed.
+	 * @param e The experiment
+	 * @return <tt>true</tt> if the experiment is queued, <tt>false</tt>
+	 * otherwise
+	 */
+	public boolean isQueued(Experiment e)
+	{
+		return m_runnable.isQueued(e);
+	}
+	
+	/**
+	 * Gets the progression fraction of this run. The progression is taken as
+	 * the average of the progression fraction of the individual experiments
+	 * contained within the run. Hence if experiments report a progression of 1
+	 * when they are done and 0 in other cases, the computed ratio corresponds
+	 * to the fraction of experiments in the run that are completed.
+	 * @return The progression fraction
+	 */
+	/*@ pure @*/ public float getProgression()
+	{
+		float p = 0;
+		float t = 0;
+		for (Experiment e : m_runnable.getExperiments())
+		{
+			p += e.getProgression();
+			t++;
+		}
+		if (t == 0)
+		{
+			return 0;
+		}
+		return p / t;
+	}
+	
+	/**
 	 * Prevents the assistant from starting any new experiment in this run,
 	 * and optionally interrupts any currently running experiments.
 	 * @param now Set to <tt>true</tt> to immediately interrupt running
@@ -83,6 +141,15 @@ public class AssistantRun
 		{
 			// Do nothing
 		}
+	}
+	
+	/**
+	 * Gets the list of experiments concerned by this run.
+	 * @return The list of experiments
+	 */
+	/*@ pure non_null @*/ public List<Experiment> getExperiments()
+	{
+		return m_runnable.getExperiments();
 	}
 	
 	/**

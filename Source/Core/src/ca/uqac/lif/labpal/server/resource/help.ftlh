@@ -1,0 +1,56 @@
+<#include "header.ftlh">
+
+<h2>What is this?</h2>
+
+<p>Welcome to LabPal, a versatile environment for running experiments on
+a computer.</p>
+
+<p>You are currently using the web interface that belongs to a
+<strong>laboratory</strong> (or <i>lab</i> for short). A lab contains
+a set of <a href="/experiments"><strong>experiments</strong></a>.
+When an experiment is executed,
+it produces one or many <strong>output parameters</strong>, whose data
+may be used to create <a href="/tables"><strong>tables</strong></a>, 
+<a href="/plots"><strong>plots</strong></a> and 
+<a href="/macros"><strong>macros</strong></a>.</p>
+
+<p>The execution of the experiments is managed by a
+<a href="/assistant"><strong>lab
+assistant</strong></a>. Typically, one views the list of experiments,
+picks some of them and adds them to the assistant's <em>queue</em>. One
+can then start/stop the assistant at any time, and view the status of
+completed experiments and plots.</p>
+
+<p>At any moment, the current status of the lab (complete with any data
+produced by experiments that are finished) can be saved to a file. The
+reverse operation is also possible: one can (up)load a saved file and
+resume the execution of the lab from that point.</p>
+
+<p>These are the basic rules for using LabPal. If the author of this
+specific lab has written a description, you can read it in the
+<a href="/index">home page</a>.</p>
+
+<p>For more information about using LabPal, please refer to its
+<a href="https://liflab.github.io/labpal">web site</a>, which includes
+an extensive user manual and tutorial videos.</p>
+
+<h2>About LabPal</h2>
+
+<p>LabPal was written by <a href="http://leduotang.ca/sylvain">Sylvain Hall&eacute;</a>,
+Full Professor
+at <a href="http://www.uqac.ca/">Universit&eacute; du Qu&eacute;bec &agrave; Chicoutimi</a>,
+Canada. A summary of LabPal can be found in the following article:</p>
+
+<blockquote>S. Hall&eacute;, R. Khoury, M. Awesso. (2018).
+Streamlining the Inclusion of Computer Experiments In a Research Paper.
+<i>IEEE Computer</i> 51(11): 78-89. DOI:
+<a href="https://doi.org/10.1109/MC.2018.2876075">10.1109/MC.2018.2876075</a>.
+</blockquote>
+
+<p>The use of LabPal for the execution of experiments and the collection
+of data does not represent an endorsement of any form on behalf of Pr.
+Hall&eacute; and UQAC; any data collected through LabPal, and any claims
+and conclusions drawn from this data, are solely the responsibility of
+the lab's authors.</p>
+
+<#include "footer.ftlh">

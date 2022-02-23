@@ -17,10 +17,14 @@
  */
 package ca.uqac.lif.labpal;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
+import ca.uqac.lif.units.Time;
+import ca.uqac.lif.units.si.Second;
 
 /**
  * A "dummy" experiment that simulates processing by waiting for some
@@ -31,8 +35,11 @@ public class DummyExperiment extends Experiment
 	@Test
 	public void dummyExperimentTest1()
 	{
-		// A dummy test to avoid JUnit complaining about the class having no
-		// test
+		DummyExperiment de = new DummyExperiment().setDuration(new Second(1));
+		long start = System.currentTimeMillis();
+		de.run();
+		long end = System.currentTimeMillis();
+		assertTrue(end - start >= 1000);
 	}
 
 	/**
@@ -44,24 +51,29 @@ public class DummyExperiment extends Experiment
 	
 	protected boolean m_fulfillCalled;
 	
-	protected DummyExperiment()
+	public DummyExperiment()
 	{
 		super();
-	}
-
-	public DummyExperiment(long duration, long timeout)
-	{
-		super();
-		m_duration = duration;
 		m_hasPrerequisites = false;
 		m_fulfillCalled = false;
-		setTimeout(timeout);
+	}
+
+	public DummyExperiment setDuration(Time duration)
+	{
+		m_duration = (long) (new Second(duration).get().floatValue() * 1000f);
+		return this;
 	}
 	
 	public DummyExperiment hasPrerequisites(boolean b)
 	{
 		m_hasPrerequisites = b;
 		return this;
+	}
+	
+	@Override
+	public String getDescription()
+	{
+		return "A dummy experiment for testing purposes.";	
 	}
 	
 	public boolean hasPrerequisites()
@@ -91,9 +103,11 @@ public class DummyExperiment extends Experiment
 	{
 		if (m_duration > 0)
 		{
+			for (int i = 0; i < m_duration / 50; i++)
 			try 
 			{
-				Thread.sleep(m_duration);
+				Thread.sleep(50);
+				setProgression(i * 50 / m_duration);
 			}
 			catch (InterruptedException e) 
 			{

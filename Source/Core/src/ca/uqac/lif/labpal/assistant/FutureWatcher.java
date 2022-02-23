@@ -24,6 +24,7 @@ import java.util.concurrent.TimeoutException;
 
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.Experiment.Status;
+import ca.uqac.lif.units.si.Second;
 
 /**
  * A runnable class that lets another thread running an experiment last for up
@@ -63,7 +64,7 @@ class FutureWatcher implements Runnable
 	@Override
 	public void run()
 	{
-		long timeout = m_experiment.getTimeout();
+		long timeout = (int) (new Second(m_experiment.getTimeout()).get().floatValue() * 1000f);
 		try
 		{
 			if (timeout <= 0)

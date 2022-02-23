@@ -36,34 +36,42 @@ import ca.uqac.lif.labpal.DummyExperiment;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
 import ca.uqac.lif.labpal.experiment.Experiment.Status;
+import ca.uqac.lif.units.Time;
+import ca.uqac.lif.units.si.Second;
 
 /**
  * Unit tests for {@link Experiment}.
  */
 public class ExperimentTest 
 {
+	public static final Time t_1s = new Second(1);
+	
+	public static final Time t_250ms = new Second(0.25);
+
+	public static final Time t_0s = new Second(0);
+	
 	@Test
 	public void testLifecycle1()
 	{
-		DummyExperiment de = new DummyExperiment(1000, 0);
+		Experiment de = new DummyExperiment().setDuration(t_1s).setTimeout(t_0s);
 		assertTrue(de.prerequisitesFulfilled());
 		assertEquals(Status.READY, de.getStatus());
 		assertEquals(0, de.getStartTime());
 		assertEquals(0, de.getPrerequisitesTime());
 		assertEquals(0, de.getEndTime());
-		assertEquals(0, de.getTotalDuration());
+		assertEquals(0, new Second(de.getTotalDuration()).get().floatValue(), 0.001);
 	}
 	
 	@Test
 	public void testLifecycle2() throws ExperimentException, InterruptedException
 	{
-		DummyExperiment de = new DummyExperiment(1000, 0).hasPrerequisites(true);
+		Experiment de = new DummyExperiment().hasPrerequisites(true).setDuration(t_1s).setTimeout(t_0s);
 		assertFalse(de.prerequisitesFulfilled());
 		assertEquals(Status.UNINITIALIZED, de.getStatus());
 		assertEquals(0, de.getStartTime());
 		assertEquals(0, de.getPrerequisitesTime());
 		assertEquals(0, de.getEndTime());
-		assertEquals(0, de.getTotalDuration());
+		assertEquals(0, new Second(de.getTotalDuration()).get().floatValue(), 0.001);
 		de.fulfillPrerequisites();
 		assertEquals(Status.READY, de.getStatus());
 	}
@@ -71,22 +79,22 @@ public class ExperimentTest
 	@Test
 	public void testLifecycle5()
 	{
-		DummyExperiment de = new DummyExperiment(1000, 0).hasPrerequisites(true);
+		Experiment de = new DummyExperiment().hasPrerequisites(true).setDuration(t_1s).setTimeout(t_0s);
 		assertFalse(de.prerequisitesFulfilled());
 		assertEquals(Status.UNINITIALIZED, de.getStatus());
 		de.run();
-		assertTrue(de.fulfillCalled());
+		assertTrue(((DummyExperiment) de).fulfillCalled());
 		assertEquals(Status.DONE, de.getStatus());
 	}
 	
 	@Test
 	public void testLifecycle6()
 	{
-		DummyExperiment de = new DummyExperiment(1000, 0) {
+		Experiment de = new DummyExperiment() {
 			public void execute() throws ExperimentException {
 				throw new ExperimentException("foo");
 			}
-		};
+		}.setDuration(t_1s).setTimeout(t_0s);
 		de.run();
 		assertEquals(Status.FAILED, de.getStatus());
 	}
@@ -94,11 +102,11 @@ public class ExperimentTest
 	@Test
 	public void testLifecycle7()
 	{
-		DummyExperiment de = new DummyExperiment(1000, 0) {
+		Experiment de = new DummyExperiment() {
 			public void fulfillPrerequisites() throws ExperimentException, InterruptedException {
 				throw new ExperimentException("foo");
 			}
-		}.hasPrerequisites(true);
+		}.hasPrerequisites(true).setDuration(t_1s).setTimeout(t_0s);
 		de.run();
 		assertEquals(Status.FAILED, de.getStatus());
 	}
@@ -106,11 +114,11 @@ public class ExperimentTest
 	@Test
 	public void testLifecycle8() throws InterruptedException
 	{
-		DummyExperiment de = new DummyExperiment(1000, 0) {
+		Experiment de = new DummyExperiment() {
 			public void fulfillPrerequisites() throws InterruptedException {
 				Thread.sleep(1000);
 			}
-		}.hasPrerequisites(true);
+		}.hasPrerequisites(true).setDuration(t_1s).setTimeout(t_0s);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.submit(de);
 		Thread.sleep(250);
@@ -122,11 +130,11 @@ public class ExperimentTest
 	@Test
 	public void testLifecycle9() throws InterruptedException
 	{
-		DummyExperiment de = new DummyExperiment(1000, 0) {
+		Experiment de = new DummyExperiment() {
 			public void execute() throws InterruptedException {
 				Thread.sleep(1000);
 			}
-		};
+		}.setDuration(t_1s).setTimeout(t_0s);;
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.submit(de);
 		Thread.sleep(250);
@@ -138,12 +146,12 @@ public class ExperimentTest
 	@Test
 	public void testLifecycle3()
 	{
-		DummyExperiment de = new DummyExperiment(250, 0) {
+		Experiment de = new DummyExperiment() {
 			public void execute() throws InterruptedException, ExperimentException {
 				writeOutput("foo", 42);
 				super.execute();
 			}
-		};
+		}.setDuration(t_250ms).setTimeout(t_0s);
 		de.run();
 		assertEquals(Status.DONE, de.getStatus());
 		assertTrue(de.getStartTime() > 0);
@@ -159,7 +167,7 @@ public class ExperimentTest
 	@Test
 	public void testLifecycle4()
 	{
-		DummyExperiment de = new DummyExperiment(250, 0) {
+		Experiment de = new DummyExperiment() {
 			public void fulfillPrerequisites() throws ExperimentException, InterruptedException
 			{
 				super.fulfillPrerequisites();
@@ -174,7 +182,7 @@ public class ExperimentTest
 				writeOutput("foo", 42);
 				super.execute();
 			}
-		}.hasPrerequisites(true);
+		}.hasPrerequisites(true).setDuration(t_250ms).setTimeout(t_0s);
 		de.run();
 		assertEquals(Status.DONE, de.getStatus());
 		assertTrue(de.getStartTime() > 0);
@@ -190,11 +198,11 @@ public class ExperimentTest
 	@Test
 	public void testReset1()
 	{
-		DummyExperiment de = new DummyExperiment(1000, 0) {
+		Experiment de = new DummyExperiment() {
 			public void execute() {
 				writeOutput("foo", 42);
 			}
-		};
+		}.setDuration(t_1s).setTimeout(t_0s);
 		de.writeInput("bar", "baz");
 		assertEquals("baz", de.read("bar"));
 		assertNull(de.read("foo"));
@@ -210,7 +218,7 @@ public class ExperimentTest
 	public void testSerialize1() throws PrintException, ReadException
 	{
 		// Test serialization before the experiment has run
-		Experiment de = new SerializableExperiment(1000, 250);
+		Experiment de = new SerializableExperiment().setDuration(t_1s).setTimeout(t_250ms);
 		JsonPrinter jop = new JsonPrinter();
 		JsonElement printed = jop.print(de);
 		JsonReader jor = new JsonReader();
@@ -226,7 +234,7 @@ public class ExperimentTest
 		assertEquals(de.getEndTime(), copy.getEndTime());
 		assertEquals(de.getProgression(), copy.getProgression(), 0.00001);
 		assertEquals(de.getTimeRatio(), copy.getTimeRatio(), 0.00001);
-		assertEquals(de.getTimeout(), copy.getTimeout(), 0.00001);
+		assertEquals(de.getTimeout().get().floatValue(), copy.getTimeout().get().floatValue(), 0.001);
 	}
 	
 	@Test
@@ -251,7 +259,7 @@ public class ExperimentTest
 		assertEquals(de.getEndTime(), copy.getEndTime());
 		assertEquals(de.getProgression(), copy.getProgression(), 0.00001);
 		assertEquals(de.getTimeRatio(), copy.getTimeRatio(), 0.00001);
-		assertEquals(de.getTimeout(), copy.getTimeout(), 0.00001);
+		assertEquals(de.getTimeout(), copy.getTimeout());
 		List<?> orig_list = (List<?>) de.read("somelist");
 		List<?> copy_list = (List<?>) copy.read("somelist");
 		assertNotNull(copy_list);
@@ -262,18 +270,12 @@ public class ExperimentTest
 	
 	public static class SerializableExperiment extends DummyExperiment
 	{
-		public SerializableExperiment(long duration, long timeout)
-		{
-			super(duration, timeout);
-			writeInput("bar", true);
-		}
-		
 		public SerializableExperiment()
 		{
 			super();
 			writeInput("bar", true);
 		}
-		
+				
 		@Override
 		public void execute()
 		{

@@ -59,12 +59,17 @@ public class LabPalServer extends Server
 		setServerPort(21212);
 		setUserAgent("LabPal " + Laboratory.formatVersion());
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/help", "help.ftlh", "top-menu-help").setTitle("Help"));
-		registerCallback(new TemplatePageCallback(this, Method.GET, "/status", "status.ftlh", "top-menu-status").setTitle("Status"));
+		registerCallback(new TemplatePageCallback(this, Method.GET, "/find", "find.ftlh", "top-menu-find").setTitle("Find"));
+		registerCallback(new StatusPageCallback(this, Method.GET, "/status", "status.ftlh").setTitle("Status"));
 		registerCallback(new ExperimentPageCallback(this, Method.GET, "/experiment/", "experiment.ftlh"));
 		registerCallback(new ExperimentsStatusCallback(this, Method.GET, "/experiments/status"));
 		registerCallback(new ExperimentsPageCallback(this, Method.GET, "/experiments", "experiments.ftlh"));
+		registerCallback(new LabStatusCallback(this, Method.GET, "/lab/status"));
 		registerCallback(new AssistantStatusCallback(this, Method.GET, "/assistant/status"));
 		registerCallback(new AssistantPageCallback(this, Method.GET, "/assistant", "assistant.ftlh"));
+		registerCallback(new TablePageCallback(this, Method.GET, "/table/", "table.ftlh"));
+		registerCallback(new TemplatePageCallback(this, Method.GET, "/tables", "tables.ftlh", "top-menu-tables").setTitle("Tables"));
+		registerCallback(new TemplatePageCallback(this, Method.GET, "/plots", "plots.ftlh", "top-menu-plots").setTitle("Plots"));
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/index", "index.ftlh", "top-menu-home").setTitle("Home"));
 		registerCallback(new CssCallback(this, Method.GET, "/screen.css", "screen.css.ftlh"));
 		registerCallback(new JavaScriptCallback("resource", LabPalServer.class));

@@ -475,3 +475,14 @@ table.exp-table td {
 .progress-bar .other {
   background-color: white;
 }
+
+.running-exps {
+  padding-left: 0px;
+}
+.running-exps li {
+  display: inline-block;
+  list-style-type: none;
+  background: url('images/erlenmeyer-16.png') left no-repeat;
+  padding-left: 28px;
+  margin-right: 10px;
+}

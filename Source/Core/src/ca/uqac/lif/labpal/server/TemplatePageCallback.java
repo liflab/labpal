@@ -45,7 +45,7 @@ import freemarker.template.TemplateExceptionHandler;
 public class TemplatePageCallback extends RestCallback
 {
 	protected static String s_templateBaseDir = "resource";
-	
+
 	protected static String s_errorTemplate = "error.ftlh";
 
 	protected String m_templateLocation;
@@ -151,5 +151,22 @@ public class TemplatePageCallback extends RestCallback
 	protected Object liftObject(String key, Object value)
 	{
 		return value;
+	}
+
+	/**
+	 * Escapes characters to HTML entities
+	 * 
+	 * @param s
+	 *          The input string
+	 * @return The escaped string
+	 */
+	public static String htmlEscape(String s)
+	{
+		if (s == null)
+			return s;
+		s = s.replaceAll("&", "&amp;");
+		s = s.replaceAll("<", "&lt;");
+		s = s.replaceAll(">", "&gt;");
+		return s;
 	}
 }

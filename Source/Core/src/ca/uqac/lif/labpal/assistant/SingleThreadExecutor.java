@@ -41,4 +41,10 @@ public class SingleThreadExecutor extends LabPalExecutorService
 	{
 		return new SingleThreadExecutor();
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "ST";
+	}
 }

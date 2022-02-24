@@ -20,6 +20,8 @@ package ca.uqac.lif.labpal;
 import ca.uqac.lif.labpal.assistant.Assistant;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.util.AnsiPrinter;
 import ca.uqac.lif.labpal.util.CliParser;
 import ca.uqac.lif.labpal.util.FileHelper;
@@ -110,11 +112,36 @@ public class Laboratory
 	 * A list of experiment groups.
 	 */
 	/*@ non_null @*/ private List<ExperimentGroup> m_experimentGroups;
+	
+	/**
+	 * A map associating plot IDs to plot instances.
+	 */
+	/*@ non_null @*/ private Map<Integer,Plot> m_plots;
+	
+	/**
+	 * A map associating table IDs to table instances.
+	 */
+	/*@ non_null @*/ private Map<Integer,Table> m_tables;
 
 	/**
 	 * An assistant instance used to run experiments inside the lab.
 	 */
-	/*@ non_null @*/ private transient Assistant m_assistant;  
+	/*@ non_null @*/ private transient Assistant m_assistant;
+	
+	/**
+	 * The name of this lab.
+	 */
+	/*@ non_null @*/ private String m_name;
+	
+	/**
+	 * The author of this lab.
+	 */
+	/*@ non_null @*/ private String m_author;
+	
+	/**
+	 * The DOI of this lab, if any.
+	 */
+	/*@ non_null @*/ private String m_doi;
 
 	/**
 	 * The default filename assumed for the HTML description
@@ -148,8 +175,13 @@ public class Laboratory
 	{
 		super();
 		m_experiments = new HashMap<Integer,Experiment>();
+		m_plots = new HashMap<Integer,Plot>();
+		m_tables = new HashMap<Integer,Table>();
 		m_assistant = new Assistant();
 		m_experimentGroups = new ArrayList<ExperimentGroup>();
+		m_doi = "";
+		m_author = "Fred Flintstone";
+		m_name = "Untitled";
 	}
 
 	/**
@@ -239,9 +271,92 @@ public class Laboratory
 	 * 
 	 * @return The generator
 	 */
-	public final ca.uqac.lif.labpal.Random getRandom()
+	/*@ pure non_null @*/ public final ca.uqac.lif.labpal.Random getRandom()
 	{
 		return m_random;
+	}
+	
+	/**
+	 * Gets the lab's random seed.
+	 * @return The seed
+	 */
+	/*@ pure non_null @*/ public final int getSeed()
+	{
+		return m_seed;
+	}
+	
+	/**
+	 * Gets the name of this lab.
+	 * @return The lab name
+	 */
+	/*@ pure non_null @*/ public final String getName()
+	{
+		return m_name;
+	}
+	
+	/**
+	 * Sets the name of this lab.
+	 * @param name The lab name
+	 * @return This lab
+	 */
+	/*@ non_null @*/ public final Laboratory setName(String name)
+	{
+		m_name = name;
+		return this;
+	}
+	
+	/**
+	 * Gets the author of this lab.
+	 * @return The author name
+	 */
+	/*@ pure non_null @*/ public final String getAuthor()
+	{
+		return m_author;
+	}
+	
+	/**
+	 * Sets the author of this lab.
+	 * @param author The author name
+	 * @return This lab
+	 */
+	/*@ non_null @*/ public final Laboratory setAuthor(String author)
+	{
+		m_author = author;
+		return this;
+	}
+	
+	/**
+	 * Gets the DOI of this lab.
+	 * @return The DOI
+	 */
+	/*@ pure non_null @*/ public final String getDoi()
+	{
+		return m_doi;
+	}
+	
+	/**
+	 * Sets the DOI of this lab.
+	 * @param doi The DOI
+	 * @return This lab
+	 */
+	/*@ non_null @*/ public final Laboratory setDoi(String doi)
+	{
+		m_doi = doi;
+		return this;
+	}
+	
+	/**
+	 * Retrieves the total number of "data points" contained within this lab.
+	 * @return The number of points
+	 */
+	/*@ pure @*/ public int countDataPoints()
+	{
+		int total = 0;
+		for (Experiment e : m_experiments.values())
+		{
+			total += e.countDataPoints();
+		}
+		return total;
 	}
 	
 	/**
@@ -360,6 +475,11 @@ public class Laboratory
 		String name = new String(bytes);
 		return name.trim();
 	}
+	
+	/*@ pure @*/ public float getParkMips()
+	{
+		return s_parkMips;
+	}
 
 	/**
 	 * Sets the assistant used to run experiments inside the lab.
@@ -387,7 +507,7 @@ public class Laboratory
 	 * @return The experiment instance, or <tt>null</tt> if the experiment
 	 * does not exist in the lab
 	 */
-	/*@ pure null @*/ public Experiment getExperiment(int id)
+	/*@ pure null @*/ public final Experiment getExperiment(int id)
 	{
 		if (m_experiments.containsKey(id))
 		{
@@ -397,10 +517,25 @@ public class Laboratory
 	}
 	
 	/**
+	 * Returns a table instance with given ID, if it exists.
+	 * @param id The table ID
+	 * @return The table instance, or <tt>null</tt> if the table
+	 * does not exist in the lab
+	 */
+	/*@ pure null @*/ public final Table getTable(int id)
+	{
+		if (m_tables.containsKey(id))
+		{
+			return m_tables.get(id);
+		}
+		return null;
+	}
+	
+	/**
 	 * Returns a list of all experiments in the lab, sorted by ID.
 	 * @return The list of experiments
 	 */
-	/*@ pure null @*/ public List<Experiment> getExperiments()
+	/*@ pure non_null @*/ public final List<Experiment> getExperiments()
 	{
 		List<Integer> l_ids = new ArrayList<Integer>();
 		l_ids.addAll(m_experiments.keySet());
@@ -412,17 +547,79 @@ public class Laboratory
 		}
 		return exps;
 	}
+	
+	/**
+	 * Returns a list of all plots in the lab, sorted by ID.
+	 * @return The list of plots
+	 */
+	/*@ pure non_null @*/ public final List<Plot> getPlots()
+	{
+		List<Integer> l_ids = new ArrayList<Integer>();
+		l_ids.addAll(m_plots.keySet());
+		Collections.sort(l_ids);
+		List<Plot> exps = new ArrayList<Plot>();
+		for (int id : l_ids)
+		{
+			exps.add(m_plots.get(id));
+		}
+		return exps;
+	}
+	
+	/**
+	 * Returns a list of all tables in the lab, sorted by ID.
+	 * @return The list of tables
+	 */
+	/*@ pure non_null @*/ public final List<Table> getTables()
+	{
+		List<Integer> l_ids = new ArrayList<Integer>();
+		l_ids.addAll(m_tables.keySet());
+		Collections.sort(l_ids);
+		List<Table> exps = new ArrayList<Table>();
+		for (int id : l_ids)
+		{
+			exps.add(m_tables.get(id));
+		}
+		return exps;
+	}
 
 	/**
-	 * Adds a list of 
-	 * @param experiments
-	 * @return
+	 * Adds a list of experiments to the lab
+	 * @param experiments The experiments to add
+	 * @return This lab
 	 */
 	/*@ non_null @*/ public Laboratory add(Experiment ... experiments)
 	{
 		for (Experiment e : experiments)
 		{
 			m_experiments.put(e.getId(), e);
+		}
+		return this;
+	}
+	
+	/**
+	 * Adds a list of tables to the lab
+	 * @param tables The tables to add
+	 * @return This lab
+	 */
+	/*@ non_null @*/ public Laboratory add(Table ... tables)
+	{
+		for (Table t : tables)
+		{
+			m_tables.put(t.getId(), t);
+		}
+		return this;
+	}
+	
+	/**
+	 * Adds a list of plots to the lab
+	 * @param experiments The plots to add
+	 * @return This lab
+	 */
+	/*@ non_null @*/ public Laboratory add(Plot ... plots)
+	{
+		for (Plot p : plots)
+		{
+			m_plots.put(p.getId(), p);
 		}
 		return this;
 	}

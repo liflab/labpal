@@ -90,6 +90,20 @@ public class Assistant
 	}
 	
 	/**
+	 * Produces a string identifying this assistant.
+	 * @return The assistant's name
+	 */
+	/*@ pure non_null @*/ public String getName()
+	{
+		String out = m_executor.toString();
+		if (m_scheduler != null)
+		{
+			out += ";" + m_scheduler;
+		}
+		return out;
+	}
+	
+	/**
 	 * Gets the contents of the assistant's queue.
 	 * @return The queue
 	 */

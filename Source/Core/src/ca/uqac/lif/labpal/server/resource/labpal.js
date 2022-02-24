@@ -188,6 +188,29 @@ function updateRuns() {
   })
 };
 
+function updateLabBar() {
+	  $.ajax({
+	    url: "/lab/status"
+	  }).done(function (data) {
+		  		$(".progress-bar li.done").css({width : (data["done"] / data["total"]) * 400 + "px"});
+		  		$(".progress-bar li.queued").css({width : (data["queued"] / data["total"]) * 400 + "px"});
+		  		$(".progress-bar li.failed").css({width : (data["failed"] / data["total"]) * 400 + "px"});
+		  		$(".progress-bar li.running").css({width : (data["running"] / data["total"]) * 400 + "px"});
+		  		$("#numdone").text(data["done"] + "/" + data["total"]);
+		  		if (data["ids"].length == 0) {
+		  			$(".running-exps").html("<li class=\"none\">None</li>");
+		  		}
+		  		else {
+		  		  var list = "";
+		  		  for (var i = 0; i < data["ids"].length; i++) {
+		  			  list += "<li><a href=\"/experiment/" + data["ids"][i] + "\">" + data["ids"][i] + "</a></li>\n";
+		  		  }
+		  		  $(".running-exps").html(list);
+		  		}
+	            setTimeout(updateLabBar, 5250);
+	  })
+	};
+
 /**
  * Toggle the captions on the top menu
  * depending on the width of the viewport

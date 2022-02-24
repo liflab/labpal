@@ -15,7 +15,7 @@
   <p>No experiment currently in the queue.</p>
 <#else>
   <form name="current-queue" method="post" action="/assistant">
-  <p><input type="submit" class="btn" id="btn-start" name="start" value="Start a new run" /></p>
+  <p><input type="submit" class="btn btn-start" id="start" name="start" value="Start a new run" /></p>
   <#include "experiment-list.ftlh">
   </form>
 </#if>

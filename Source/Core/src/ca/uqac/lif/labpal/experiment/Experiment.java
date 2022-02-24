@@ -270,9 +270,20 @@ public class Experiment implements Runnable, Comparable<Experiment>
 		return new Second(0);
 	}
 
+	
 	/*@ pure non_null @*/ public final Time getTimeout()
 	{
 		return m_timeout;
+	}
+	
+	/**
+	 * Retrieves the total number of "data points" contained within this
+	 * experiment. What counts as a "data point" is left to the author.
+	 * @return The number of points
+	 */
+	public int countDataPoints()
+	{
+		return m_outputParameters.size();
 	}
 	
 	public final float getProgression()

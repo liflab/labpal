@@ -1,17 +1,23 @@
 $(document).ready(function() {
 
     /* Checkbox: select all experiments */
+	/*
     $("table.exp-table .top-checkbox").click(function() {
       $(".side-checkbox").each(function() { 
 	    $(this).prop("checked",(!($(this).prop("disabled")) && $(" .top-checkbox").prop("checked")));
 	  });
     });
-  
+    */
 	/* Filter by enumeration or/and interval */
-	$("#experiment-filter .btn-filter").click(filter_experiments); 
+	$("#experiment-filter .btn-filter").click(filter_experiments);
+	
 
 	/* Sort an experiment table by clicking on its headers */
-	$("table.exp-table").tablesorter();
+	$("table.exp-table").tablesorter({
+		headers: {
+			0: {sorter: false} // Except 1st column
+		}
+	});
 	
 	/* Pull-down divs */
 	$(".pulldown-contents").hide();
@@ -78,6 +84,108 @@ function filter_experiments()
 			}
 		}
 	}
+};
+
+var last_experiment_status = {};
+
+/**
+ * Updates the progress bars of experiments in an experiment list based on
+ * a JSON structure returned by the server.
+ */
+function updateExperiments() {
+  $.ajax({
+    url: "/experiments/status"
+  }).done(function (data) {
+	  		var statuses = {};
+            for (var k in data) {
+              var status = data[k][0]
+              var progression = data[k][1];
+              if (!(k in last_experiment_status)) {
+            	  last_experiment_status[k] = status;
+              }
+              statuses[k] = status;
+              if (status == "RUNNING" || status == "RUNNING_PREREQ") {
+                $("#progress-bar-" + k).show();
+                $("#progress-bar-val-" + k).show();
+                $("#progress-bar-val-" + k).text(Math.round(progression * 100) + "%");
+                $("#progress-bar-rect-" + k).css({"width" : (progression * 50) + "px"});
+              }
+              else {
+                $("#progress-bar-" + k).hide();
+                $("#progress-bar-val-" + k).hide();
+              }
+              for (var k in data) {
+            	  if (statuses[k] != last_experiment_status[k]) {
+            		  var status_class = "running";
+            		  last_experiment_status[k] = statuses[k];
+                      switch (statuses[k]) {
+                      case "UNINITIALIZED":
+                    	  status_class = "prereq";
+                    	  break;
+                      case "DONE":
+                    	  status_class = "done";
+                    	  break;
+                      case "DONE_WARNING":
+                    	  status_class = "warning";
+                    	  break;
+                      case "FAILED":
+                    	  status_class = "failed";
+                    	  break;
+                      case "CANCELLED":
+                    	  status_class = "failed";
+                    	  break;
+                      case "TIMEOUT":
+                    	  status_class = "timeout";
+                    	  break;
+                      case "READY":
+                    	  status_class = "ready";
+                    	  break;
+                      case "RUNNING":
+                    	  status_class = "running";
+                    	  break;
+                      case "RUNNING_PREREQ":
+                    	  status_class = "running";
+                    	  break;
+                      case "QUEUED":
+                    	  status_class = "queued";
+                    	  break;
+                      default:
+                    	  status_class = "unknown";
+                      	  break;
+                      }
+                      var e = $("#status-icon-" + k);
+                      $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
+            	  }
+              }
+            }
+            setTimeout(updateExperiments, 2000);
+  })
+};
+
+/**
+ * Updates the progress bars of runs in a list of runs based on
+ * a JSON structure returned by the server.
+ */
+function updateRuns() {
+  $.ajax({
+    url: "/assistant/status"
+  }).done(function (data) {
+            for (var k in data) {
+              var running = data[k][0]
+              var progression = data[k][1];
+              if (running) {
+                $("#progress-bar-r" + k).show();
+                $("#progress-bar-val-r" + k).show();
+                $("#progress-bar-val-r" + k).text(Math.round(progression * 100) + "%");
+                $("#progress-bar-rect-r" + k).css({"width" : (progression * 50) + "px"});
+              }
+              else {
+                $("#progress-bar-r" + k).hide();
+                $("#progress-bar-val-r" + k).hide();
+              }
+            }
+            setTimeout(updateRuns, 3100);
+  })
 };
 
 /**

@@ -242,6 +242,45 @@ public class Assistant
 		runs.addAll(m_runs);
 		return runs;
 	}
+	
+	/**
+	 * Gets the run with given ID, if it exists.
+	 * @param id The ID
+	 * @return The run, or <tt>null</tt> if no run with such ID exists
+	 */
+	/*@ pure null @*/ public AssistantRun getRun(int id) 
+	{
+		for (AssistantRun run : m_runs)
+		{
+			if (Integer.parseInt(run.getId()) == id)
+			{
+				return run;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Interrupts and removes an assistant run.
+	 * @param id The ID
+	 * @return <tt>true</tt> if a run with such ID existed and was deleted,
+	 * <tt>false</tt> otherwise
+	 */
+	public boolean deleteRun(int id)
+	{
+		boolean deleted = false;
+		for (AssistantRun run : m_runs)
+		{
+			if (Integer.parseInt(run.getId()) == id)
+			{
+				run.stop(true);
+				m_runs.remove(run);
+				deleted = true;
+				break;
+			}
+		}
+		return deleted;
+	}
 
 	/**
 	 * Gets the cumulative time this assistant has spent running experiments.

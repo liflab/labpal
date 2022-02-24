@@ -1,7 +1,7 @@
 <#include "header.ftlh">
 
 <#if message?has_content>
-<p>${message}</p>
+<p class="message info"><span>${message}</span></p>
 </#if>
 
 <h2>Queue</h2>
@@ -15,7 +15,7 @@
   <p>No experiment currently in the queue.</p>
 <#else>
   <form name="current-queue" method="post" action="/assistant">
-  <input type="submit" class="btn" id="btn-start" name="start" value="Start a new run" />
+  <p><input type="submit" class="btn" id="btn-start" name="start" value="Start a new run" /></p>
   <#include "experiment-list.ftlh">
   </form>
 </#if>
@@ -30,28 +30,41 @@
   <p>No run in this assistant.</p>
 </#if>
 
-<#list runs as run>
+<#list runs as r>
   
-  <#assign id = run.getId()>
+  <#assign r_id = r.getId()>
+  <#assign r_running = r.isRunning()>
 
   <div class="around-pulldown">
-  <h3 class="pulldown" title="Click to show/hide the list of experiments in this run">Run ${id}</h3>
+  <h3 class="pulldown" title="Click to show/hide the list of experiments in this run">
+  Run ${r_id}
+  <#include "progress-bar-run.ftlh">
+  </h3>
   <div class="pulldown-contents">
 
-  <#assign experiments = run.getExperiments()>
+  <#assign experiments = r.getExperiments()>
 
   <#if experiments?size == 0>
     <p>No experiment in this run.</p> <#-- Should not happen, just to be safe -->
   <#else>
     <#include "experiment-list.ftlh">
   </#if>
-
-  <input type="submit" class="btn" id="btn-stop" name="stop-${id}" value="Stop this run" />
-  <input type="submit" class="btn" id="btn-clean" name="delete-${id}" value="Delete this run" />
-
   </div>
   </div>
+  
+  <form name="run-${r_id}" method="post" action="/assistant">
+  <#if r_running>
+  <input type="submit" class="btn btn-stop" id="stop-${r_id}" name="stop-${r_id}" value="Stop this run" />
+  </#if>
+  <input type="submit" class="btn btn-delete" id="delete-${r_id}" name="delete-${r_id}" value="Delete this run" />
+  </form>
+
 
 </#list>
+
+<script type="text/javascript">
+var tid_e = setTimeout(updateExperiments, 2000);
+var tid_r = setTimeout(updateRuns, 3100);
+</script>
 
 <#include "footer.ftlh">

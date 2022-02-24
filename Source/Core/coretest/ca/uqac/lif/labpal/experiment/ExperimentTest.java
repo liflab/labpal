@@ -118,12 +118,12 @@ public class ExperimentTest
 			public void fulfillPrerequisites() throws InterruptedException {
 				Thread.sleep(1000);
 			}
-		}.hasPrerequisites(true).setDuration(t_1s).setTimeout(t_0s);
+		}.hasPrerequisites(true).setDuration(new Second(2)).setTimeout(t_0s);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.submit(de);
-		Thread.sleep(250);
+		Thread.sleep(500);
 		executor.shutdownNow();
-		executor.awaitTermination(0, TimeUnit.MILLISECONDS);
+		executor.awaitTermination(100, TimeUnit.MILLISECONDS);
 		assertEquals(Status.CANCELLED, de.getStatus());
 	}
 	

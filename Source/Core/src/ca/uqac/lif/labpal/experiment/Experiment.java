@@ -256,9 +256,16 @@ public class Experiment implements Runnable, Comparable<Experiment>
 
 	/*@ non_null @*/ public final Time getTotalDuration()
 	{
-		if (m_startTime > 0 && m_endTime > 0)
+		if (m_startTime > 0)
 		{
-			return new Second((float) (m_endTime - m_startTime) / 1000f);
+			if (m_endTime > 0)
+			{
+				return new Second((float) (m_endTime - m_startTime) / 1000f);
+			}
+			else
+			{
+				return new Second((float) (System.currentTimeMillis() - m_startTime) / 1000f);
+			}
 		}
 		return new Second(0);
 	}
@@ -405,6 +412,22 @@ public class Experiment implements Runnable, Comparable<Experiment>
 	public int compareTo(Experiment e)
 	{
 		return m_id - e.getId();
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return m_id;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof Experiment))
+		{
+			return false;
+		}
+		return ((Experiment) o).getId() == m_id;
 	}
 
 	/*@ pure @*/ protected final boolean isFinished()

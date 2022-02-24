@@ -8,52 +8,48 @@
    <#list experiments as e>
    <#assign status = e.getStatus()>
    <#assign id = e.getId()>
+   <#assign e_running = (status == "RUNNING" || status == "RUNNING_PREREQ")>
    <tr>
-    <td class="exp-chk"><input type="checkbox" class="side-checkbox side-checkbox-${id}" id="exp-chk-g${gid}-${id}" name="exp-chk-g${gid}-${id}"></td>
+    <td class="exp-chk"><input type="hidden" id="exp-chh-g-${gid}-${id}" name="exp-chh-g-${gid}-${id}" value="0" /><input type="checkbox" class="side-checkbox side-checkbox-${id}" id="exp-chk-g${gid}-${id}" name="exp-chk-g${gid}-${id}"></td>
     <td class="id-cell"><a href="/experiment/${id}">${id}</a></td>
     <#list params as p>
       <td>${e.read(p)}</td>
     </#list>
     <td>
     <#if lab.isQueued(e)>
-      <div class="status-icon status-queued" title="Queued"><span class="text-only">Q</span></span>
+      <span id="status-icon-${id}" class="status-icon status-queued" title="Queued"><span class="text-only">Q</span></span>
     <#else>
       <#switch status>
       <#case "UNINITIALIZED">
-        <span class="status-icon status-prereq" title="Prerequisites not fulfilled"><span class="text-only">P</span></span>
+        <span id="status-icon-${id}" class="status-icon status-prereq" title="Prerequisites not fulfilled"><span class="text-only">P</span></span>
         <#break>
       <#case "DONE">
-        <span class="status-icon status-done" title="Ready"><span class="text-only">D</span></span>
+        <span id="status-icon-${id}" class="status-icon status-done" title="Ready"><span class="text-only">D</span></span>
         <#break>
       <#case "DONE_WARNING">
-        <span class="status-icon status-warning" title="Done with warnings"><span class="text-only">W</span></span>
+        <span id="status-icon-${id}" class="status-icon status-warning" title="Done with warnings"><span class="text-only">W</span></span>
         <#break>
       <#case "FAILED">
-        <span class="status-icon status-failed" title="Failed"><span class="text-only">F</span></span>
+        <span id="status-icon-${id}" class="status-icon status-failed" title="Failed"><span class="text-only">F</span></span>
         <#break>
       <#case "CANCELLED">
-        <span class="status-icon status-failed" title="Cancelled"><span class="text-only">C</span></span>
+        <span id="status-icon-${id}" class="status-icon status-failed" title="Cancelled"><span class="text-only">C</span></span>
         <#break>
       <#case "TIMEOUT">
-        <span class="status-icon status-timeout" title="Timed out"><span class="text-only">T</span></span>
+        <span id="status-icon-${id}" class="status-icon status-timeout" title="Timed out"><span class="text-only">T</span></span>
         <#break>
       <#case "READY">
-        <span class="status-icon status-ready" title="Ready"><span class="text-only">r</span></span>
+        <span id="status-icon-${id}" class="status-icon status-ready" title="Ready"><span class="text-only">r</span></span>
         <#break>
        <#case "RUNNING">
-        <span class="status-icon status-running" title="Running"><span class="text-only">r</span>
-        <#assign w = (e.getProgression() * 50)>
-        <#assign p = (e.getProgression() * 100)>
-        <ul class="progress-bar" style="width:50px">
-          <li class="done" style="width:${w}px"><span class="text/only">${p?round}% completed</span>
-        </ul>
-        </span>
+        <span id="status-icon-${id}" class="status-icon status-running" title="Running"><span class="text-only">r</span></span>
         <#break>
        <#case "RUNNING_PREREQ">
-        <div class="status-icon status-running" title="Running prerequisites"><span class="text-only">r</span></div>
+        <span id="status-icon-${id}" class="status-icon status-running" title="Running prerequisites"><span class="text-only">r</span></span>
         <#break>
       </#switch>
     </#if>
+    <#include "progress-bar-experiment.ftlh">
     </td>
    </tr>
    </#list>

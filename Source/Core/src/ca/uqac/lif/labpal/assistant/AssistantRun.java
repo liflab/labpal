@@ -54,7 +54,7 @@ public class AssistantRun
 	/**
 	 * A counter for run IDs
 	 */
-	protected static int s_idCounter = 0;
+	protected static int s_idCounter = 1;
 	
 	protected RunRunnable m_runnable;
 	

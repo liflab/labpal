@@ -14,7 +14,11 @@
 <#assign enddate = e.getEndDate()>
 
 <table class="status-table">
-<tr><th>Status:</th><td>${e.getStatus()}</td></tr>
+<tr><th>Status:</th><td>${e.getStatus()}
+<#if e.getStatus() == "RUNNING" || e.getStatus() == "RUNNING_PREREQ">
+  <#include "progress-bar-experiment.ftlh">
+</#if>
+</td></tr>
 <#if startdate?has_content>
   <tr><th>Started on:</th><td>${startdate}</td></tr>
 </#if>
@@ -23,10 +27,12 @@
 </#if>
 <#if startdate?has_content>
   <tr><th>Duration:</th><td>${e.getTotalDuration()}</td></tr>
-</#if>  
-<tr><th>Estimated duration:</th><td>{%EXP_ESTIMATE%}</td></tr>
+</#if>
+<#if expestimate?has_content>
+  <tr><th>Estimated duration:</th><td>${expestimate}</td></tr>
+</#if>
 <tr><th>Timeout:</th><td>
-  <#if (e.getTimeout() <= 0)>
+  <#if (e.getTimeout().get().floatValue() <= 0)>
     No timeout
   <#else>
    ${e.getTimeout()}

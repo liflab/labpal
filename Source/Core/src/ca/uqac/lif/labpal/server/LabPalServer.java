@@ -59,8 +59,11 @@ public class LabPalServer extends Server
 		setServerPort(21212);
 		setUserAgent("LabPal " + Laboratory.formatVersion());
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/help", "help.ftlh", "top-menu-help").setTitle("Help"));
+		registerCallback(new TemplatePageCallback(this, Method.GET, "/status", "status.ftlh", "top-menu-status").setTitle("Status"));
 		registerCallback(new ExperimentPageCallback(this, Method.GET, "/experiment/", "experiment.ftlh"));
+		registerCallback(new ExperimentsStatusCallback(this, Method.GET, "/experiments/status"));
 		registerCallback(new ExperimentsPageCallback(this, Method.GET, "/experiments", "experiments.ftlh"));
+		registerCallback(new AssistantStatusCallback(this, Method.GET, "/assistant/status"));
 		registerCallback(new AssistantPageCallback(this, Method.GET, "/assistant", "assistant.ftlh"));
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/index", "index.ftlh", "top-menu-home").setTitle("Home"));
 		registerCallback(new CssCallback(this, Method.GET, "/screen.css", "screen.css.ftlh"));

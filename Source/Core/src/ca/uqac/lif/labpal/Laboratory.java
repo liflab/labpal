@@ -270,7 +270,8 @@ public class Laboratory
 		{
 			in_group.addAll(g.getObjects());
 		}
-		Collection<Experiment> s_orphans = m_experiments.values();
+		Collection<Experiment> s_orphans = new HashSet<Experiment>();
+		s_orphans.addAll(m_experiments.values());
 		s_orphans.removeAll(in_group);
 		ExperimentGroup g = new ExperimentGroup("Ungrouped experiments");
 		g.add(s_orphans);

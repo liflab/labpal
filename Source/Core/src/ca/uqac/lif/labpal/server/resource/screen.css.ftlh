@@ -287,22 +287,22 @@ table.exp-table td {
   box-shadow: 2px 2px 0px 0px rgba(115,115,115,1);
 }
 
-#btn-download {
+.btn-download {
   background: ${color4} url('images/download-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
-#btn-upload {
+.btn-upload {
   background: ${color4} url('images/upload-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
-#btn-start {
+.btn-start {
   background: ${color4} url('images/running-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
-#btn-stop {
+.btn-stop {
   background: ${color4} url('images/abort-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
@@ -313,6 +313,11 @@ table.exp-table td {
 }
 
 .btn-unqueue {
+  background: ${color4} url('images/remove-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
+.btn-delete {
   background: ${color4} url('images/remove-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
@@ -389,4 +394,84 @@ table.exp-table td {
 #content a:hover {
   color: ${color1};
   text-decoration: underline;
+}
+
+.message {
+  padding-left: 40px;
+  border: solid 1px darkgrey;
+  border-radius: 4px;
+  min-height: 48px;
+  display: table-cell;
+  vertical-align: middle;
+  margin-bottom: 12pt;
+}
+
+.message span {
+  margin: auto;
+  display: block;
+  margin: 6px;
+}
+
+.message.info {
+  background: white url('images/info-32.png') left center no-repeat;
+}
+
+.message.error {
+  background: #fcc url('images/error-32.png') left center no-repeat;
+}
+
+.progress-bar {
+  border: solid 1px darkgrey;
+  height: 16px;
+  width: auto;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  margin-right: 12pt;
+  background: white;
+  display: inline-block;
+}
+
+.progress-bar li, .progress-bar > span {
+  float: left;
+  display: inline-block;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.progress-bar .done {
+  background-color: green;
+}
+
+.progress-bar .done:hover {
+  background-color: lightgreen;
+}
+
+.progress-bar .warning {
+  background-color: orange;
+}
+
+.progress-bar .warning:hover {
+  background-color: yellow;
+}
+
+.progress-bar .queued {
+  background-color: gray;
+}
+
+.progress-bar .queued:hover {
+  background-color: lightgray;
+}
+
+.progress-bar .failed {
+  background-color: red;
+}
+
+.progress-bar .failed:hover {
+  background-color: #f88;
+}
+
+.progress-bar .other {
+  background-color: white;
 }

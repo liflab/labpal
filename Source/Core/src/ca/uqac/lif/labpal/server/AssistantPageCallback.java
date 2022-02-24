@@ -43,9 +43,34 @@ public class AssistantPageCallback extends TemplatePageCallback
 		Set<Experiment> exps = new HashSet<Experiment>();
 		if (input.containsKey("enqueue"))
 		{
+			// Adding groups
+			Set<Integer> groups = new HashSet<Integer>();
+			for (String key : input.keySet())
+			{
+				if (key.startsWith("top-checkbox"))
+				{
+					String[] parts = key.split("-");
+					int g_id = Integer.parseInt(parts[2]);
+					groups.add(g_id);
+				}
+			}
 			// Adding experiments submitted from experiments page to the queue
 			for (String key : input.keySet())
 			{
+				if (key.startsWith("exp-chh-g"))
+				{
+					String[] parts = key.split("-");
+					int g_id = Integer.parseInt(parts[3]);
+					int exp_id = Integer.parseInt(parts[4]);
+					if (groups.contains(g_id))
+					{
+						Experiment e = m_server.getLaboratory().getExperiment(exp_id);
+						if (e != null)
+						{
+							exps.add(e);
+						}
+					}
+				}
 				if (key.startsWith("exp-chk-g"))
 				{
 					String[] parts = key.split("-");
@@ -65,7 +90,34 @@ public class AssistantPageCallback extends TemplatePageCallback
 			// Start run with current queue contents
 			AssistantRun run = m_server.getLaboratory().getAssistant().enqueueCurrent();
 			input.put("message", "Run #" + run.getId() + " added to assistant's jobs");
-			
+		}
+		String message = null;
+		for (String key : input.keySet())
+		{
+			if (key.startsWith("stop"))
+			{
+				// Stop a run
+				String[] parts = key.split("-");
+				int run_id = Integer.parseInt(parts[1]);
+				AssistantRun run = m_server.getLaboratory().getAssistant().getRun(run_id);
+				if (run != null)
+				{
+					run.stop(true);
+				}
+				message = "Run #" + run_id + " interrupted";
+			}
+			if (key.startsWith("delete"))
+			{
+				// Stop a run
+				String[] parts = key.split("-");
+				int run_id = Integer.parseInt(parts[1]);
+				m_server.getLaboratory().getAssistant().deleteRun(run_id);
+				message = "Run #" + run_id + " deleted";
+			}
+		}
+		if (message != null)
+		{
+			input.put("message", message);
 		}
 	}
 	

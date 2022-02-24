@@ -107,7 +107,7 @@ public class DummyExperiment extends Experiment
 			try 
 			{
 				Thread.sleep(50);
-				setProgression(i * 50 / m_duration);
+				setProgression(((float) i) * 50f / (float) m_duration);
 			}
 			catch (InterruptedException e) 
 			{

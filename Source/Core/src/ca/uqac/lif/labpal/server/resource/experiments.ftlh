@@ -65,5 +65,8 @@
 
 </form>
 
+<script type="text/javascript">
+var tid_e = setTimeout(updateExperiments, 2000);
+</script>
 
 <#include "footer.ftlh">

@@ -20,9 +20,11 @@ package ca.uqac.lif.labpal.plot;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Collection;
 
 import ca.uqac.lif.labpal.Progressive;
 import ca.uqac.lif.labpal.Stateful;
+import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
@@ -272,5 +274,15 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Progre
 	public AtomicFunction duplicate(boolean arg0) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	/**
+	 * Gets the collection of experiments on which this table depends on.
+	 * @param sorted Set to <tt>true</tt> to sort the collection
+	 * @return The set of experiments
+	 */
+	/*@ non_null @*/ public Collection<Experiment> getExperimentDependencies(boolean sorted)
+	{
+		return m_table.getExperimentDependencies(sorted);
 	}
 }

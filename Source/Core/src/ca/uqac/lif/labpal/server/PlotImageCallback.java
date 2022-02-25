@@ -70,7 +70,7 @@ public class PlotImageCallback extends RestCallback
 		String path = u.getPath();
 		String method = t.getRequestMethod();
 		return ((m_ignoreMethod || method.compareToIgnoreCase(methodToString(m_method)) == 0)) 
-				&& path.startsWith(m_path);
+				&& path.startsWith(m_path) && (path.contains("/png") || path.contains("/pdf") || path.contains("/gp") || path.contains("/dumb"));
 	}
 
 	@Override

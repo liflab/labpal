@@ -9,7 +9,7 @@
 <#assign pid = plot.getId()>
 
 <div class="plot">
-<a href="/plot/${pid}" target="_blank" title="Click on plot to view in new window"><img id="img-p${pid}" src="/plot/${pid}" alt="${plot.getNickname()}" /></a>
+<a href="/plot/${pid}" target="_blank" title="Click on plot to view in new window"><img id="img-p${pid}" src="/plot/${pid}/png" alt="${plot.getNickname()}" /></a>
 <div>
 <ul class="line-align">
 <li><span style="padding-left:32px;padding-right:0" class="btn-24 btn-reset" href="plot/${pid}?format=gp&amp;dl=1" title="Refresh this plot" onclick="refreshPlot('${pid}')"><span class="text-only">Refresh</span></span></li>

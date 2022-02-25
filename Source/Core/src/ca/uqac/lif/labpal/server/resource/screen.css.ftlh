@@ -528,12 +528,12 @@ table.exp-table td {
   opacity: 1;
 }
 
-.plot ul {
+.plot ul, ul.plot-buttons {
   margin-left: 0;
   padding-left: 0;
 }
 
-.plot ul li {
+.plot ul li, ul.plot-buttons li {
   list-style-type: none;
   display: inline-block;
   margin-right: 10px;

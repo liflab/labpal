@@ -1,31 +1,41 @@
-<#if onlytable>${tablecontents?no_esc}<#else>
 <#include "header.ftlh">
 
-<#assign progress = table.getProgression()>
-<#assign tid = table.getId()>
+<#assign progress = plot.getProgression()>
+<#assign pid = plot.getId()>
 
-<h2 class="line-align"><span>${table.getTitle()}</span>
+<h2 class="line-align"><span>${plot.getTitle()}</span>
 <#if progress == 1>
-  <span id="status-icon-t${tid}" class="status-icon status-done" title="Done"><span class="text-only">Done</span></span>
+  <span id="status-icon-t${pid}" class="status-icon status-done" title="Done"><span class="text-only">Done</span></span>
 <#else>
-  <span><#include "progress-bar-table.ftlh"></span>
+  <span><#include "progress-bar-plot.ftlh"></span>
 </#if>
 </h2>
 
-<#if table.getDescription()?has_content>
-<p class="description">${table.getDescription()}</p>
+<#if plot.getDescription()?has_content>
+<p class="description">${plot.getDescription()}</p>
 </#if>
 
-<div id="tablecontents">
-${tablecontents?no_esc}
+<div>
+<p><img style="border:solid 1px black" id="plotimage" src="/plot/${pid}/png" alt="Plot" /></p>
+
+<div>
+<ul class="plot-buttons line-align">
+<li><span style="padding-left:32px;padding-right:0" class="btn-24 btn-reset" href="plot/${pid}?format=gp&amp;dl=1" title="Refresh this plot" onclick="refreshPlot('${pid}')"><span class="text-only">Refresh</span></span></li>
+<li><a style="padding-right:0" class="btn-24 btn-gp" href="plot/${pid}?format=gp&amp;dl=1" title="Download as GnuPlot source file"><span class="text-only">GP</span></a></li>
+<li><a style="padding-right:0" class="btn-24 btn-gp" href="plot/${pid}?format=dumb" title="View as ASCII art" target="_blank"><span class="text-only">ASCII</span></a></li>
+<li><a style="padding-right:0" class="btn-24 btn-pdf" href="plot/${pid}?format=pdf&amp;dl=1" title="Download as PDF"><span class="text-only">PDF</span></a></li>
+<li><a style="padding-right:0" class="btn-24 btn-table" href="table/${plot.getTable().getId()}" title="Show the data for this plot"><span class="text-only">Table</span></a></li>
+</ul>
 </div>
+</div>
+<div style="clear:both"></div>
 
 <h3>Dependencies</h3>
 
-<p>Below is the list of all the experiments in the lab on which this table depends.</p>
+<p>Below is the list of all the experiments in the lab on which this plot depends.</p>
 
 <ul class="running-exps">
-<#list table.getExperimentDependencies(true) as exp_dep>
+<#list plot.getExperimentDependencies(true) as exp_dep>
   <#assign id = exp_dep.getId()>
   <#assign status = exp_dep.getStatus()>
   <li><a class="line-align" href="/experiment/${id}"><span style="margin-right:10px">${id}</span>
@@ -64,41 +74,37 @@ ${tablecontents?no_esc}
 </ul>
 
 <script type="text/javascript">
-var tid_e = setTimeout(updateTableStatus, 3100);
+var tid_e = setTimeout(updatePlotStatus, 3100);
 
-function updateTableStatus() {
+function updatePlotStatus() {
   $.ajax({
-    url: "/tables/status/${tid}"
+    url: "/plots/status/${pid}"
   }).done(function (data) {
               var status = data[0];
               var progression = data[1];
               var deps = data[2];
         	  var status_class = getStatusClass(status);
-        	  var e = $("#status-icon-t${tid}");
+        	  var e = $("#status-icon-p${pid}");
               $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
               if (status != "RUNNING") {
-            	  $("#progress-bar-t${tid}").hide();
-            	  $("#progress-bar-val-t${tid}").hide();
+            	  $("#progress-bar-p${pid}").hide();
+            	  $("#progress-bar-val-p${pid}").hide();
               }
               else {
-            	  $("#progress-bar-t${tid}").show();
-                  $("#progress-bar-val-t${tid}").text(Math.round(progression * 100) + "%");
-                  $("#progress-bar-rect-t${tid}").css({"width" : (progression * 50) + "px"});            	  
+            	  $("#progress-bar-p${pid}").show();
+                  $("#progress-bar-val-p${pid}").text(Math.round(progression * 100) + "%");
+                  $("#progress-bar-rect-p${pid}").css({"width" : (progression * 50) + "px"});            	  
               }
               for (var i = 0; i < deps.length; i++) {
             	  var exp_data = deps[i];
             	  var exp_status_class = getStatusClass(exp_data[1]);
             	  $("#status-icon-" + exp_data[0]).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + exp_status_class);
               }
-  })
-  $.ajax({
-    url: "/table/${tid}/html"
-  }).done(function (data) {
-              $("#tablecontents").html(data);
-              setTimeout(updateTableStatus, 3100);
+              var d = new Date(); // Prevent caching
+  			  $("#plotimage").attr("src", "/plot/" + ${pid} + "/png?" + d.getTime());
+  			  setTimeout(updatePlotStatus, 3100);
   })
 };
 </script>
 
 <#include "footer.ftlh">
-</#if>

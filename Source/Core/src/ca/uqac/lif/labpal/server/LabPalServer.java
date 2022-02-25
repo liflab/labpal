@@ -73,6 +73,8 @@ public class LabPalServer extends Server
 		registerCallback(new PlotsStatusCallback(this, Method.GET, "/plots/status"));
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/plots", "plots.ftlh", "top-menu-plots").setTitle("Plots"));
 		registerCallback(new PlotImageCallback(lab));
+		registerCallback(new PlotsStatusCallback(this, Method.GET, "/plots/status"));
+		registerCallback(new PlotPageCallback(this, Method.GET, "/plot/", "plot.ftlh"));
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/index", "index.ftlh", "top-menu-home").setTitle("Home"));
 		registerCallback(new CssCallback(this, Method.GET, "/screen.css", "screen.css.ftlh"));
 		registerCallback(new JavaScriptCallback("resource", LabPalServer.class));

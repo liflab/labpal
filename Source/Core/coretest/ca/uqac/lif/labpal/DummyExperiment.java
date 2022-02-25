@@ -113,6 +113,8 @@ public class DummyExperiment extends Experiment
 			{
 				throw e;
 			}
+			writeOutput("x", getId());
+			writeOutput("y", getId() * Math.random());
 		}
 	}
 }

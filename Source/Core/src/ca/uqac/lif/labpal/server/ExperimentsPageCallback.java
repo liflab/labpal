@@ -27,9 +27,9 @@ import com.sun.net.httpserver.HttpExchange;
 
 import bsh.EvalError;
 import bsh.Interpreter;
+import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
-import ca.uqac.lif.labpal.experiment.Experiment.Status;
 
 public class ExperimentsPageCallback extends TemplatePageCallback
 {

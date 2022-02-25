@@ -532,6 +532,21 @@ public class Laboratory
 	}
 	
 	/**
+	 * Returns a plot instance with given ID, if it exists.
+	 * @param id The plot ID
+	 * @return The plot instance, or <tt>null</tt> if the plot
+	 * does not exist in the lab
+	 */
+	/*@ pure null @*/ public final Plot getPlot(int id)
+	{
+		if (m_plots.containsKey(id))
+		{
+			return m_plots.get(id);
+		}
+		return null;
+	}
+	
+	/**
 	 * Returns a list of all experiments in the lab, sorted by ID.
 	 * @return The list of experiments
 	 */

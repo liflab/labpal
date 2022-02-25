@@ -17,19 +17,26 @@
  */
 package ca.uqac.lif.labpal.table;
 
+import java.util.Set;
+
+import ca.uqac.lif.dag.Node;
+import ca.uqac.lif.labpal.Progressive;
+import ca.uqac.lif.labpal.Stateful;
+import ca.uqac.lif.labpal.provenance.LeafFetcher;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 import ca.uqac.lif.petitpoucet.function.InvalidNumberOfArgumentsException;
+import ca.uqac.lif.petitpoucet.function.NthOutput;
 import ca.uqac.lif.spreadsheet.Spreadsheet;
 
 /**
  * An explainable 0:1 function that outputs a {@link Spreadsheet}.
  * @author Sylvain Hallé
  */
-public abstract class Table extends AtomicFunction implements ExplanationQueryable
+public abstract class Table extends AtomicFunction implements Progressive, ExplanationQueryable, Stateful
 {
 	/**
 	 * A counter for table IDs.
@@ -193,6 +200,35 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 * table
 	 */
 	/*@ null @*/ public abstract Table dependsOn(int col, int row);
+	
+	@Override
+	public float getProgression()
+	{
+		PartNode root = getExplanation(NthOutput.FIRST);
+		LeafFetcher lf = new LeafFetcher(root);
+		lf.crawl();
+		Set<Node> leaves = lf.getLeaves();
+		float total = 0, prog = 0;
+		for (Node n : leaves)
+		{
+			if (!(n instanceof PartNode))
+			{
+				continue;
+			}
+			PartNode pn = (PartNode) n;
+			Object o = pn.getSubject();
+			if (o instanceof Progressive)
+			{
+				total++;
+				prog += ((Progressive) o).getProgression();
+			}
+		}
+		if (total == 0)
+		{
+			return 0;
+		}
+		return prog / total;
+	}
 	
 	protected abstract PartNode explain(Part d, NodeFactory f);
 	

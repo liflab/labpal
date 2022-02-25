@@ -19,7 +19,6 @@ package ca.uqac.lif.labpal.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +49,14 @@ public class TablePageCallback extends TemplatePageCallback
 		if (t == null)
 		{
 			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such table");
+		}
+		if (h.getRequestURI().toString().endsWith("/html"))
+		{
+			input.put("onlytable", true);
+		}
+		else
+		{
+			input.put("onlytable", false);
 		}
 		input.put("id", id);
 		input.put("title", "Table " + id);

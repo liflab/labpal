@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ca.uqac.lif.dag.LabelledNode;
 import ca.uqac.lif.json.JsonList;
+import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentValue;
 import ca.uqac.lif.labpal.provenance.TrackedValue;
@@ -83,6 +85,19 @@ public class ExperimentTable extends Table
 	{
 		m_experiments.add(e);
 		return this;
+	}
+	
+	@Override
+	public Status getStatus()
+	{
+		// The status of an experiment table is the lowest status of the
+		// experiments it is linked to
+		Status s = Status.DONE;
+		for (Experiment e : m_experiments)
+		{
+			s = Stateful.getLowestStatus(s, e.getStatus());
+		}
+		return s;
 	}
 
 	@Override
@@ -203,11 +218,36 @@ public class ExperimentTable extends Table
 	{
 		PartNode root = f.getPartNode(d, this);
 		Cell c = Cell.mentionedCell(d);
-		if (m_lastEntries == null || c == null)
+		if (c == null)
+		{
+			// Explain whole table
+			LabelledNode to_add = root;
+			if (m_experiments.size() > 1 || m_dimensions.length > 1)
+			{
+				LabelledNode and = f.getAndNode();
+				to_add.addChild(and);
+				to_add = and;
+			}
+			ExperimentValue[] pvs = new ExperimentValue[m_dimensions.length];
+			for (int i = 0; i < m_dimensions.length; i++)
+			{
+				pvs[i] = new ExperimentValue(m_dimensions[i]);
+			}
+			for (Experiment e : m_experiments)
+			{
+				for (int i = 0; i < m_dimensions.length; i++)	
+				{
+					to_add.addChild(f.getPartNode(pvs[i], e));	
+				}
+			}
+			return root;
+		}
+		if (m_lastEntries == null)
 		{
 			root.addChild(f.getUnknownNode());
 			return root;
 		}
+		// Explain single cell
 		int row = c.getRow(), col = c.getColumn();
 		if (row < 1 || row > m_lastEntries.size() || col < 0 || col >= m_dimensions.length)
 		{

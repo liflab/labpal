@@ -14,7 +14,7 @@ html, body {
 
 #content {
   outline: solid 1px darkgrey;
-  background: url('images/graph-paper-50.png');
+  background: url('/images/graph-paper-50.png');
   padding: 8px;
   grid-column: 1 / span 1;
   grid-row: 2 / span 1;
@@ -76,47 +76,47 @@ html, body {
 }
 
 #top-menu-home {
-  background: url('images/home-48.png') left center no-repeat;
+  background: url('/images/home-48.png') left center no-repeat;
   padding-left: 56px;
 }
 
 #top-menu-status {
-  background: url('images/status-48.png') left center no-repeat;
+  background: url('/images/status-48.png') left center no-repeat;
   padding-left: 56px;
 }
 
 #top-menu-experiments {
-  background: url('images/erlenmeyer-48.png') left center no-repeat;
+  background: url('/images/erlenmeyer-48.png') left center no-repeat;
   padding-left: 56px;
 }
 
 #top-menu-assistant {
-  background: url('images/assistant-48.png') left center no-repeat;
+  background: url('/images/assistant-48.png') left center no-repeat;
   padding-left: 32px;
 }
 
 #top-menu-plots {
-  background: url('images/graph-48.png') left center no-repeat;
+  background: url('/images/graph-48.png') left center no-repeat;
   padding-left: 56px;
 }
 
 #top-menu-tables {
-  background: url('images/table-48.png') left center no-repeat;
+  background: url('/images/table-48.png') left center no-repeat;
   padding-left: 56px;
 }
 
 #top-menu-find {
-  background: url('images/find-48.png') left center no-repeat;
+  background: url('/images/find-48.png') left center no-repeat;
   padding-left: 56px;
 }
 
 #top-menu-macros {
-  background: url('images/tulip-48.png') left center no-repeat;
+  background: url('/images/tulip-48.png') left center no-repeat;
   padding-left: 56px;
 }
 
 #top-menu-help {
-  background: url('images/help-48.png') left center no-repeat;
+  background: url('/images/help-48.png') left center no-repeat;
   padding-left: 56px;
 }
 
@@ -131,7 +131,7 @@ html, body {
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 104px 1fr;
-  background: ${color3} url('images/lif-24.png') center right 8px no-repeat;
+  background: ${color3} url('/images/lif-24.png') center right 8px no-repeat;
 }
 
 #logo-container {
@@ -140,7 +140,7 @@ html, body {
 }
 
 #labpal-logo {
-  background: url('images/labpal-32.png') top left no-repeat;
+  background: url('/images/labpal-32.png') top left no-repeat;
   width: 98px;
   height: 32px;
   margin-top: 4px;
@@ -174,7 +174,7 @@ table.exp-table tr:hover td {
 }
 
 table.exp-table td.exp-chk {
-  background: url('images/erlenmeyer-16.png') right center no-repeat;
+  background: url('/images/erlenmeyer-16.png') right center no-repeat;
   padding-right: 20px;
 }
 
@@ -190,43 +190,43 @@ table.exp-table td {
 }
 
 .status-icon.status-done {
-  background: url('images/status-done-24.png') left center no-repeat;
+  background: url('/images/status-done-24.png') left center no-repeat;
 }
 
 .status-icon.status-warning {
-  background: url('images/status-warning-24.png') left center no-repeat;
+  background: url('/images/status-warning-24.png') left center no-repeat;
 }
 
 .status-icon.status-exclamation {
-  background: url('images/status-exclamation-24.png') left center no-repeat;
+  background: url('/images/status-exclamation-24.png') left center no-repeat;
 }
 
 .status-icon.status-running {
-  background: url('images/status-running-24.png') left center no-repeat;
+  background: url('/images/status-running-24.png') left center no-repeat;
 }
 
 .status-icon.status-ready {
-  background: url('images/status-ok-24.png') left center no-repeat;
+  background: url('/images/status-ok-24.png') left center no-repeat;
 }
 
 .status-icon.status-failed {
-  background: url('images/status-fail-24.png') left center no-repeat;
+  background: url('/images/status-fail-24.png') left center no-repeat;
 }
 
 .status-icon.status-killed {
-  background: url('images/status-timeout-24.png') left center no-repeat;
+  background: url('/images/status-timeout-24.png') left center no-repeat;
 }
 
 .status-icon.status-unknown {
-  background: url('images/status-unknown-24.png') left center no-repeat;
+  background: url('/images/status-unknown-24.png') left center no-repeat;
 }
 
 .status-icon.status-queued {
-  background: url('images/status-queued-24.png') left center no-repeat;
+  background: url('/images/status-queued-24.png') left center no-repeat;
 }
 
 .status-icon.status-prereq {
-  background: url('images/status-prereq-24.png') left center no-repeat;
+  background: url('/images/status-prereq-24.png') left center no-repeat;
 }
 
 .status-icon > span {
@@ -235,16 +235,16 @@ table.exp-table td {
 
 .pulldown {
   padding-left: 24px;
-  background: url('images/expanded-24.png') top left no-repeat;
+  background: url('/images/expanded-24.png') top left no-repeat;
 }
 
 .pulldown.closed {
-  background: url('images/collapsed-24.png') top left no-repeat;
+  background: url('/images/collapsed-24.png') top left no-repeat;
 }
 
 .tables .table-icon {
   width: 24px;
-  background: url('images/table-24.png') top center no-repeat;
+  background: url('/images/table-24.png') top center no-repeat;
   padding-right: 8pt;
 }
 
@@ -288,78 +288,78 @@ table.exp-table td {
 }
 
 .btn-download {
-  background: ${color4} url('images/download-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/download-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-upload {
-  background: ${color4} url('images/upload-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/upload-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-start {
-  background: ${color4} url('images/running-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/running-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-stop {
-  background: ${color4} url('images/abort-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/abort-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-queue {
-  background: ${color4} url('images/queue-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/queue-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-unqueue {
-  background: ${color4} url('images/remove-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/remove-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-delete {
-  background: ${color4} url('images/remove-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/remove-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-reset {
-  background: ${color4} url('images/reset-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/reset-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-compute-claims {
-  background: ${color4} url('images/reset-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/reset-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-filter {
-  background: ${color4} url('images/find-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/find-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-clean {
-  background: ${color4} url('images/clean-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/clean-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 .btn-edit {
-  background: ${color4} url('images/pencil-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/pencil-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 #btn-find {
-  background: ${color4} url('images/find-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/find-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 #btn-report-results {
-  background: ${color4} url('images/wifi-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/wifi-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
 
 .btn-picture {
-  background: ${color4} url('images/image-24.png') 4px 4px no-repeat;
+  background: ${color4} url('/images/image-24.png') 4px 4px no-repeat;
   padding-left: 40px;
 }
 
@@ -413,11 +413,11 @@ table.exp-table td {
 }
 
 .message.info {
-  background: white url('images/info-32.png') left center no-repeat;
+  background: white url('/images/info-32.png') left center no-repeat;
 }
 
 .message.error {
-  background: #fcc url('images/error-32.png') left center no-repeat;
+  background: #fcc url('/images/error-32.png') left center no-repeat;
 }
 
 .progress-bar {
@@ -482,7 +482,98 @@ table.exp-table td {
 .running-exps li {
   display: inline-block;
   list-style-type: none;
-  background: url('images/erlenmeyer-16.png') left no-repeat;
+  background: url('/images/erlenmeyer-16.png') left no-repeat;
   padding-left: 28px;
   margin-right: 10px;
+}
+
+#top-menu ul li.small-screen {
+	background-position-x: center;
+	width: 56px;
+}
+
+#top-menu ul li.small-screen a {
+	background-position-x: center;
+	padding-left: 10px;
+	width: 48px;
+}
+
+#top-menu ul li.small-screen .menu-text {
+	display: none;
+}
+
+.plot {
+  width: 340px;
+  height: 280px;
+  float: left;
+  margin: 20px;
+}
+
+.plot img {
+  width: 320px;
+  height: 240px;
+  border: solid 1px darkgrey;
+  opacity: 0.67;
+}
+
+.plot img:hover {
+  border: solid 1px blue;
+  opacity: 1;
+}
+
+.plot ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.plot ul li {
+  list-style-type: none;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.btn-pdf {
+  background: ${color4} url('/images/icon-pdf-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
+}
+
+.btn-gp {
+  background: ${color4} url('/images/graph-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
+}
+
+.btn-table {
+  background: ${color4} url('/images/table-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
+}
+
+.btn-csv {
+  width: 24px;
+  height: 24px;
+  background: url('/images/csv-24.png') top center no-repeat;
+  display: inline-block;
+}
+
+.btn-tex {
+  width: 24px;
+  height: 24px;
+  background: url('/images/tex-24.png') top center no-repeat;
+  display: inline-block;
+}
+
+.btn-html {
+  width: 24px;
+  height: 24px;
+  background: url('/images/html-24.png') top center no-repeat;
+  display: inline-block;
+}
+
+.btn-all-plots {
+  background: ${color4} url('/images/pages-24.png') 4px 4px no-repeat;
+  padding-left: 28px;
+}
+
+.btn-all-plots-latex {
+  background: ${color4} url('/images/tex-24.png') 4px 4px no-repeat;
+  padding-left: 28px;
 }

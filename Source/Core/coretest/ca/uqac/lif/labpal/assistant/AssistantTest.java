@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ca.uqac.lif.labpal.DummyExperiment;
+import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.assistant.Assistant;
 import ca.uqac.lif.labpal.assistant.AssistantRun;
 import ca.uqac.lif.labpal.experiment.Experiment;
-import ca.uqac.lif.labpal.experiment.Experiment.Status;
 import ca.uqac.lif.units.Time;
 import ca.uqac.lif.units.si.Second;
 

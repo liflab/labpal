@@ -1,17 +1,5 @@
 $(document).ready(function() {
 
-    /* Checkbox: select all experiments */
-	/*
-    $("table.exp-table .top-checkbox").click(function() {
-      $(".side-checkbox").each(function() { 
-	    $(this).prop("checked",(!($(this).prop("disabled")) && $(" .top-checkbox").prop("checked")));
-	  });
-    });
-    */
-	/* Filter by enumeration or/and interval */
-	$("#experiment-filter .btn-filter").click(filter_experiments);
-	
-
 	/* Sort an experiment table by clicking on its headers */
 	$("table.exp-table").tablesorter({
 		headers: {
@@ -42,48 +30,48 @@ $(document).ready(function() {
 });
 
 /**
- * Filters the list of experiments in a page based on a text
- * string specifiying range
- * @returns Nothing
+ * Gets the icon class corresponding to the status of an object.
+ * @param status The status
+ * @returns The icon class
  */
-function filter_experiments() 
-{
-	var hideLigne = $(".top-filter").val().trim();
-	if (hideLigne =="")
-	{
-		$("table.exp-table .tr").show();
-		$("table.exp-table .side-checkbox").prop("disabled", false);
-	}
-	else
-	{
-		$("table.exp-table .tr").hide();
-		$("table.exp-table .side-checkbox").prop("disabled", true);
-		hideLigne = hideLigne.replace(/[^0-9,\-]/g, "");
-		console.log(hideLigne);
-		var hideLigneArray = hideLigne.split(",");
-		for (var i = 0; i < hideLigneArray.length; i++)
-		{
-			if (hideLigneArray[i]!='') {//inputs like ',9,'
-				if(hideLigneArray[i].indexOf('-')>-1)
-				{
-					var hideLigneArray2 = hideLigneArray[i].split("-");
-					if (hideLigneArray2[0]!='' && hideLigneArray2[1]!='') 
-					{//inputs like '-5'
-						for (var k = parseInt(hideLigneArray2[0]); k <= parseInt(hideLigneArray2[1]); k++)
-						{	      
-							$("table.exp-table .tr-"+k).show();
-							$("table.exp-table .side-checkbox-"+k).prop("disabled", false);
-						}
-					}
-				}
-				else
-				{
-					$("table.exp-table .tr-"+hideLigneArray[i]).show();
-					$("table.exp-table .side-checkbox-"+hideLigneArray[i]).prop("disabled", false);
-				}
-			}
-		}
-	}
+function getStatusClass(status) {
+	var status_class = "running";
+    switch (status) {
+    case "UNINITIALIZED":
+  	  status_class = "prereq";
+  	  break;
+    case "DONE":
+  	  status_class = "done";
+  	  break;
+    case "DONE_WARNING":
+  	  status_class = "warning";
+  	  break;
+    case "FAILED":
+  	  status_class = "failed";
+  	  break;
+    case "CANCELLED":
+  	  status_class = "failed";
+  	  break;
+    case "TIMEOUT":
+  	  status_class = "timeout";
+  	  break;
+    case "READY":
+  	  status_class = "ready";
+  	  break;
+    case "RUNNING":
+  	  status_class = "running";
+  	  break;
+    case "RUNNING_PREREQ":
+  	  status_class = "running";
+  	  break;
+    case "QUEUED":
+  	  status_class = "queued";
+  	  break;
+    default:
+  	  status_class = "unknown";
+      break;
+    }
+    return status_class;
 };
 
 var last_experiment_status = {};
@@ -116,46 +104,11 @@ function updateExperiments() {
               }
               for (var k in data) {
             	  if (statuses[k] != last_experiment_status[k]) {
-            		  var status_class = "running";
+            		  var status_class = getStatusClass(statuses[k]);
             		  last_experiment_status[k] = statuses[k];
-                      switch (statuses[k]) {
-                      case "UNINITIALIZED":
-                    	  status_class = "prereq";
-                    	  break;
-                      case "DONE":
-                    	  status_class = "done";
-                    	  break;
-                      case "DONE_WARNING":
-                    	  status_class = "warning";
-                    	  break;
-                      case "FAILED":
-                    	  status_class = "failed";
-                    	  break;
-                      case "CANCELLED":
-                    	  status_class = "failed";
-                    	  break;
-                      case "TIMEOUT":
-                    	  status_class = "timeout";
-                    	  break;
-                      case "READY":
-                    	  status_class = "ready";
-                    	  break;
-                      case "RUNNING":
-                    	  status_class = "running";
-                    	  break;
-                      case "RUNNING_PREREQ":
-                    	  status_class = "running";
-                    	  break;
-                      case "QUEUED":
-                    	  status_class = "queued";
-                    	  break;
-                      default:
-                    	  status_class = "unknown";
-                      	  break;
-                      }
-                      var e = $("#status-icon-" + k);
+            		  var e = $("#status-icon-" + k);
                       $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
-            	  }
+                   }
               }
             }
             setTimeout(updateExperiments, 2000);
@@ -188,6 +141,64 @@ function updateRuns() {
   })
 };
 
+/**
+ * Updates the progress bars of tables in a list of tables based on
+ * a JSON structure returned by the server.
+ */
+function updateTables() {
+  $.ajax({
+    url: "/tables/status"
+  }).done(function (data) {
+            for (var k in data) {
+              var status = data[k][0];
+              var progression = data[k][1];
+        	  var status_class = getStatusClass(status);
+        	  var e = $("#status-icon-t" + k);
+              $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
+              if (status != "RUNNING") {
+            	  $("#progress-bar-t" + k).hide();
+              }
+              else {
+            	  $("#progress-bar-t" + k).show();
+                  $("#progress-bar-val-t" + k).text(Math.round(progression * 100) + "%");
+                  $("#progress-bar-rect-t" + k).css({"width" : (progression * 50) + "px"});            	  
+              }
+            }
+            setTimeout(updateTables, 3100);
+  })
+};
+
+/**
+ * Updates the progress bars of plots in a list of plots based on
+ * a JSON structure returned by the server.
+ */
+function updatePlots() {
+  $.ajax({
+    url: "/plots/status"
+  }).done(function (data) {
+	  for (var k in data) {
+          var status = data[k][0];
+          var progression = data[k][1];
+    	  var status_class = getStatusClass(status);
+    	  var e = $("#status-icon-p" + k);
+          $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
+          if (status != "RUNNING") {
+        	  $("#progress-bar-p" + k).hide();
+          }
+          else {
+        	  $("#progress-bar-p" + k).show();
+              $("#progress-bar-val-p" + k).text(Math.round(progression * 100) + "%");
+              $("#progress-bar-rect-p" + k).css({"width" : (progression * 50) + "px"});            	  
+          }
+        }
+        setTimeout(updatePlots, 3100);
+  })
+};
+
+/**
+ * Updates the lab's progress bar based on
+ * a JSON structure returned by the server.
+ */
 function updateLabBar() {
 	  $.ajax({
 	    url: "/lab/status"
@@ -209,7 +220,7 @@ function updateLabBar() {
 		  		}
 	            setTimeout(updateLabBar, 5250);
 	  })
-	};
+};
 
 /**
  * Toggle the captions on the top menu

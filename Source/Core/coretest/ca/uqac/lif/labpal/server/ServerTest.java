@@ -9,7 +9,9 @@ import ca.uqac.lif.labpal.assistant.QueuedThreadPoolExecutor;
 import ca.uqac.lif.labpal.assistant.SingleThreadExecutor;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
+import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.units.si.Second;
 
 public class ServerTest {
@@ -21,12 +23,14 @@ public class ServerTest {
 		lab.setAssistant(new Assistant(new QueuedThreadPoolExecutor(3)));
 		ExperimentGroup g = new ExperimentGroup("My group", "A group of experiments");
 		lab.add(g);
-		ExperimentTable et = new ExperimentTable("bar");
+		ExperimentTable et = new ExperimentTable("x", "y");
 		et.setTitle("A first table");
 		lab.add(et);
+		Plot p = new Plot(et, new GnuplotScatterplot());
+		lab.add(p);
 		for (int i = 0; i < 10; i++)
 		{
-			Experiment e = new DummyExperiment().setDuration(new Second(10)).setTimeout(new Second(0));
+			Experiment e = new DummyExperiment().setDuration(new Second(10 * Math.random())).setTimeout(new Second(0));
 			e.writeInput("foo", i);
 			e.writeInput("bar", "baz" + i);
 			if (i % 3 == 0)

@@ -57,6 +57,10 @@ public class ExplainCallback extends TemplatePageCallback
 	public void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
 	{
 		super.fillInputModel(h, input);
+		StringBuilder out = new StringBuilder();
+		Node node = null;
+		explanationToHtml(node, out);
+		input.put("exptree", out.toString());
 	}
 	
 	protected void explanationToHtml(Node node, StringBuilder out)

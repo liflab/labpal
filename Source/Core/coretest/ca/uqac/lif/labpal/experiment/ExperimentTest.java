@@ -33,9 +33,9 @@ import ca.uqac.lif.azrael.json.JsonPrinter;
 import ca.uqac.lif.azrael.json.JsonReader;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.labpal.DummyExperiment;
+import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
-import ca.uqac.lif.labpal.experiment.Experiment.Status;
 import ca.uqac.lif.units.Time;
 import ca.uqac.lif.units.si.Second;
 

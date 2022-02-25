@@ -23,6 +23,7 @@ import java.util.Set;
 import ca.uqac.lif.dag.LabelledNode;
 import ca.uqac.lif.dag.LeafCrawler;
 import ca.uqac.lif.dag.Node;
+import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.petitpoucet.AndNode;
 import ca.uqac.lif.petitpoucet.ComposedPart;
 import ca.uqac.lif.petitpoucet.NodeFactory;
@@ -83,6 +84,19 @@ public class TransformedTable extends Table
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public Status getStatus()
+	{
+		// The status of a transformed table is the lowest status of the tables
+		// it is made from
+		Status s = Status.DONE;
+		for (Table t : m_inputTables)
+		{
+			s = Stateful.getLowestStatus(s, t.getStatus());
+		}
+		return s;
 	}
 
 	@Override

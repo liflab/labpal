@@ -21,6 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import ca.uqac.lif.labpal.Progressive;
+import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
@@ -36,7 +38,7 @@ import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
  * generate a picture from experimental data.
  * @author Sylvain Hallé
  */
-public class Plot extends AtomicFunction implements ExplanationQueryable
+public class Plot extends AtomicFunction implements ExplanationQueryable, Progressive, Stateful
 {
 	/**
 	 * A counter for plot IDs.
@@ -92,6 +94,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 		m_id = id;
 		m_table = t;
 		m_plot = p;
+		m_nickname = "";
 	}
 
 	/**
@@ -173,7 +176,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 	{
 		return m_table;
 	}
-	
+
 	/**
 	 * Determines if the chart produced by this plot supports the Gnuplot
 	 * export format.
@@ -191,6 +194,20 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 	public byte[] getImage(ChartFormat format) throws UnsupportedPlotFormatException
 	{
 		return getImage(format, true);
+	}
+
+	@Override
+	public float getProgression()
+	{
+		// The progression of a plot is the progression of the table it is drawn from
+		return m_table.getProgression();
+	}
+
+	@Override
+	public Status getStatus() 
+	{
+		// The status of a plot is the status of the table it is drawn from
+		return m_table.getStatus();
 	}
 
 	/**
@@ -256,5 +273,4 @@ public class Plot extends AtomicFunction implements ExplanationQueryable
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

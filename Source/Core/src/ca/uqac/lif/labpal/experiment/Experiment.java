@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ca.uqac.lif.labpal.Progressive;
+import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.units.Time;
 import ca.uqac.lif.units.si.Second;
 
@@ -37,11 +39,9 @@ import ca.uqac.lif.units.si.Second;
  * 
  * @author Sylvain Hallé
  */
-public class Experiment implements Runnable, Comparable<Experiment>
+public class Experiment implements Runnable, Comparable<Experiment>, Progressive, Stateful
 {
 	protected static final transient SimpleDateFormat s_dateFormat = new SimpleDateFormat();
-
-	public enum Status {UNINITIALIZED, RUNNING, RUNNING_PREREQ, READY, DONE, TIMEOUT, CANCELLED, FAILED}
 
 	private static transient int s_idCounter = 1;
 
@@ -286,6 +286,7 @@ public class Experiment implements Runnable, Comparable<Experiment>
 		return m_outputParameters.size();
 	}
 	
+	@Override
 	public final float getProgression()
 	{
 		float p = 0;

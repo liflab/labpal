@@ -2,8 +2,10 @@
 <#assign p = (table.getProgression() * 100)>
 <#assign w = p/2>
 
+<span class="line-align">
 <#assign id = table.getId()>
 <#assign status = table.getStatus()>
+<#assign t_running = (status == "RUNNING" || status == "RUNNING_PREREQ")>
   <#switch status>
       <#case "UNINITIALIZED">
         <span id="status-icon-t${id}" class="status-icon status-prereq" title="Prerequisites not fulfilled"><span class="text-only">P</span></span>
@@ -35,4 +37,5 @@
   </#switch>
 
 <span class="progress-bar" id="progress-bar-t${table.getId()}" style="width:50px;<#if status != "RUNNING">display:none;</#if>"><span class="done" id="progress-bar-rect-t${table.getId()}" style="width:${w}px"></span></span>
-<span id="progress-bar-val-t${table.getId()}">${p?round}%</span><span class="text-only"> completed</span>
+<span id="progress-bar-val-t${table.getId()}"<#if !t_running> style="display:none"</#if>>${p?round}%</span><span class="text-only"> completed</span>
+</span>

@@ -36,8 +36,8 @@
   <#assign r_running = r.isRunning()>
 
   <div class="around-pulldown">
-  <h3 class="pulldown" title="Click to show/hide the list of experiments in this run">
-  Run ${r_id}
+  <h3 class="pulldown line-align" title="Click to show/hide the list of experiments in this run">
+  <span>Run ${r_id}</span>
   <#include "progress-bar-run.ftlh">
   </h3>
   <div class="pulldown-contents">

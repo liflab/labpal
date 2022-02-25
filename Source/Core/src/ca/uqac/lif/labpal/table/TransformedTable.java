@@ -17,13 +17,18 @@
  */
 package ca.uqac.lif.labpal.table;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import ca.uqac.lif.dag.LabelledNode;
 import ca.uqac.lif.dag.LeafCrawler;
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.labpal.Stateful;
+import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.petitpoucet.AndNode;
 import ca.uqac.lif.petitpoucet.ComposedPart;
 import ca.uqac.lif.petitpoucet.NodeFactory;
@@ -188,5 +193,23 @@ public class TransformedTable extends Table
 	public AtomicFunction duplicate(boolean arg0) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Collection<Experiment> getExperimentDependencies(boolean sorted) 
+	{
+		Set<Experiment> exps = new HashSet<Experiment>();
+		for (Table t : m_inputTables)
+		{
+			exps.addAll(t.getExperimentDependencies());
+		}
+		if (sorted)
+		{
+			List<Experiment> sorted_list = new ArrayList<Experiment>(exps.size());
+			sorted_list.addAll(exps);
+			Collections.sort(sorted_list);
+			return sorted_list;
+		}
+		return exps;
 	}
 }

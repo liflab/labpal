@@ -157,6 +157,7 @@ function updateTables() {
               $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
               if (status != "RUNNING") {
             	  $("#progress-bar-t" + k).hide();
+            	  $("#progress-bar-val-t" + k).hide();
               }
               else {
             	  $("#progress-bar-t" + k).show();
@@ -184,6 +185,7 @@ function updatePlots() {
           $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
           if (status != "RUNNING") {
         	  $("#progress-bar-p" + k).hide();
+        	  $("#progress-bar-val-p" + k).hide();
           }
           else {
         	  $("#progress-bar-p" + k).show();

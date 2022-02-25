@@ -2,8 +2,10 @@
 <#assign p = (plot.getProgression() * 100)>
 <#assign w = p/2>
 
+<span class="line-align">
 <#assign id = plot.getId()>
 <#assign status = plot.getStatus()>
+<#assign p_running = (status == "RUNNING" || status == "RUNNING_PREREQ")>
   <#switch status>
       <#case "UNINITIALIZED">
         <span id="status-icon-p${id}" class="status-icon status-prereq" title="Prerequisites not fulfilled"><span class="text-only">P</span></span>
@@ -35,4 +37,5 @@
   </#switch>
 
 <span class="progress-bar" id="progress-bar-p${plot.getId()}" style="width:50px;<#if status != "RUNNING">display:none;</#if>"><span class="done" id="progress-bar-rect-p${plot.getId()}" style="width:${w}px"></span></span>
-<span id="progress-bar-val-p${plot.getId()}">${p?round}%</span><span class="text-only"> completed</span>
+<span id="progress-bar-val-p${plot.getId()}"<#if !p_running> style="display:none"</#if>>${p?round}%</span><span class="text-only"> completed</span>
+</span>

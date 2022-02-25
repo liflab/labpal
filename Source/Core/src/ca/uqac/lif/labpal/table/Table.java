@@ -17,11 +17,13 @@
  */
 package ca.uqac.lif.labpal.table;
 
+import java.util.Collection;
 import java.util.Set;
 
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.labpal.Progressive;
 import ca.uqac.lif.labpal.Stateful;
+import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.provenance.LeafFetcher;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
@@ -231,6 +233,22 @@ public abstract class Table extends AtomicFunction implements Progressive, Expla
 	}
 	
 	protected abstract PartNode explain(Part d, NodeFactory f);
+	
+	/**
+	 * Gets the set of experiments on which this table depends on.
+	 * @return The set of experiments
+	 */
+	/*@ non_null @*/ public final Collection<Experiment> getExperimentDependencies()
+	{
+		return getExperimentDependencies(false);
+	}
+	
+	/**
+	 * Gets the collection of experiments on which this table depends on.
+	 * @param sorted Set to <tt>true</tt> to sort the collection
+	 * @return The set of experiments
+	 */
+	/*@ non_null @*/ public abstract Collection<Experiment> getExperimentDependencies(boolean sorted);
 	
 	@Override
 	public final PartNode getExplanation(Part d, NodeFactory f)

@@ -20,6 +20,9 @@ package ca.uqac.lif.labpal.server;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +30,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
+import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.table.Table;
 
 /**
@@ -86,7 +90,23 @@ public class TablesStatusCallback extends TemplatePageCallback
 				return cbr;
 			}
 			out.print("[");
-			out.print("\"" + tab.getStatus() + "\", " + tab.getProgression());
+			out.print("\"" + tab.getStatus() + "\", " + tab.getProgression() + ", ");
+			Collection<Experiment> deps = tab.getExperimentDependencies();
+			boolean d_first = true;
+			out.print("[");
+			for (Experiment e : deps)
+			{
+				if (d_first)
+				{
+					d_first = false;
+				}
+				else
+				{
+					out.print(", ");
+				}
+				out.print("[\"" + e.getId() + "\", \"" + e.getStatus() + "\"]");
+			}
+			out.print("]");
 			out.print("]");
 		}
 		cbr.setContents(baos.toString());

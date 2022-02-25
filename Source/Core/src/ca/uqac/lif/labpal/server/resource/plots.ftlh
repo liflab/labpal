@@ -11,12 +11,12 @@
 <div class="plot">
 <a href="/plot/${pid}" target="_blank" title="Click on plot to view in new window"><img id="img-p${pid}" src="/plot/${pid}" alt="${plot.getNickname()}" /></a>
 <div>
-<ul>
-<li><span class="btn-24 btn-reset" href="plot/${pid}?format=gp&amp;dl=1" title="Refresh this plot" onclick="refreshPlot('${pid}')"><span class="text-only">Refresh</span></span></li>
-<li><a class="btn-24 btn-gp" href="plot/${pid}?format=gp&amp;dl=1" title="Download as GnuPlot source file">GP</a></li>
-<li><a class="btn-24 btn-gp" href="plot/${pid}?format=dumb" title="View as ASCII art" target="_blank">ASCII</a></li>
-<li><a class="btn-24 btn-pdf" href="plot/${pid}?format=pdf&amp;dl=1" title="Download as PDF">PDF</a></li>
-<li><a class="btn-24 btn-table" href="table/${plot.getTable().getId()}" title="Show the data for this plot">Table</a></li>
+<ul class="line-align">
+<li><span style="padding-left:32px;padding-right:0" class="btn-24 btn-reset" href="plot/${pid}?format=gp&amp;dl=1" title="Refresh this plot" onclick="refreshPlot('${pid}')"><span class="text-only">Refresh</span></span></li>
+<li><a style="padding-right:0" class="btn-24 btn-gp" href="plot/${pid}?format=gp&amp;dl=1" title="Download as GnuPlot source file"><span class="text-only">GP</span></a></li>
+<li><a style="padding-right:0" class="btn-24 btn-gp" href="plot/${pid}?format=dumb" title="View as ASCII art" target="_blank"><span class="text-only">ASCII</span></a></li>
+<li><a style="padding-right:0" class="btn-24 btn-pdf" href="plot/${pid}?format=pdf&amp;dl=1" title="Download as PDF"><span class="text-only">PDF</span></a></li>
+<li><a style="padding-right:0" class="btn-24 btn-table" href="table/${plot.getTable().getId()}" title="Show the data for this plot"><span class="text-only">Table</span></a></li>
 <li><#include "progress-bar-plot.ftlh"></li>
 </ul>
 </div>

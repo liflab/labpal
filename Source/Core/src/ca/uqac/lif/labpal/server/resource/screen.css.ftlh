@@ -479,12 +479,19 @@ table.exp-table td {
 .running-exps {
   padding-left: 0px;
 }
+
 .running-exps li {
   display: inline-block;
   list-style-type: none;
   background: url('/images/erlenmeyer-16.png') left no-repeat;
-  padding-left: 28px;
+  padding-left: 22px;
   margin-right: 10px;
+  border-radius: 3px;
+}
+
+.running-exps li:hover {
+  background-color: #eee;
+  background-opacity: 0.5;
 }
 
 #top-menu ul li.small-screen {
@@ -576,4 +583,13 @@ table.exp-table td {
 .btn-all-plots-latex {
   background: ${color4} url('/images/tex-24.png') 4px 4px no-repeat;
   padding-left: 28px;
+}
+
+.line-align {
+  display: flex;
+  align-items: center;
+}
+
+.line-align > span {
+  margin-right: 10px;
 }

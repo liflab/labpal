@@ -18,6 +18,7 @@
 package ca.uqac.lif.labpal.table;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -309,5 +310,18 @@ public class ExperimentTable extends Table
 	public AtomicFunction duplicate(boolean arg0) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<Experiment> getExperimentDependencies(boolean sorted)
+	{
+		if (sorted)
+		{
+			List<Experiment> exps = new ArrayList<Experiment>();
+			exps.addAll(m_experiments);
+			Collections.sort(exps);
+			return exps;
+		}
+		return m_experiments;
 	}
 }

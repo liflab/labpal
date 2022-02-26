@@ -17,35 +17,37 @@
  */
 package ca.uqac.lif.labpal.experiment;
 
-import java.util.Set;
+import java.util.Collection;
 
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.plot.Plot;
 
 /**
- * Selects a set of experiments from a lab according to a condition.
- *  
+ * Selects the experiments necessary to render a plot.
  * @author Sylvain Hallé
+ *
  */
-public abstract class ExperimentSelector
+public class PlotExperimentSelector extends ConcreteExperimentSelector 
 {
 	/**
-	 * The lab from which to select experiments.
+	 * The plot relative to which the experiments are selected.
 	 */
-	/*@ non_null @*/ protected final Laboratory m_laboratory;
+	/*@ non_null @*/ protected final Plot m_plot;
 	
 	/**
-	 * Creates a new instance of experiment selector.
+	 * Creates a new instance of the selector.
 	 * @param lab The lab from which to select experiments
+	 * @param p The plot relative to which the experiments are selected
 	 */
-	public ExperimentSelector(/*@ non_null @*/ Laboratory lab)
+	public PlotExperimentSelector(/*@ non_null @*/ Laboratory lab, /*@ non_null @*/ Plot p)
 	{
-		super();
-		m_laboratory = lab;
+		super(lab);
+		m_plot = p;
 	}
-	
-	/**
-	 * Selects a set of experiments from a lab.
-	 * @return The set of experiments
-	 */
-	/*@ non_null @*/ public abstract Set<Experiment> select();
+
+	@Override
+	/*@ non_null @*/ public Collection<Experiment> select()
+	{
+		return m_plot.getExperimentDependencies(false);
+	}
 }

@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2019 Sylvain Hallé
+  Copyright (C) 2015-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -80,12 +80,13 @@ public class PlotImageCallback extends RestCallback
 		Map<String, String> params = getParameters(t);
 		int plot_id = fetchId(t);
 		Plot p = m_lab.getPlot(plot_id);
+		String uri = t.getRequestURI().toString();
 		if (p == null)
 		{
 			response.setCode(CallbackResponse.HTTP_NOT_FOUND);
 			return response;
 		}
-		if (params.containsKey("format") && params.get("format").compareToIgnoreCase("gp") == 0)
+		if (uri.contains("/gp") || (params.containsKey("format") && params.get("format").compareToIgnoreCase("gp") == 0))
 		{
 			String plot_contents = p.toGnuplot(ChartFormat.PDF, m_lab.getName(), true);
 			if (plot_contents != null)
@@ -104,12 +105,12 @@ public class PlotImageCallback extends RestCallback
 		}
 		ChartFormat term = ChartFormat.PNG;
 		response.setContentType(ContentType.PNG);
-		if (params.containsKey("format") && params.get("format").compareToIgnoreCase("pdf") == 0)
+		if (uri.contains("/pdf") || (params.containsKey("format") && params.get("format").compareToIgnoreCase("pdf") == 0))
 		{
 			term = ChartFormat.PDF;
 			response.setContentType(ContentType.PDF);
 		}
-		if (params.containsKey("format") && params.get("format").compareToIgnoreCase("dumb") == 0)
+		if (uri.contains("/dumb") || (params.containsKey("format") && params.get("format").compareToIgnoreCase("dumb") == 0))
 		{
 			term = Gnuplot.DUMB;
 			response.setContentType(ContentType.TEXT);
@@ -122,7 +123,7 @@ public class PlotImageCallback extends RestCallback
 		}
 		response.setContents(image);
 		response.setCode(CallbackResponse.HTTP_OK);
-		if (params.containsKey("dl"))
+		if (uri.contains("dl") || params.containsKey("dl"))
 		{
 			response.setAttachment(Server.urlEncode(p.getTitle() + "." + term.getExtension()));
 		}

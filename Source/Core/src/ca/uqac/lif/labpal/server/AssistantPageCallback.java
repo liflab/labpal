@@ -21,15 +21,30 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.assistant.AssistantRun;
 import ca.uqac.lif.labpal.experiment.Experiment;
+import ca.uqac.lif.labpal.experiment.PlotExperimentSelector;
+import ca.uqac.lif.labpal.experiment.TableExperimentSelector;
+import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.table.Table;
 
 public class AssistantPageCallback extends TemplatePageCallback
 {
-
+	/**
+	 * The pattern to extract the plot ID from the URL.
+	 */
+	protected static final Pattern s_plotIdPattern = Pattern.compile("assistant/enqueue/plot/(\\d+)");
+	
+	/**
+	 * The pattern to extract the table ID from the URL.
+	 */
+	protected static final Pattern s_tableIdPattern = Pattern.compile("assistant/enqueue/table/(\\d+)");
+	
 	public AssistantPageCallback(LabPalServer server, Method m, String path, String template_location)
 	{
 		super(server, m, path, template_location, "top-menu-assistant");
@@ -39,8 +54,33 @@ public class AssistantPageCallback extends TemplatePageCallback
 	public void fillInputModel(HttpExchange h, Map<String,Object> input)  throws PageRenderingException
 	{
 		super.fillInputModel(h, input);
+		String uri = h.getRequestURI().toString();
 		input.put("title", "Assistant");
 		Set<Experiment> exps = new HashSet<Experiment>();
+		if (uri.contains("enqueue/plot"))
+		{
+			int plot_id = fetchId(s_plotIdPattern, h);
+			Plot p = m_server.getLaboratory().getPlot(plot_id);
+			if (p == null)
+			{
+				throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such plot");
+			}
+			PlotExperimentSelector selector = new PlotExperimentSelector(m_server.getLaboratory(), p);
+			int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
+			input.put("message", added + " experiment(s) enqueued to generate plot " + plot_id);
+		}
+		if (uri.contains("enqueue/table"))
+		{
+			int plot_id = fetchId(s_tableIdPattern, h);
+			Table t = m_server.getLaboratory().getTable(plot_id);
+			if (t == null)
+			{
+				throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such table");
+			}
+			TableExperimentSelector selector = new TableExperimentSelector(m_server.getLaboratory(), t);
+			int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
+			input.put("message", added + " experiment(s) enqueued to generate plot " + plot_id);
+		}
 		if (input.containsKey("enqueue"))
 		{
 			// Adding groups

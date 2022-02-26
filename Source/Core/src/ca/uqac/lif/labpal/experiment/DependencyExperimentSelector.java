@@ -32,7 +32,7 @@ import ca.uqac.lif.labpal.Laboratory;
  * 
  * @author Sylvain Hallé
  */
-public class DependencyExperimentSelector extends ExperimentSelector
+public class DependencyExperimentSelector extends ConcreteExperimentSelector
 {
 	/**
 	 * The experiment from which dependencies are to be retrieved.

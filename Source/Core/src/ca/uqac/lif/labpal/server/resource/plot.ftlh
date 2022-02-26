@@ -16,15 +16,22 @@
 </#if>
 
 <div>
-<p><img style="border:solid 1px black" id="plotimage" src="/plot/${pid}/png" alt="Plot" /></p>
+<p>
+<#if plottext?has_content>
+<pre>${plottext}</pre>
+<#else>
+<img style="border:solid 1px black" id="plotimage" src="/plot/${pid}/png" alt="Plot" />
+</#if>
+</p>
 
 <div>
 <ul class="plot-buttons line-align">
-<li><span style="padding-left:32px;padding-right:0" class="btn-24 btn-reset" href="plot/${pid}?format=gp&amp;dl=1" title="Refresh this plot" onclick="refreshPlot('${pid}')"><span class="text-only">Refresh</span></span></li>
-<li><a style="padding-right:0" class="btn-24 btn-gp" href="plot/${pid}?format=gp&amp;dl=1" title="Download as GnuPlot source file"><span class="text-only">GP</span></a></li>
-<li><a style="padding-right:0" class="btn-24 btn-gp" href="plot/${pid}?format=dumb" title="View as ASCII art" target="_blank"><span class="text-only">ASCII</span></a></li>
-<li><a style="padding-right:0" class="btn-24 btn-pdf" href="plot/${pid}?format=pdf&amp;dl=1" title="Download as PDF"><span class="text-only">PDF</span></a></li>
-<li><a style="padding-right:0" class="btn-24 btn-table" href="table/${plot.getTable().getId()}" title="Show the data for this plot"><span class="text-only">Table</span></a></li>
+<li><span style="padding-left:32px" class="btn-24 btn-reset" href="/plot/${pid}?format=gp&amp;dl=1" title="Refresh this plot" onclick="refreshPlot('${pid}')"><span>Refresh</span></span></li>
+<li><a class="btn-24 btn-gp" href="/plot/${pid}/gp?dl=1" title="Download as GnuPlot source file"><span>GP</span></a></li>
+<li><a class="btn-24 btn-gp" href="/plot/${pid}/dumb" title="View as ASCII art" target="_blank"><span>ASCII</span></a></li>
+<li><a class="btn-24 btn-pdf" href="/plot/${pid}/pdf?dl=1" title="Download as PDF"><span>PDF</span></a></li>
+<li><a class="btn-24 btn-table" href="/table/${plot.getTable().getId()}" title="Show the data for this plot"><span>Table</span></a></li>
+<li><a style="padding-left:32px" class="btn-24 btn-queue" href="/assistant/enqueue/plot/${plot.getId()}" title="Add experiments linked to this plot to the assistant's queue"><span>Enqueue</span></a></li>
 </ul>
 </div>
 </div>
@@ -38,7 +45,7 @@
 <#list plot.getExperimentDependencies(true) as exp_dep>
   <#assign id = exp_dep.getId()>
   <#assign status = exp_dep.getStatus()>
-  <li><a class="line-align" href="/experiment/${id}"><span style="margin-right:10px">${id}</span>
+  <li><a class="line-align" href="/experiment/${id}"><span class="id-cell" style="margin-right:10px">${id}</span>
   <#switch status>
       <#case "UNINITIALIZED">
         <span id="status-icon-${id}" class="status-icon status-prereq" title="Prerequisites not fulfilled"><span class="text-only">P</span></span>

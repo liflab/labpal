@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
-import ca.uqac.lif.labpal.experiment.ExperimentSelector;
 
 /**
  * Coordinates the execution of batches of experiments from a given laboratory.

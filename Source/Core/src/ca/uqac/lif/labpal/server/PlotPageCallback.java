@@ -28,6 +28,7 @@ import com.sun.net.httpserver.HttpExchange;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 
 public class PlotPageCallback extends TemplatePageCallback
 {
@@ -54,6 +55,11 @@ public class PlotPageCallback extends TemplatePageCallback
 		input.put("id", id);
 		input.put("title", "Plot " + id);
 		input.put("plot", p);
+		if (isTextBrowser(h))
+		{
+			byte[] bytes = p.getImage(Gnuplot.DUMB);
+			input.put("plottext", new String(bytes));
+		}
 	}
 	
 	protected static int fetchId(HttpExchange h)

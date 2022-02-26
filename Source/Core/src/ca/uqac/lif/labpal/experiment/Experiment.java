@@ -366,6 +366,9 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 			// Can only move to Done from Running (traps the case where the thread
 			// set it to Timeout or Cancelled)
 			setStatus(Status.DONE);
+			m_progressionLock.lock();
+			m_progression = 1; // Force progression to 100%
+			m_progressionLock.unlock();
 		}
 	}
 

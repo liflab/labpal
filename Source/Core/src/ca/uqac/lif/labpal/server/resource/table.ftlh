@@ -20,6 +20,15 @@
 ${tablecontents?no_esc}
 </div>
 
+<div>
+<ul class="plot-buttons line-align">
+<li><a class="btn-24 btn-csv" href="/table/${tid}/csv?dl=1" title="Download as CSV"><span>CSV</span></a></li>
+<li><a class="btn-24 btn-tex" href="/table/${tid}/tex?dl=1" title="Download as LaTeX"><span>LaTeX</span></a></li>
+<li><a class="btn-24 btn-html" href="/table/${tid}/html?dl=1" title="Download as HTML"><span>HTML</span></a></li>
+<li><a class="btn-24 btn-queue" href="/assistant/enqueue/table/${tid}" title="Add experiments linked to this table to the assistant's queue"><span>Enqueue</span></a></li>
+</ul>
+</div>
+
 <h3>Dependencies</h3>
 
 <p>Below is the list of all the experiments in the lab on which this table depends.</p>
@@ -28,7 +37,7 @@ ${tablecontents?no_esc}
 <#list table.getExperimentDependencies(true) as exp_dep>
   <#assign id = exp_dep.getId()>
   <#assign status = exp_dep.getStatus()>
-  <li><a class="line-align" href="/experiment/${id}"><span style="margin-right:10px">${id}</span>
+  <li><a class="line-align" href="/experiment/${id}"><span class="id-cell" style="margin-right:10px">${id}</span>
   <#switch status>
       <#case "UNINITIALIZED">
         <span id="status-icon-${id}" class="status-icon status-prereq" title="Prerequisites not fulfilled"><span class="text-only">P</span></span>

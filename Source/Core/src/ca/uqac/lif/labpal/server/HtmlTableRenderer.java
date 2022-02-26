@@ -130,6 +130,7 @@ public class HtmlTableRenderer extends HtmlSpreadsheetPrinter
 	{
 		if (o == null)
 		{
+			ps.print("&nbsp;");
 			return;
 		}
 		String dp_id = "T" + m_table.getId() + ":" + row + ":" + col;

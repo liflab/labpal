@@ -25,7 +25,10 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
@@ -152,6 +155,17 @@ public class TemplatePageCallback extends RestCallback
 	{
 		return value;
 	}
+	
+	protected static int fetchId(Pattern pat, HttpExchange h)
+	{
+		String uri = h.getRequestURI().toString();
+		Matcher mat = pat.matcher(uri);
+		if (!mat.find())
+		{
+			return -1; // No ID
+		}
+		return Integer.parseInt(mat.group(1));
+	}
 
 	/**
 	 * Escapes characters to HTML entities
@@ -168,5 +182,23 @@ public class TemplatePageCallback extends RestCallback
 		s = s.replaceAll("<", "&lt;");
 		s = s.replaceAll(">", "&gt;");
 		return s;
+	}
+	
+	/**
+	 * Determines if an HTTP request has been sent by a text browser.
+	 * The method recognizes three text browsers: Lynx, Links and ELinks.
+	 * @param h The HTTP request
+	 * @return <tt>true</tt> if the request has been sent by a recognized
+	 * text browser, <tt>false</tt> otherwise
+	 */
+	protected static boolean isTextBrowser(HttpExchange h)
+	{
+		Headers headers = h.getRequestHeaders();
+		if (!headers.containsKey("User-Agent"))
+		{
+			return false;
+		}
+		String ua = headers.get("User-Agent").get(0);
+		return ua.contains("Lynx") || ua.contains("ELinks") || ua.contains("Links");
 	}
 }

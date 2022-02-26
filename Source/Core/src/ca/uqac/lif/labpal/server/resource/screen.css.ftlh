@@ -514,6 +514,8 @@ table.exp-table td {
   height: 280px;
   float: left;
   margin: 20px;
+  padding: 0px;
+  list-style-type: none;
 }
 
 .plot img {
@@ -555,24 +557,18 @@ table.exp-table td {
 }
 
 .btn-csv {
-  width: 24px;
-  height: 24px;
-  background: url('/images/csv-24.png') top center no-repeat;
-  display: inline-block;
+  background: ${color4} url('/images/csv-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
 }
 
 .btn-tex {
-  width: 24px;
-  height: 24px;
-  background: url('/images/tex-24.png') top center no-repeat;
-  display: inline-block;
+  background: ${color4} url('/images/tex-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
 }
 
 .btn-html {
-  width: 24px;
-  height: 24px;
-  background: url('/images/html-24.png') top center no-repeat;
-  display: inline-block;
+  background: ${color4} url('/images/html-24.png') 4px 4px no-repeat;
+  padding-left: 32px;
 }
 
 .btn-all-plots {

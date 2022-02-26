@@ -43,7 +43,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	public void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
 	{
 		super.fillInputModel(h, input);
-		int id = fetchId(h);
+		int id = fetchId(s_idPattern, h);
 		Experiment e = m_server.getLaboratory().getExperiment(id);
 		if (e == null)
 		{
@@ -56,17 +56,6 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		input.put("inputs", ins);
 		Map<String,String> outs = formatParameters(e.getOutputParameters());
 		input.put("outputs", outs);
-	}
-	
-	protected static int fetchId(HttpExchange h)
-	{
-		String uri = h.getRequestURI().toString();
-		Matcher mat = s_idPattern.matcher(uri);
-		if (!mat.find())
-		{
-			return -1; // No ID
-		}
-		return Integer.parseInt(mat.group(1));
 	}
 	
 	protected static Map<String,String> formatParameters(Map<String,Object> params)

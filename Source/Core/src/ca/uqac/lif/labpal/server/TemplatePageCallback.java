@@ -32,7 +32,6 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
-import ca.uqac.lif.jerrydog.RestCallback;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import freemarker.template.Configuration;
@@ -45,7 +44,7 @@ import freemarker.template.TemplateExceptionHandler;
  * 
  * @author Sylvain Hallé
  */
-public class TemplatePageCallback extends RestCallback
+public class TemplatePageCallback extends LaboratoryCallback
 {
 	protected static String s_templateBaseDir = "resource";
 
@@ -54,8 +53,6 @@ public class TemplatePageCallback extends RestCallback
 	protected String m_templateLocation;
 
 	protected String m_title;
-
-	protected LabPalServer m_server;
 
 	private static Configuration s_config;
 
@@ -72,8 +69,7 @@ public class TemplatePageCallback extends RestCallback
 
 	public TemplatePageCallback(LabPalServer server, Method m, String path, String template_location, String menu_highlight)
 	{
-		super(m, path);
-		m_server = server;
+		super(server, m, path);
 		m_templateLocation = template_location;
 		m_menuHighlight = menu_highlight;
 		m_ignoreMethod = true;

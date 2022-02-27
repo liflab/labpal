@@ -17,14 +17,30 @@
  */
 package ca.uqac.lif.labpal;
 
+import ca.uqac.lif.dag.LabelledNode;
 import ca.uqac.lif.labpal.assistant.Assistant;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
+import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.provenance.LaboratoryPart;
+import ca.uqac.lif.labpal.provenance.LaboratoryPart.ClaimNumber;
+import ca.uqac.lif.labpal.provenance.LaboratoryPart.MacroNumber;
+import ca.uqac.lif.labpal.provenance.LaboratoryPart.PlotNumber;
+import ca.uqac.lif.labpal.provenance.LaboratoryPart.TableNumber;
+import ca.uqac.lif.labpal.provenance.TrackedValue;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.util.AnsiPrinter;
 import ca.uqac.lif.labpal.util.CliParser;
 import ca.uqac.lif.labpal.util.FileHelper;
+import ca.uqac.lif.petitpoucet.ComposedPart;
+import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.Part;
+import ca.uqac.lif.petitpoucet.PartNode;
+import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
+import ca.uqac.lif.petitpoucet.function.NthOutput;
+import ca.uqac.lif.petitpoucet.function.vector.NthElement;
+import ca.uqac.lif.spreadsheet.Cell;
 import ca.uqac.lif.labpal.util.CliParser.Argument;
 import ca.uqac.lif.labpal.util.CliParser.ArgumentMap;
 
@@ -48,7 +64,7 @@ import java.util.regex.Pattern;
  * 
  * @author Sylvain Hallé
  */
-public class Laboratory
+public class Laboratory implements ExplanationQueryable
 {
 	/* Return codes */
 	public static transient int ERR_OK = 0;
@@ -122,6 +138,11 @@ public class Laboratory
 	 * A map associating table IDs to table instances.
 	 */
 	/*@ non_null @*/ private Map<Integer,Table> m_tables;
+	
+	/**
+	 * A map associating macro IDs to macro instances.
+	 */
+	/*@ non_null @*/ private Map<Integer,Macro> m_macros;
 
 	/**
 	 * An assistant instance used to run experiments inside the lab.
@@ -177,6 +198,7 @@ public class Laboratory
 		m_experiments = new HashMap<Integer,Experiment>();
 		m_plots = new HashMap<Integer,Plot>();
 		m_tables = new HashMap<Integer,Table>();
+		m_macros = new HashMap<Integer,Macro>();
 		m_assistant = new Assistant();
 		m_experimentGroups = new ArrayList<ExperimentGroup>();
 		m_doi = "";
@@ -547,6 +569,21 @@ public class Laboratory
 	}
 	
 	/**
+	 * Returns a macro instance with given ID, if it exists.
+	 * @param id The macro ID
+	 * @return The macro instance, or <tt>null</tt> if the macro
+	 * does not exist in the lab
+	 */
+	/*@ pure null @*/ public final Macro getMacro(int id)
+	{
+		if (m_macros.containsKey(id))
+		{
+			return m_macros.get(id);
+		}
+		return null;
+	}
+	
+	/**
 	 * Returns a list of all experiments in the lab, sorted by ID.
 	 * @return The list of experiments
 	 */
@@ -621,6 +658,20 @@ public class Laboratory
 		for (Table t : tables)
 		{
 			m_tables.put(t.getId(), t);
+		}
+		return this;
+	}
+	
+	/**
+	 * Adds a list of macros to the lab
+	 * @param macros The macros to add
+	 * @return This lab
+	 */
+	/*@ non_null @*/ public Laboratory add(Macro ... macros)
+	{
+		for (Macro m : macros)
+		{
+			m_macros.put(m.getId(), m);
 		}
 		return this;
 	}
@@ -733,6 +784,145 @@ public class Laboratory
 			i++;
 		}
 		return (float) i / s_parkMipsDivider;
+	}
+	
+	public TrackedValue getPart(String datapoint_id)
+	{
+		String[] parts = datapoint_id.split(":");
+		int id = Integer.parseInt(parts[0].substring(1));
+		if (parts[0].startsWith("T"))
+		{
+			// Table
+			Table subject = getTable(id);
+			if (parts.length == 1)
+			{
+				return new TrackedValue(null, Part.all, subject);
+			}
+			int row = Integer.parseInt(parts[1]);
+			int col = Integer.parseInt(parts[2]);
+			return new TrackedValue(null, Cell.get(col, row), subject);
+		}
+		else if (parts[0].startsWith("P"))
+		{
+			// Plot
+			Plot subject = getPlot(id);
+			return new TrackedValue(null, Part.all, subject);
+		}
+		else if (parts[0].startsWith("M"))
+		{
+			// Macro
+			Macro subject = getMacro(id);
+			if (parts.length == 1)
+			{
+				return new TrackedValue(null, Part.all, subject);
+			}
+			int index = Integer.parseInt(parts[1]);
+			return new TrackedValue(null, new NthElement(index), subject);
+		}
+		/*else if (parts[0].startsWith("C"))
+		{
+			// Claim
+			Claim subject = getClaim(id);
+			return new TrackedValue(null, NthOutput.FIRST, subject);
+		}*/
+		return null;
+	}
+
+	public PartNode getExplanation(String datapoint_id)
+	{
+		TrackedValue tv = getPart(datapoint_id);
+		if (tv == null)
+		{
+			return null;
+		}
+		NodeFactory f = NodeFactory.getFactory();
+		Part root_part = null;
+		Part p = tv.getPart();
+		Object o = tv.getSubject();
+		LabelledNode child = null;
+		if (o instanceof Table)
+		{
+			child = ((Table) o).getExplanation(p);
+			root_part = ComposedPart.compose(p, new TableNumber(((Table) o).getId()));
+		}
+		else if (o instanceof Macro)
+		{
+			child = ((Macro) o).getExplanation(p);
+			root_part = ComposedPart.compose(p, new MacroNumber(((Macro) o).getId()));
+		}
+		else if (o instanceof Plot)
+		{
+			child = ((Plot) o).getExplanation(p);
+			root_part = ComposedPart.compose(p, new PlotNumber(((Plot) o).getId()));
+		}
+		/*else if (o instanceof Claim)
+		{
+			child = ((Plot) o).getExplanation(p);
+			root_part = ComposedPart.compose(p, new ClaimNumber(((Claim) o).getId()));
+		}*/
+		else
+		{
+			child = f.getUnknownNode();
+		}
+		PartNode root = f.getPartNode(root_part, this);
+		root.addChild(child);
+		return root;
+	}
+
+	@Override
+	public PartNode getExplanation(Part d, NodeFactory f)
+	{
+		PartNode root = f.getPartNode(d, this);
+		Part head = d.head();
+		if (!(head instanceof LaboratoryPart))
+		{
+			root.addChild(f.getUnknownNode());
+			return root;
+		}
+		int id = ((LaboratoryPart) head).getId();
+		if (head instanceof PlotNumber)
+		{
+			Plot o = getPlot(id);
+			if (o != null)
+			{
+				root.addChild(o.getExplanation(d.tail(), f));
+			}
+		}
+		else if (head instanceof TableNumber)
+		{
+			Table o = getTable(id);
+			if (o != null)
+			{
+				root.addChild(o.getExplanation(d.tail(), f));
+			}
+		}
+		else if (head instanceof MacroNumber)
+		{
+			Macro o = getMacro(id);
+			if (o != null)
+			{
+				root.addChild(o.getExplanation(d.tail(), f));
+			}
+		}
+		/*else if (head instanceof ClaimNumber)
+		{
+			Claim o = getClaim(id);
+			if (o != null)
+			{
+				root.addChild(o.getExplanation(d.tail(), f));
+			}
+		}*/
+		else
+		{
+			root.addChild(f.getUnknownNode());
+		}
+		return root;
+	}
+
+	@Override
+	public PartNode getExplanation(Part d)
+	{
+		return getExplanation(d, NodeFactory.getFactory());
 	}
 
 	/**

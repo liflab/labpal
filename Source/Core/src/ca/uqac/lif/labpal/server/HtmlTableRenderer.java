@@ -60,7 +60,7 @@ public class HtmlTableRenderer extends HtmlSpreadsheetPrinter
 	
 	public HtmlTableRenderer(Table t)
 	{
-		this(t, "explain");
+		this(t, "/explain");
 	}
 	
 	public HtmlTableRenderer highlight(Cell c)

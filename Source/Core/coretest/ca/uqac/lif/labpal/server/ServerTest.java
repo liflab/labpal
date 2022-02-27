@@ -23,7 +23,7 @@ public class ServerTest {
 		lab.setAssistant(new Assistant(new QueuedThreadPoolExecutor(3)));
 		ExperimentGroup g = new ExperimentGroup("My group", "A group of experiments");
 		lab.add(g);
-		ExperimentTable et = new ExperimentTable("x", "y");
+		ExperimentTable et = new ExperimentTable("foo", "y");
 		et.setTitle("A first table");
 		lab.add(et);
 		Plot p = new Plot(et, new GnuplotScatterplot());

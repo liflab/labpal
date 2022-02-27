@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
 
+import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Progressive;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
@@ -40,7 +41,7 @@ import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
  * generate a picture from experimental data.
  * @author Sylvain Hallé
  */
-public class Plot extends AtomicFunction implements ExplanationQueryable, Progressive, Stateful
+public class Plot extends AtomicFunction implements ExplanationQueryable, Progressive, Stateful, Identifiable
 {
 	/**
 	 * A counter for plot IDs.
@@ -165,6 +166,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Progre
 	 * Gets the unique ID of this plot.
 	 * @return The id
 	 */
+	@Override
 	public int getId()
 	{
 		return m_id;

@@ -17,21 +17,19 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.dag.Pin;
-import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentValue;
 import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.provenance.GraphViewer;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.petitpoucet.AndNode;
 import ca.uqac.lif.petitpoucet.OrNode;
@@ -40,6 +38,7 @@ import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.vector.NthElement;
 import ca.uqac.lif.spreadsheet.Cell;
 import ca.uqac.lif.spreadsheet.chart.Chart;
+import ca.uqac.lif.spreadsheet.chart.ChartFormat;
 
 public class ExplainCallback extends TemplatePageCallback
 {
@@ -57,10 +56,25 @@ public class ExplainCallback extends TemplatePageCallback
 	public void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
 	{
 		super.fillInputModel(h, input);
+		String datapoint_id = (String) input.get("id");
 		StringBuilder out = new StringBuilder();
-		Node node = null;
+		PartNode node = m_server.getLaboratory().getExplanation(datapoint_id);
 		explanationToHtml(node, out);
 		input.put("exptree", out.toString());
+		input.put("imageurl", "/explain/graph?id=" + datapoint_id);
+		GraphViewer renderer = new GraphViewer();
+		byte[] image = renderer.toImage(node, ChartFormat.SVG, false);
+		input.put("imagesvg", hackSvg(image));
+	}
+	
+	/**
+	 * Transforms the original SVG.
+	 * @param image The byte array with the original SVG
+	 * @return A string with the modified SVG file
+	 */
+	protected static String hackSvg(byte[] image)
+	{
+		return new String(image);
 	}
 	
 	protected void explanationToHtml(Node node, StringBuilder out)
@@ -234,24 +248,24 @@ public class ExplainCallback extends TemplatePageCallback
 		}
 		if (subject instanceof Table)
 		{
-			url += "/table?id=" + ((Table) subject).getId();
+			url += "/table/" + ((Table) subject).getId();
 			Cell c = Cell.mentionedCell(part);
 			if (c != null)
 			{
-				url += "&highlight=" + c.getRow() + "." + c.getColumn();
+				url += "?highlight=" + c.getRow() + "." + c.getColumn();
 			}
 		}
 		else if (subject instanceof Plot)
 		{
-			url += "/plot?id=" + ((Plot) subject).getId();
+			url += "/plot/" + ((Plot) subject).getId();
 		}
 		else if (subject instanceof Experiment)
 		{
-			url += "/experiment?id=" + ((Experiment) subject).getId();
+			url += "/experiment/" + ((Experiment) subject).getId();
 			if (part.head() instanceof ExperimentValue)
 			{
 				ExperimentValue n = (ExperimentValue) part.head();
-				url += "&highlight=" + n.getParameter();
+				url += "?highlight=" + n.getParameter();
 				Part tail = part.tail();
 				if (tail != null && tail.head() instanceof NthElement)
 				{

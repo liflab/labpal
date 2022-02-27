@@ -105,7 +105,6 @@ public class AllPlotsLatexCallback extends LaboratoryCallback
       out.append(FileHelper.CRLF).append("\\end{lrbox}").append(FileHelper.CRLF)
           .append(FileHelper.CRLF);
     }
-
     return out;
   }
 }

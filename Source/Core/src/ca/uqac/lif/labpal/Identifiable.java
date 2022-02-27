@@ -18,10 +18,16 @@
 package ca.uqac.lif.labpal;
 
 /**
- * Interface implemented by objects that advertise their completion ratio.
+ * Interface implemented by objects that are uniquely identified with a
+ * number.
  * @author Sylvain Hallé
+ * @since 3.0
  */
-public interface Progressive 
+public interface Identifiable 
 {
-	public float getProgression();
+	/**
+	 * Gets the numerical identifier of this object.
+	 * @return The identifier
+	 */
+	public int getId();
 }

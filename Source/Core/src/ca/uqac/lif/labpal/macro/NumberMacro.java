@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2022 Sylvain Hallé
+  Copyright (C) 2014-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -15,13 +15,32 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.labpal;
+package ca.uqac.lif.labpal.macro;
 
-/**
- * Interface implemented by objects that advertise their completion ratio.
- * @author Sylvain Hallé
- */
-public interface Progressive 
+import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonNumber;
+import ca.uqac.lif.labpal.Laboratory;
+
+public class NumberMacro extends MacroScalar
 {
-	public float getProgression();
+	public NumberMacro(Laboratory lab, String name, String description) 
+	{
+		super(lab, name, description);
+	}
+
+	@Override
+	public final JsonElement getValue()
+	{
+		Number n = getNumber();
+		return new JsonNumber(n);
+	}
+	
+	/**
+	 * Gets the numerical value associated to this macro
+	 * @return The value
+	 */
+	public Number getNumber()
+	{
+		return 0;
+	}
 }

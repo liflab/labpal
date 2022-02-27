@@ -120,7 +120,9 @@ public class GraphViewer
 		SpreadsheetLineageDotRenderer renderer = new SpreadsheetLineageDotRenderer(roots);
 		renderer.setNoCaptions(no_captions);
 		renderer.render(ps);
-		return baos.toString();
+		String graph = baos.toString();
+		graph = graph.replace("digraph G {", "digraph G {\n bgcolor=\"#ffffff00\";\n");
+		return graph;
 	}
 
 	/**
@@ -266,7 +268,7 @@ public class GraphViewer
 			else
 			{
 				String message = "";
-				String url = "experiment?id=" + e.getId();
+				String url = "/experiment/" + e.getId();
 				String highlight_string = "";
 				if (d instanceof All)
 				{
@@ -278,7 +280,7 @@ public class GraphViewer
 					ExperimentValue mentioned = ExperimentValue.mentionedValue(d);
 					if (mentioned != null)
 					{
-						highlight_string = "&amp;highlight=" + mentioned.getParameter();
+						highlight_string = "?highlight=" + mentioned.getParameter();
 						int elem_index = NthElement.mentionedElement(d);
 						if (elem_index >= 0)
 						{
@@ -301,7 +303,7 @@ public class GraphViewer
 			else
 			{
 				String message;
-				String url = "table?id=" + t.getId();
+				String url = "/table/" + t.getId();
 				String highlight_string = "";
 				if (d instanceof All)
 				{
@@ -312,7 +314,7 @@ public class GraphViewer
 					Cell mentioned = Cell.mentionedCell(d);
 					if (mentioned != null)
 					{
-						highlight_string = "&amp;highlight=" + mentioned.getRow() + "." + mentioned.getColumn();
+						highlight_string = "?highlight=" + mentioned.getRow() + "." + mentioned.getColumn();
 					}
 					message = d.toString() + " of " + "Table " + t.getId();
 				}

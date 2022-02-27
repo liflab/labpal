@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2022 Sylvain Hallé
+  Copyright (C) 2014-2017 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -15,13 +15,10 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.labpal;
-
 /**
- * Interface implemented by objects that advertise their completion ratio.
+ * Provides classes for creating user-defined data points
+ * computed from the contents of a laboratory.
  * @author Sylvain Hallé
+ *
  */
-public interface Progressive 
-{
-	public float getProgression();
-}
+package ca.uqac.lif.labpal.macro;

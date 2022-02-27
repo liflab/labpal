@@ -59,7 +59,7 @@ public class LabPalServer extends Server
 		setServerPort(21212);
 		setUserAgent("LabPal " + Laboratory.formatVersion());
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/help", "help.ftlh", "top-menu-help").setTitle("Help"));
-		registerCallback(new TemplatePageCallback(this, Method.GET, "/find", "find.ftlh", "top-menu-find").setTitle("Find"));
+		registerCallback(new FindFormCallback(this));
 		registerCallback(new StatusPageCallback(this, Method.GET, "/status", "status.ftlh").setTitle("Status"));
 		registerCallback(new ExperimentPageCallback(this, Method.GET, "/experiment/", "experiment.ftlh"));
 		registerCallback(new ExperimentsStatusCallback(this, Method.GET, "/experiments/status"));
@@ -78,6 +78,8 @@ public class LabPalServer extends Server
 		registerCallback(new PlotsStatusCallback(this, Method.GET, "/plots/status"));
 		registerCallback(new PlotPageCallback(this, Method.GET, "/plot/", "plot.ftlh"));
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/index", "index.ftlh", "top-menu-home").setTitle("Home"));
+		registerCallback(new ExplainImageCallback(this));
+		registerCallback(new ExplainCallback(this, Method.GET, "/explain", "explain.ftlh").setTitle("Explanation"));
 		registerCallback(new CssCallback(this, Method.GET, "/screen.css", "screen.css.ftlh"));
 		registerCallback(new JavaScriptCallback("resource", LabPalServer.class));
 		registerCallback(new InnerFileCallback("resource", LabPalServer.class));

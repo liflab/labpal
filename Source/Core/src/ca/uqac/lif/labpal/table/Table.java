@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import ca.uqac.lif.dag.Node;
+import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Progressive;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
@@ -38,7 +39,7 @@ import ca.uqac.lif.spreadsheet.Spreadsheet;
  * An explainable 0:1 function that outputs a {@link Spreadsheet}.
  * @author Sylvain Hallé
  */
-public abstract class Table extends AtomicFunction implements Progressive, ExplanationQueryable, Stateful
+public abstract class Table extends AtomicFunction implements Progressive, ExplanationQueryable, Stateful, Identifiable
 {
 	/**
 	 * A counter for table IDs.
@@ -162,6 +163,7 @@ public abstract class Table extends AtomicFunction implements Progressive, Expla
 	 * Gets the unique ID of this table.
 	 * @return The id
 	 */
+	@Override
 	public int getId()
 	{
 		return m_id;

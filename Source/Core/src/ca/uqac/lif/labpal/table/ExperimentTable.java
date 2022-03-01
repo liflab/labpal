@@ -92,14 +92,7 @@ public class ExperimentTable extends Table
 	@Override
 	public Status getStatus()
 	{
-		// The status of an experiment table is the lowest status of the
-		// experiments it is linked to
-		Status s = Status.DONE;
-		for (Experiment e : m_experiments)
-		{
-			s = Stateful.getLowestStatus(s, e.getStatus());
-		}
-		return s;
+		return Stateful.getLowestStatus(m_experiments);
 	}
 
 	@Override

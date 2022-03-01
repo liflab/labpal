@@ -21,11 +21,12 @@ import java.util.Collection;
 
 /**
  * Interface implemented by objects whose state depends on other objects in a
- * lab. For example, a table depends on a set of experiments, and a plot
- * depends on a table.
+ * lab. For example, a table and an assistant run each depend on a set of
+ * experiments, while a plot depends on a table.
  * @author Sylvain Hallé
  *
  * @param <T> The type of the dependencies
+ * @since 3.0
  */
 public interface Dependent<T>
 {

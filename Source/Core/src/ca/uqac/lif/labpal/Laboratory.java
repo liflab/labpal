@@ -32,6 +32,7 @@ import ca.uqac.lif.labpal.provenance.TrackedValue;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.util.AnsiPrinter;
 import ca.uqac.lif.labpal.util.CliParser;
+import ca.uqac.lif.labpal.util.CommandRunner;
 import ca.uqac.lif.labpal.util.FileHelper;
 import ca.uqac.lif.petitpoucet.ComposedPart;
 import ca.uqac.lif.petitpoucet.NodeFactory;

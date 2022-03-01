@@ -28,7 +28,6 @@ import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
-import ca.uqac.lif.jerrydog.RestCallback;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
 /**
@@ -36,14 +35,11 @@ import ca.uqac.lif.labpal.experiment.Experiment;
  * of the lab as a whole. 
  * @author Sylvain Hallé
  */
-public class LabStatusCallback extends RestCallback
+public class LabStatusCallback extends LaboratoryCallback
 {
-	protected LabPalServer m_server;
-	
 	public LabStatusCallback(LabPalServer server, Method m, String path)
 	{
-		super(m, path);
-		m_server = server;
+		super(server, m, path);
 	}
 	
 	@Override

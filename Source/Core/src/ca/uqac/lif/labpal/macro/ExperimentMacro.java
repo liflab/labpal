@@ -150,12 +150,7 @@ public class ExperimentMacro extends Macro implements Dependent<Experiment>
 	@Override
 	public Status getStatus() 
 	{
-		Status s = Status.DONE;
-		for (Experiment e : m_experiments)
-		{
-			s = Stateful.getLowestStatus(s, e.getStatus());
-		}
-		return s;
+		return Stateful.getLowestStatus(m_experiments);
 	}
 	
 	@Override

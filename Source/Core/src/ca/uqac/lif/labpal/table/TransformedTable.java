@@ -18,6 +18,7 @@
 package ca.uqac.lif.labpal.table;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -54,7 +55,7 @@ public class TransformedTable extends Table
 	 */
 	protected Function m_transformation;
 
-	protected Table[] m_inputTables;
+	protected List<Table> m_inputTables;
 
 	/**
 	 * Creates a new transformed table.
@@ -65,16 +66,16 @@ public class TransformedTable extends Table
 	{
 		super();
 		m_transformation = f;
-		m_inputTables = tables;
+		m_inputTables = Arrays.asList(tables);
 	}
 
 	@Override
 	protected Spreadsheet calculateSpreadsheet()
 	{
-		Object[] ins = new Object[m_inputTables.length];
-		for (int i = 0; i < m_inputTables.length; i++)
+		Object[] ins = new Object[m_inputTables.size()];
+		for (int i = 0; i < m_inputTables.size(); i++)
 		{
-			ins[i] = m_inputTables[i].getSpreadsheet();
+			ins[i] = m_inputTables.get(i).getSpreadsheet();
 		}
 		Object[] out = m_transformation.evaluate(ins);
 		if (!(out[0] instanceof Spreadsheet))
@@ -94,14 +95,7 @@ public class TransformedTable extends Table
 	@Override
 	public Status getStatus()
 	{
-		// The status of a transformed table is the lowest status of the tables
-		// it is made from
-		Status s = Status.DONE;
-		for (Table t : m_inputTables)
-		{
-			s = Stateful.getLowestStatus(s, t.getStatus());
-		}
-		return s;
+		return Stateful.getLowestStatus(m_inputTables);
 	}
 
 	@Override
@@ -122,7 +116,7 @@ public class TransformedTable extends Table
 		{
 			// We ask the explanation of the whole table: point to its input tables
 			LabelledNode to_add = root;
-			if (m_inputTables.length > 1)
+			if (m_inputTables.size() > 1)
 			{
 				AndNode and = f.getAndNode();
 				root.addChild(and);
@@ -148,13 +142,13 @@ public class TransformedTable extends Table
 		{
 			Part p = leaf.getPart();
 			int mentioned_input = NthInput.mentionedInput(p);
-			if (mentioned_input < 0 || mentioned_input >= m_inputTables.length)
+			if (mentioned_input < 0 || mentioned_input >= m_inputTables.size())
 			{
 				leaf.addChild(f.getUnknownNode());
 			}
 			else
 			{
-				Table t = m_inputTables[mentioned_input];
+				Table t = m_inputTables.get(mentioned_input);
 				Part new_p = NthInput.replaceInByOut(p, 0);
 				PartNode sub_root = t.explain(new_p, f);
 				leaf.addChild(sub_root);

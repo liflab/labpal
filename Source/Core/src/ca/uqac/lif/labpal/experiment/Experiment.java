@@ -400,12 +400,33 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	@Override
 	public final void reset()
 	{
-		setStatus(Status.UNINITIALIZED);
+		if (prerequisitesFulfilled())
+		{
+			setStatus(Status.READY);
+		}
+		else
+		{
+			setStatus(Status.UNINITIALIZED);
+			setProgression(0);
+		}
 		m_outputParameters.clear();
-		m_startTime = -1;
-		m_prereqTime = -1;
-		m_endTime = -1;
+		m_startTime = 0;
+		m_prereqTime = 0;
+		m_endTime = 0;
 		m_hasTimedOut = false;
+		handleReset();
+	}
+	
+	/**
+	 * Resets the internal state of an experiment upon a call to
+	 * {@link #reset()}. This method can be overridden so that a custom
+	 * experiment cleans up the member fields that are not inherited from
+	 * the {@link Experiment} class, if necessary. By default, all
+	 * this method does is to set the progression to 0.
+	 */
+	protected void handleReset()
+	{
+		setProgression(0);
 	}
 	
 	/**
@@ -470,6 +491,12 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		return ((Experiment) o).getId() == m_id;
 	}
 
+	/**
+	 * Determines if an experiment is currently in one of its possible
+	 * final states.
+	 * @return <tt>true</tt> if the experiment is in a final state,
+	 * <tt>false</tt> otherwise
+	 */
 	/*@ pure @*/ protected final boolean isFinished()
 	{
 		Status s = getStatus();

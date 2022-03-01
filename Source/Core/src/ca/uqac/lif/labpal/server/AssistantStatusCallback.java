@@ -63,14 +63,7 @@ public class AssistantStatusCallback extends RestCallback
 				out.println(",");
 			}
 			out.print("\"" + r.getId() + "\" : [");
-			if (r.isRunning())
-			{
-				out.print("true,");
-			}
-			else
-			{
-				out.print("false,");
-			}
+			out.print("\"" + r.getStatus() + "\",");
 			out.print(r.getProgression());
 			out.print("]");
 		}

@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import ca.uqac.lif.labpal.Dependent;
+import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.assistant.Assistant.RunRunnable;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
@@ -49,7 +51,7 @@ import ca.uqac.lif.labpal.experiment.Experiment;
  * 
  * @author Sylvain Hallé
  */
-public class AssistantRun 
+public class AssistantRun implements Stateful, Dependent<Experiment>
 {
 	/**
 	 * A counter for run IDs
@@ -108,6 +110,7 @@ public class AssistantRun
 	 * to the fraction of experiments in the run that are completed.
 	 * @return The progression fraction
 	 */
+	@Override
 	/*@ pure @*/ public float getProgression()
 	{
 		float p = 0;
@@ -122,6 +125,12 @@ public class AssistantRun
 			return 0;
 		}
 		return p / t;
+	}
+	
+	@Override
+	/*@ pure non_null @*/ public Status getStatus()
+	{
+		return Stateful.getLowestStatus(m_runnable.getExperiments());
 	}
 	
 	/**
@@ -147,9 +156,19 @@ public class AssistantRun
 	 * Gets the list of experiments concerned by this run.
 	 * @return The list of experiments
 	 */
-	/*@ pure non_null @*/ public List<Experiment> getExperiments()
+	@Override
+	/*@ pure non_null @*/ public List<Experiment> dependsOn()
 	{
 		return m_runnable.getExperiments();
+	}
+	
+	@Override
+	public void reset()
+	{
+		for (Experiment e : m_runnable.getExperiments())
+		{
+			e.reset();
+		}
 	}
 	
 	/**

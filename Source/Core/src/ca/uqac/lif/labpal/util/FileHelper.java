@@ -45,7 +45,6 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import ca.uqac.lif.jerrydog.InnerFileServer;
-import ca.uqac.lif.labpal.CommandRunner;
 
 /**
  * A number of helpful utilities to read, write and manage files

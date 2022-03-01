@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.labpal;
 
+import java.util.Collection;
+
 /**
  * Interface implemented by runnable objects whose internal state follows a
  * lifecycle. At any moment, a stateful object can be in one of seven states:
@@ -92,13 +94,21 @@ public interface Stateful
 	 * according to an implicit ordering of object states. This ordering
 	 * is as follows:
 	 * <p>
-	 * failed &lt; interrupted &lt; preparing &lt; running &lt; uninitialized &lt; ready &lt; done
+	 * running &lt; preparing &lt; failed &lt; interrupted &lt; uninitialized &lt; ready &lt; done
 	 * @param s1 The first state
 	 * @param s2 The second state
 	 * @return The lowest of the two states
 	 */
-	public static Status getLowestStatus(Status s1, Status s2)
+	private static Status getLowestStatus(Status s1, Status s2)
 	{
+		if  (s1 == Status.RUNNING || s2 == Status.RUNNING)
+		{
+			return Status.RUNNING;
+		}
+		if (s1 == Status.PREPARING || s2 == Status.PREPARING)
+		{
+			return Status.PREPARING;
+		}
 		if (s1 == Status.FAILED || s2 == Status.FAILED)
 		{
 			return Status.FAILED;
@@ -106,14 +116,6 @@ public interface Stateful
 		if (s1 == Status.INTERRUPTED || s2 == Status.INTERRUPTED)
 		{
 			return Status.INTERRUPTED;
-		}
-		if (s1 == Status.PREPARING || s2 == Status.PREPARING)
-		{
-			return Status.PREPARING;
-		}
-		if  (s1 == Status.RUNNING || s2 == Status.RUNNING)
-		{
-			return Status.RUNNING;
 		}
 		if (s1 == Status.UNINITIALIZED || s2 == Status.UNINITIALIZED)
 		{
@@ -124,5 +126,25 @@ public interface Stateful
 			return Status.READY;
 		}
 		return Status.DONE;
+	}
+	
+	/**
+	 * Returns the "lowest" state of a collection of stateful objects, according
+	 * to an implicit ordering of object states.
+	 * @see #getLowestStatus(Status, Status)
+	 */
+	public static Status getLowestStatus(Collection<? extends Stateful> objects)
+	{
+		Status status = Status.DONE;
+		for (Stateful s : objects)
+		{
+			status = getLowestStatus(status, s.getStatus());
+			if (status == Status.RUNNING)
+			{
+				// Shortcut: no use in iterating further, already at lowest
+				return status;
+			}
+		}
+		return status;
 	}
 }

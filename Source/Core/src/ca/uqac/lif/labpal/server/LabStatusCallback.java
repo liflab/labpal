@@ -19,6 +19,7 @@ package ca.uqac.lif.labpal.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +44,16 @@ public class LabStatusCallback extends RestCallback
 	{
 		super(m, path);
 		m_server = server;
+	}
+	
+	@Override
+	public boolean fire(HttpExchange t)
+	{
+		URI u = t.getRequestURI();
+		String path = u.getPath();
+		String method = t.getRequestMethod();
+		return ((m_ignoreMethod || method.compareToIgnoreCase(methodToString(m_method)) == 0)) 
+				&& path.startsWith(m_path);
 	}
 
 	@Override

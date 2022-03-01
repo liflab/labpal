@@ -1,8 +1,19 @@
+<#if outparams?has_content>
+
+<#-- Display only fragment with output parameters -->
+${outparams?no_esc}
+
+<#else>
+
+<#-- Display full experiment page -->
+
 <#include "header.ftlh">
 
 <#assign e = lab.getExperiment(id)>
 
 <h2>About experiment #${id}</h2>
+
+<#assign e_running = (e.getStatus() == "RUNNING" || e.getStatus() == "PREPARING")>
 
 <#if groupdesc?has_content>
   ${groupdesc}
@@ -14,10 +25,109 @@
 <#assign enddate = e.getEndDate()>
 
 <table class="status-table">
-<tr><th>Status:</th><td>${e.getStatus()}
-<#if e.getStatus() == "RUNNING" || e.getStatus() == "RUNNING_PREREQ">
-  <#include "progress-bar-experiment.ftlh">
-</#if>
+<tr><th>Status:</th><td class="line-align">
+<#switch e.getStatus()>
+  <#case "UNINITIALIZED">
+    <div id="status-line">
+    <span id="box-prereq" class="status-icon status-prereq current"></span>
+    <span id="dash-preparing" class="dash"></span>
+    <span id="box-preparing" class="status-icon status-running"></span>
+    <span id="dash-ready" class="dash"></span>
+    <span id="box-ready" class="status-icon status-ready"></span>
+    <span id="dash-running" class="dash"></span>
+    <span id="box-running" class="status-icon status-running"></span>
+    <span id="dash-done" class="dash"></span>
+    <span id="box-done" class="status-icon status-done"></span>
+    <span class="status-caption">Uninitialized</span>
+    </div>
+  	<#break>
+  <#case "PREPARING">
+    <div id="status-line">
+    <span id="box-prereq" class="status-icon status-prereq active"></span>
+    <span id="dash-preparing" class="dash active"></span>
+    <span id="box-preparing" class="status-icon status-running current"></span>
+    <span id="dash-ready" class="dash"></span>
+    <span id="box-ready" class="status-icon status-ready"></span>
+    <span id="dash-running" class="dash"></span>
+    <span id="box-running" class="status-icon status-running"></span>
+    <span id="dash-done" class="dash"></span>
+    <span id="box-done" class="status-icon status-done"></span>
+    <span class="status-caption">Preparing</span>
+    </div>
+  	<#break>
+  <#case "READY">
+    <div id="status-line">
+    <span id="box-prereq" class="status-icon status-prereq active"></span>
+    <span id="dash-preparing" class="dash active"></span>
+    <span id="box-preparing" class="status-icon status-running active"></span>
+    <span id="dash-ready" class="dash active"></span>
+    <span id="box-ready" class="status-icon status-ready current"></span>
+    <span id="dash-running" class="dash"></span>
+    <span id="box-running" class="status-icon status-running"></span>
+    <span id="dash-done" class="dash"></span>
+    <span id="box-done" class="status-icon status-done"></span>
+    <span class="status-caption">Ready</span>
+    </div>
+  	<#break>
+  <#case "RUNNING">
+    <div id="status-line">
+    <span id="box-prereq" class="status-icon status-prereq active"></span>
+    <span id="dash-preparing" class="dash active"></span>
+    <span id="box-preparing" class="status-icon status-running active"></span>
+    <span id="dash-ready" class="dash active"></span>
+    <span id="box-ready" class="status-icon status-ready active"></span>
+    <span id="dash-running" class="dash active"></span>
+    <span id="box-running" class="status-icon status-running current"></span>
+    <span id="dash-done" class="dash"></span>
+    <span id="box-done" class="status-icon status-done"></span>
+    <span class="status-caption">Running</span>
+    </div>
+  	<#break>
+  <#case "DONE">
+    <div id="status-line">
+    <span id="box-prereq" class="status-icon status-prereq active"></span>
+    <span id="dash-preparing" class="dash active"></span>
+    <span id="box-preparing" class="status-icon status-running active"></span>
+    <span id="dash-ready" class="dash active"></span>
+    <span id="box-ready" class="status-icon status-ready active"></span>
+    <span id="dash-running" class="dash active"></span>
+    <span id="box-running" class="status-icon status-running active"></span>
+    <span id="dash-done" class="dash active"></span>
+    <span id="box-done" class="status-icon status-done current"></span>
+    <span class="status-caption">Done</span>
+    </div>
+  	<#break>
+  <#case "FAILED">
+    <div id="status-line">
+    <span id="box-prereq" class="status-icon status-prereq active"></span>
+    <span id="dash-preparing" class="dash active"></span>
+    <span id="box-preparing" class="status-icon status-running active"></span>
+    <span id="dash-ready" class="dash active"></span>
+    <span id="box-ready" class="status-icon status-ready active"></span>
+    <span id="dash-running" class="dash active"></span>
+    <span id="box-running" class="status-icon status-running active"></span>
+    <span id="dash-done" class="dash active"></span>
+    <span id="box-done" class="status-icon status-failed current"></span>
+    <span class="status-caption">Failed</span>
+    </div>
+  	<#break>
+  <#case "INTERRUPTED">
+    <div id="status-line">
+    <span id="box-prereq" class="status-icon status-prereq active"></span>
+    <span id="dash-preparing" class="dash active"></span>
+    <span id="box-preparing" class="status-icon status-running active"></span>
+    <span id="dash-ready" class="dash active"></span>
+    <span id="box-ready" class="status-icon status-ready active"></span>
+    <span id="dash-running" class="dash active"></span>
+    <span id="box-running" class="status-icon status-running active"></span>
+    <span id="dash-done" class="dash active"></span>
+    <span id="box-done" class="status-icon status-timeout current"></span>
+    <span class="status-caption">Timed out</span>
+    </div>
+  	<#break>
+</#switch>
+<span style="margin-left:16pt"><#include "progress-bar-experiment.ftlh"></span>
+</span>
 </td></tr>
 <#if startdate?has_content>
   <tr><th>Started on:</th><td>${startdate}</td></tr>
@@ -57,6 +167,8 @@
 
 <h2>Input Parameters</h2>
 
+<div id="exp-input-params">
+
 <#if inputs?size == 0>
   <p>This experiment has no input parameters.</p>
 <#else>
@@ -67,10 +179,14 @@
   </table>
 </#if>
 
+</div>
+
 <h2>Output Parameters</h2>
 
+<div id="exp-output-params">
+
 <#if outputs?size == 0>
-  <p>This experiment has no output parameters.</p>
+  <p>No parameter is defined.</p>
 <#else>
   <table>
   <#list outputs?keys as k>
@@ -79,4 +195,135 @@
   </table>
 </#if>
 
+</div>
+
+<script type="text/javascript">
+var tid_e = setTimeout(updateExperimentStatus, 3100);
+
+var last_e_status = "";
+
+function updateExperimentLine(status) {
+  switch (status) {
+    case "UNINITIALIZED":
+      $("#box-prereq").removeClass("active").addClass("current");
+      $("#dash-preparing").removeClass("active");
+      $("#box-preparing").removeClass("active current");
+      $("#dash-ready").removeClass("active");
+      $("#box-ready").removeClass("active current");
+      $("#dash-running").removeClass("active");
+      $("#box-running").removeClass("active current");
+      $("#dash-done").removeClass("active");
+      $("#box-done").removeClass("active status-failed status-timeout").addClass("status-done");
+      $(".status-caption").text("Uninitialized");
+      break;
+    case "PREPARING":
+      $("#box-prereq").removeClass("current").addClass("active");
+      $("#dash-preparing").addClass("active");
+      $("#box-preparing").removeClass("active").addClass("current");
+      $("#dash-ready").removeClass("active");
+      $("#box-ready").removeClass("active current");
+      $("#dash-running").removeClass("active");
+      $("#box-running").removeClass("active current");
+      $("#dash-done").removeClass("active");
+      $("#box-done").removeClass("active status-failed status-timeout").addClass("status-done");
+      $(".status-caption").text("Preparing");
+      break;
+    case "READY":
+      $("#box-prereq").removeClass("current").addClass("active");
+      $("#dash-preparing").addClass("active");
+      $("#box-preparing").removeClass("current").addClass("active");
+      $("#dash-ready").addClass("active");
+      $("#box-ready").removeClass("active").addClass("current");
+      $("#dash-running").removeClass("active");
+      $("#box-running").removeClass("active current");
+      $("#dash-done").removeClass("active");
+      $("#box-done").removeClass("active status-failed status-timeout").addClass("status-done");
+      $(".status-caption").text("Ready");
+      break;
+    case "RUNNING":
+      $("#box-prereq").removeClass("current").addClass("active");
+      $("#dash-preparing").addClass("active");
+      $("#box-preparing").removeClass("current").addClass("active");
+      $("#dash-ready").addClass("active");
+      $("#box-ready").removeClass("current").addClass("active");
+      $("#dash-running").addClass("active");
+      $("#box-running").removeClass("active").addClass("current");
+      $("#dash-done").removeClass("active");
+      $("#box-done").removeClass("active status-failed status-timeout").addClass("status-done");
+      $(".status-caption").text("Running");
+      break;
+    case "DONE":
+      $("#box-prereq").removeClass("current").addClass("active");
+      $("#dash-preparing").addClass("active");
+      $("#box-preparing").removeClass("curent").addClass("active");
+      $("#dash-ready").addClass("active");
+      $("#box-ready").removeClass("current").addClass("active");
+      $("#dash-running").addClass("active");
+      $("#box-running").removeClass("current").addClass("active");
+      $("#dash-done").addClass("active");
+      $("#box-done").removeClass("active status-failed status-timeout").addClass("status-done current");
+      $(".status-caption").text("Done");
+      break;
+    case "FAILED":
+      $("#box-prereq").removeClass("current").addClass("active");
+      $("#dash-preparing").addClass("active");
+      $("#box-preparing").removeClass("curent").addClass("active");
+      $("#dash-ready").addClass("active");
+      $("#box-ready").removeClass("current").addClass("active");
+      $("#dash-running").addClass("active");
+      $("#box-running").removeClass("current").addClass("active");
+      $("#dash-done").addClass("active");
+      $("#box-done").removeClass("active status-done status-timeout").addClass("status-failed current");
+      $(".status-caption").text("Failed");
+      break;
+    case "INTERRUPTED":
+      $("#box-prereq").removeClass("current").addClass("active");
+      $("#dash-preparing").addClass("active");
+      $("#box-preparing").removeClass("curent").addClass("active");
+      $("#dash-ready").addClass("active");
+      $("#box-ready").removeClass("current").addClass("active");
+      $("#dash-running").addClass("active");
+      $("#box-running").removeClass("current").addClass("active");
+      $("#dash-done").addClass("active");
+      $("#box-done").removeClass("active status-done status-failed").addClass("status-timeout current");
+      $(".status-caption").text("Interrupted");
+      break;
+  }
+};
+
+function updateExperimentStatus() {
+  $.ajax({
+    url: "/experiments/status/${id}"
+  }).done(function (data) {
+    var status = data[0];
+    updateExperimentLine(status);
+    if (status == "RUNNING") {
+      $("#progress-bar-${id}").show();
+      var prog = data[1];
+      var w = Math.round(prog * 50);
+      var p = Math.round(prog * 100);
+      $("#progress-bar-rect-${id}").css("width", w + "px");
+      $("#progress-bar-val-${id}").text(p + "%");
+    }
+    else {
+      $("#progress-bar-${id}").hide();
+    }
+    if (status == "RUNNING" || status != last_e_status) {
+	    $.ajax({
+	    url: "/experiment/${id}/output/html"
+	  	}).done(function (data) {
+	    	$("#exp-output-params").html(data);
+	    })
+	}
+	last_e_status = status;
+    setTimeout(updateExperimentStatus, 3100);
+  })
+};
+
+
+
+</script>
+
 <#include "footer.ftlh">
+
+</#if>

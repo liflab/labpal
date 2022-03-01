@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import ca.uqac.lif.labpal.Progressive;
+import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.units.Time;
 import ca.uqac.lif.units.si.Second;
@@ -39,7 +39,7 @@ import ca.uqac.lif.units.si.Second;
  * 
  * @author Sylvain Hallé
  */
-public class Experiment implements Runnable, Comparable<Experiment>, Progressive, Stateful
+public class Experiment implements Runnable, Comparable<Experiment>, Stateful, Identifiable
 {
 	protected static final transient SimpleDateFormat s_dateFormat = new SimpleDateFormat();
 
@@ -58,6 +58,8 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 	private long m_prereqTime;
 
 	private long m_endTime;
+	
+	private boolean m_hasTimedOut;
 
 	/*@ non_null @*/ private Status m_status;
 
@@ -94,6 +96,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 		m_prereqTime = 0;
 		m_endTime = 0;
 		m_status = Status.UNINITIALIZED;
+		m_hasTimedOut = false;
 	}
 
 	/*@ pure non_null @*/ public final Set<Integer> dependsOn()
@@ -127,6 +130,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 		return m_timeRatio;
 	}
 
+	@Override
 	/*@ pure @*/ public final int getId()
 	{
 		return m_id;
@@ -319,7 +323,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 			{
 				try
 				{
-					setStatus(Status.RUNNING_PREREQ);
+					setStatus(Status.PREPARING);
 					fulfillPrerequisites();
 				}
 				catch (ExperimentException e)
@@ -329,7 +333,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 				}
 				catch (InterruptedException e)
 				{
-					setStatus(Status.CANCELLED);
+					setStatus(Status.INTERRUPTED);
 					return;
 				}
 			}
@@ -356,8 +360,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 		}
 		catch (InterruptedException e)
 		{
-			//System.out.println("Interrupted");
-			setStatus(Status.CANCELLED);
+			setStatus(Status.INTERRUPTED);
 			success = false;
 		}
 		m_endTime = System.currentTimeMillis();
@@ -394,6 +397,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 		return this;
 	}
 
+	@Override
 	public final void reset()
 	{
 		setStatus(Status.UNINITIALIZED);
@@ -401,6 +405,27 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 		m_startTime = -1;
 		m_prereqTime = -1;
 		m_endTime = -1;
+		m_hasTimedOut = false;
+	}
+	
+	/**
+	 * Tells the experiment that it has ended in a timeout. Since timeouts are
+	 * handled by the thread that runs the experiment, this notification has to
+	 * come from the outside.
+	 */
+	public final void declareTimeout()
+	{
+		m_hasTimedOut = true;
+	}
+	
+	/**
+	 * Determines if the experiment has been declared a timeout.
+	 * @return <tt>true</tt> if the experiment timed out, <tt>false</tt>
+	 * otherwise
+	 */
+	/*@ pure @*/ public final boolean hasTimedOut()
+	{
+		return m_hasTimedOut;
 	}
 
 	public void execute() throws ExperimentException, InterruptedException
@@ -448,7 +473,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Progressive
 	/*@ pure @*/ protected final boolean isFinished()
 	{
 		Status s = getStatus();
-		return s == Status.DONE || s == Status.TIMEOUT || s == Status.CANCELLED || s == Status.FAILED;
+		return s == Status.DONE || s == Status.INTERRUPTED || s == Status.FAILED;
 	}
 	
 	/**

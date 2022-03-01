@@ -124,7 +124,7 @@ public class ExperimentTest
 		Thread.sleep(500);
 		executor.shutdownNow();
 		executor.awaitTermination(100, TimeUnit.MILLISECONDS);
-		assertEquals(Status.CANCELLED, de.getStatus());
+		assertEquals(Status.INTERRUPTED, de.getStatus());
 	}
 	
 	@Test

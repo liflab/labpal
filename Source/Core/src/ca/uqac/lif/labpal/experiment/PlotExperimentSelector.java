@@ -48,6 +48,6 @@ public class PlotExperimentSelector extends ConcreteExperimentSelector
 	@Override
 	/*@ non_null @*/ public Collection<Experiment> select()
 	{
-		return m_plot.getExperimentDependencies(false);
+		return m_plot.dependsOn().get(0).dependsOn();
 	}
 }

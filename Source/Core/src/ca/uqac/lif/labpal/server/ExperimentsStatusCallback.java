@@ -19,12 +19,12 @@ package ca.uqac.lif.labpal.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
-import ca.uqac.lif.jerrydog.RestCallback;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
 /**
@@ -32,14 +32,16 @@ import ca.uqac.lif.labpal.experiment.Experiment;
  * of each experiment in the lab. 
  * @author Sylvain Hallé
  */
-public class ExperimentsStatusCallback extends RestCallback
+public class ExperimentsStatusCallback extends LabStatusCallback
 {
-	protected LabPalServer m_server;
+	/**
+	 * The pattern to extract the experiment ID from the URL.
+	 */
+	protected static final Pattern s_idPattern = Pattern.compile("experiments/status/(\\d+)");
 	
 	public ExperimentsStatusCallback(LabPalServer server, Method m, String path)
 	{
-		super(m, path);
-		m_server = server;
+		super(server, m, path);
 	}
 
 	@Override
@@ -50,6 +52,23 @@ public class ExperimentsStatusCallback extends RestCallback
 		cbr.setContentType(ContentType.JSON);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream out = new PrintStream(baos);
+		int exp_id = TemplatePageCallback.fetchId(s_idPattern, t);
+		if (exp_id > 0)
+		{
+			Experiment e = m_server.getLaboratory().getExperiment(exp_id);
+			if (e == null)
+			{
+				cbr.setCode(CallbackResponse.HTTP_NOT_FOUND);
+				cbr.setContents("No such experiment");
+				return cbr;
+			}
+			out.println("[");
+			out.print("\"" + e.getStatus() + "\",");
+			out.print(e.getProgression());
+			out.print("]");
+			cbr.setContents(baos.toString());
+			return cbr;
+		}
 		out.println("{");
 		boolean first = true;
 		for (Experiment e : m_server.getLaboratory().getExperiments())

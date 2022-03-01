@@ -18,6 +18,7 @@
 package ca.uqac.lif.labpal.table;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,7 @@ public class ExperimentTable extends Table
 	 * value and lineage information of each cell.
 	 */
 	protected List<TableEntry> m_lastEntries;
-	
+
 	/**
 	 * Creates an empty table with a given list of column names
 	 * @param id The unique ID given to this table
@@ -87,7 +88,7 @@ public class ExperimentTable extends Table
 		m_experiments.add(e);
 		return this;
 	}
-	
+
 	@Override
 	public Status getStatus()
 	{
@@ -313,15 +314,11 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	public List<Experiment> getExperimentDependencies(boolean sorted)
+	public Collection<Experiment> dependsOn()
 	{
-		if (sorted)
-		{
-			List<Experiment> exps = new ArrayList<Experiment>();
-			exps.addAll(m_experiments);
-			Collections.sort(exps);
-			return exps;
-		}
-		return m_experiments;
+		List<Experiment> exps = new ArrayList<Experiment>();
+		exps.addAll(m_experiments);
+		Collections.sort(exps);
+		return exps;
 	}
 }

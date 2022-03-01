@@ -20,19 +20,15 @@ package ca.uqac.lif.labpal.server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import ca.uqac.lif.labpal.assistant.AssistantRun;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
 public class StatusPageCallback extends TemplatePageCallback
 {
-
 	public StatusPageCallback(LabPalServer server, Method m, String path, String template_location)
 	{
 		super(server, m, path, template_location, "top-menu-status");

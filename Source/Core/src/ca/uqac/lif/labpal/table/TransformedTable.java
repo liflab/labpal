@@ -53,9 +53,9 @@ public class TransformedTable extends Table
 	 * The function to apply to the input spreadsheet
 	 */
 	protected Function m_transformation;
-	
+
 	protected Table[] m_inputTables;
-	
+
 	/**
 	 * Creates a new transformed table.
 	 * @param f The function to apply to the input tables
@@ -67,7 +67,7 @@ public class TransformedTable extends Table
 		m_transformation = f;
 		m_inputTables = tables;
 	}
-	
+
 	@Override
 	protected Spreadsheet calculateSpreadsheet()
 	{
@@ -90,7 +90,7 @@ public class TransformedTable extends Table
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Status getStatus()
 	{
@@ -172,7 +172,7 @@ public class TransformedTable extends Table
 			super(start);
 			m_leaves = new HashSet<PartNode>();
 		}
-		
+
 		/*@ pure non_null @*/ public Set<PartNode> getLeaves()
 		{
 			return m_leaves;
@@ -186,7 +186,7 @@ public class TransformedTable extends Table
 				m_leaves.add((PartNode) n);
 			}
 		}
-		
+
 	}
 
 	@Override
@@ -196,20 +196,16 @@ public class TransformedTable extends Table
 	}
 
 	@Override
-	public Collection<Experiment> getExperimentDependencies(boolean sorted) 
+	public Collection<Experiment> dependsOn() 
 	{
 		Set<Experiment> exps = new HashSet<Experiment>();
 		for (Table t : m_inputTables)
 		{
-			exps.addAll(t.getExperimentDependencies());
+			exps.addAll(t.dependsOn());
 		}
-		if (sorted)
-		{
-			List<Experiment> sorted_list = new ArrayList<Experiment>(exps.size());
-			sorted_list.addAll(exps);
-			Collections.sort(sorted_list);
-			return sorted_list;
-		}
-		return exps;
+		List<Experiment> sorted_list = new ArrayList<Experiment>(exps.size());
+		sorted_list.addAll(exps);
+		Collections.sort(sorted_list);
+		return sorted_list;
 	}
 }

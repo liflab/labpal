@@ -17,8 +17,6 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +25,6 @@ import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.plot.Plot;
-import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 
 public class PlotPageCallback extends TemplatePageCallback

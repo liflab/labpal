@@ -1,3 +1,20 @@
+/*
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2022 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.labpal.assistant;
 
 import static org.junit.Assert.*;
@@ -61,7 +78,8 @@ public class AssistantTest
 		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_200ms);
 		AssistantRun run = assistant.enqueue(de1);
 		run.join();
-		assertEquals(Status.TIMEOUT, de1.getStatus());
+		assertEquals(Status.INTERRUPTED, de1.getStatus());
+		assertTrue(de1.hasTimedOut());
 	}
 	
 	@Test(timeout = 5000)
@@ -84,7 +102,8 @@ public class AssistantTest
 		Experiment de3 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_20s);
 		AssistantRun run = assistant.enqueue(de2, de3);
 		run.join();
-		assertEquals(Status.TIMEOUT, de2.getStatus());
+		assertEquals(Status.INTERRUPTED, de2.getStatus());
+		assertTrue(de2.hasTimedOut());
 		assertEquals(Status.DONE, de3.getStatus());
 	}
 	
@@ -133,7 +152,7 @@ public class AssistantTest
 		Thread.sleep(100); // Give the assistant some time to start the first experiment 
 		run.stop(true);
 		run.join();
-		assertEquals(Status.CANCELLED, de1.getStatus());
+		assertEquals(Status.INTERRUPTED, de1.getStatus());
 	}
 	
 	@Test(timeout = 5000)
@@ -163,8 +182,8 @@ public class AssistantTest
 		Thread.sleep(200); // Give enough time only for de1 and de2 to start, and hence to be cancelled
 		run.stop(true);
 		run.join();
-		assertEquals(Status.CANCELLED, de1.getStatus());
-		assertEquals(Status.CANCELLED, de2.getStatus());
+		assertEquals(Status.INTERRUPTED, de1.getStatus());
+		assertEquals(Status.INTERRUPTED, de2.getStatus());
 		assertEquals(Status.READY, de3.getStatus());
 	}
 	
@@ -175,7 +194,8 @@ public class AssistantTest
 		Experiment de1 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_200ms);
 		AssistantRun run = assistant.enqueue(de1);
 		run.join();
-		assertEquals(Status.TIMEOUT, de1.getStatus());
+		assertEquals(Status.INTERRUPTED, de1.getStatus());
+		assertTrue(de1.hasTimedOut());
 	}
 	
 	@Test(timeout = 5000)
@@ -188,7 +208,8 @@ public class AssistantTest
 		AssistantRun run = assistant.enqueue(de1, de2, de3);
 		run.join();
 		assertEquals(Status.DONE, de1.getStatus());
-		assertEquals(Status.TIMEOUT, de2.getStatus());
+		assertEquals(Status.INTERRUPTED, de2.getStatus());
+		assertTrue(de2.hasTimedOut());
 		assertEquals(Status.DONE, de3.getStatus());
 	}
 	
@@ -218,7 +239,7 @@ public class AssistantTest
 		run1.stop(true);
 		run1.join();
 		run2.join();
-		assertEquals(Status.CANCELLED, de1.getStatus());
+		assertEquals(Status.INTERRUPTED, de1.getStatus());
 		assertEquals(Status.DONE, de2.getStatus());
 	}
 	

@@ -88,7 +88,7 @@ public class PlotsStatusCallback extends TemplatePageCallback
 			}
 			out.print("[");
 			out.print("\"" + p.getStatus() + "\", " + p.getProgression() + ", ");
-			Collection<Experiment> deps = p.getExperimentDependencies(false);
+			Collection<Experiment> deps = p.dependsOn().get(0).dependsOn();
 			boolean d_first = true;
 			out.print("[");
 			for (Experiment e : deps)

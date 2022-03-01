@@ -17,23 +17,31 @@
  */
 package ca.uqac.lif.labpal.macro;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.Progressive;
 import ca.uqac.lif.labpal.Stateful;
+import ca.uqac.lif.labpal.latex.LatexExportable;
+import ca.uqac.lif.labpal.table.LatexTableRenderer;
+import ca.uqac.lif.labpal.util.FileHelper;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 
 /**
- * Basic class for representing macros
+ * A generic object producing key-value pairs computed over the contents of a
+ * lab.
  * @author Sylvain Hallé
+ * @since 2.7
  */
-public abstract class Macro implements ExplanationQueryable, Identifiable, Stateful, Progressive
+public abstract class Macro implements ExplanationQueryable, Identifiable, Stateful, LatexExportable
 {
 	/**
 	 * The macro's ID
@@ -56,16 +64,39 @@ public abstract class Macro implements ExplanationQueryable, Identifiable, State
 	protected final Laboratory m_lab;
 	
 	/**
+	 * The names of the data points
+	 */
+	protected List<String> m_names;
+	
+	/**
+	 * A description for the macro itself.
+	 */
+	protected String m_description;
+	
+	/**
+	 * A description for each data point inside the macro.
+	 */
+	protected Map<String,String> m_descriptions;
+	
+	/**
 	 * Creates a new macro
 	 * @param lab The lab this macro is associated with
 	 */
-	protected Macro(Laboratory lab)
+	protected Macro(Laboratory lab, String ... names)
 	{
 		super();
 		s_counterLock.lock();
 		m_id = s_idCounter++;
 		s_counterLock.unlock();
 		m_lab = lab;
+		m_descriptions = new HashMap<String,String>();
+		m_description = "";
+		m_names = new ArrayList<String>(names.length);
+		for (String name : names)
+		{
+			m_names.add(name.intern());
+			m_descriptions.put(name, "");
+		}
 	}
 
 	/**
@@ -88,30 +119,127 @@ public abstract class Macro implements ExplanationQueryable, Identifiable, State
 	}
 	
 	/**
-	 * Exports the contents of this data point as a LaTeX command
-	 * @return The string defining the command
+	 * Adds a new named data point and its description
+	 * @param name The name
+	 * @param description The description
+	 * @return This map
 	 */
-	public final String toLatex()
+	public Macro add(String name, String description)
 	{
-		return toLatex(false);
+		m_names.add(name);
+		m_descriptions.put(name, description);
+		return this;
 	}
 	
 	/**
-	 * Exports the contents of this data point as a LaTeX command
-	 * @param with_comments Set to {@code true} to add comments before the
-	 * command definition
-	 * @return The string defining the command
+	 * Gets the ordered list of data point names defined in this macro
+	 * @return The list of names
 	 */
-	public abstract String toLatex(boolean with_comments);
-		
-	/**
-	 * Resets the ID counter for macros
-	 */
-	public static void resetCounter()
+	public List<String> getNames()
 	{
-		s_counterLock.lock();
-		s_idCounter = 1;
-		s_counterLock.unlock();
+		return m_names;
+	}
+	
+	/**
+	 * Gets the description associated to the macro as a whole.
+	 * @param name The name of the data point
+	 * @return The description
+	 */
+	/*@ non_null @*/ public String getDescription()
+	{
+		return m_description;
+	}
+	
+	/**
+	 * Gets the description associated to a data point
+	 * @param name The name of the data point
+	 * @return The description, or the empty string if the data point
+	 * does not exist
+	 */
+	public String getDescription(String name)
+	{
+		if (m_descriptions.containsKey(name))
+		{
+			return m_descriptions.get(name);
+		}
+		return "";
+	}
+	
+	/**
+	 * Sets a description for a data point.
+	 * @param name The name of the data point
+	 * @param description The description
+	 * @return This macro
+	 */
+	/*@ non_null @*/ public Macro setDescription(String name, String description)
+	{
+		m_descriptions.put(name, description);
+		return this;
+	}
+	
+	/**
+	 * Sets a description for the macro as a whole.
+	 * @param description The description
+	 * @return This macro
+	 */
+	/*@ non_null @*/ public Macro setDescription(String description)
+	{
+		m_description = description;
+		return this;
+	}
+	
+	/**
+	 * Gets a map of all the values computed for each named data point in this
+	 * macro
+	 * @return The map
+	 */
+	public final Map<String,Object> getValues()
+	{
+		Map<String,Object> map = new HashMap<String,Object>();
+		for (String name : m_names)
+		{
+			map.put(name, null);
+		}
+		computeValues(map);
+		return map;
+	}
+	
+	/**
+	 * Populates the map of all the values computed for each named
+	 * data point in this macro
+	 * @param map A map, pre-filled with all the defined keys, each
+	 * temporarily associated to the null value
+	 */
+	public abstract void computeValues(Map<String,Object> map);
+	
+	@Override
+	public String toLatex()
+	{
+		boolean with_comments = true;
+		StringBuilder out = new StringBuilder();
+		Map<String,Object> values = getValues();
+		for (int i = 0; i < m_names.size(); i++)
+		{
+			String name = m_names.get(i);
+			Object value = values.get(name);
+			String description = getDescription(name);
+			if (with_comments)
+			{
+				out.append("% ").append(name).append(FileHelper.CRLF);
+				out.append("% ").append(description).append(FileHelper.CRLF);
+			}
+			out.append("\\newcommand{\\").append(name).append("}{\\href{").append("M" + m_id + ":" + i).append("}{");
+			if (value == null)
+			{
+				out.append("null");
+			}
+			else
+			{
+				out.append(LatexTableRenderer.escape(value.toString()));	
+			}
+			out.append("}}").append(FileHelper.CRLF).append(FileHelper.CRLF);
+		}
+		return out.toString();
 	}
 	
 	@Override
@@ -127,5 +255,4 @@ public abstract class Macro implements ExplanationQueryable, Identifiable, State
 		root.addChild(f.getUnknownNode());
 		return root;
 	}
-
 }

@@ -48,6 +48,6 @@ public class TableExperimentSelector extends ConcreteExperimentSelector
 	@Override
 	/*@ non_null @*/ public Collection<Experiment> select()
 	{
-		return m_table.getExperimentDependencies(false);
+		return m_table.dependsOn();
 	}
 }

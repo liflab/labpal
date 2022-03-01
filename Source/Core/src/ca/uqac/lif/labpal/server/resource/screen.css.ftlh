@@ -589,3 +589,54 @@ table.exp-table td {
 .line-align > span {
   margin-right: 10px;
 }
+
+#status-line {
+  display: flex;
+  align-items: center;
+}
+
+#status-line span.status-icon {
+  opacity: 0.2;
+  margin-right: 0px;
+  transform: scale(0.8);
+  background-position: top left;
+  height: 23px;
+}
+
+#status-line span.status-icon.active {
+  opacity: 1;
+}
+
+#status-line span.status-icon.current {
+  opacity: 1;
+  transform: none;
+  border: solid 3px darkgreen;
+  border-radius: 3px;
+}
+
+#status-line span.status-icon.status-running.current {
+  opacity: 1;
+  transform: none;
+  animation: blink-animation 1s steps(5, start) infinite;
+}
+
+@keyframes blink-animation {
+        to {
+          visibility: hidden;
+        }
+      }
+
+#status-line .dash {
+  border: solid 2px darkgreen;
+  width: 16pt;
+  height: 0px;
+  opacity: 0.2;
+}
+
+#status-line .dash.active {
+  opacity: 1;
+}
+
+#status-line .status-caption {
+  margin-left: 16pt;
+}

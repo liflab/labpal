@@ -17,12 +17,11 @@
  */
 package ca.uqac.lif.labpal.table;
 
-import java.util.Collection;
 import java.util.Set;
 
 import ca.uqac.lif.dag.Node;
+import ca.uqac.lif.labpal.Dependent;
 import ca.uqac.lif.labpal.Identifiable;
-import ca.uqac.lif.labpal.Progressive;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.provenance.LeafFetcher;
@@ -39,7 +38,7 @@ import ca.uqac.lif.spreadsheet.Spreadsheet;
  * An explainable 0:1 function that outputs a {@link Spreadsheet}.
  * @author Sylvain Hallé
  */
-public abstract class Table extends AtomicFunction implements Progressive, ExplanationQueryable, Stateful, Identifiable
+public abstract class Table extends AtomicFunction implements ExplanationQueryable, Stateful, Identifiable, Dependent<Experiment>
 {
 	/**
 	 * A counter for table IDs.
@@ -221,10 +220,10 @@ public abstract class Table extends AtomicFunction implements Progressive, Expla
 			}
 			PartNode pn = (PartNode) n;
 			Object o = pn.getSubject();
-			if (o instanceof Progressive)
+			if (o instanceof Stateful)
 			{
 				total++;
-				prog += ((Progressive) o).getProgression();
+				prog += ((Stateful) o).getProgression();
 			}
 		}
 		if (total == 0)
@@ -235,22 +234,6 @@ public abstract class Table extends AtomicFunction implements Progressive, Expla
 	}
 	
 	protected abstract PartNode explain(Part d, NodeFactory f);
-	
-	/**
-	 * Gets the set of experiments on which this table depends on.
-	 * @return The set of experiments
-	 */
-	/*@ non_null @*/ public final Collection<Experiment> getExperimentDependencies()
-	{
-		return getExperimentDependencies(false);
-	}
-	
-	/**
-	 * Gets the collection of experiments on which this table depends on.
-	 * @param sorted Set to <tt>true</tt> to sort the collection
-	 * @return The set of experiments
-	 */
-	/*@ non_null @*/ public abstract Collection<Experiment> getExperimentDependencies(boolean sorted);
 	
 	@Override
 	public final PartNode getExplanation(Part d, NodeFactory f)

@@ -185,11 +185,6 @@ public class Laboratory implements ExplanationQueryable
 	private transient ArgumentMap m_cliArguments = null;
 
 	/**
-	 * A random number generator associated with this lab
-	 */
-	private transient Random m_random = new Random();
-
-	/**
 	 * Creates a new empty laboratory instance.
 	 */
 	public Laboratory()
@@ -273,7 +268,6 @@ public class Laboratory implements ExplanationQueryable
 	 */
 	public final Laboratory setRandomSeed(int seed)
 	{
-		m_random.setSeed(seed);
 		m_seed = seed;
 		return this;
 	}
@@ -286,16 +280,6 @@ public class Laboratory implements ExplanationQueryable
 	public final int getRandomSeed()
 	{
 		return m_seed;
-	}
-
-	/**
-	 * Gets a reference to the lab's random number generator
-	 * 
-	 * @return The generator
-	 */
-	/*@ pure non_null @*/ public final ca.uqac.lif.labpal.Random getRandom()
-	{
-		return m_random;
 	}
 	
 	/**

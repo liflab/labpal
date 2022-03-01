@@ -17,9 +17,10 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -33,7 +34,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	 * The pattern to extract the experiment ID from the URL.
 	 */
 	protected static final Pattern s_idPattern = Pattern.compile("experiment/(\\d+)");
-	
+
 	public ExperimentPageCallback(LabPalServer server, Method m, String path, String template_location)
 	{
 		super(server, m, path, template_location, "top-menu-experiments");
@@ -42,22 +43,51 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	@Override
 	public void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
 	{
-		super.fillInputModel(h, input);
 		int id = fetchId(s_idPattern, h);
 		Experiment e = m_server.getLaboratory().getExperiment(id);
 		if (e == null)
 		{
 			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such experiment");
 		}
-		input.put("id", id);
-		input.put("title", "Experiment " + id);
-		
-		Map<String,String> ins = formatParameters(e.getInputParameters());
-		input.put("inputs", ins);
-		Map<String,String> outs = formatParameters(e.getOutputParameters());
-		input.put("outputs", outs);
+		String uri = h.getRequestURI().toString();
+		if (uri.contains("output/html"))
+		{
+			String table = formatTable(e.getOutputParameters());
+			input.put("outparams", table);
+		}
+		else
+		{
+			super.fillInputModel(h, input);
+			input.put("id", id);
+			input.put("title", "Experiment " + id);
+			Map<String,String> ins = formatParameters(e.getInputParameters());
+			input.put("inputs", ins);
+			Map<String,String> outs = formatParameters(e.getOutputParameters());
+			input.put("outputs", outs);
+		}
 	}
 	
+	protected static String formatTable(Map<String,Object> params)
+	{
+		if (params.isEmpty())
+		{
+			return "<p>No parameter is defined.</p>";
+		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		ps.println("<table>");
+		for (Map.Entry<String,Object> entry : params.entrySet())
+		{
+			ps.print("<tr><th>");
+			ps.print(entry.getKey());
+			ps.print("</th><td>");
+			ps.print(entry.getValue().toString());
+			ps.println("</td></tr>");
+		}
+		ps.println("</table>");
+		return baos.toString();
+	}
+
 	protected static Map<String,String> formatParameters(Map<String,Object> params)
 	{
 		Map<String,String> formatted = new HashMap<String,String>();
@@ -69,3 +99,4 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	}
 
 }
+

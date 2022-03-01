@@ -78,11 +78,12 @@ class FutureWatcher implements Runnable
 		}
 		catch (InterruptedException | ExecutionException e)
 		{
-			m_experiment.setStatus(Status.CANCELLED);
+			m_experiment.setStatus(Status.INTERRUPTED);
 		}
 		catch (TimeoutException e)
 		{
-			m_experiment.setStatus(Status.TIMEOUT);
+			m_experiment.setStatus(Status.INTERRUPTED);
+			m_experiment.declareTimeout();
 		}
 	}
 }

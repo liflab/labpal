@@ -6,20 +6,13 @@ $(document).ready(function() {
 			0: {sorter: false} // Except 1st column
 		}
 	});
-	
+
 	/* Pull-down divs */
 	$(".pulldown-contents").hide();
 	$(".pulldown").addClass("closed");
 	$(".pulldown").click(function() {
 		$(this).toggleClass("closed");
 		$(this).closest("div.around-pulldown").find(".pulldown-contents").toggle();
-	});
-	
-	/* The "report results" button in the status page is overridden
-	   to send an Ajax request instead of reloading the page */
-	$("#btn-report-results").click(function() {
-	  $.ajax("/report-results");
-	  return false;
 	});
 
 	/* Button to toggle multi-line display of output parameter */
@@ -36,42 +29,83 @@ $(document).ready(function() {
  */
 function getStatusClass(status) {
 	var status_class = "running";
-    switch (status) {
-    case "UNINITIALIZED":
-  	  status_class = "prereq";
-  	  break;
-    case "DONE":
-  	  status_class = "done";
-  	  break;
-    case "DONE_WARNING":
-  	  status_class = "warning";
-  	  break;
-    case "FAILED":
-  	  status_class = "failed";
-  	  break;
-    case "CANCELLED":
-  	  status_class = "failed";
-  	  break;
-    case "TIMEOUT":
-  	  status_class = "timeout";
-  	  break;
-    case "READY":
-  	  status_class = "ready";
-  	  break;
-    case "RUNNING":
-  	  status_class = "running";
-  	  break;
-    case "RUNNING_PREREQ":
-  	  status_class = "running";
-  	  break;
-    case "QUEUED":
-  	  status_class = "queued";
-  	  break;
-    default:
-  	  status_class = "unknown";
-      break;
-    }
-    return status_class;
+	switch (status) {
+	case "UNINITIALIZED":
+		status_class = "prereq";
+		break;
+	case "DONE":
+		status_class = "done";
+		break;
+	case "DONE_WARNING":
+		status_class = "warning";
+		break;
+	case "FAILED":
+		status_class = "failed";
+		break;
+	case "CANCELLED":
+		status_class = "failed";
+		break;
+	case "TIMEOUT":
+		status_class = "timeout";
+		break;
+	case "READY":
+		status_class = "ready";
+		break;
+	case "RUNNING":
+		status_class = "running";
+		break;
+	case "PREPARING":
+		status_class = "running";
+		break;
+	case "QUEUED":
+		status_class = "queued";
+		break;
+	default:
+		status_class = "unknown";
+	break;
+	}
+	return status_class;
+};
+
+/**
+ * Updates the progress bars and status icons of a set of elements based on
+ * a JSON structure returned by the server.
+ * @param data The JSON structure
+ * @param prefix A prefix to append to element names
+ * @param last_experiment_status An optional map containing the status of
+ * the elements the last time the method was called
+ * @returns A map containing the current status of the elements (which can be
+ * passed back on the next call to the method)
+ */
+function updateBars(data, prefix, last_experiment_status = {}) {
+	var statuses = {};
+	for (var k in data) {
+		var status = data[k][0];
+		var progression = data[k][1];
+		if (!(k in last_experiment_status)) {
+			last_experiment_status[k] = status;
+		}
+		statuses[k] = status;
+		if (status == "RUNNING" || status == "PREPARING") {
+			$("#progress-bar-" + k).show();
+			$("#progress-bar-val-" + prefix + k).show();
+			$("#progress-bar-val-" + prefix + k).text(Math.round(progression * 100) + "%");
+			$("#progress-bar-rect-" + prefix + k).css({"width" : (progression * 50) + "px"});
+		}
+		else {
+			$("#progress-bar-" + k).hide();
+			$("#progress-bar-val-" + k).hide();
+		}
+		for (var k in data) {
+			if (statuses[k] != last_experiment_status[k]) {
+				var status_class = getStatusClass(statuses[k]);
+				last_experiment_status[k] = statuses[k];
+				var e = $("#status-icon-" + prefix + k);
+				$(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
+			}
+		}
+	}
+	return statuses;
 };
 
 var last_experiment_status = {};
@@ -81,38 +115,12 @@ var last_experiment_status = {};
  * a JSON structure returned by the server.
  */
 function updateExperiments() {
-  $.ajax({
-    url: "/experiments/status"
-  }).done(function (data) {
-	  		var statuses = {};
-            for (var k in data) {
-              var status = data[k][0]
-              var progression = data[k][1];
-              if (!(k in last_experiment_status)) {
-            	  last_experiment_status[k] = status;
-              }
-              statuses[k] = status;
-              if (status == "RUNNING" || status == "RUNNING_PREREQ") {
-                $("#progress-bar-" + k).show();
-                $("#progress-bar-val-" + k).show();
-                $("#progress-bar-val-" + k).text(Math.round(progression * 100) + "%");
-                $("#progress-bar-rect-" + k).css({"width" : (progression * 50) + "px"});
-              }
-              else {
-                $("#progress-bar-" + k).hide();
-                $("#progress-bar-val-" + k).hide();
-              }
-              for (var k in data) {
-            	  if (statuses[k] != last_experiment_status[k]) {
-            		  var status_class = getStatusClass(statuses[k]);
-            		  last_experiment_status[k] = statuses[k];
-            		  var e = $("#status-icon-" + k);
-                      $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
-                   }
-              }
-            }
-            setTimeout(updateExperiments, 2000);
-  })
+	$.ajax({
+		url: "/experiments/status"
+	}).done(function (data) {
+		last_experiment_status = updateBars(data, "", last_experiment_status);
+		setTimeout(updateExperiments, 2000);
+	})
 };
 
 /**
@@ -120,53 +128,26 @@ function updateExperiments() {
  * a JSON structure returned by the server.
  */
 function updateRuns() {
-  $.ajax({
-    url: "/assistant/status"
-  }).done(function (data) {
-            for (var k in data) {
-              var running = data[k][0]
-              var progression = data[k][1];
-              if (running) {
-                $("#progress-bar-r" + k).show();
-                $("#progress-bar-val-r" + k).show();
-                $("#progress-bar-val-r" + k).text(Math.round(progression * 100) + "%");
-                $("#progress-bar-rect-r" + k).css({"width" : (progression * 50) + "px"});
-              }
-              else {
-                $("#progress-bar-r" + k).hide();
-                $("#progress-bar-val-r" + k).hide();
-              }
-            }
-            setTimeout(updateRuns, 3100);
-  })
+	$.ajax({
+		url: "/assistant/status"
+	}).done(function (data) {
+		updateBars(data, "r");
+		setTimeout(updateRuns, 3100);
+	})
 };
+
 
 /**
  * Updates the progress bars of tables in a list of tables based on
  * a JSON structure returned by the server.
  */
 function updateTables() {
-  $.ajax({
-    url: "/tables/status"
-  }).done(function (data) {
-            for (var k in data) {
-              var status = data[k][0];
-              var progression = data[k][1];
-        	  var status_class = getStatusClass(status);
-        	  var e = $("#status-icon-t" + k);
-              $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
-              if (status != "RUNNING") {
-            	  $("#progress-bar-t" + k).hide();
-            	  $("#progress-bar-val-t" + k).hide();
-              }
-              else {
-            	  $("#progress-bar-t" + k).show();
-                  $("#progress-bar-val-t" + k).text(Math.round(progression * 100) + "%");
-                  $("#progress-bar-rect-t" + k).css({"width" : (progression * 50) + "px"});            	  
-              }
-            }
-            setTimeout(updateTables, 3100);
-  })
+	$.ajax({
+		url: "/tables/status"
+	}).done(function (data) {
+		updateBars(data, "t");
+		setTimeout(updateTables, 3100);
+	})
 };
 
 /**
@@ -174,27 +155,12 @@ function updateTables() {
  * a JSON structure returned by the server.
  */
 function updatePlots() {
-  $.ajax({
-    url: "/plots/status"
-  }).done(function (data) {
-	  for (var k in data) {
-          var status = data[k][0];
-          var progression = data[k][1];
-    	  var status_class = getStatusClass(status);
-    	  var e = $("#status-icon-p" + k);
-          $(e).removeClass("status-queued status-prereq status-done status-warning status-failed status-timeout status-ready status-running status-unknown").addClass("status-" + status_class);
-          if (status != "RUNNING") {
-        	  $("#progress-bar-p" + k).hide();
-        	  $("#progress-bar-val-p" + k).hide();
-          }
-          else {
-        	  $("#progress-bar-p" + k).show();
-              $("#progress-bar-val-p" + k).text(Math.round(progression * 100) + "%");
-              $("#progress-bar-rect-p" + k).css({"width" : (progression * 50) + "px"});            	  
-          }
-        }
-        setTimeout(updatePlots, 3100);
-  })
+	$.ajax({
+		url: "/plots/status"
+	}).done(function (data) {
+		updateBars(data, "p");
+		setTimeout(updatePlots, 3100);
+	})
 };
 
 /**
@@ -202,26 +168,26 @@ function updatePlots() {
  * a JSON structure returned by the server.
  */
 function updateLabBar() {
-	  $.ajax({
-	    url: "/lab/status"
-	  }).done(function (data) {
-		  		$(".progress-bar li.done").css({width : (data["done"] / data["total"]) * 400 + "px"});
-		  		$(".progress-bar li.queued").css({width : (data["queued"] / data["total"]) * 400 + "px"});
-		  		$(".progress-bar li.failed").css({width : (data["failed"] / data["total"]) * 400 + "px"});
-		  		$(".progress-bar li.running").css({width : (data["running"] / data["total"]) * 400 + "px"});
-		  		$("#numdone").text(data["done"] + "/" + data["total"]);
-		  		if (data["ids"].length == 0) {
-		  			$(".running-exps").html("<li class=\"none\">None</li>");
-		  		}
-		  		else {
-		  		  var list = "";
-		  		  for (var i = 0; i < data["ids"].length; i++) {
-		  			  list += "<li><a href=\"/experiment/" + data["ids"][i] + "\">" + data["ids"][i] + "</a></li>\n";
-		  		  }
-		  		  $(".running-exps").html(list);
-		  		}
-	            setTimeout(updateLabBar, 5250);
-	  })
+	$.ajax({
+		url: "/lab/status"
+	}).done(function (data) {
+		$(".progress-bar li.done").css({width : (data["done"] / data["total"]) * 400 + "px"});
+		$(".progress-bar li.queued").css({width : (data["queued"] / data["total"]) * 400 + "px"});
+		$(".progress-bar li.failed").css({width : (data["failed"] / data["total"]) * 400 + "px"});
+		$(".progress-bar li.running").css({width : (data["running"] / data["total"]) * 400 + "px"});
+		$("#numdone").text(data["done"] + "/" + data["total"]);
+		if (data["ids"].length == 0) {
+			$(".running-exps").html("<li class=\"none\">None</li>");
+		}
+		else {
+			var list = "";
+			for (var i = 0; i < data["ids"].length; i++) {
+				list += "<li><a href=\"/experiment/" + data["ids"][i] + "\">" + data["ids"][i] + "</a></li>\n";
+			}
+			$(".running-exps").html(list);
+		}
+		setTimeout(updateLabBar, 5250);
+	})
 };
 
 /**

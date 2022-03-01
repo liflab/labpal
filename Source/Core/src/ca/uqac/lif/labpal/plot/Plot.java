@@ -20,12 +20,12 @@ package ca.uqac.lif.labpal.plot;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
+import ca.uqac.lif.labpal.Dependent;
 import ca.uqac.lif.labpal.Identifiable;
-import ca.uqac.lif.labpal.Progressive;
 import ca.uqac.lif.labpal.Stateful;
-import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
@@ -41,7 +41,7 @@ import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
  * generate a picture from experimental data.
  * @author Sylvain Hallé
  */
-public class Plot extends AtomicFunction implements ExplanationQueryable, Progressive, Stateful, Identifiable
+public class Plot extends AtomicFunction implements ExplanationQueryable, Stateful, Identifiable, Dependent<Table>
 {
 	/**
 	 * A counter for plot IDs.
@@ -278,13 +278,11 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Progre
 		return null;
 	}
 	
-	/**
-	 * Gets the collection of experiments on which this table depends on.
-	 * @param sorted Set to <tt>true</tt> to sort the collection
-	 * @return The set of experiments
-	 */
-	/*@ non_null @*/ public Collection<Experiment> getExperimentDependencies(boolean sorted)
+	@Override
+	/*@ pure non_null @*/ public List<Table> dependsOn()
 	{
-		return m_table.getExperimentDependencies(sorted);
+		List<Table> list = new ArrayList<Table>(1);
+		list.add(m_table);
+		return list;
 	}
 }

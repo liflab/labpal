@@ -71,7 +71,7 @@ public class QueuedThreadPoolExecutor extends LabPalExecutorService
 	@Override
 	public String toString()
 	{
-		return m_numThreads + "T";
+		return m_numThreads + " thread(s)";
 	}
 
 }

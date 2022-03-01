@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2014-2017 Sylvain Hallé
+  Copyright (C) 2014-2022 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -15,32 +15,23 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.labpal.macro;
+package ca.uqac.lif.labpal;
 
-import ca.uqac.lif.json.JsonElement;
-import ca.uqac.lif.json.JsonNumber;
-import ca.uqac.lif.labpal.Laboratory;
+import java.util.Collection;
 
-public class NumberMacro extends MacroScalar
+/**
+ * Interface implemented by objects whose state depends on other objects in a
+ * lab. For example, a table depends on a set of experiments, and a plot
+ * depends on a table.
+ * @author Sylvain Hallé
+ *
+ * @param <T> The type of the dependencies
+ */
+public interface Dependent<T>
 {
-	public NumberMacro(Laboratory lab, String name, String description) 
-	{
-		super(lab, name, description);
-	}
-
-	@Override
-	public final JsonElement getValue()
-	{
-		Number n = getNumber();
-		return new JsonNumber(n);
-	}
-	
 	/**
-	 * Gets the numerical value associated to this macro
-	 * @return The value
+	 * Gets the other objects of type T this object depends on.
+	 * @return The collection of other objects
 	 */
-	public Number getNumber()
-	{
-		return 0;
-	}
+	/*@ non_null @*/ public Collection<T> dependsOn();
 }

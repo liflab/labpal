@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Group<T extends Comparable<T>>
+public class Group<T extends Comparable<T>> implements Dependent<T>
 {
 	/**
 	 * A numerical ID for groups.
@@ -146,5 +146,14 @@ public class Group<T extends Comparable<T>>
 	/*@ pure @*/ public boolean belongsTo(T o)
 	{
 		return m_objects.contains(o);
+	}
+
+	@Override
+	/*@ pure @*/ public Collection<T> dependsOn()
+	{
+		List<T> list = new ArrayList<T>(m_objects.size());
+		list.addAll(m_objects);
+		Collections.sort(list);
+		return list;
 	}
 }

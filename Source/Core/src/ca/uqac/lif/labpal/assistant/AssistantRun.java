@@ -23,10 +23,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import ca.uqac.lif.labpal.Dependent;
-import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.assistant.Assistant.RunRunnable;
 import ca.uqac.lif.labpal.experiment.Experiment;
+import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 
 /**
  * An object allowing control and monitoring over the execution of a batch
@@ -51,7 +50,7 @@ import ca.uqac.lif.labpal.experiment.Experiment;
  * 
  * @author Sylvain Hallé
  */
-public class AssistantRun implements Stateful, Dependent<Experiment>
+public class AssistantRun extends ExperimentGroup
 {
 	/**
 	 * A counter for run IDs
@@ -66,10 +65,11 @@ public class AssistantRun implements Stateful, Dependent<Experiment>
 	
 	public AssistantRun(RunRunnable runnable, Future<?> future)
 	{
-		super();
+		super("Run " + (s_idCounter + 1));
 		m_runnable = runnable;
 		m_future = future;
 		m_id = s_idCounter++;
+		m_objects.addAll(runnable.m_experiments);
 	}
 	
 	public AssistantRun cancel(Experiment ... experiments)
@@ -125,12 +125,6 @@ public class AssistantRun implements Stateful, Dependent<Experiment>
 			return 0;
 		}
 		return p / t;
-	}
-	
-	@Override
-	/*@ pure non_null @*/ public Status getStatus()
-	{
-		return Stateful.getLowestStatus(m_runnable.getExperiments());
 	}
 	
 	/**
@@ -208,9 +202,8 @@ public class AssistantRun implements Stateful, Dependent<Experiment>
 	 * Gets a unique ID string that represents this assistant's run.
 	 * @return The ID
 	 */
-	/*@ non_null @*/ public String getId()
+	/*@ non_null @*/ public int getId()
 	{
-		return Integer.toString(m_id);
+		return m_id;
 	}
-
 }

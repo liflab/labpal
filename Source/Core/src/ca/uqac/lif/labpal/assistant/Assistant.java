@@ -64,6 +64,13 @@ public class Assistant
 	 * A queue of experiments that have not yet been committed to a run.
 	 */
 	/*@ non_null @*/ protected final transient List<Experiment> m_queue;
+	
+	/**
+	 * An ID given to the temporary experiment group corresponding to the
+	 * assistant's queue. We deliberately use a large number that is unlikely
+	 * to belong to an existing group in the lab.
+	 */
+	protected static final transient int s_queueGroupId = 999;
 
 	/**
 	 * Creates a new assistant with default settings.
@@ -140,7 +147,7 @@ public class Assistant
 	/*@ pure non_null @*/ public ExperimentGroup getQueueAsGroup()
 	{
 		ExperimentGroup g = new ExperimentGroup("");
-		g.setId(-1);
+		g.setId(s_queueGroupId);
 		g.add(m_queue);
 		return g;
 	}
@@ -265,7 +272,7 @@ public class Assistant
 	{
 		for (AssistantRun run : m_runs)
 		{
-			if (Integer.parseInt(run.getId()) == id)
+			if (run.getId() == id)
 			{
 				return run;
 			}
@@ -284,7 +291,7 @@ public class Assistant
 		boolean deleted = false;
 		for (AssistantRun run : m_runs)
 		{
-			if (Integer.parseInt(run.getId()) == id)
+			if (run.getId() == id)
 			{
 				run.stop(true);
 				m_runs.remove(run);

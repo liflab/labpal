@@ -34,6 +34,7 @@
   
   <#assign r_id = r.getId()>
   <#assign r_running = r.isRunning()>
+  <#assign g = r>
 
   <div class="around-pulldown">
   <h3 class="pulldown line-align" title="Click to show/hide the list of experiments in this run">

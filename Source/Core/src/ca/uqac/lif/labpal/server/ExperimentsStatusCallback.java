@@ -64,7 +64,10 @@ public class ExperimentsStatusCallback extends LabStatusCallback
 			}
 			out.println("[");
 			out.print("\"" + e.getStatus() + "\",");
-			out.print(e.getProgression());
+			out.print(e.getProgression() + ",");
+			out.print("\"" + e.getStartDate() + "\",");
+			out.print("\"" + e.getEndDate() + "\",");
+			out.print("\"" + e.getTotalDuration().toString() + "\"");
 			out.print("]");
 			cbr.setContents(baos.toString());
 			return cbr;

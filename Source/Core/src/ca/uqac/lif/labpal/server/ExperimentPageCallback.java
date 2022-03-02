@@ -17,10 +17,11 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -49,43 +50,39 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		{
 			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such experiment");
 		}
+		super.fillInputModel(h, input);
+		input.put("outparams", formatTable(input, e, e.getOutputParameters()));
 		String uri = h.getRequestURI().toString();
 		if (uri.contains("output/html"))
 		{
-			String table = formatTable(e.getOutputParameters());
-			input.put("outparams", table);
+			input.put("outputonly", true);
 		}
 		else
 		{
-			super.fillInputModel(h, input);
 			input.put("id", id);
 			input.put("title", "Experiment " + id);
 			Map<String,String> ins = formatParameters(e.getInputParameters());
 			input.put("inputs", ins);
-			Map<String,String> outs = formatParameters(e.getOutputParameters());
-			input.put("outputs", outs);
 		}
 	}
-	
-	protected static String formatTable(Map<String,Object> params)
+
+	protected static String formatTable(Map<String,Object> input, Experiment e, Map<String,Object> params)
 	{
-		if (params.isEmpty())
-		{
-			return "<p>No parameter is defined.</p>";
-		}
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(baos);
-		ps.println("<table>");
-		for (Map.Entry<String,Object> entry : params.entrySet())
-		{
-			ps.print("<tr><th>");
-			ps.print(entry.getKey());
-			ps.print("</th><td>");
-			ps.print(entry.getValue().toString());
-			ps.println("</td></tr>");
-		}
-		ps.println("</table>");
-		return baos.toString();
+		Set<String> to_highlight = new HashSet<String>();
+    if (input.containsKey("highlight"))
+    {
+      to_highlight = getKeysToHighlight((String) input.get("highlight"));
+    }
+    String outparams = "";
+    if (e.getOutputParameters().isEmpty())
+    {
+    	outparams = "<p>No parameter is defined.</p>";
+    }
+    else
+    {
+    	outparams = renderHtml(e.getOutputParameters(), "", e, to_highlight).toString();
+    }
+    return outparams;
 	}
 
 	protected static Map<String,String> formatParameters(Map<String,Object> params)
@@ -96,6 +93,155 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			formatted.put(e.getKey(), e.getValue().toString());
 		}
 		return formatted;
+	}
+
+	/**
+	 * Creates HTML code displaying (recursively) the experiment's parameters
+	 * 
+	 * @param e
+	 *          The current JSON element in the parameters
+	 * @param path
+	 *          The path in the experiment's parameters from the root
+	 * @param exp
+	 *          The experiment
+	 * @param to_highlight
+	 *          A set of datapoint IDs to highlight
+	 * @return A well-formatted HTML structure showing the parameters
+	 */
+	public static StringBuilder renderHtml(Object e, String path, Experiment exp,
+			Set<String> to_highlight)
+	{
+		StringBuilder out = new StringBuilder();
+		if (e instanceof Number)
+		{
+			out.append(((Number) e));
+		}
+		else if (e instanceof List)
+		{
+			out.append("<table class=\"json-table\">\n");
+			int el_cnt = 0;
+			for (Object v : (List<?>) e)
+			{
+				String path_append = path + ":" + el_cnt;
+				String css_class_key = "";
+				String css_class_value = "";
+				if (containsExactly(to_highlight, path_append))
+				{
+					css_class_value += " class=\"highlighted\"";
+				}
+				if (containsPrefix(to_highlight, path_append))
+				{
+					css_class_key += " class=\"highlighted\"";
+				}
+				out.append("<tr><th").append(css_class_key).append(">").append(el_cnt).append("</th>");
+				out.append("<td").append(css_class_value).append(">");
+				out.append(renderHtml(v, path_append, exp, to_highlight));
+				out.append("</td></tr>\n");
+				el_cnt++;
+			}
+			out.append("</table>\n");
+		}
+		else if (e instanceof Map)
+		{
+			Map<?,?> m = (Map<?,?>) e;
+			out.append("<table class=\"json-table\">\n");
+			for (Object k : m.keySet())
+			{
+				String path_append = "";
+				if (!path.isEmpty())
+				{
+					path_append += ".";
+				}
+				path_append += k;
+				out.append("<tr>");
+				String css_class_key = "";
+				String css_class_value = "";
+				if (containsExactly(to_highlight, path_append))
+				{
+					css_class_value += " class=\"highlighted\"";
+				}
+				if (containsPrefix(to_highlight, path_append))
+				{
+					css_class_key += " highlighted";
+				}
+				String p_desc = exp.getDescription(path_append);
+				if (p_desc.isEmpty())
+				{
+					out.append("<th class=\"" + css_class_key + "\">").append(htmlEscape(k.toString())).append("</th>");
+				}
+				else
+				{
+					out.append("<th class=\"with-desc").append(css_class_key).append("\" title=\"")
+					.append(htmlEscape(p_desc)).append("\">").append(htmlEscape(k.toString())).append("</th>");
+				}
+				out.append("<td " + css_class_value + ">");
+				Object v = m.get(k);
+				out.append(renderHtml(v, path_append, exp, to_highlight));
+				out.append("</td></tr>\n");
+			}
+			out.append("</table>\n");
+		}
+		else
+		{
+			// Fallback for unknown types 
+			out.append(e.toString());
+		}
+		return out;
+	}
+
+	/**
+	 * Gets the set of keys that should be highlighted in the table of experiment
+	 * results.
+	 * 
+	 * @param highlight
+	 *          The key to highlight
+	 * @return A set of keys to highlight
+	 */
+	protected static Set<String> getKeysToHighlight(String highlight)
+	{
+		Set<String> to_highlight = new HashSet<String>();
+		String[] ids = highlight.split(",");
+		for (String id : ids)
+		{
+			to_highlight.add(id);
+		}
+		return to_highlight;
+	}
+
+	/**
+	 * Checks if a set of strings contains exactly one specific string
+	 * 
+	 * @param set
+	 *          The set
+	 * @param key
+	 *          The string
+	 * @return {@code true} if the set contains the key, {@code false} otherwise
+	 */
+	protected static boolean containsExactly(Set<String> set, String key)
+	{
+		return set.contains(key);
+	}
+
+	/**
+	 * Checks if string is the prefix of a string in some set
+	 * 
+	 * @param set
+	 *          The set
+	 * @param key
+	 *          The string
+	 * @return {@code true} if the set has an element with {@code key} as its
+	 *         prefix, {@code false} otherwise
+	 */
+	protected static boolean containsPrefix(Set<String> set, String key)
+	{
+		for (String s : set)
+		{
+			if (s.startsWith(key))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

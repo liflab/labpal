@@ -640,3 +640,16 @@ table.exp-table td {
 #status-line .status-caption {
   margin-left: 16pt;
 }
+
+.json-table th {
+  text-align: left;
+  background: ${color3};
+  margin: 2px;
+  padding: 2px;
+  border-radius: 2px;
+}
+
+.json-table td {
+  margin: 2px;
+  padding: 2px;
+}

@@ -18,7 +18,7 @@
 <li><a style="padding-right:0" class="btn-24 btn-pdf" href="/plot/${pid}?format=pdf&amp;dl=1" title="Download as PDF"><span class="text-only">PDF</span></a></li>
 <li><a style="padding-right:0" class="btn-24 btn-table" href="/table/${plot.getTable().getId()}" title="Show the data for this plot"><span class="text-only">Table</span></a></li>
 <li><a style="padding-left:32px;padding-right:0" class="btn-24 btn-queue" href="/assistant/enqueue/plot/${plot.getId()}" title="Add experiments linked to this plot to the assistant's queue"><span class="text-only">Enqueue</span></a></li>
-<li><#include "progress-bar-plot.ftlh"></li>
+<li><@statusChunk e=plot prefix="p" /></li>
 </ul>
 </div>
 </li>

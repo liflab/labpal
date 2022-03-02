@@ -514,7 +514,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	  {
 	    if (timestamp <= 0)
 	    {
-	      return "";
+	      return "-";
 	    }
 	    return s_dateFormat.format(new Date(timestamp));
 	  }

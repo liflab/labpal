@@ -38,11 +38,11 @@
   <div class="around-pulldown">
   <h3 class="pulldown line-align" title="Click to show/hide the list of experiments in this run">
   <span>Run ${r_id}</span>
-  <#include "progress-bar-run.ftlh">
+  <@statusChunk e=r prefix="r" />
   </h3>
   <div class="pulldown-contents">
 
-  <#assign experiments = r.getExperiments()>
+  <#assign experiments = r.dependsOn()>
 
   <#if experiments?size == 0>
     <p>No experiment in this run.</p> <#-- Should not happen, just to be safe -->
@@ -54,9 +54,9 @@
   
   <form name="run-${r_id}" method="post" action="/assistant">
   <#if r_running>
-  <input type="submit" class="btn btn-stop" id="stop-${r_id}" name="stop-${r_id}" value="Stop this run" />
+  <input type="submit" class="btn btn-stop" id="stop-r-${r_id}" name="stop-r-${r_id}" value="Stop this run" />
   </#if>
-  <input type="submit" class="btn btn-delete" id="delete-${r_id}" name="delete-${r_id}" value="Delete this run" />
+  <input type="submit" class="btn btn-delete" id="delete-r-${r_id}" name="delete-r-${r_id}" value="Delete this run" />
   </form>
 
 

@@ -1,4 +1,4 @@
-<#if outparams?has_content>
+<#if outputonly?has_content>
 
 <#-- Display only fragment with output parameters -->
 ${outparams?no_esc}
@@ -8,6 +8,7 @@ ${outparams?no_esc}
 <#-- Display full experiment page -->
 
 <#include "header.ftlh">
+<#include "functions.ftlh">
 
 <#assign e = lab.getExperiment(id)>
 
@@ -126,18 +127,12 @@ ${outparams?no_esc}
     </div>
   	<#break>
 </#switch>
-<span style="margin-left:16pt"><#include "progress-bar-experiment.ftlh"></span>
+<span style="margin-left:16pt"><@progressBar status=e.getStatus() prefix="e" id=e.getId() progression=e.getProgression() /></span>
 </span>
 </td></tr>
-<#if startdate?has_content>
-  <tr><th>Started on:</th><td>${startdate}</td></tr>
-</#if>
-<#if enddate?has_content>
-  <tr><th>Ended on:</th><td>${enddate}</td></tr>
-</#if>
-<#if startdate?has_content>
-  <tr><th>Duration:</th><td>${e.getTotalDuration()}</td></tr>
-</#if>
+<tr><th>Started on:</th><td id="startdate"><#if startdate?has_content>${startdate}<#else>-</#if></td></tr>
+<tr><th>Ended on:</th><td id="enddate"><#if enddate?has_content>${enddate}<#else>-</#if></td></tr>
+<tr><th>Duration:</th><td id="duration">${e.getTotalDuration()}</td></tr>
 <#if expestimate?has_content>
   <tr><th>Estimated duration:</th><td>${expestimate}</td></tr>
 </#if>
@@ -172,7 +167,7 @@ ${outparams?no_esc}
 <#if inputs?size == 0>
   <p>This experiment has no input parameters.</p>
 <#else>
-  <table>
+  <table class="json-table">
   <#list inputs?keys as k>
     <tr><th>${k}</th><td>${inputs[k]}</td></tr>
   </#list>
@@ -185,15 +180,7 @@ ${outparams?no_esc}
 
 <div id="exp-output-params">
 
-<#if outputs?size == 0>
-  <p>No parameter is defined.</p>
-<#else>
-  <table>
-  <#list outputs?keys as k>
-    <tr><th>${k}</th><td>${outputs[k]}</td></tr>
-  </#list>
-  </table>
-</#if>
+${outparams?no_esc}
 
 </div>
 
@@ -255,7 +242,7 @@ function updateExperimentLine(status) {
     case "DONE":
       $("#box-prereq").removeClass("current").addClass("active");
       $("#dash-preparing").addClass("active");
-      $("#box-preparing").removeClass("curent").addClass("active");
+      $("#box-preparing").removeClass("current").addClass("active");
       $("#dash-ready").addClass("active");
       $("#box-ready").removeClass("current").addClass("active");
       $("#dash-running").addClass("active");
@@ -267,7 +254,7 @@ function updateExperimentLine(status) {
     case "FAILED":
       $("#box-prereq").removeClass("current").addClass("active");
       $("#dash-preparing").addClass("active");
-      $("#box-preparing").removeClass("curent").addClass("active");
+      $("#box-preparing").removeClass("current").addClass("active");
       $("#dash-ready").addClass("active");
       $("#box-ready").removeClass("current").addClass("active");
       $("#dash-running").addClass("active");
@@ -279,7 +266,7 @@ function updateExperimentLine(status) {
     case "INTERRUPTED":
       $("#box-prereq").removeClass("current").addClass("active");
       $("#dash-preparing").addClass("active");
-      $("#box-preparing").removeClass("curent").addClass("active");
+      $("#box-preparing").removeClass("current").addClass("active");
       $("#dash-ready").addClass("active");
       $("#box-ready").removeClass("current").addClass("active");
       $("#dash-running").addClass("active");
@@ -297,6 +284,9 @@ function updateExperimentStatus() {
   }).done(function (data) {
     var status = data[0];
     updateExperimentLine(status);
+    $("#startdate").text(data[2]);
+    $("#enddate").text(data[3]);
+    $("#duration").text(data[4]);
     if (status == "RUNNING") {
       $("#progress-bar-${id}").show();
       var prog = data[1];
@@ -319,9 +309,6 @@ function updateExperimentStatus() {
     setTimeout(updateExperimentStatus, 3100);
   })
 };
-
-
-
 </script>
 
 <#include "footer.ftlh">

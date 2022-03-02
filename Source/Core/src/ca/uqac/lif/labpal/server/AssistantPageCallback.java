@@ -138,7 +138,7 @@ public class AssistantPageCallback extends TemplatePageCallback
 			{
 				// Stop a run
 				String[] parts = key.split("-");
-				int run_id = Integer.parseInt(parts[1]);
+				int run_id = Integer.parseInt(parts[2]);
 				AssistantRun run = m_server.getLaboratory().getAssistant().getRun(run_id);
 				if (run != null)
 				{
@@ -150,7 +150,7 @@ public class AssistantPageCallback extends TemplatePageCallback
 			{
 				// Stop a run
 				String[] parts = key.split("-");
-				int run_id = Integer.parseInt(parts[1]);
+				int run_id = Integer.parseInt(parts[2]);
 				m_server.getLaboratory().getAssistant().deleteRun(run_id);
 				message = "Run #" + run_id + " deleted";
 			}

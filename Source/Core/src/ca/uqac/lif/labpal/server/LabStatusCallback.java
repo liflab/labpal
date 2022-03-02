@@ -17,8 +17,6 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +26,8 @@ import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
+import ca.uqac.lif.json.JsonList;
+import ca.uqac.lif.json.JsonMap;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
 /**
@@ -59,7 +59,7 @@ public class LabStatusCallback extends LaboratoryCallback
 		cbr.setCode(CallbackResponse.HTTP_OK);
 		cbr.setContentType(ContentType.JSON);
 		List<Experiment> running = new ArrayList<Experiment>();
-		int num_ex = 0, num_running = 0, num_q = 0, num_failed = 0, num_done = 0, num_warn = 0;
+		int num_ex = 0, num_running = 0, num_q = 0, num_failed = 0, num_done = 0, num_warn = 0, num_interrupted = 0;
 		for (Experiment ex : m_server.getLaboratory().getExperiments())
 	    {
 	      num_ex++;
@@ -75,6 +75,9 @@ public class LabStatusCallback extends LaboratoryCallback
 	      case FAILED:
 	        num_failed++;
 	        break;
+	      case INTERRUPTED:
+	        num_interrupted++;
+	        break;
 	      default:
 	        if (m_server.getLaboratory().isQueued(ex))
 	        {
@@ -84,26 +87,21 @@ public class LabStatusCallback extends LaboratoryCallback
 	      }
 	    }
 		Collections.sort(running);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream out = new PrintStream(baos);
-		out.println("{");
-		out.print("  \"ids\": [");
+		JsonMap map = new JsonMap();		
+		JsonList ids = new JsonList();
 		for (int i = 0; i < running.size(); i++)
 		{
-			if (i > 0)
-			{
-				out.print(",");
-			}
-			out.print(running.get(i).getId());
+			ids.add(running.get(i).getId());
 		}
-		out.println("],");
-		out.println("  \"total\": " + num_ex + ",");
-		out.println("  \"running\": " + num_running + ",");
-		out.println("  \"done\": " + num_done + ",");
-		out.println("  \"queued\": " + num_q + ",");
-		out.println("  \"failed\": " + num_failed);
-		out.println("}");
-		cbr.setContents(baos.toString());
+		map.put("ids", ids);
+		map.put("total", num_ex);
+		map.put("running", num_running);
+		map.put("done", num_done);
+		map.put("done-warning", num_warn);
+		map.put("interrupted", num_interrupted);
+		map.put("queued", num_q);
+		map.put("failed", num_failed);
+		cbr.setContents(map.toString());
 		return cbr;
 	}
 }

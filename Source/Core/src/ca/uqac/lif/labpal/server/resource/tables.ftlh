@@ -14,7 +14,7 @@
 <td><a class="btn-24 btn-tex" href="/table/${tid}/tex?dl=1" title="Download as LaTeX"><span class="text-only">LaTeX</span></a></td>
 <td><a class="btn-24 btn-html" href="/table/${tid}/html?dl=1" title="Download as HTML"><span class="text-only">HTML</span></a></td>
 <td><a class="nickname" href="/table/${tid}">${table.getNickname()}</a></td>
-<td><#include "progress-bar-table.ftlh"></td>
+<td><@statusChunk e=table prefix="t" /></td>
 </tr>
 </#list>
 </table>

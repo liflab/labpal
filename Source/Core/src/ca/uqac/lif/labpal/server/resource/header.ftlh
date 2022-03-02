@@ -19,3 +19,5 @@
 <div id="content">
 
 <h1 class="text-only">${title}</h1>
+
+<#include "functions.ftlh">

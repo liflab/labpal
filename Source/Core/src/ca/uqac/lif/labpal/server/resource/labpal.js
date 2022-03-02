@@ -42,7 +42,7 @@ function getStatusClass(status) {
 	case "FAILED":
 		status_class = "failed";
 		break;
-	case "CANCELLED":
+	case "INTERRUPTED":
 		status_class = "failed";
 		break;
 	case "TIMEOUT":
@@ -77,27 +77,24 @@ function getStatusClass(status) {
  * @returns A map containing the current status of the elements (which can be
  * passed back on the next call to the method)
  */
-function updateBars(data, prefix, last_experiment_status = {}) {
+function updateBars(data, prefix, last_element_status = {}) {
 	var statuses = {};
 	for (var k in data) {
 		var status = data[k][0];
 		var progression = data[k][1];
-		if (!(k in last_experiment_status)) {
-			last_experiment_status[k] = status;
-		}
 		statuses[k] = status;
 		if (status == "RUNNING" || status == "PREPARING") {
-			$("#progress-bar-" + k).show();
+			$("#progress-bar-" + prefix + k).show();
 			$("#progress-bar-val-" + prefix + k).show();
 			$("#progress-bar-val-" + prefix + k).text(Math.round(progression * 100) + "%");
 			$("#progress-bar-rect-" + prefix + k).css({"width" : (progression * 50) + "px"});
 		}
 		else {
-			$("#progress-bar-" + k).hide();
-			$("#progress-bar-val-" + k).hide();
+			$("#progress-bar-" + prefix + k).hide();
+			$("#progress-bar-val-" + prefix + k).hide();
 		}
 		for (var k in data) {
-			if (statuses[k] != last_experiment_status[k]) {
+			if (statuses[k] != last_element_status[k]) {
 				var status_class = getStatusClass(statuses[k]);
 				last_experiment_status[k] = statuses[k];
 				var e = $("#status-icon-" + prefix + k);
@@ -118,7 +115,7 @@ function updateExperiments() {
 	$.ajax({
 		url: "/experiments/status"
 	}).done(function (data) {
-		last_experiment_status = updateBars(data, "", last_experiment_status);
+		last_experiment_status = updateBars(data, "e", last_experiment_status);
 		setTimeout(updateExperiments, 2000);
 	})
 };
@@ -132,6 +129,12 @@ function updateRuns() {
 		url: "/assistant/status"
 	}).done(function (data) {
 		updateBars(data, "r");
+		for (var k in data) {
+			var status = data[k][0];
+			if (status == "DONE" || status == "FAILED" || status == "INTERRUPTED") {
+				$("#stop-r-" + k).hide();
+			}
+		}
 		setTimeout(updateRuns, 3100);
 	})
 };

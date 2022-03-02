@@ -5,11 +5,7 @@
 <#assign tid = table.getId()>
 
 <h2 class="line-align"><span>${table.getTitle()}</span>
-<#if progress == 1>
-  <span id="status-icon-t${tid}" class="status-icon status-done" title="Done"><span class="text-only">Done</span></span>
-<#else>
-  <span><#include "progress-bar-table.ftlh"></span>
-</#if>
+<@statusChunk e=table prefix="t" />
 </h2>
 
 <#if table.getDescription()?has_content>
@@ -37,37 +33,7 @@ ${tablecontents?no_esc}
 <#list table.getExperimentDependencies(true) as exp_dep>
   <#assign id = exp_dep.getId()>
   <#assign status = exp_dep.getStatus()>
-  <li><a class="line-align" href="/experiment/${id}"><span class="id-cell" style="margin-right:10px">${id}</span>
-  <#switch status>
-      <#case "UNINITIALIZED">
-        <span id="status-icon-${id}" class="status-icon status-prereq" title="Prerequisites not fulfilled"><span class="text-only">P</span></span>
-        <#break>
-      <#case "DONE">
-        <span id="status-icon-${id}" class="status-icon status-done" title="Ready"><span class="text-only">D</span></span>
-        <#break>
-      <#case "DONE_WARNING">
-        <span id="status-icon-${id}" class="status-icon status-warning" title="Done with warnings"><span class="text-only">W</span></span>
-        <#break>
-      <#case "FAILED">
-        <span id="status-icon-${id}" class="status-icon status-failed" title="Failed"><span class="text-only">F</span></span>
-        <#break>
-      <#case "CANCELLED">
-        <span id="status-icon-${id}" class="status-icon status-failed" title="Cancelled"><span class="text-only">C</span></span>
-        <#break>
-      <#case "TIMEOUT">
-        <span id="status-icon-${id}" class="status-icon status-timeout" title="Timed out"><span class="text-only">T</span></span>
-        <#break>
-      <#case "READY">
-        <span id="status-icon-${id}" class="status-icon status-ready" title="Ready"><span class="text-only">r</span></span>
-        <#break>
-       <#case "RUNNING">
-        <span id="status-icon-${id}" class="status-icon status-running" title="Running"><span class="text-only">r</span></span>
-        <#break>
-       <#case "RUNNING_PREREQ">
-        <span id="status-icon-${id}" class="status-icon status-running" title="Running prerequisites"><span class="text-only">r</span></span>
-        <#break>
-      </#switch> 
-      </a>
+  <li><a class="line-align" href="/experiment/${id}"><span class="id-cell" style="margin-right:10px">${id}</span><@statusChunk e=e prefix="e" withbar=false queued=lab.isQueued(e) /></a>
   </li>
 </#list>
 </ul>

@@ -6,6 +6,31 @@ $(document).ready(function() {
 			0: {sorter: false} // Except 1st column
 		}
 	});
+	
+	/* Clicking on top checkbox either checks or unchecks all
+	 * experiments in the table */
+	$("table.exp-table th.top-td input[type='checkbox']").click(function(event) {
+		var id = $(event.target).attr("id");
+		var g_id = id.split("-")[2];
+		var group_checks = $("input[id*='exp-chk-g-" + g_id + "']");
+		if ($(event.target).prop("checked")) {
+			group_checks.prop("checked", true);
+		}
+		else {
+			group_checks.prop("checked", false);
+		}
+	});
+	
+	/* Unchecking an experiment unchecks the top checkbox if it was
+	 * checked */
+	$("table.exp-table input[id*='exp-chk-g']").click(function(event) {
+		var id = $(event.target).attr("id");
+		var g_id = id.split("-")[3];
+		var e_id = id.split("-")[4];
+		if (!$(event.target).prop("checked")) {
+			$("#top-checkbox-" + g_id).prop("checked", false);
+		}
+	});
 
 	/* Pull-down divs */
 	$(".pulldown-contents").hide();

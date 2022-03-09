@@ -30,7 +30,7 @@ ${tablecontents?no_esc}
 <p>Below is the list of all the experiments in the lab on which this table depends.</p>
 
 <ul class="running-exps">
-<#list table.dependsOn() as exp_dep>
+<#list expdeps as exp_dep>
   <#assign id = exp_dep.getId()>
   <#assign status = exp_dep.getStatus()>
   <li><a class="line-align" href="/experiment/${id}"><span class="id-cell" style="margin-right:10px">${id}</span><@statusChunk e=exp_dep prefix="e" withbar=false queued=lab.isQueued(exp_dep) /></a>

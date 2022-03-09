@@ -18,17 +18,21 @@
 package ca.uqac.lif.labpal.experiment;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import ca.uqac.lif.labpal.Dependent;
 import ca.uqac.lif.labpal.Laboratory;
 
 /**
  * Experiment selector that retrieves all experiments that are dependencies of
- * a given experiment. More precisely, the selector calculates the
+ * a given object. More precisely, the selector calculates the
  * <em>transitive closure</em> of the dependency relation starting from a given
- * experiment.
+ * dependent object.
  * 
  * @since 3.0
  * @see Dependent
@@ -39,14 +43,14 @@ public class DependencyExperimentSelector extends ConcreteExperimentSelector
 	/**
 	 * The experiment from which dependencies are to be retrieved.
 	 */
-	/*@ non_null @*/ protected final Experiment m_experiment;
+	/*@ non_null @*/ protected final Dependent<?> m_experiment;
 	
 	/**
 	 * Creates a new dependency experiment selector.
 	 * @param lab The lab from which to select experiments
 	 * @param e The experiment from which dependencies are to be retrieved
 	 */
-	public DependencyExperimentSelector(/*@ non_null @*/ Laboratory lab, /*@ non_null @*/ Experiment e)
+	public DependencyExperimentSelector(/*@ non_null @*/ Laboratory lab, /*@ non_null @*/ Dependent<?> e)
 	{
 		super(lab);
 		m_experiment = e;
@@ -55,25 +59,47 @@ public class DependencyExperimentSelector extends ConcreteExperimentSelector
 	@Override
 	public Set<Experiment> select() 
 	{
-		Set<Experiment> deps = new HashSet<Experiment>();
-		Queue<Experiment> added = new ArrayDeque<Experiment>();
+		Set<Object> deps = new HashSet<Object>();
+		Queue<Object> added = new ArrayDeque<Object>();
 		added.add(m_experiment);
 		while (!added.isEmpty())
 		{
-			Experiment e = added.remove();
+			Object e = added.remove();
 			if (deps.contains(e))
 			{
 				continue;
 			}
 			deps.add(e);
-			for (Experiment e_dep : e.dependsOn())
+			if (e instanceof Dependent)
 			{
-				if (!deps.contains(e_dep) && !added.contains(e_dep))
+				for (Object o_dep : ((Dependent<?>) e).dependsOn())
 				{
-					added.add(e_dep);
-				}
+					if (!deps.contains(o_dep) && !added.contains(o_dep))
+					{
+						added.add(o_dep);
+					}
+				}				
 			}
 		}
-		return deps;
+		// Filter out to retain only objects that are experiments
+		Set<Experiment> exp_dep = new HashSet<Experiment>();
+		for (Object o : deps)
+		{
+			if (o instanceof Experiment)
+			{
+				exp_dep.add((Experiment) o);
+			}
+		}
+		return exp_dep;
+	}
+	
+	public static List<Experiment> getDependencies(Dependent<?> object)
+	{
+		DependencyExperimentSelector des = new DependencyExperimentSelector(null, object);
+		Set<Experiment> s_exp_deps = des.select();
+		List<Experiment> l_exp_deps = new ArrayList<Experiment>();
+		l_exp_deps.addAll(s_exp_deps);
+		Collections.sort(l_exp_deps);
+		return l_exp_deps;
 	}
 }

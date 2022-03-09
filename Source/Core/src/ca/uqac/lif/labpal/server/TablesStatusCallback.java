@@ -19,7 +19,7 @@ package ca.uqac.lif.labpal.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +27,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
+import ca.uqac.lif.labpal.experiment.DependencyExperimentSelector;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.table.Table;
 
@@ -88,7 +89,7 @@ public class TablesStatusCallback extends TemplatePageCallback
 			}
 			out.print("[");
 			out.print("\"" + tab.getStatus() + "\", " + tab.getProgression() + ", ");
-			Collection<Experiment> deps = tab.dependsOn();
+			List<Experiment> deps = DependencyExperimentSelector.getDependencies(tab);
 			boolean d_first = true;
 			out.print("[");
 			for (Experiment e : deps)

@@ -28,6 +28,7 @@ import com.sun.net.httpserver.HttpExchange;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.jerrydog.Server;
+import ca.uqac.lif.labpal.experiment.DependencyExperimentSelector;
 import ca.uqac.lif.labpal.table.CsvTableRenderer;
 import ca.uqac.lif.labpal.table.LatexTableRenderer;
 import ca.uqac.lif.labpal.table.Table;
@@ -138,6 +139,7 @@ public class TablePageCallback extends TemplatePageCallback
 		input.put("id", id);
 		input.put("title", "Table " + id);
 		input.put("table", t);
+		input.put("expdeps", DependencyExperimentSelector.getDependencies(t));
 		HtmlTableRenderer renderer = new HtmlTableRenderer(t);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		renderer.render(new PrintStream(baos));

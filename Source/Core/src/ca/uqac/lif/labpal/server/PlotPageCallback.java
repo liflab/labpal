@@ -18,10 +18,10 @@
 package ca.uqac.lif.labpal.server;
 
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
+import ca.uqac.lif.labpal.experiment.DependencyExperimentSelector;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 
@@ -41,7 +41,7 @@ public class PlotPageCallback extends TemplatePageCallback
 	public void fillInputModel(String uri, Map<String,String> req_parameters, Map<String,Object> input, Map<String,byte[]> parts) throws PageRenderingException
 	{
 		super.fillInputModel(uri, req_parameters, input, parts);
-		int id = fetchId(uri);
+		int id = fetchId(s_idPattern, uri);
 		Plot p = m_server.getLaboratory().getPlot(id);
 		if (p == null)
 		{
@@ -50,20 +50,11 @@ public class PlotPageCallback extends TemplatePageCallback
 		input.put("id", id);
 		input.put("title", "Plot " + id);
 		input.put("plot", p);
-		if (req_parameters.containsKey("textbrowser") && Boolean.TRUE.equals(req_parameters.get("textbrowser")))
+		input.put("expdeps", DependencyExperimentSelector.getDependencies(p));
+		if (req_parameters.containsKey("textbrowser") && Boolean.TRUE.equals(input.get("textbrowser")))
 		{
 			byte[] bytes = p.getImage(Gnuplot.DUMB);
 			input.put("plottext", new String(bytes));
 		}
-	}
-	
-	protected static int fetchId(String uri)
-	{
-		Matcher mat = s_idPattern.matcher(uri);
-		if (!mat.find())
-		{
-			return -1; // No ID
-		}
-		return Integer.parseInt(mat.group(1));
 	}
 }

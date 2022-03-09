@@ -30,7 +30,7 @@ public class FoobarDemo
 			Region pr = filter(product(range("abc", 0, 5), range("def", 0, 5),
 					extension("tool", "Foobar", "Foobaz")),
 					(p) -> {
-						return p.getInt("abc") % 2 == 0 || p.getInt("abc") > p.getInt("def");});
+						return p.getInt("abc") % 2 == 0 || p.getInt("abc") >= p.getInt("def");});
 			
 			for (String[] x : permute("abc", "def"))
 				for (Region r : pr.all(x[0]))

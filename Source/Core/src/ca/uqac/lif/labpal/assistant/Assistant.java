@@ -140,6 +140,25 @@ public class Assistant
 	}
 	
 	/**
+	 * Removes a collection of experiments from the assistant's queue.
+	 * @param experiments The experiments to removed
+	 * @return The number of experiments actually removed to the queue
+	 */
+	/*@ non_null @*/ public int removeFromQueue(Collection<Experiment> experiments)
+	{
+		int removed = 0;
+		for (Experiment e : experiments)
+		{
+			if (m_queue.contains(e))
+			{
+				m_queue.remove(e);
+				removed++;
+			}
+		}
+		return removed;
+	}
+	
+	/**
 	 * Gets the contents of the assistant's queue, exposed as an experiment
 	 * group.
 	 * @return The group

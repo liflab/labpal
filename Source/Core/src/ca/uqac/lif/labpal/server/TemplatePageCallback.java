@@ -57,6 +57,8 @@ public class TemplatePageCallback extends LaboratoryCallback
 	private static Configuration s_config;
 
 	protected String m_menuHighlight;
+	
+	protected boolean m_getParts = false;
 
 	static
 	{
@@ -65,6 +67,23 @@ public class TemplatePageCallback extends LaboratoryCallback
 		s_config.setDefaultEncoding("UTF-8");
 		s_config.setLocale(Locale.US);
 		s_config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+	}
+
+	public static byte[] render(Map<String,Object> input, String template_location) 
+	{
+		try
+		{
+			input.put("versionstring", Laboratory.formatVersion());
+			Template temp = s_config.getTemplate(template_location);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			OutputStreamWriter osw = new OutputStreamWriter(baos);
+			temp.process(input, osw);
+			return baos.toByteArray();
+		}
+		catch (IOException | TemplateException e)
+		{
+			return new byte[0];
+		}
 	}
 
 	public TemplatePageCallback(LabPalServer server, Method m, String path, String template_location, String menu_highlight)
@@ -99,18 +118,33 @@ public class TemplatePageCallback extends LaboratoryCallback
 	@Override
 	public CallbackResponse process(HttpExchange h)
 	{
+		Map<String, byte[]> parts;
 		Map<String,Object> input = new HashMap<String,Object>();
+		input.put("textbrowser", isTextBrowser(h));
+		Map<String,String> parameters;
+		if (m_getParts)
+		{
+			parts = HttpUtilities.getParts(h);
+			parameters = new HashMap<String,String>();
+		}
+		else
+		{
+			parts = new HashMap<String,byte[]>();
+			parameters = getParameters(h); 
+		}
 		input.put("title", m_title);
-		CallbackResponse cbr = new CallbackResponse(h);
-		cbr.setCode(CallbackResponse.HTTP_OK);
-		cbr.setContentType(ContentType.HTML);
+		CallbackResponse cbr = null;
 		String template_location = m_templateLocation;
 		try
 		{
-			fillInputModel(h, input);
+			fillInputModel(h.getRequestURI().toString(), parameters, input, parts);
+			cbr = new CallbackResponse(h);
+			cbr.setCode(CallbackResponse.HTTP_OK);
+			cbr.setContentType(ContentType.HTML);
 		}
 		catch (PageRenderingException e)
 		{
+			cbr = new CallbackResponse(h);
 			cbr.setCode(e.getCode());
 			template_location = s_errorTemplate;
 			input.put("errormessage", e.getMessage());
@@ -134,10 +168,9 @@ public class TemplatePageCallback extends LaboratoryCallback
 		return cbr;
 	}
 
-	protected void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
+	protected void fillInputModel(String uri, Map<String,String> request_params, Map<String,Object> input, Map<String,byte[]> parts) throws PageRenderingException
 	{
-		Map<String,String> m = getParameters(h);
-		for (Map.Entry<String,String> e : m.entrySet())
+		for (Map.Entry<String,String> e : request_params.entrySet())
 		{
 			Object o = liftObject(e.getKey(), e.getValue());
 			input.put(e.getKey(), o);
@@ -151,10 +184,9 @@ public class TemplatePageCallback extends LaboratoryCallback
 	{
 		return value;
 	}
-	
-	protected static int fetchId(Pattern pat, HttpExchange h)
+
+	protected static int fetchId(Pattern pat, String uri)
 	{
-		String uri = h.getRequestURI().toString();
 		Matcher mat = pat.matcher(uri);
 		if (!mat.find())
 		{
@@ -179,7 +211,7 @@ public class TemplatePageCallback extends LaboratoryCallback
 		s = s.replaceAll(">", "&gt;");
 		return s;
 	}
-	
+
 	/**
 	 * Determines if an HTTP request has been sent by a text browser.
 	 * The method recognizes three text browsers: Lynx, Links and ELinks.

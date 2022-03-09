@@ -43,6 +43,7 @@ import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
  */
 public class Plot extends AtomicFunction implements ExplanationQueryable, Stateful, Identifiable, Dependent<Table>
 {
+	
 	/**
 	 * A counter for plot IDs.
 	 */
@@ -98,6 +99,11 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Statef
 		m_table = t;
 		m_plot = p;
 		m_nickname = "";
+		setTitle(t.getTitle());
+		if (!t.getNickname().isBlank())
+		{
+			setNickname("p" + t.getNickname());
+		}
 	}
 
 	/**

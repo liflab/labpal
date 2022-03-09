@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.sun.net.httpserver.HttpExchange;
-
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
@@ -42,17 +40,16 @@ public class ExperimentPageCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
+	public void fillInputModel(String uri, Map<String,String> req_parameters, Map<String,Object> input, Map<String,byte[]> parts) throws PageRenderingException
 	{
-		int id = fetchId(s_idPattern, h);
+		int id = fetchId(s_idPattern, uri);
 		Experiment e = m_server.getLaboratory().getExperiment(id);
 		if (e == null)
 		{
 			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such experiment");
 		}
-		super.fillInputModel(h, input);
+		super.fillInputModel(uri, req_parameters, input, parts);
 		input.put("outparams", formatTable(input, e, e.getOutputParameters()));
-		String uri = h.getRequestURI().toString();
 		if (uri.contains("output/html"))
 		{
 			input.put("outputonly", true);

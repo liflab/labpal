@@ -21,18 +21,15 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import ca.uqac.lif.azrael.PrintException;
-import ca.uqac.lif.azrael.ReadException;
-import ca.uqac.lif.azrael.json.JsonPrinter;
-import ca.uqac.lif.azrael.json.JsonReader;
-import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.labpal.DummyExperiment;
+import ca.uqac.lif.labpal.Persistent.PersistenceException;
 import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
@@ -45,11 +42,11 @@ import ca.uqac.lif.units.si.Second;
 public class ExperimentTest 
 {
 	public static final Time t_1s = new Second(1);
-	
+
 	public static final Time t_250ms = new Second(0.25);
 
 	public static final Time t_0s = new Second(0);
-	
+
 	@Test
 	public void testLifecycle1()
 	{
@@ -61,7 +58,7 @@ public class ExperimentTest
 		assertEquals(0, de.getEndTime());
 		assertEquals(0, new Second(de.getTotalDuration()).get().floatValue(), 0.001);
 	}
-	
+
 	@Test
 	public void testLifecycle2() throws ExperimentException, InterruptedException
 	{
@@ -75,7 +72,7 @@ public class ExperimentTest
 		de.fulfillPrerequisites();
 		assertEquals(Status.READY, de.getStatus());
 	}
-	
+
 	@Test
 	public void testLifecycle5()
 	{
@@ -86,7 +83,7 @@ public class ExperimentTest
 		assertTrue(((DummyExperiment) de).fulfillCalled());
 		assertEquals(Status.DONE, de.getStatus());
 	}
-	
+
 	@Test
 	public void testLifecycle6()
 	{
@@ -98,7 +95,7 @@ public class ExperimentTest
 		de.run();
 		assertEquals(Status.FAILED, de.getStatus());
 	}
-	
+
 	@Test
 	public void testLifecycle7()
 	{
@@ -110,7 +107,7 @@ public class ExperimentTest
 		de.run();
 		assertEquals(Status.FAILED, de.getStatus());
 	}
-	
+
 	@Test
 	public void testLifecycle8() throws InterruptedException
 	{
@@ -126,7 +123,7 @@ public class ExperimentTest
 		executor.awaitTermination(100, TimeUnit.MILLISECONDS);
 		assertEquals(Status.INTERRUPTED, de.getStatus());
 	}
-	
+
 	@Test
 	public void testLifecycle9() throws InterruptedException
 	{
@@ -142,7 +139,7 @@ public class ExperimentTest
 		executor.awaitTermination(0, TimeUnit.MILLISECONDS);
 		assertEquals(Status.RUNNING, de.getStatus());
 	}
-	
+
 	@Test
 	public void testLifecycle3()
 	{
@@ -159,11 +156,11 @@ public class ExperimentTest
 		assertTrue(de.getEndTime() > de.getStartTime());
 		de.reset();
 		assertEquals(Status.READY, de.getStatus());
-		assertEquals(-1, de.getStartTime());
-		assertEquals(-1, de.getPrerequisitesTime());
-		assertEquals(-1, de.getEndTime());
+		assertEquals(0, de.getStartTime());
+		assertEquals(0, de.getPrerequisitesTime());
+		assertEquals(0, de.getEndTime());
 	}
-	
+
 	@Test
 	public void testLifecycle4()
 	{
@@ -174,7 +171,6 @@ public class ExperimentTest
 				try {
 					Thread.sleep(250);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -190,11 +186,11 @@ public class ExperimentTest
 		assertTrue(de.getEndTime() > de.getPrerequisitesTime());
 		de.reset();
 		assertEquals(Status.READY, de.getStatus());
-		assertEquals(-1, de.getStartTime());
-		assertEquals(-1, de.getPrerequisitesTime());
-		assertEquals(-1, de.getEndTime());
+		assertEquals(0, de.getStartTime());
+		assertEquals(0, de.getPrerequisitesTime());
+		assertEquals(0, de.getEndTime());
 	}
-	
+
 	@Test
 	public void testReset1()
 	{
@@ -213,19 +209,15 @@ public class ExperimentTest
 		assertEquals("baz", de.read("bar"));
 		assertNull(de.read("foo"));
 	}
-	
+
 	@Test
-	public void testSerialize1() throws PrintException, ReadException
+	public void testPersist1() throws PersistenceException
 	{
 		// Test serialization before the experiment has run
 		Experiment de = new SerializableExperiment().setDuration(t_1s).setTimeout(t_250ms);
-		JsonPrinter jop = new JsonPrinter();
-		JsonElement printed = jop.print(de);
-		JsonReader jor = new JsonReader();
-		Object o = jor.read(printed);
-		assertNotNull(o);
-		assertTrue(o instanceof SerializableExperiment);
-		SerializableExperiment copy = (SerializableExperiment) o;
+		Object printed = de.saveState();
+		Experiment copy = new SerializableExperiment();
+		copy.loadState(printed);
 		assertEquals(de.getId(), copy.getId());
 		assertEquals(de.read("bar"), copy.read("bar"));
 		assertEquals(de.getStatus(), copy.getStatus());
@@ -236,21 +228,17 @@ public class ExperimentTest
 		assertEquals(de.getTimeRatio(), copy.getTimeRatio(), 0.00001);
 		assertEquals(de.getTimeout().get().floatValue(), copy.getTimeout().get().floatValue(), 0.001);
 	}
-	
+
 	@Test
-	public void testSerialize2() throws PrintException, ReadException
+	public void testPersist2() throws PersistenceException
 	{
 		// Test serialization after the experiment has run
 		SerializableExperiment de = new SerializableExperiment();
-		de.hasPrerequisites(true);
+		de.setDuration(t_1s).setTimeout(t_250ms);
 		de.run();
-		JsonPrinter jop = new JsonPrinter();
-		JsonElement printed = jop.print(de);
-		JsonReader jor = new JsonReader();
-		Object o = jor.read(printed);
-		assertNotNull(o);
-		assertTrue(o instanceof SerializableExperiment);
-		SerializableExperiment copy = (SerializableExperiment) o;
+		Object printed = de.saveState();
+		SerializableExperiment copy = new SerializableExperiment();
+		copy.loadState(printed);
 		assertEquals(de.getId(), copy.getId());
 		assertEquals(de.read("bar"), copy.read("bar"));
 		assertEquals(de.getStatus(), copy.getStatus());
@@ -259,7 +247,7 @@ public class ExperimentTest
 		assertEquals(de.getEndTime(), copy.getEndTime());
 		assertEquals(de.getProgression(), copy.getProgression(), 0.00001);
 		assertEquals(de.getTimeRatio(), copy.getTimeRatio(), 0.00001);
-		assertEquals(de.getTimeout(), copy.getTimeout());
+		assertEquals(0, de.getTimeout().compareTo(copy.getTimeout()));
 		List<?> orig_list = (List<?>) de.read("somelist");
 		List<?> copy_list = (List<?>) copy.read("somelist");
 		assertNotNull(copy_list);
@@ -267,7 +255,7 @@ public class ExperimentTest
 		// Also check inner fields of the descendant
 		assertEquals(de.hasPrerequisites(), copy.hasPrerequisites());
 	}
-	
+
 	public static class SerializableExperiment extends DummyExperiment
 	{
 		public SerializableExperiment()
@@ -275,7 +263,7 @@ public class ExperimentTest
 			super();
 			writeInput("bar", true);
 		}
-				
+
 		@Override
 		public void execute()
 		{
@@ -284,6 +272,37 @@ public class ExperimentTest
 			list.add(true);
 			list.add(255);
 			writeOutput("somelist", list);
+		}
+
+		@Override
+		public Map<String,Object> saveState() throws PersistenceException
+		{
+			Map<String,Object> map = super.saveState();
+			List<Boolean> list = new ArrayList<Boolean>(2);
+			list.add(m_fulfillCalled);
+			list.add(m_hasPrerequisites);
+			map.put("other", list);
+			return map;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void loadState(Object o) throws PersistenceException
+		{
+			super.loadState(o);
+			Map<String,Object> map = (Map<String,Object>) o;
+			if (!map.containsKey("other"))
+			{
+				throw new PersistenceException("");
+			}
+			Object o_list = map.get("other");
+			if (!(o_list instanceof List))
+			{
+				throw new PersistenceException("");
+			}
+			List<?> list = (List<?>) o_list;
+			m_fulfillCalled = Boolean.TRUE.equals(list.get(0));
+			m_hasPrerequisites = Boolean.TRUE.equals(list.get(1));
 		}
 	}
 }

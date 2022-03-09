@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Group<T extends Comparable<T>> implements Dependent<T>
+public abstract class Group<T extends Comparable<T>> implements Dependent<T>
 {
 	/**
 	 * A numerical ID for groups.

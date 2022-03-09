@@ -24,6 +24,31 @@ package ca.uqac.lif.labpal.region;
 public class DiscreteRange extends ExtensionDomain<Number>
 {
 	/**
+	 * Creates a new discrete range.
+	 * @param name The name of the domain
+	 * @param start The start of the range
+	 * @param end The end of the range
+	 * @param step The increment for values in the range
+	 * @return A new discrete range
+	 */
+	public static DiscreteRange range(String name, double start, double end, double step)
+	{
+		return new DiscreteRange(name, start, end, step);
+	}
+	
+	/**
+	 * Creates a new discrete range with an increment of 1.
+	 * @param name The name of the domain
+	 * @param start The start of the range
+	 * @param end The end of the range
+	 * @return A new discrete range
+	 */
+	public static DiscreteRange range(String name, double start, double end)
+	{
+		return new DiscreteRange(name, start, end);
+	}
+	
+	/**
 	 * The start of the range.
 	 */
 	protected final double m_start;
@@ -58,6 +83,20 @@ public class DiscreteRange extends ExtensionDomain<Number>
 		{
 			m_values.add(x);
 		}
+	}
+	
+	/**
+	 * Creates a new discrete range. This constructor corresponds to the set
+	 * of all numerical values of the form <i>start</i> + <i>k</i> &times;
+	 * <i>step</i> (for <i>k</i> &in; {0, 1, &hellip;}) lying in the closed
+	 * interval [<i>start</i>,<i>end</i>].
+	 * @param name The name of the domain
+	 * @param start The start of the range
+	 * @param end The end of the range
+	 */
+	public DiscreteRange(String name, double start, double end)
+	{
+		this(name, start, end, 1);
 	}
 	
 	@Override

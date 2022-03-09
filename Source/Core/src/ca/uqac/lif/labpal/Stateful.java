@@ -147,4 +147,33 @@ public interface Stateful
 		}
 		return status;
 	}
+	
+	/**
+	 * Gets a status value based on a string expression.
+	 * @param s The string
+	 * @return The status
+	 */
+	public static Status getStatus(String s)
+	{
+		switch (s)
+		{
+		case "UNINITIALIZED":
+			return Status.UNINITIALIZED;
+		case "PREPARING":
+			return Status.PREPARING;
+		case "READY":
+			return Status.READY;
+		case "RUNNING":
+			return Status.RUNNING;
+		case "DONE":
+			return Status.DONE;
+		case "INTERRUPTED":
+			return Status.INTERRUPTED;
+		case "FAILED":
+			return Status.FAILED;
+		default:
+			return Status.UNINITIALIZED;
+		}
+	}
+
 }

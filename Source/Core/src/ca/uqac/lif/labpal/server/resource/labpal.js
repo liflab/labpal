@@ -29,6 +29,10 @@ $(document).ready(function() {
 		var e_id = id.split("-")[4];
 		if (!$(event.target).prop("checked")) {
 			$("#top-checkbox-" + g_id).prop("checked", false);
+			$("#exp-chh-g-" + g_id + "-" + e_id).prop("value", 1);
+		}
+		else {
+			$("#exp-chh-g-" + g_id + "-" + e_id).prop("value", 0);
 		}
 	});
 

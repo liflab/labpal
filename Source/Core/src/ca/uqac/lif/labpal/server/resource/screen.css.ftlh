@@ -15,7 +15,10 @@ html, body {
 #content {
   outline: solid 1px darkgrey;
   background: url('/images/graph-paper-50.png');
-  padding: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 8px;
+  padding-bottom: 56px;
   grid-column: 1 / span 1;
   grid-row: 2 / span 1;
   margin: 20px;
@@ -509,33 +512,39 @@ table.exp-table td {
 	display: none;
 }
 
-.plot {
+ul.plotlist {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: top;
+  justify-content: flex-start;
+  padding-left: 0px;
+}
+
+ul.plotlist > li {
   width: 340px;
-  height: 280px;
-  float: left;
   margin: 20px;
   padding: 0px;
   list-style-type: none;
 }
 
-.plot img {
+ul.plotlist > li img {
   width: 320px;
   height: 240px;
   border: solid 1px darkgrey;
   opacity: 0.67;
 }
 
-.plot img:hover {
+ul.plotlist > li img:hover {
   border: solid 1px blue;
   opacity: 1;
 }
 
-.plot ul, ul.plot-buttons {
+ul.plotlist > li ul, ul.plot-buttons {
   margin-left: 0;
   padding-left: 0;
 }
 
-.plot ul li, ul.plot-buttons li {
+ul.plotlist > li ul li, ul.plot-buttons li {
   list-style-type: none;
   display: inline-block;
   margin-right: 10px;

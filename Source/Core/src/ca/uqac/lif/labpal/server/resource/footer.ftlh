@@ -15,7 +15,7 @@
 <#assign sel_macros = "">
 <#assign sel_find = "">
 <#assign sel_help = "">
-<#switch menuhighlight>
+<#switch menuhighlight!"top-menu-home">
   <#case "top-menu-home">
     <#assign sel_home = "selected">
     <#break>

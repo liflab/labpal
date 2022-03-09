@@ -17,13 +17,10 @@
  */
 package ca.uqac.lif.labpal.server;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.assistant.AssistantRun;
@@ -39,91 +36,43 @@ public class AssistantPageCallback extends TemplatePageCallback
 	 * The pattern to extract the plot ID from the URL.
 	 */
 	protected static final Pattern s_plotIdPattern = Pattern.compile("assistant/enqueue/plot/(\\d+)");
-	
+
 	/**
 	 * The pattern to extract the table ID from the URL.
 	 */
 	protected static final Pattern s_tableIdPattern = Pattern.compile("assistant/enqueue/table/(\\d+)");
-	
+
 	public AssistantPageCallback(LabPalServer server, Method m, String path, String template_location)
 	{
 		super(server, m, path, template_location, "top-menu-assistant");
 	}
 
 	@Override
-	public void fillInputModel(HttpExchange h, Map<String,Object> input)  throws PageRenderingException
+	public void fillInputModel(String uri, Map<String,String> req_parameters, Map<String,Object> input, Map<String,byte[]> req_parts) throws PageRenderingException
 	{
-		super.fillInputModel(h, input);
-		String uri = h.getRequestURI().toString();
+		super.fillInputModel(uri, req_parameters, input, req_parts);
 		input.put("title", "Assistant");
-		Set<Experiment> exps = new HashSet<Experiment>();
 		if (uri.contains("enqueue/plot"))
 		{
-			int plot_id = fetchId(s_plotIdPattern, h);
-			Plot p = m_server.getLaboratory().getPlot(plot_id);
-			if (p == null)
-			{
-				throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such plot");
-			}
-			PlotExperimentSelector selector = new PlotExperimentSelector(m_server.getLaboratory(), p);
-			int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
-			input.put("message", added + " experiment(s) enqueued to generate plot " + plot_id);
+			enqueuePlot(uri, input);
 		}
 		if (uri.contains("enqueue/table"))
 		{
-			int plot_id = fetchId(s_tableIdPattern, h);
-			Table t = m_server.getLaboratory().getTable(plot_id);
-			if (t == null)
-			{
-				throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such table");
-			}
-			TableExperimentSelector selector = new TableExperimentSelector(m_server.getLaboratory(), t);
-			int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
-			input.put("message", added + " experiment(s) enqueued to generate plot " + plot_id);
+			enqueueTable(uri, input);
 		}
+		Set<Integer> groups = fetchGroupIds(input);
+		Set<Experiment> exps = fetchExperiments(input, groups);
 		if (input.containsKey("enqueue"))
 		{
-			// Adding groups
-			Set<Integer> groups = new HashSet<Integer>();
-			for (String key : input.keySet())
-			{
-				if (key.startsWith("top-checkbox"))
-				{
-					String[] parts = key.split("-");
-					int g_id = Integer.parseInt(parts[2]);
-					groups.add(g_id);
-				}
-			}
-			// Adding experiments submitted from experiments page to the queue
-			for (String key : input.keySet())
-			{
-				if (key.startsWith("exp-chh-g"))
-				{
-					String[] parts = key.split("-");
-					int g_id = Integer.parseInt(parts[3]);
-					int exp_id = Integer.parseInt(parts[4]);
-					if (groups.contains(g_id))
-					{
-						Experiment e = m_server.getLaboratory().getExperiment(exp_id);
-						if (e != null)
-						{
-							exps.add(e);
-						}
-					}
-				}
-				if (key.startsWith("exp-chk-g"))
-				{
-					String[] parts = key.split("-");
-					int exp_id = Integer.parseInt(parts[3]);
-					Experiment e = m_server.getLaboratory().getExperiment(exp_id);
-					if (e != null)
-					{
-						exps.add(e);
-					}
-				}
-			}
-			int added = m_server.getLaboratory().getAssistant().addToQueue(exps);
-			input.put("message", added + " experiment(s) enqueued");
+			enqueueExperiments(input, exps);
+		}
+		if (input.containsKey("dequeue"))
+		{
+			dequeueExperiments(input, exps);
+		}
+		if (input.containsKey("reset"))
+		{
+			resetExperiments(input, exps);
 		}
 		if (input.containsKey("start"))
 		{
@@ -161,14 +110,102 @@ public class AssistantPageCallback extends TemplatePageCallback
 		}
 	}
 	
-	protected static Map<String,String> formatParameters(Map<String,Object> params)
+	protected void enqueueExperiments(Map<String,Object> input, Set<Experiment> exps)
 	{
-		Map<String,String> formatted = new HashMap<String,String>();
-		for (Map.Entry<String,Object> e : params.entrySet())
-		{
-			formatted.put(e.getKey(), e.getValue().toString());
-		}
-		return formatted;
+		int processed = m_server.getLaboratory().getAssistant().addToQueue(exps);
+		input.put("message", processed + " experiment(s) enqueued");
 	}
-
+	
+	protected void dequeueExperiments(Map<String,Object> input, Set<Experiment> exps)
+	{
+		int processed = m_server.getLaboratory().getAssistant().removeFromQueue(exps);
+		input.put("message", processed + " experiment(s) dequeued");
+	}
+	
+	protected void resetExperiments(Map<String,Object> input, Set<Experiment> exps)
+	{
+		int processed = exps.size();
+		for (Experiment e : exps)
+		{
+			e.reset();
+		}
+		input.put("message", processed + " experiment(s) reset");
+	}
+	
+	protected void enqueueTable(String uri, Map<String,Object> input) throws PageRenderingException
+	{
+		int plot_id = fetchId(s_tableIdPattern, uri);
+		Table t = m_server.getLaboratory().getTable(plot_id);
+		if (t == null)
+		{
+			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such table");
+		}
+		TableExperimentSelector selector = new TableExperimentSelector(m_server.getLaboratory(), t);
+		int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
+		input.put("message", added + " experiment(s) enqueued to generate plot " + plot_id);
+	}
+	
+	protected void enqueuePlot(String uri, Map<String,Object> input) throws PageRenderingException
+	{
+		int plot_id = fetchId(s_plotIdPattern, uri);
+		Plot p = m_server.getLaboratory().getPlot(plot_id);
+		if (p == null)
+		{
+			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such plot");
+		}
+		PlotExperimentSelector selector = new PlotExperimentSelector(m_server.getLaboratory(), p);
+		int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
+		input.put("message", added + " experiment(s) enqueued to generate plot " + plot_id);
+	}
+	
+	protected Set<Integer> fetchGroupIds(Map<String,Object> input)
+	{
+		Set<Integer> groups = new HashSet<Integer>();
+		for (String key : input.keySet())
+		{
+			if (key.startsWith("top-checkbox"))
+			{
+				String[] parts = key.split("-");
+				int g_id = Integer.parseInt(parts[2]);
+				groups.add(g_id);
+			}
+		}
+		return groups;
+	}
+	
+	protected Set<Experiment> fetchExperiments(Map<String,Object> input, Set<Integer> groups)
+	{
+		Set<Experiment> exps = new HashSet<Experiment>();
+		for (String key : input.keySet())
+		{
+			if (key.startsWith("exp-chh-g"))
+			{
+				if (input.get(key).toString().compareTo("1") == 0)
+				{
+					String[] parts = key.split("-");
+					int g_id = Integer.parseInt(parts[3]);
+					int exp_id = Integer.parseInt(parts[4]);
+					if (groups.contains(g_id))
+					{
+						Experiment e = m_server.getLaboratory().getExperiment(exp_id);
+						if (e != null)
+						{
+							exps.add(e);
+						}
+					}
+				}
+			}
+			if (key.startsWith("exp-chk-g"))
+			{
+				String[] parts = key.split("-");
+				int exp_id = Integer.parseInt(parts[4]);
+				Experiment e = m_server.getLaboratory().getExperiment(exp_id);
+				if (e != null)
+				{
+					exps.add(e);
+				}
+			}
+		}
+		return exps;
+	}
 }

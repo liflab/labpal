@@ -28,8 +28,10 @@ import ca.uqac.lif.dag.LabelledNode;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
+import ca.uqac.lif.labpal.experiment.ExperimentFactory;
 import ca.uqac.lif.labpal.experiment.ExperimentValue;
 import ca.uqac.lif.labpal.provenance.TrackedValue;
+import ca.uqac.lif.labpal.region.Region;
 import ca.uqac.lif.petitpoucet.ComposedPart;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
@@ -46,6 +48,30 @@ import ca.uqac.lif.spreadsheet.Spreadsheet;
  */
 public class ExperimentTable extends Table
 {
+	/**
+	 * Creates an empty table with a given list of column names.
+	 * @param dimensions The column names
+	 * @return The new table instance
+	 */
+	public static ExperimentTable table(String ... dimensions)
+	{
+		return new ExperimentTable(dimensions);
+	}
+	
+	/**
+	 * Creates an empty table and populates it with experiments contained within
+	 * a region.
+	 * @param factory The factory to obtain experiment instances
+	 * @param r The region to get experiments from
+	 * @return The table
+	 */
+	public static ExperimentTable table(ExperimentFactory<? extends Experiment> factory, Region r)
+	{
+		ExperimentTable t = new ExperimentTable(r.getDimensions());
+		t.add(factory, r);
+		return t;
+	}
+	
 	/**
 	 * The list of experiments in this table. Note that we use a list,
 	 * and not a set, as we need the experiments to be enumerated in the
@@ -66,8 +92,7 @@ public class ExperimentTable extends Table
 	protected List<TableEntry> m_lastEntries;
 
 	/**
-	 * Creates an empty table with a given list of column names
-	 * @param id The unique ID given to this table
+	 * Creates an empty table with a given list of column names.
 	 * @param dimensions The column names
 	 */
 	public ExperimentTable(String ... dimensions)
@@ -87,6 +112,29 @@ public class ExperimentTable extends Table
 	{
 		m_experiments.add(e);
 		return this;
+	}
+	
+	/**
+	 * Adds a collection of experiments to the table.
+	 * @param e The experiments to read from
+	 * @return This table
+	 */
+	public ExperimentTable add(Collection<? extends Experiment> experiments)
+	{
+		m_experiments.addAll(experiments);
+		return this;
+	}
+	
+	/**
+	 * Adds a collection of experiments to the table by calling a
+	 * factory on a region.
+	 * @param factory The factory to obtain experiment instances
+	 * @param r The region to get experiments from
+	 * @return This table
+	 */
+	public ExperimentTable add(ExperimentFactory<? extends Experiment> factory, Region r)
+	{
+		return add(factory.get(r));
 	}
 
 	@Override
@@ -313,5 +361,5 @@ public class ExperimentTable extends Table
 		exps.addAll(m_experiments);
 		Collections.sort(exps);
 		return exps;
-	}
+	}	
 }

@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.labpal;
 
+import java.util.Collection;
+
 /**
  * Interface implemented by objects that are uniquely identified with a
  * number.
@@ -30,4 +32,25 @@ public interface Identifiable
 	 * @return The identifier
 	 */
 	public int getId();
+	
+	/**
+	 * In a collection of identifiable objects, find an object with the same ID
+	 * as another identifiable object.
+	 * @param i The object
+	 * @param collection The collection
+	 * @return The identifiable with the same ID, or <tt>null</tt> if no object
+	 * exists with that ID
+	 */
+	/*@ null @*/ public static Identifiable find(Identifiable i, Collection<? extends Identifiable> collection)
+	{
+		int id = i.getId();
+		for (Identifiable c_i : collection)
+		{
+			if (c_i.getId() == id)
+			{
+				return c_i;
+			}
+		}
+		return null;
+	}
 }

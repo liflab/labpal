@@ -21,23 +21,18 @@ package ca.uqac.lif.labpal.region;
  * A region containing points from another region if they respect a condition.
  * @author Sylvain Hallé
  */
-public abstract class ConditionalRegion extends ExtensionRegion
+public class ConditionalRegion extends ExtensionRegion
 {
 	/**
-	 * Creates a new conditional region.
+	 * Creates a new instance of conditional region.
 	 * @param r The region whose points will be filtered according to a
 	 * condition
+	 * @param condition The condition
+	 * @return The new conditional region
 	 */
-	public ConditionalRegion(Region r)
+	public static ConditionalRegion filter(/*@ non_null @*/ Region r, /*@ non_null @*/ MembershipCondition condition)
 	{
-		super(r.getDimensions());
-		for (Point p : r.allPoints())
-		{
-			if (belongsTo(p))
-			{
-				add(p);
-			}
-		}
+		return new ConditionalRegion(r, condition);
 	}
 	
 	/**
@@ -46,5 +41,29 @@ public abstract class ConditionalRegion extends ExtensionRegion
 	 * @return <tt>true</tt> if the point should be in the region,
 	 * <tt>false</tt> otherwise
 	 */
-	public abstract boolean belongsTo(Point p);
+	/*@ non_null @*/ protected MembershipCondition m_condition;
+	
+	public static interface MembershipCondition
+	{
+		public boolean belongsTo(Point p);
+	}
+	
+	/**
+	 * Creates a new conditional region.
+	 * @param r The region whose points will be filtered according to a
+	 * condition
+	 * @param condition The condition
+	 */
+	public ConditionalRegion(/*@ non_null @*/ Region r, /*@ non_null @*/ MembershipCondition condition)
+	{
+		super(r.getDimensions());
+		m_condition = condition;
+		for (Point p : r.allPoints())
+		{
+			if (m_condition.belongsTo(p))
+			{
+				add(p);
+			}
+		}
+	}
 }

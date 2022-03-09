@@ -49,7 +49,7 @@ public class CssCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public void fillInputModel(HttpExchange h, Map<String,Object> input) 
+	public void fillInputModel(String uri, Map<String,String> req_parameters, Map<String,Object> input, Map<String,byte[]> parts) 
 	{
 		String[] color_scheme = m_server.getColorScheme();
 		for (int i = 0; i < color_scheme.length; i++)

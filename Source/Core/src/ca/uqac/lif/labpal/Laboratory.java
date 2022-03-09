@@ -17,8 +17,19 @@
  */
 package ca.uqac.lif.labpal;
 
+import ca.uqac.lif.azrael.PrintException;
+import ca.uqac.lif.azrael.ReadException;
+import ca.uqac.lif.azrael.json.JsonPrinter;
+import ca.uqac.lif.azrael.json.JsonReader;
 import ca.uqac.lif.dag.LabelledNode;
+import ca.uqac.lif.jerrydog.Server;
+import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonParser;
+import ca.uqac.lif.json.JsonParser.JsonParseException;
+import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.assistant.Assistant;
+import ca.uqac.lif.labpal.assistant.QueuedThreadPoolExecutor;
+import ca.uqac.lif.labpal.assistant.SingleThreadExecutor;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 import ca.uqac.lif.labpal.macro.Macro;
@@ -29,11 +40,15 @@ import ca.uqac.lif.labpal.provenance.LaboratoryPart.MacroNumber;
 import ca.uqac.lif.labpal.provenance.LaboratoryPart.PlotNumber;
 import ca.uqac.lif.labpal.provenance.LaboratoryPart.TableNumber;
 import ca.uqac.lif.labpal.provenance.TrackedValue;
+import ca.uqac.lif.labpal.server.HttpUtilities;
+import ca.uqac.lif.labpal.server.LabPalServer;
+import ca.uqac.lif.labpal.server.LaboratoryCallback;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.util.AnsiPrinter;
 import ca.uqac.lif.labpal.util.CliParser;
 import ca.uqac.lif.labpal.util.CommandRunner;
 import ca.uqac.lif.labpal.util.FileHelper;
+import ca.uqac.lif.labpal.util.Stopwatch;
 import ca.uqac.lif.petitpoucet.ComposedPart;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
@@ -45,6 +60,14 @@ import ca.uqac.lif.spreadsheet.Cell;
 import ca.uqac.lif.labpal.util.CliParser.Argument;
 import ca.uqac.lif.labpal.util.CliParser.ArgumentMap;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +78,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * An organized collection of experiments, tables, and plots. The lab is
@@ -65,7 +91,7 @@ import java.util.regex.Pattern;
  * 
  * @author Sylvain Hallé
  */
-public class Laboratory implements ExplanationQueryable
+public class Laboratory implements ExplanationQueryable, Persistent
 {
 	/* Return codes */
 	public static transient int ERR_OK = 0;
@@ -96,6 +122,16 @@ public class Laboratory implements ExplanationQueryable
 	public static final transient String s_versionString = formatVersion();
 
 	/**
+	 * The default file extension to save experiment results
+	 */
+	public static final transient String s_fileExtension = "labo";
+
+	/**
+	 * The MIME type for LabPal files
+	 */
+	public static final transient String s_mimeType = "application/labpal";
+
+	/**
 	 * The seed used to initialize the random number generator
 	 */
 	private int m_seed = 0;
@@ -124,42 +160,42 @@ public class Laboratory implements ExplanationQueryable
 	 * A map associating experiment IDs to experiment instances.
 	 */
 	/*@ non_null @*/ private Map<Integer,Experiment> m_experiments;
-	
+
 	/**
 	 * A list of experiment groups.
 	 */
-	/*@ non_null @*/ private List<ExperimentGroup> m_experimentGroups;
-	
+	/*@ non_null @*/ private transient List<ExperimentGroup> m_experimentGroups;
+
 	/**
 	 * A map associating plot IDs to plot instances.
 	 */
-	/*@ non_null @*/ private Map<Integer,Plot> m_plots;
-	
+	/*@ non_null @*/ private transient Map<Integer,Plot> m_plots;
+
 	/**
 	 * A map associating table IDs to table instances.
 	 */
-	/*@ non_null @*/ private Map<Integer,Table> m_tables;
-	
+	/*@ non_null @*/ private transient Map<Integer,Table> m_tables;
+
 	/**
 	 * A map associating macro IDs to macro instances.
 	 */
-	/*@ non_null @*/ private Map<Integer,Macro> m_macros;
+	/*@ non_null @*/ private transient Map<Integer,Macro> m_macros;
 
 	/**
 	 * An assistant instance used to run experiments inside the lab.
 	 */
 	/*@ non_null @*/ private transient Assistant m_assistant;
-	
+
 	/**
 	 * The name of this lab.
 	 */
 	/*@ non_null @*/ private String m_name;
-	
+
 	/**
 	 * The author of this lab.
 	 */
 	/*@ non_null @*/ private String m_author;
-	
+
 	/**
 	 * The DOI of this lab, if any.
 	 */
@@ -236,7 +272,16 @@ public class Laboratory implements ExplanationQueryable
 		// Do nothing
 	}
 
-
+	/**
+	 * Adds callbacks to the LabPal web server that will be launched for this
+	 * lab.
+	 * @param callbacks An empty list of callbacks. The method can instantiate
+	 * new callbacks and add them to this list. 
+	 */
+	public void setupCallbacks(List<LaboratoryCallback> callbacks)
+	{
+		// Do nothing
+	}
 
 	/**
 	 * Gets the command-line arguments parsed when launching this lab.
@@ -251,7 +296,7 @@ public class Laboratory implements ExplanationQueryable
 		return m_cliArguments;
 	}
 
-	protected static String getCliHeader()
+	/*@ non_null @*/ private static String getCliHeader()
 	{
 		String out = "";
 		out += "LabPal " + formatVersion() + " - A versatile environment for running experiments\n";
@@ -267,7 +312,7 @@ public class Laboratory implements ExplanationQueryable
 	 *          The seed
 	 * @return This lab
 	 */
-	public final Laboratory setRandomSeed(int seed)
+	/*@ non_null @*/ public final Laboratory setRandomSeed(int seed)
 	{
 		m_seed = seed;
 		return this;
@@ -282,7 +327,7 @@ public class Laboratory implements ExplanationQueryable
 	{
 		return m_seed;
 	}
-	
+
 	/**
 	 * Gets the lab's random seed.
 	 * @return The seed
@@ -291,7 +336,7 @@ public class Laboratory implements ExplanationQueryable
 	{
 		return m_seed;
 	}
-	
+
 	/**
 	 * Gets the name of this lab.
 	 * @return The lab name
@@ -300,7 +345,7 @@ public class Laboratory implements ExplanationQueryable
 	{
 		return m_name;
 	}
-	
+
 	/**
 	 * Sets the name of this lab.
 	 * @param name The lab name
@@ -311,7 +356,7 @@ public class Laboratory implements ExplanationQueryable
 		m_name = name;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the author of this lab.
 	 * @return The author name
@@ -320,7 +365,7 @@ public class Laboratory implements ExplanationQueryable
 	{
 		return m_author;
 	}
-	
+
 	/**
 	 * Sets the author of this lab.
 	 * @param author The author name
@@ -331,7 +376,7 @@ public class Laboratory implements ExplanationQueryable
 		m_author = author;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the DOI of this lab.
 	 * @return The DOI
@@ -340,7 +385,7 @@ public class Laboratory implements ExplanationQueryable
 	{
 		return m_doi;
 	}
-	
+
 	/**
 	 * Sets the DOI of this lab.
 	 * @param doi The DOI
@@ -351,7 +396,7 @@ public class Laboratory implements ExplanationQueryable
 		m_doi = doi;
 		return this;
 	}
-	
+
 	/**
 	 * Retrieves the total number of "data points" contained within this lab.
 	 * @return The number of points
@@ -365,7 +410,7 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return total;
 	}
-	
+
 	/**
 	 * Gets the list of experiment groups contained in this lab.
 	 * @return The list of experiment groups, including the group of
@@ -379,7 +424,7 @@ public class Laboratory implements ExplanationQueryable
 		all_groups.addAll(m_experimentGroups);
 		return all_groups;
 	}
-	
+
 	/**
 	 * Gets an experiment group made of all experiments that do not belong to
 	 * any other group.
@@ -400,7 +445,7 @@ public class Laboratory implements ExplanationQueryable
 		g.setId(0); // 0 is always the ID of the "orphan" group
 		return g;
 	}
-	
+
 	/**
 	 * Adds a group to the lab and assigns it a unique ID.
 	 * @param g The group
@@ -482,7 +527,7 @@ public class Laboratory implements ExplanationQueryable
 		String name = new String(bytes);
 		return name.trim();
 	}
-	
+
 	/*@ pure @*/ public float getParkMips()
 	{
 		return s_parkMips;
@@ -522,7 +567,7 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a table instance with given ID, if it exists.
 	 * @param id The table ID
@@ -537,7 +582,7 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a plot instance with given ID, if it exists.
 	 * @param id The plot ID
@@ -552,7 +597,7 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a macro instance with given ID, if it exists.
 	 * @param id The macro ID
@@ -567,7 +612,7 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a list of all experiments in the lab, sorted by ID.
 	 * @return The list of experiments
@@ -584,7 +629,7 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return exps;
 	}
-	
+
 	/**
 	 * Returns a list of all plots in the lab, sorted by ID.
 	 * @return The list of plots
@@ -601,7 +646,7 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return exps;
 	}
-	
+
 	/**
 	 * Returns a list of all tables in the lab, sorted by ID.
 	 * @return The list of tables
@@ -632,21 +677,25 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Adds a list of tables to the lab
 	 * @param tables The tables to add
-	 * @return This lab
+	 * @return The first table in the arguments
 	 */
-	/*@ non_null @*/ public Laboratory add(Table ... tables)
+	/*@ non_null @*/ public Table add(Table ... tables)
 	{
 		for (Table t : tables)
 		{
 			m_tables.put(t.getId(), t);
 		}
-		return this;
+		if (tables.length > 0)
+		{
+			return tables[0];
+		}
+		return null;
 	}
-	
+
 	/**
 	 * Adds a list of macros to the lab
 	 * @param macros The macros to add
@@ -660,7 +709,7 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Adds a list of plots to the lab
 	 * @param experiments The plots to add
@@ -685,7 +734,7 @@ public class Laboratory implements ExplanationQueryable
 	{
 		return m_experiments.containsKey(e.getId());
 	}
-	
+
 	/**
 	 * Determines if an experiment is waiting to be executed.
 	 * @param e The experiment
@@ -770,7 +819,7 @@ public class Laboratory implements ExplanationQueryable
 		}
 		return (float) i / s_parkMipsDivider;
 	}
-	
+
 	public TrackedValue getPart(String datapoint_id)
 	{
 		String[] parts = datapoint_id.split(":");
@@ -910,13 +959,71 @@ public class Laboratory implements ExplanationQueryable
 		return getExplanation(d, NodeFactory.getFactory());
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public void loadState(Object o_map) throws PersistenceException
+	{
+		setup();
+		if (!(o_map instanceof Map))
+		{
+			throw new PersistenceException("Unexpected data structure");
+		}
+		Map<?,?> map = (Map<?,?>) o_map;
+		if (!map.containsKey("name") || !map.containsKey("author") || !map.containsKey("doi") || !map.containsKey("experiments") || !map.containsKey("seed"))
+		{
+			throw new PersistenceException("Unexpected data structure");
+		}
+		m_name = (String) map.get("name");
+		m_author = (String) map.get("author");
+		m_doi = (String) map.get("doi");
+		m_seed = ((Number) map.get("seed")).intValue();
+		Object o_exps = map.get("experiments");
+		if (!(o_exps instanceof Map))
+		{
+			throw new PersistenceException("Unexpected data structure");
+		}
+		for (Map.Entry<Integer,?> entry : ((Map<Integer,?>) o_exps).entrySet())
+		{
+			int exp_id = entry.getKey();
+			Object o_e = entry.getValue();
+			Experiment e = getExperiment(exp_id);
+			if (e == null)
+			{
+				throw new PersistenceException("Experiment " + exp_id + " does not exist in lab");
+			}
+			e.loadState(o_e);
+		}
+	}
+
+	@Override
+	public Object saveState() throws PersistenceException
+	{
+		Map<String,Object> contents = new HashMap<String,Object>();
+		contents.put("name", m_name);
+		contents.put("author", m_author);
+		contents.put("doi", m_doi);
+		contents.put("seed", m_seed);
+		Map<Integer,Object> exps = new HashMap<Integer,Object>(m_experiments.size());
+		for (Experiment e : m_experiments.values())
+		{
+			Status s = e.getStatus();
+			if (s == Status.DONE || s == Status.INTERRUPTED || s == Status.FAILED)
+			{
+				// Only print the state of experiments that are completed
+				exps.put(e.getId(), e.saveState());
+			}
+		}
+		contents.put("experiments", exps);
+		return contents;
+	}
+
 	/**
 	 * Sets up a command line parser with the arguments that are common to
 	 * all lab instances.
 	 * 
 	 * @return A parser
 	 */
-	protected static CliParser setupParser()
+	private static CliParser setupParser()
 	{
 		CliParser parser = new CliParser();
 		parser.addArgument(
@@ -937,52 +1044,49 @@ public class Laboratory implements ExplanationQueryable
 		.addArgument(new Argument().withLongName("version").withDescription("Shows version info"));
 		parser.addArgument(new Argument().withLongName("color-scheme").withArgument("c")
 				.withDescription("Use GUI color scheme c (0-3)"));
-		parser.addArgument(new Argument().withLongName("name").withArgument("x")
-				.withDescription("Set assistant name to x"));
 		parser.addArgument(new Argument().withLongName("filter").withArgument("exp")
 				.withDescription("Filter experiments according to expression exp"));
+		parser.addArgument(new Argument().withLongName("threads").withDescription("Uses n threads to run experiments").withArgument("n"));
 		return parser;
 	}
 
-	protected static void showVersionInfo(AnsiPrinter out)
+	private static void showVersionInfo(AnsiPrinter out)
 	{
 		out.append(getCliHeader()).append("\n");
 	}
 
 	public static final int initialize(String[] args, Class<? extends Laboratory> clazz)
 	{
+		// Open a print stream to the terminal
 		final AnsiPrinter stdout = new AnsiPrinter(System.out);
-		CliParser parser = setupParser();
-		Laboratory new_lab = null;
-		try
-		{
-			new_lab = clazz.newInstance();
-		}
-		catch (InstantiationException e)
-		{
-			e.printStackTrace();
-			return ERR_LAB;
-		}
-		catch (IllegalAccessException e)
-		{
-			e.printStackTrace();
-			return ERR_LAB;
-		}
-		if (new_lab == null)
-		{
-			return ERR_LAB;
-		}
 		stdout.resetColors();
 		stdout.print(getCliHeader());
+		// Properly close print streams when closing the program
+		// https://www.securecoding.cert.org/confluence/display/java/FIO14-J.+Perform+proper+cleanup+at+program+termination
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				stdout.close();
+			}
+		}));
+
+		// Create an empty lab instance and ask for any custom CLI switches
+		CliParser parser = setupParser();
+		Laboratory new_lab = getInstance(clazz);
+		if (new_lab == null)
+		{
+			stdout.println("Cannot create lab instance");
+			return ERR_LAB;
+		}		
 		new_lab.setupCli(parser);
-		// Add lab-specific options and parse command line
 		ArgumentMap argument_map = parser.parse(args);
 		if (argument_map == null)
 		{
 			// Something went wrong when parsing
 			stdout.print(getCliHeader());
-			System.err.println(
-					"Error parsing command-line arguments. Run the lab with --help to see the syntax.");
+			System.err.println("Error parsing command-line arguments. Run the lab with --help to see\nthe syntax.");
 			return ERR_ARGUMENTS;
 		}
 		/*
@@ -991,6 +1095,7 @@ public class Laboratory implements ExplanationQueryable
 		{
 			new_lab = preloadLab(new_lab, stdout);
 		}
+		 */
 		// Are we loading a lab file? If so, this overrides the
 		// lab loaded from an internal file (if any)
 		String filename = "";
@@ -998,37 +1103,9 @@ public class Laboratory implements ExplanationQueryable
 		for (int i = 0; i < names.size(); i++)
 		{
 			filename = names.get(i);
-			if (i == 0)
-			{
-				new_lab = loadFromFilename(new_lab, filename);
-			}
-			else
-			{
-				Laboratory lab_to_merge = loadFromFilename(new_lab, filename);
-				new_lab.mergeWith(lab_to_merge);
-			}
+			new_lab.loadFromFilename(filename);
 		}
-		new_lab.setAssistant(assistant);
-		 
-		// Properly close print streams when closing the program
-		// https://www.securecoding.cert.org/confluence/display/java/FIO14-J.+Perform+proper+cleanup+at+program+termination
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				assistant.stop();
-				stdout.close();
-			}
-		}));
 		new_lab.m_cliArguments = argument_map;
-		if (new_lab.m_cliArguments == null)
-		{
-			// Could not parse command line arguments
-			parser.printHelp("", System.out);
-			stdout.close();
-			return ERR_ARGUMENTS;
-		}
 		if (new_lab.m_cliArguments.hasOption("help"))
 		{
 			parser.printHelp("", System.out);
@@ -1047,33 +1124,33 @@ public class Laboratory implements ExplanationQueryable
 			int seed = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("seed"));
 			new_lab.setRandomSeed(seed);
 		}
-		List<WebCallback> callbacks = new ArrayList<WebCallback>();
+		List<LaboratoryCallback> callbacks = new ArrayList<>();
 		new_lab.setupCallbacks(callbacks);
 		int code = ERR_OK;
-		if (!filename.isEmpty())
+		/*if (!filename.isEmpty())
 		{
 			stdout.println("Loading lab from " + filename);
-		}
+		}*/
 		new_lab.setup();
-		*/
-		/*
-		if (argument_map.hasOption("report-to"))
+
+		// Setup assistant
+		Assistant lab_assistant = null;
+		if (new_lab.m_cliArguments.hasOption("threads"))
 		{
-			String host = argument_map.getOptionValue("report-to").trim();
-			new_lab.getReporter().reportTo(host);
-			stdout.println("Results will be reported to " + host);
-			if (argument_map.hasOption("interval"))
+			int num_threads = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("threads"));
+			if (num_threads < 1)
 			{
-				new_lab.getReporter()
-				.setInterval(Integer.parseInt(argument_map.getOptionValue("interval")) * 1000);
+				stdout.println("Invalid number of threads");
+				return ERR_ARGUMENTS;
 			}
+			lab_assistant = new Assistant(new QueuedThreadPoolExecutor(num_threads));
 		}
-		if (argument_map.hasOption("name"))
+		else
 		{
-			String assistant_name = argument_map.getOptionValue("name").trim();
-			assistant.setName(assistant_name);
+			lab_assistant = new Assistant(new SingleThreadExecutor());
 		}
-		*/
+		new_lab.setAssistant(lab_assistant);
+
 		/*
 		// Sets an experiment filter
 		String filter_params = "";
@@ -1106,54 +1183,171 @@ public class Laboratory implements ExplanationQueryable
 				br.run();
 			}
 		}
-		*/
-		/*
-		else if (!new_lab.m_cliArguments.hasOption("console"))
+		 */
+
+		// Start LabPal's web interface
+		LabPalServer server = new LabPalServer(new_lab);
+		if (callbacks != null)
 		{
-			// Start LabPal's web interface
-			LabPalServer server = new LabPalServer(new_lab.m_cliArguments, new_lab, assistant);
-			if (callbacks != null)
+			// Register custom callbacks, if any
+			for (LaboratoryCallback cb : callbacks)
 			{
-				// Register custom callbacks, if any
-				for (WebCallback cb : callbacks)
-				{
-					server.registerCallback(0, cb);
-				}
-			}
-			stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort()
-			+ HomePageCallback.URL + " in your browser\n");
-			stdout.print("Hit Ctrl+C in this window to stop\n");
-			try
-			{
-				server.startServer();
-			}
-			catch (IOException e)
-			{
-				System.err.println("Cannot start server on port " + server.getServerPort()
-				+ ". Is another lab already running?");
-				stdout.close();
-				return ERR_SERVER;
-			}
-			if (new_lab.m_cliArguments.hasOption("color-scheme"))
-			{
-				int scheme = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("color-scheme"));
-				server.setColorScheme(scheme);
-			}
-			if (new_lab.m_cliArguments.hasOption("autostart"))
-			{
-				new_lab.startAll();
-			}
-			// Server mode
-			while (true)
-			{
-				Experiment.wait(10000);
+				server.registerCallback(0, cb);
 			}
 		}
-		stdout.close();
-		*/
-		return 0;
-		//return code;
+		stdout.print("Visit http://" + server.getServerName() + ":" + server.getServerPort()
+		+ " in your browser\n");
+		stdout.print("Hit Ctrl+C in this window to stop\n");
+		try
+		{
+			server.startServer();
+		}
+		catch (IOException e)
+		{
+			System.err.println("Cannot start server on port " + server.getServerPort()
+			+ ". Is another lab already running?");
+			stdout.close();
+			return ERR_SERVER;
+		}
+		if (new_lab.m_cliArguments.hasOption("color-scheme"))
+		{
+			int scheme = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("color-scheme"));
+			server.setColorScheme(scheme);
+		}
+		if (new_lab.m_cliArguments.hasOption("autostart"))
+		{
+			lab_assistant.enqueueCurrent();
+		}
+		// Infinite loop
+		while (true)
+		{
+			Stopwatch.sleep(10000);
+		}
+	}
 
+	/**
+	 * Saves the content of a lab as a zip file. The zip is made of a single
+	 * JSON file containing the lab's internal state.
+	 * 
+	 * @return The byte array with the contents of the zip file
+	 * @throws IOException
+	 *           Thrown if the creation of the zip failed for some reason
+	 * @throws PrintException
+	 *           Thrown if the serialization of the lab failed for some reason
+	 */
+	public byte[] saveToZip() throws IOException, PrintException, PersistenceException
+	{
+		String filename = Server.urlEncode(getName());
+		Object o = saveState();
+		String lab_contents = new JsonPrinter().print(o).toString();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ZipOutputStream zos = new ZipOutputStream(bos);
+		String ZE = filename + ".json";
+		ZipEntry ze = new ZipEntry(ZE);
+		zos.putNextEntry(ze);
+		zos.write(lab_contents.getBytes());
+		zos.closeEntry();
+		zos.close();
+		return bos.toByteArray();
+	}
+
+	/**
+	 * Attempts to get an instance of a laboratory class by calling its no-args
+	 * constructor.
+	 * @param clazz The lab class to get an instance of
+	 * @return A lab instance, or <tt>null</tt> if the lab cannot not be
+	 * instantiated
+	 */
+	/*@ null @*/ private static Laboratory getInstance(/*@ null @*/ Class<? extends Laboratory> clazz)
+	{
+		try
+		{
+			Constructor<? extends Laboratory> c = clazz.getConstructor();
+			return c.newInstance();
+		}
+		catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		{
+			return null;
+		}
+	}
+
+	public final void loadFromFilename(String filename)
+	{
+		try
+		{
+			// Substitute current lab for one loaded from the file
+			if (filename.endsWith(".zip") || filename.endsWith("." + s_fileExtension))
+			{
+				loadFromZipFile(new FileInputStream(new File(filename)));
+			}
+			else
+			{
+				loadFromJsonString(FileHelper.readToString(new File(filename)));
+			}
+		}
+		catch (FileNotFoundException e)
+		{
+			System.err.println(
+					"WARNING: file " + filename + " not found. An empty lab will be started instead.");
+		}
+		catch (IOException e)
+		{
+			System.err.println("WARNING: file " + filename
+					+ " could not be read. An empty lab will be started instead.");
+		}
+		catch (PersistenceException e)
+		{
+			System.err
+			.println("WARNING: a lab could not be loaded from the contents of " + filename + " .");
+		}
+	}
+
+	/**
+	 * Loads a laboratory from an input stream open on a zip file. The file is
+	 * expected to contain a single JSON document with the lab's internal state.
+	 * @param is The input stream
+	 * @throws IOException Thrown if stream cannot be read
+	 * @throws ReadException Thrown if input stream does not contain
+	 * a valid lab instance
+	 * @throws JsonParseException Thrown if the file contained within the
+	 * zip is not a valid JSON document
+	 */
+	public final void loadFromZipFile(InputStream is) throws IOException, PersistenceException
+	{
+		ZipInputStream zis = new ZipInputStream(is);
+		ZipEntry entry;
+		entry = zis.getNextEntry();
+		byte[] contents = null;
+		while (entry != null)
+		{
+			// String name = entry.getName();
+			contents = HttpUtilities.extractFile(zis);
+			// We assume the zip contains a single file
+			break;
+		}
+		String json = new String(contents);
+		loadFromJsonString(json);
+	}
+
+	/**
+	 * Loads the lab's state from a JSON string.
+	 * @param s The JSON string with the assistant's state
+	 * @throws PersistenceException If the deserialization or JSON parsing could
+	 * not be done
+	 */
+	public final void loadFromJsonString(String s) throws PersistenceException
+	{
+		JsonParser jp = new JsonParser();
+		try
+		{
+			JsonElement je = jp.parse(s);
+			Object o = new JsonReader().read(je);
+			loadState(o);	
+		}
+		catch (JsonParseException | ReadException e)
+		{
+			throw new PersistenceException(e);
+		}
 	}
 
 	public static void main(String[] args)

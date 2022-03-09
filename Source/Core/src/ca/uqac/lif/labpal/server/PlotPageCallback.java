@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sun.net.httpserver.HttpExchange;
-
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
@@ -40,10 +38,10 @@ public class PlotPageCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
+	public void fillInputModel(String uri, Map<String,String> req_parameters, Map<String,Object> input, Map<String,byte[]> parts) throws PageRenderingException
 	{
-		super.fillInputModel(h, input);
-		int id = fetchId(h);
+		super.fillInputModel(uri, req_parameters, input, parts);
+		int id = fetchId(uri);
 		Plot p = m_server.getLaboratory().getPlot(id);
 		if (p == null)
 		{
@@ -52,16 +50,15 @@ public class PlotPageCallback extends TemplatePageCallback
 		input.put("id", id);
 		input.put("title", "Plot " + id);
 		input.put("plot", p);
-		if (isTextBrowser(h))
+		if (req_parameters.containsKey("textbrowser") && Boolean.TRUE.equals(req_parameters.get("textbrowser")))
 		{
 			byte[] bytes = p.getImage(Gnuplot.DUMB);
 			input.put("plottext", new String(bytes));
 		}
 	}
 	
-	protected static int fetchId(HttpExchange h)
+	protected static int fetchId(String uri)
 	{
-		String uri = h.getRequestURI().toString();
 		Matcher mat = s_idPattern.matcher(uri);
 		if (!mat.find())
 		{

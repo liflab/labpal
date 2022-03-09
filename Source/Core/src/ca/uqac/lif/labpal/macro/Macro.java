@@ -44,6 +44,14 @@ import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 public abstract class Macro implements ExplanationQueryable, Identifiable, Stateful, LatexExportable
 {
 	/**
+	 * Resets the ID counter for macros.
+	 */
+	public static final void resetCounter()
+	{
+		s_idCounter = 1;
+	}
+	
+	/**
 	 * The macro's ID
 	 */
 	protected int m_id;

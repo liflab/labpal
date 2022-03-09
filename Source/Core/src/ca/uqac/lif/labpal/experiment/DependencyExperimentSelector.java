@@ -26,10 +26,12 @@ import ca.uqac.lif.labpal.Laboratory;
 
 /**
  * Experiment selector that retrieves all experiments that are dependencies of
- * a given experiment.
+ * a given experiment. More precisely, the selector calculates the
+ * <em>transitive closure</em> of the dependency relation starting from a given
+ * experiment.
  * 
  * @since 3.0
- * 
+ * @see Dependent
  * @author Sylvain Hallé
  */
 public class DependencyExperimentSelector extends ConcreteExperimentSelector
@@ -64,10 +66,9 @@ public class DependencyExperimentSelector extends ConcreteExperimentSelector
 				continue;
 			}
 			deps.add(e);
-			for (int dep : e.dependsOn())
+			for (Experiment e_dep : e.dependsOn())
 			{
-				Experiment e_dep = m_laboratory.getExperiment(dep);
-				if (e_dep != null && !deps.contains(e_dep) && !added.contains(e_dep))
+				if (!deps.contains(e_dep) && !added.contains(e_dep))
 				{
 					added.add(e_dep);
 				}

@@ -25,7 +25,6 @@ import ca.uqac.lif.labpal.DummyExperiment;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.assistant.Assistant;
 import ca.uqac.lif.labpal.assistant.QueuedThreadPoolExecutor;
-import ca.uqac.lif.labpal.assistant.SingleThreadExecutor;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 import ca.uqac.lif.labpal.macro.ExperimentMacro;

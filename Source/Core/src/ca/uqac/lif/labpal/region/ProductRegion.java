@@ -23,7 +23,17 @@ package ca.uqac.lif.labpal.region;
  *
  */
 public class ProductRegion extends ExtensionRegion
-{
+{	
+	/**
+	 * Creates a new product region.
+	 * @param domains The domains for each dimension of the region.
+	 * @return The new product region
+	 */
+	public static ProductRegion product(Domain<?> ... domains)
+	{
+		return new ProductRegion(domains);
+	}
+	
 	/**
 	 * Creates a new product region.
 	 * @param domains The domains for each dimension of the region.

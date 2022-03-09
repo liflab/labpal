@@ -92,6 +92,17 @@ public class Point
 		return null;
 	}
 	
+	public int getInt(String name)
+	{
+		Object o = get(name);
+		if (!(o instanceof Number))
+		{
+			return 0;
+		}
+		Number n = (Number) o;
+		return n.intValue();
+	}
+	
 	/**
 	 * Gets the value associated to a dimension of the point.
 	 * @param name The name of the dimension

@@ -15,7 +15,10 @@
   <p>No experiment currently in the queue.</p>
 <#else>
   <form name="current-queue" method="post" action="/assistant">
-  <p><input type="submit" class="btn btn-start" id="start" name="start" value="Start a new run" /></p>
+  <p>
+  <input type="submit" class="btn btn-start" id="start" name="start" value="Start a new run" />
+  <input type="submit" class="btn btn-delete" id="dequeue" name="dequeue" value="Remove from queue" />
+  </p>
   <#include "experiment-list.ftlh">
   </form>
 </#if>
@@ -45,6 +48,7 @@
 
   <#assign experiments = r.dependsOn()>
 
+  <form name="run-${r_id}" method="post" action="/assistant">
   <#if experiments?size == 0>
     <p>No experiment in this run.</p> <#-- Should not happen, just to be safe -->
   <#else>
@@ -53,11 +57,11 @@
   </div>
   </div>
   
-  <form name="run-${r_id}" method="post" action="/assistant">
+  
   <#if r_running>
   <input type="submit" class="btn btn-stop" id="stop-r-${r_id}" name="stop-r-${r_id}" value="Stop this run" />
-  </#if>
   <input type="submit" class="btn btn-delete" id="delete-r-${r_id}" name="delete-r-${r_id}" value="Delete this run" />
+  </#if>
   </form>
 
 

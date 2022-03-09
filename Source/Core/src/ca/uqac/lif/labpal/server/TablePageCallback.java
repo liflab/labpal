@@ -48,7 +48,7 @@ public class TablePageCallback extends TemplatePageCallback
 	public CallbackResponse process(HttpExchange h)
 	{
 		String uri = h.getRequestURI().toString();
-		int id = fetchId(h);
+		int id = fetchId(uri);
 		Table t = m_server.getLaboratory().getTable(id);
 		if (uri.contains("/csv"))
 		{
@@ -118,11 +118,10 @@ public class TablePageCallback extends TemplatePageCallback
 
 
 	@Override
-	public void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
+	public void fillInputModel(String uri, Map<String,String> req_parameters, Map<String,Object> input, Map<String,byte[]> parts) throws PageRenderingException
 	{
-		super.fillInputModel(h, input);
-		int id = fetchId(h);
-		String uri = h.getRequestURI().toString();
+		super.fillInputModel(uri, req_parameters, input, parts);
+		int id = fetchId(uri);
 		Table t = m_server.getLaboratory().getTable(id);
 		if (t == null)
 		{
@@ -145,9 +144,8 @@ public class TablePageCallback extends TemplatePageCallback
 		input.put("tablecontents", baos.toString());
 	}
 
-	protected static int fetchId(HttpExchange h)
+	protected static int fetchId(String uri)
 	{
-		String uri = h.getRequestURI().toString();
 		Matcher mat = s_idPattern.matcher(uri);
 		if (!mat.find())
 		{

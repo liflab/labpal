@@ -25,6 +25,7 @@ import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.provenance.LeafFetcher;
+import ca.uqac.lif.labpal.region.Region;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
@@ -137,12 +138,56 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		m_title = title;
 		return this;
 	}
+	
+	/**
+	 * Sets the title associated to this plot, based on the values
+	 * of a region.
+	 * @param r The region
+	 * @return This table
+	 */
+	/*@ non_null @*/ public Table setTitle(/*@ non_null @*/ Region r)
+	{
+		return setTitle("", r);
+	}
+	
+	/**
+	 * Sets the title associated to this plot, based on the values
+	 * of a region.
+	 * @param prefix A string prefix to put before the auto-generated
+	 * title
+	 * @param r The region
+	 * @return This table
+	 */
+	/*@ non_null @*/ public Table setTitle(String prefix, Region r)
+	{
+		StringBuilder out = new StringBuilder();
+		out.append(prefix);
+		boolean first = true;
+		for (String d : r.getDimensions())
+		{
+			Set<Object> domain = r.getDomain(d);
+			if (domain.size() == 1)
+			{
+				if (first)
+				{
+					first = false;
+				}
+				else
+				{
+					out.append(", ");
+				}
+				out.append(d + "=" + pick(domain));
+			}
+		}
+		setTitle(out.toString());
+		return this;
+	}
 
 	/**
 	 * Gets the nickname given to this table.
 	 * @return The name
 	 */
-	public String getNickname()
+	/*@ pure @*/ public String getNickname()
 	{
 		return m_nickname;
 	}
@@ -152,7 +197,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 * @param nickname The name
 	 * @return This table
 	 */
-	public Table setNickname(String nickname)
+	/*@ non_null @*/ public Table setNickname(String nickname)
 	{
 		m_nickname = nickname;
 		return this;
@@ -249,5 +294,14 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	protected Object[] getValue(Object... inputs) throws InvalidNumberOfArgumentsException
 	{
 		return new Object[] {getSpreadsheet()};
-	}	
+	}
+	
+	protected static Object pick(Set<?> set)
+	{
+		for (Object o : set)
+		{
+			return o;
+		}
+		return null;
+	}
 }

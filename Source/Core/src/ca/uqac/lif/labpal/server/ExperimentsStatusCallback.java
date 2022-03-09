@@ -52,7 +52,7 @@ public class ExperimentsStatusCallback extends LabStatusCallback
 		cbr.setContentType(ContentType.JSON);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream out = new PrintStream(baos);
-		int exp_id = TemplatePageCallback.fetchId(s_idPattern, t);
+		int exp_id = TemplatePageCallback.fetchId(s_idPattern, t.getRequestURI().toString());
 		if (exp_id > 0)
 		{
 			Experiment e = m_server.getLaboratory().getExperiment(exp_id);

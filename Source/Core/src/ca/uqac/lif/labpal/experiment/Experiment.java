@@ -18,16 +18,20 @@
 package ca.uqac.lif.labpal.experiment;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ca.uqac.lif.labpal.Dependent;
 import ca.uqac.lif.labpal.Identifiable;
+import ca.uqac.lif.labpal.Persistent;
 import ca.uqac.lif.labpal.Stateful;
+import ca.uqac.lif.labpal.region.Point;
 import ca.uqac.lif.units.Time;
 import ca.uqac.lif.units.si.Second;
 
@@ -39,17 +43,54 @@ import ca.uqac.lif.units.si.Second;
  * 
  * @author Sylvain Hallé
  */
-public class Experiment implements Runnable, Comparable<Experiment>, Stateful, Identifiable
+public class Experiment implements Runnable, Comparable<Experiment>, Stateful, Identifiable, Persistent, Dependent<Experiment>
 {
-	protected static final transient SimpleDateFormat s_dateFormat = new SimpleDateFormat();
+	/**
+	 * Resets the ID counter for experiments.
+	 */
+	public static final void resetCounter()
+	{
+		s_idCounter = 1;
+	}
 
+	/**
+	 * A duration of 0 seconds, used as the default timeout value.
+	 * @see #m_timeout
+	 */
+	/*@ non_null @*/ protected static final transient Second s_zeroSeconds = new Second(0);
+
+	/**
+	 * A format used to print dates when sending them to a page of the web
+	 * interface.
+	 */
+	/*@ non_null @*/ protected static final transient SimpleDateFormat s_dateFormat = new SimpleDateFormat();
+
+	/**
+	 * A counter used to keep track of the last assigned ID over all experiment
+	 * instances. 
+	 */
 	private static transient int s_idCounter = 1;
 
+	/**
+	 * The numerical identifier (ID) given to an experiment instance.
+	 * @see #getId()
+	 * @see Identifiable
+	 */
 	private int m_id;
 
+	/**
+	 * A fraction between 0 and 1 representing the approximate progression of the
+	 * execution of the experiment.
+	 * @see #getProgression()
+	 * @see Stateful
+	 */
 	private float m_progression;
 
-	private Time m_timeout;
+	/**
+	 * A time duration after which the experiment is expected to be interrupted
+	 * if it has not done so yet.
+	 */
+	/*@ non_null @*/ private Time m_timeout;
 
 	private float m_timeRatio;
 
@@ -58,27 +99,64 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	private long m_prereqTime;
 
 	private long m_endTime;
-	
+
 	private boolean m_hasTimedOut;
 
+	/**
+	 * The current status of the experiment.
+	 * @see #getStatus()
+	 * @see Stateful
+	 */
 	/*@ non_null @*/ private Status m_status;
 
+	/**
+	 * A lock to enforce synchronized access to the experiment's status field.
+	 */
 	/*@ non_null @*/ private transient Lock m_statusLock;
 
+	/**
+	 * A lock to enforce synchronized access to the progression member field.
+	 */
 	/*@ non_null @*/ private transient Lock m_progressionLock;
 
+	/**
+	 * A map associating input parameter names to their value.
+	 */
 	/*@ non_null @*/ private Map<String,Object> m_inputParameters;
 
+	/**
+	 * A map associating output parameter names to their value.
+	 */
 	/*@ non_null @*/ private Map<String,Object> m_outputParameters;
 
+	/**
+	 * A lock to enforce synchronized access to the input parameter map.
+	 */
 	/*@ non_null @*/ private transient Lock m_inputParametersLock;
 
+	/**
+	 * A lock to enforce synchronized access to the output parameter map.
+	 */
 	/*@ non_null @*/ private transient Lock m_outputParametersLock;
 
+	/**
+	 * A map associating parameter names to a textual description of what each
+	 * parameter represents.
+	 */
 	/*@ non_null @*/ private transient Map<String,String> m_parameterDescriptions;
 
-	/*@ non_null @*/ private Set<Integer> m_dependencies;
+	/**
+	 * A list of experiments, which are the other instances this experiment
+	 * directly depends on.
+	 * @see #dependsOn()
+	 * @see Dependent
+	 */
+	/*@ non_null @*/ private List<Experiment> m_dependencies;
 
+	/**
+	 * Creates a new empty experiment instance and prepares its internal
+	 * state.
+	 */
 	public Experiment()
 	{
 		super();
@@ -90,31 +168,42 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		m_inputParameters = new HashMap<String,Object>();
 		m_outputParameters = new HashMap<String,Object>();
 		m_parameterDescriptions = new HashMap<String,String>();
-		m_dependencies = new HashSet<Integer>();
+		m_dependencies = new ArrayList<Experiment>();
 		m_timeRatio = 0;
 		m_startTime = 0;
 		m_prereqTime = 0;
 		m_endTime = 0;
 		m_status = Status.UNINITIALIZED;
 		m_hasTimedOut = false;
+		m_timeout = s_zeroSeconds;
 	}
 
-	/*@ pure non_null @*/ public final Set<Integer> dependsOn()
+	/**
+	 * Creates an experiment by writing all dimensions of a point as its
+	 * input parameters.
+	 * @param p The point
+	 */
+	public Experiment(/*@ non_null @*/ Point p)
+	{
+		this();
+		for (String d : p.getDimensions())
+		{
+			writeInput(d, p.get(d));
+		}
+	}
+
+	@Override
+	/*@ pure non_null @*/ public final List<Experiment> dependsOn()
 	{
 		return m_dependencies;
 	}
 
-	/*@ non_null @*/ public final Experiment dependsOn(int id)
-	{
-		m_dependencies.add(id);
-		return this;
-	}
-
 	/*@ non_null @*/ public final Experiment dependsOn(Experiment e)
 	{
-		if (e != null)
+		if (e != null && !m_dependencies.contains(e))
 		{
-			m_dependencies.add(e.getId());
+			m_dependencies.add(e);
+			Collections.sort(m_dependencies);
 		}
 		return this;
 	}
@@ -204,6 +293,12 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		return "";
 	}
 
+	/**
+	 * Reads a parameter from the experiment.
+	 * @param key The name of the parameter
+	 * @return The object corresponding to that parameter's value, or
+	 * <tt>null</tt> if no parameter has that name
+	 */
 	/*@ null @*/ public final Object read(String key)
 	{
 		boolean found = false;
@@ -227,12 +322,42 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		return o;
 	}
 
-	/*@ non_null @*/ public final Experiment setTimeout(/*@ non_null @*/ Time t)
+	public String readString(String key)
 	{
-		m_timeout = t;
+		Object o = read(key);
+		if (o == null)
+		{
+			return null;
+		}
+		return o.toString();
+	}
+
+	/**
+	 * Sets the time duration after which the experiment is expected to be
+	 * interrupted if it has not done so yet. 
+	 * @param t The time duration, or <tt>null</tt> to set no timeout
+	 * @return This experiment
+	 */
+	/*@ non_null @*/ public final Experiment setTimeout(/*@ null @*/ Time t)
+	{
+		if (t == null)
+		{
+			m_timeout = s_zeroSeconds;
+		}
+		else
+		{
+			m_timeout = t;
+		}
 		return this;
 	}
 
+	/**
+	 * Gets the system time when the experiment was started. 
+	 * @return The system start time, in milliseconds, or 0 if the experiment
+	 * was not started
+	 * @see System#currentTimeMillis()
+	 * @see Stateful
+	 */
 	/*@ pure @*/ public final long getStartTime()
 	{
 		return m_startTime;
@@ -243,16 +368,31 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		return formatDate(m_startTime);
 	}
 
+	/**
+	 * Gets the system time when the experiment finished being in the
+	 * <em>preparing</em> state. 
+	 * @return The system time, in milliseconds, or 0 if the experiment
+	 * has not exited that state yet
+	 * @see System#currentTimeMillis()
+	 * @see Stateful
+	 */
 	/*@ pure @*/ public final long getPrerequisitesTime()
 	{
 		return m_prereqTime;
 	}
 
+	/**
+	 * Gets the system time when the experiment ended. 
+	 * @return The system end time, in milliseconds, or 0 if the experiment
+	 * is not finished
+	 * @see System#currentTimeMillis()
+	 * @see Stateful
+	 */
 	/*@ pure @*/ public final long getEndTime()
 	{
 		return m_endTime;
 	}
-	
+
 	/*@ pure non_null @*/ public final String getEndDate()
 	{
 		return formatDate(m_endTime);
@@ -274,12 +414,11 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		return new Second(0);
 	}
 
-	
 	/*@ pure non_null @*/ public final Time getTimeout()
 	{
 		return m_timeout;
 	}
-	
+
 	/**
 	 * Retrieves the total number of "data points" contained within this
 	 * experiment. What counts as a "data point" is left to the author.
@@ -289,7 +428,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	{
 		return m_outputParameters.size();
 	}
-	
+
 	@Override
 	public final float getProgression()
 	{
@@ -306,6 +445,54 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		m_progression = x;
 		m_progressionLock.unlock();
 		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void loadState(Object o_read) throws PersistenceException
+	{
+		if (!(o_read instanceof Map))
+		{
+			throw new PersistenceException("Unexpected data structure");
+		}
+		Map<?,?> map = (Map<?,?>) o_read;
+		if (!map.containsKey("id") || !map.containsKey("input") || !map.containsKey("output") || !map.containsKey("start") || !map.containsKey("prereq") || !map.containsKey("end") || !map.containsKey("status") || !map.containsKey("timedout") || !map.containsKey("timeout") || !map.containsKey("progression"))
+		{
+			throw new PersistenceException("Unexpected data structure");
+		}
+		Object o_in = map.get("input");
+		Object o_out = map.get("output");
+		if (!(o_in instanceof Map) || !(o_out instanceof Map))
+		{
+			throw new PersistenceException("Unexpected data structure");
+		}
+		m_id = ((Number) map.get("id")).intValue();
+		m_inputParameters = (Map<String,Object>) o_in;
+		m_outputParameters = (Map<String,Object>) o_out;
+		m_startTime = ((Number) map.get("start")).longValue();
+		m_prereqTime = ((Number) map.get("prereq")).longValue();
+		m_endTime = ((Number) map.get("end")).longValue();
+		m_progression = ((Number) map.get("progression")).floatValue();
+		m_status = Stateful.getStatus((String) map.get("status"));
+		m_hasTimedOut = (Boolean) map.get("timedout");
+		m_timeout = (Time) map.get("timeout");
+	}
+
+	@Override
+	public Map<String,Object> saveState() throws PersistenceException
+	{
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("id", m_id);
+		params.put("input", m_inputParameters);
+		params.put("output", m_outputParameters);
+		params.put("status", getStatus().toString());
+		params.put("start", m_startTime);
+		params.put("prereq", m_prereqTime);
+		params.put("end", m_endTime);
+		params.put("timedout", m_hasTimedOut);
+		params.put("timeout", m_timeout);
+		params.put("progression", m_progression);
+		return params;
 	}
 
 	@Override
@@ -416,7 +603,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		m_hasTimedOut = false;
 		handleReset();
 	}
-	
+
 	/**
 	 * Resets the internal state of an experiment upon a call to
 	 * {@link #reset()}. This method can be overridden so that a custom
@@ -428,7 +615,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	{
 		setProgression(0);
 	}
-	
+
 	/**
 	 * Tells the experiment that it has ended in a timeout. Since timeouts are
 	 * handled by the thread that runs the experiment, this notification has to
@@ -438,7 +625,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	{
 		m_hasTimedOut = true;
 	}
-	
+
 	/**
 	 * Determines if the experiment has been declared a timeout.
 	 * @return <tt>true</tt> if the experiment timed out, <tt>false</tt>
@@ -474,13 +661,13 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	{
 		return m_id - e.getId();
 	}
-	
+
 	@Override
 	public int hashCode()
 	{
 		return m_id;
 	}
-	
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -502,20 +689,20 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		Status s = getStatus();
 		return s == Status.DONE || s == Status.INTERRUPTED || s == Status.FAILED;
 	}
-	
+
 	/**
-	   * Formats the date
-	   * 
-	   * @param timestamp
-	   *          A Unix timestamp
-	   * @return A formatted date
-	   */
-	  protected static String formatDate(long timestamp)
-	  {
-	    if (timestamp <= 0)
-	    {
-	      return "-";
-	    }
-	    return s_dateFormat.format(new Date(timestamp));
-	  }
+	 * Formats the date
+	 * 
+	 * @param timestamp
+	 *          A Unix timestamp
+	 * @return A formatted date
+	 */
+	protected static String formatDate(long timestamp)
+	{
+		if (timestamp <= 0)
+		{
+			return "-";
+		}
+		return s_dateFormat.format(new Date(timestamp));
+	}
 }

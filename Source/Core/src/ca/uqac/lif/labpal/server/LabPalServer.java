@@ -80,14 +80,32 @@ public class LabPalServer extends Server
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/index", "index.ftlh", "top-menu-home").setTitle("Home"));
 		registerCallback(new ExplainImageCallback(this));
 		registerCallback(new ExplainCallback(this, Method.GET, "/explain", "explain.ftlh").setTitle("Explanation"));
+		registerCallback(new DownloadCallback(this));
+		registerCallback(new UploadCallback(this, "status.ftlh"));
 		registerCallback(new CssCallback(this, Method.GET, "/screen.css", "screen.css.ftlh"));
 		registerCallback(new JavaScriptCallback("resource", LabPalServer.class));
 		registerCallback(new InnerFileCallback("resource", LabPalServer.class));
 	}
 
+	/**
+	 * Gets the laboratory that this server is taked with controlling.
+	 * @return The lab instance
+	 */
 	/*@ pure non_null @*/ public Laboratory getLaboratory()
 	{
 		return m_lab;
+	}
+
+	/**
+	 * Sets the color scheme used to display the pages of the web interface.
+	 * @param scheme An integer between 0 and 3 corresponding to the color scheme
+	 * to be used
+	 * @return This server
+	 */
+	/*@ non_null @*/ public LabPalServer setColorScheme(int scheme)
+	{
+		m_colorScheme = scheme;
+		return this;
 	}
 
 	/**
@@ -103,15 +121,15 @@ public class LabPalServer extends Server
 		{
 			String line = scanner.nextLine().trim();
 			if (line.isEmpty() || !line.startsWith("#"))
+			{
 				continue;
+			}
 			String[] parts = line.split(",");
 			lines.add(parts);
 		}
 		scanner.close();
 		return lines;
 	}
-
-
 
 	/**
 	 * Gets the array of hex colors corresponding to the current color scheme

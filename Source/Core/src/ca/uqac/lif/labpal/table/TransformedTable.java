@@ -28,6 +28,7 @@ import java.util.Set;
 import ca.uqac.lif.dag.LabelledNode;
 import ca.uqac.lif.dag.LeafCrawler;
 import ca.uqac.lif.dag.Node;
+import ca.uqac.lif.dag.NodeConnector;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.petitpoucet.AndNode;
@@ -36,6 +37,7 @@ import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
+import ca.uqac.lif.petitpoucet.function.Circuit;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 import ca.uqac.lif.petitpoucet.function.Function;
 import ca.uqac.lif.petitpoucet.function.NthInput;
@@ -51,10 +53,59 @@ import ca.uqac.lif.spreadsheet.Spreadsheet;
 public class TransformedTable extends Table
 {
 	/**
+	 * Creates a new transformed table.
+	 * @param f The function to apply to the input tables
+	 * @param tables The input tables
+	 * @return The new transformed table
+	 */
+	public static TransformedTable transform(Function f, Table ... tables)
+	{
+		return new TransformedTable(f, tables);
+	}
+	
+	/**
+	 * Creates a new transformed table by composing a list of functions on
+	 * another table.
+	 * @param t The input table
+	 * @param functions The list of functions to compose and evaluate on the
+	 * table. Note that this composition is evaluated backwards: the list
+	 * of arguments <i>f</i><sub>1</sub>, <i>f</i><sub>2</sub>,
+	 * <i>f</i><sub>3</sub> will result in evaluating
+	 * <i>f</i><sub>3</sub>(<i>f</i><sub>2</sub>(<i>f</i><sub>1</sub>(<i>t</i>)))
+	 * on a table <i>t</i>.
+	 * @return The new transformed table
+	 */
+	public static TransformedTable transform(Table t, AtomicFunction ... functions)
+	{
+		Circuit c = new Circuit(1, 1);
+		for (int i = 0; i < functions.length; i++)
+		{
+			AtomicFunction f_i = functions[i];
+			c.addNodes(f_i);
+			if (i == 0)
+			{
+				c.associateInput(0, f_i.getInputPin(0));
+			}
+			if (i > 0)
+			{
+				NodeConnector.connect(functions[i - 1], 0, f_i, 0);
+			}
+			if (i == functions.length - 1)
+			{
+				c.associateOutput(0, f_i.getOutputPin(0));
+			}
+		}
+		return new TransformedTable(c, t);
+	}
+	
+	/**
 	 * The function to apply to the input spreadsheet
 	 */
 	protected Function m_transformation;
 
+	/**
+	 * The list of tables this transformed table takes as input.
+	 */
 	protected List<Table> m_inputTables;
 
 	/**
@@ -67,6 +118,14 @@ public class TransformedTable extends Table
 		super();
 		m_transformation = f;
 		m_inputTables = Arrays.asList(tables);
+		if (tables.length > 0)
+		{
+			setTitle(tables[0].getTitle());
+			if (!tables[0].getNickname().isBlank())
+			{
+				setNickname("t" + tables[0].getNickname());
+			}
+		}
 	}
 
 	@Override

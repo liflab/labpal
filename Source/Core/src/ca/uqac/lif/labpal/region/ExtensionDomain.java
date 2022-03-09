@@ -27,6 +27,17 @@ import java.util.Set;
 public class ExtensionDomain<T> implements Domain<T>
 {
 	/**
+	 * Creates a new extension domain.
+	 * @param name The name of the domain
+	 * @param values The list of values contained in the domain
+	 * @return The new domain instance
+	 */
+	public static ExtensionDomain<?> extension(String name, Object ... values)
+	{
+		return new ExtensionDomain<Object>(name, values);
+	}
+	
+	/**
 	 * The set of values in the domain.
 	 */
 	/*@ non_null @*/ protected final Set<T> m_values;

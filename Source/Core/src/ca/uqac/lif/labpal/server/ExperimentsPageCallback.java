@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.net.httpserver.HttpExchange;
-
 import bsh.EvalError;
 import bsh.Interpreter;
 import ca.uqac.lif.labpal.Stateful.Status;
@@ -39,9 +37,9 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
+	public void fillInputModel(String uri, Map<String,String> req_parameters, Map<String,Object> input, Map<String,byte[]> parts) throws PageRenderingException
 	{
-		super.fillInputModel(h, input);
+		super.fillInputModel(uri, req_parameters, input, parts);
 		input.put("title", "Experiments");
 		if (input.containsKey("filter"))
 		{
@@ -55,7 +53,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 			    // not going to happen - value came from JDK's own StandardCharsets
 			}
 			input.put("filter", filter);
-			input.put("groups", getGroups(h, filter.trim()));
+			input.put("groups", getGroups(filter.trim()));
 		}
 		else
 		{
@@ -63,7 +61,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		}
 	}
 	
-	protected List<ExperimentGroup> getGroups(HttpExchange h, String query)
+	protected List<ExperimentGroup> getGroups(String query)
 	{
 		if (query == null || query.trim().isEmpty())
 		{

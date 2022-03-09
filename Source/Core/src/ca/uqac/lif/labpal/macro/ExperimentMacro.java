@@ -200,5 +200,4 @@ public class ExperimentMacro extends Macro implements Dependent<Experiment>
 	{
 		return m_experiments;
 	}
-
 }

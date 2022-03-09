@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.sun.net.httpserver.HttpExchange;
-
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.dag.Pin;
 import ca.uqac.lif.labpal.Laboratory;
@@ -53,9 +51,9 @@ public class ExplainCallback extends TemplatePageCallback
 	}
 
 	@Override
-	public void fillInputModel(HttpExchange h, Map<String,Object> input) throws PageRenderingException
+	public void fillInputModel(String uri, Map<String,String> req_parameters, Map<String,Object> input, Map<String,byte[]> parts) throws PageRenderingException
 	{
-		super.fillInputModel(h, input);
+		super.fillInputModel(uri, req_parameters, input, parts);
 		String datapoint_id = (String) input.get("id");
 		StringBuilder out = new StringBuilder();
 		PartNode node = m_server.getLaboratory().getExplanation(datapoint_id);

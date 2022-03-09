@@ -14,7 +14,7 @@
 </table>
 
 <#if serialization_message?has_content>
-${serialization_message}
+${serialization_message?no_esc}
 </#if>
 
 <form style="display:inline-block" id ="download" name="download" method="post" enctype="multipart/form-data" action="/download">

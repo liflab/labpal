@@ -665,11 +665,11 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	@Override
 	public int hashCode()
 	{
-		return m_id;
+		return 9 * m_id;
 	}
 
 	@Override
-	public boolean equals(Object o)
+	/*@ pure @*/ public boolean equals(Object o)
 	{
 		if (!(o instanceof Experiment))
 		{
@@ -688,6 +688,12 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	{
 		Status s = getStatus();
 		return s == Status.DONE || s == Status.INTERRUPTED || s == Status.FAILED;
+	}
+	
+	@Override
+	/*@ pure non_null @*/ public String toString()
+	{
+		return "E" + m_id;
 	}
 
 	/**

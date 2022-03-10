@@ -296,6 +296,22 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		return new Object[] {getSpreadsheet()};
 	}
 	
+	@Override
+	public int hashCode()
+	{
+		return 11 * m_id;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof Table))
+		{
+			return false;
+		}
+		return ((Table) o).getId() == m_id;
+	}
+	
 	protected static Object pick(Set<?> set)
 	{
 		for (Object o : set)

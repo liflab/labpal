@@ -50,7 +50,7 @@ public class PlotPageCallback extends TemplatePageCallback
 		input.put("id", id);
 		input.put("title", "Plot " + id);
 		input.put("plot", p);
-		input.put("expdeps", DependencyExperimentSelector.getDependencies(p));
+		input.put("expdeps", DependencyExperimentSelector.getDependencyList(p));
 		if (req_parameters.containsKey("textbrowser") && Boolean.TRUE.equals(input.get("textbrowser")))
 		{
 			byte[] bytes = p.getImage(Gnuplot.DUMB);

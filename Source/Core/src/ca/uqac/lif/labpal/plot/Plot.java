@@ -291,4 +291,20 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Statef
 		list.add(m_table);
 		return list;
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return 13 * m_id;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof Plot))
+		{
+			return false;
+		}
+		return ((Plot) o).getId() == m_id;
+	}
 }

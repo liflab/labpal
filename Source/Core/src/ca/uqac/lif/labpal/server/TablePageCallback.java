@@ -139,7 +139,7 @@ public class TablePageCallback extends TemplatePageCallback
 		input.put("id", id);
 		input.put("title", "Table " + id);
 		input.put("table", t);
-		input.put("expdeps", DependencyExperimentSelector.getDependencies(t));
+		input.put("expdeps", DependencyExperimentSelector.getDependencyList(t));
 		HtmlTableRenderer renderer = new HtmlTableRenderer(t);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		renderer.render(new PrintStream(baos));

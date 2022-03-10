@@ -93,12 +93,16 @@ public class DependencyExperimentSelector extends ConcreteExperimentSelector
 		return exp_dep;
 	}
 	
-	public static List<Experiment> getDependencies(Dependent<?> object)
+	public static Set<Experiment> getDependencies(Dependent<?> object)
 	{
 		DependencyExperimentSelector des = new DependencyExperimentSelector(null, object);
-		Set<Experiment> s_exp_deps = des.select();
+		return des.select();
+	}
+	
+	public static List<Experiment> getDependencyList(Dependent<?> object)
+	{
 		List<Experiment> l_exp_deps = new ArrayList<Experiment>();
-		l_exp_deps.addAll(s_exp_deps);
+		l_exp_deps.addAll(getDependencies(object));
 		Collections.sort(l_exp_deps);
 		return l_exp_deps;
 	}

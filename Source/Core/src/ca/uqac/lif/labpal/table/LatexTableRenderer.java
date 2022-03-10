@@ -19,6 +19,7 @@ package ca.uqac.lif.labpal.table;
 
 import java.io.PrintStream;
 
+import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.spreadsheet.Spreadsheet;
 import ca.uqac.lif.spreadsheet.StructuredSpreadsheetPrinter;
 
@@ -32,13 +33,19 @@ public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 	 * The table to render as LaTeX markup.
 	 */
 	protected Table m_table;
-	
+
 	/**
 	 * A flag indicating whether each cell should be surrounded by a hyperlink
 	 * with that cell's datapoint ID.
 	 */
 	protected boolean m_withHyperlinks = true;
-	
+
+	/**
+	 * Whether to give a red color to the table when its status reveals a
+	 * failure.
+	 */
+	protected boolean m_colorWhenError = true;
+
 	/**
 	 * Creates a new LaTeX table renderer.
 	 * @param t The table to render as LaTeX markup
@@ -48,16 +55,24 @@ public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 		super();
 		m_table = t;
 	}
-	
+
 	public LatexTableRenderer render(PrintStream ps)
 	{
 		print(m_table.getSpreadsheet(), ps);
 		return this;
 	}
-	
+
 	@Override
 	protected void printTableStart(Spreadsheet s, PrintStream ps)
 	{
+		if (m_colorWhenError)
+		{
+			Status st = m_table.getStatus();
+			if (st == Status.FAILED || st == Status.INTERRUPTED)
+			{
+				ps.println("{\\color{red}");
+			}
+		}
 		String table_type = m_mergeCells ? "longtable" : "table";
 		ps.print("\\begin{" + table_type + "}{|");
 		for (int i = 0; i < s.getWidth(); i++)
@@ -78,6 +93,14 @@ public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 		ps.println("\\hline");
 		String table_type = m_mergeCells ? "longtable" : "table";
 		ps.print("\\end{" + table_type + "}");
+		if (m_colorWhenError)
+		{
+			Status st = m_table.getStatus();
+			if (st == Status.FAILED || st == Status.INTERRUPTED)
+			{
+				ps.println("}");
+			}
+		}
 	}
 
 	@Override
@@ -149,7 +172,7 @@ public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 			ps.println("\\hline");
 		}
 	}
-	
+
 	/**
 	 * Escapes a string for LaTeX
 	 * @param input The input string

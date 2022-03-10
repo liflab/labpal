@@ -1,4 +1,4 @@
-package ca.uqac.lif.labpal.server;
+package examples;
 
 import static ca.uqac.lif.labpal.region.ConditionalRegion.filter;
 import static ca.uqac.lif.labpal.region.DiscreteRange.range;

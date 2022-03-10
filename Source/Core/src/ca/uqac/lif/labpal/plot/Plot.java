@@ -100,7 +100,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Statef
 		m_plot = p;
 		m_nickname = "";
 		setTitle(t.getTitle());
-		if (!t.getNickname().isBlank())
+		if (!t.getNickname().isEmpty())
 		{
 			setNickname("p" + t.getNickname());
 		}

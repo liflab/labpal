@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Configuration file for AntRun.
+  
+  Use this file to override the default properties contained
+  in build.xml. For example, to override the build.jar.filename
+  property (which sets the name of the compiled jar file), add
+  an element
+  
+  <jar>
+    <filename>foo</filename>
+  </jar>
+  
+  inside the <build> element.
+  
+  **Caveat emptor:** in some cases, changing this file and running ant
+  again will result in Ant using a cached version of the old file! Run
+  "ant dummy" to make sure that the correct data is being read. Otherwise
+  you might need to run "ant clean" and start over.
+-->
+<build>
+  <!-- Uncomment any of these if you want to override the build
+       script's default values -->
+
+  <!-- The project's name -->
+  <name>LabPal</name>
+  
+  <!-- The project's author. Currently this only
+  shows up in the footer of the Javadoc documentation. -->
+  <author>Sylvain Hallé</author>
+  
+  <!-- The project's main class -->
+  <mainclass>ca.uqac.lif.labpal.Laboratory</mainclass>
+  
+  <jar>
+    <filename>labpal.jar</filename>
+  </jar>
+  
+  <srcdir>src</srcdir>
+  <depdir>dep</depdir>
+  <libdir>lib</libdir>
+  <bindir>bin</bindir>
+  <docdir>../../docs/javadoc</docdir>
+  
+  
+  <test>
+    <srcdir>srctest</srcdir>
+    <depdir>dep</depdir>
+    <libdir>lib</libdir>
+    <bindir>bin</bindir>
+    <!-- The filename pattern to recognize test files -->
+    <filenamepattern>
+           <src>**/*Test.java</src>
+           <bin>**/*Test.class</bin>
+         </filenamepattern>
+  </test>
+  
+  <dependencies>
+    <dependency>
+      <name>Azrael (Core)</name>
+      <classname>ca.uqac.lif.azrael.ObjectPrinter</classname>
+      <files>
+        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v2.0.3/azrael-core.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Azrael (JSON)</name>
+      <classname>ca.uqac.lif.azrael.json.JsonPrinter</classname>
+      <files>
+        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v2.0.3/azrael-json.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Petit Poucet (Core)</name>
+      <classname>ca.uqac.lif.petitpoucet.Queryable</classname>
+      <files>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.1-beta3/petitpoucet-core.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Petit Poucet (Functions)</name>
+      <classname>ca.uqac.lif.petitpoucet.function.Function</classname>
+      <files>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.1-beta3/petitpoucet-functions.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Jerrydog</name>
+      <classname>ca.uqac.lif.jerrydog.Server</classname>
+      <files>
+        <zip>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.3.2/jerrydog-0.3.2.zip</zip>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>lif-units</name>
+      <classname>ca.uqac.lif.units.Unit</classname>
+      <files>
+        <jar>https://github.com/liflab/lif-units/releases/download/v1.1/lif-units.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Programmatic Spreadsheet (Core)</name>
+      <classname>ca.uqac.lif.spreadsheet.Spreadsheet</classname>
+      <files>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.1-beta/pss-core.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Programmatic Spreadsheet (Charts)</name>
+      <classname>ca.uqac.lif.spreadsheet.chart.Chart</classname>
+      <files>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.1-beta/pss-charts.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Programmatic Spreadsheet (Gnuplot)</name>
+      <classname>ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot</classname>
+      <files>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.1-beta/pss-charts-gnuplot.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Programmatic Spreadsheet (Units)</name>
+      <classname>ca.uqac.lif.spreadsheet.units.Operations</classname>
+      <files>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.1-beta/pss-units.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Apache Freemarker</name>
+      <classname>freemarker.template.Template</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/org/freemarker/freemarker/2.3.31/freemarker-2.3.31.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Beanshell</name>
+      <classname>bsh.Interpreter</classname>
+      <files>
+        <jar>http://beanshell.org/bsh-2.0b4.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+	  <name>PDFBox</name>
+	  <classname>org.apache.pdfbox.util.Version</classname>
+	  <files>
+		<jar>https://repo1.maven.org/maven2/org/apache/pdfbox/pdfbox/2.0.25/pdfbox-2.0.25.jar</jar>
+		<!-- These are not necessary
+		<jar>http://central.maven.org/maven2/org/apache/pdfbox/fontbox/2.0.0/fontbox-2.0.0.jar</jar>
+		<jar>http://central.maven.org/maven2/org/apache/pdfbox/jempbox/1.8.11/jempbox-1.8.11.jar</jar>
+		<jar>http://central.maven.org/maven2/org/apache/pdfbox/xmpbox/2.0.0/xmpbox-2.0.0.jar</jar>
+		<jar>http://central.maven.org/maven2/org/apache/pdfbox/preflight/2.0.0/preflight-2.0.0.jar</jar>
+		<jar>http://central.maven.org/maven2/org/apache/pdfbox/pdfbox-tools/2.0.0/pdfbox-tools-2.0.0.jar</jar>
+		-->
+	  </files>
+	  <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Apache Commons Logging</name> <!-- Required by PDFBox -->
+      <classname>org.apache.commons.logging.Log</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+  </dependencies>
+  
+</build>

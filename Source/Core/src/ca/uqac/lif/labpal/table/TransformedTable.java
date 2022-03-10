@@ -121,7 +121,7 @@ public class TransformedTable extends Table
 		if (tables.length > 0)
 		{
 			setTitle(tables[0].getTitle());
-			if (!tables[0].getNickname().isBlank())
+			if (!tables[0].getNickname().isEmpty())
 			{
 				setNickname("t" + tables[0].getNickname());
 			}

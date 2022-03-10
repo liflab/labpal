@@ -99,7 +99,7 @@ public interface Stateful
 	 * @param s2 The second state
 	 * @return The lowest of the two states
 	 */
-	private static Status getLowestStatus(Status s1, Status s2)
+	public static Status getLowestStatus(Status s1, Status s2)
 	{
 		if  (s1 == Status.RUNNING || s2 == Status.RUNNING)
 		{

@@ -51,11 +51,6 @@ public class Assistant
 	protected transient LabPalExecutorService m_executor;
 
 	/**
-	 * The scheduler used to possibly reorder the experiments given for a run.
-	 */
-	/*@ null @*/ protected transient ExperimentScheduler m_scheduler;
-
-	/**
 	 * The list of runs produced by the assistant.
 	 */
 	/*@ non_null @*/ protected final transient List<AssistantRun> m_runs;
@@ -101,12 +96,7 @@ public class Assistant
 	 */
 	/*@ pure non_null @*/ public String getName()
 	{
-		String out = m_executor.toString();
-		if (m_scheduler != null)
-		{
-			out += ";" + m_scheduler;
-		}
-		return out;
+		return m_executor.toString();
 	}
 	
 	/**
@@ -185,7 +175,7 @@ public class Assistant
 			m_queue.clear();
 			return run;
 		}
-		List<Experiment> ordered_list = sort(experiments);
+		List<Experiment> ordered_list = Arrays.asList(experiments);
 		RunRunnable rr = new RunRunnable(ordered_list, getExecutor());
 		Future<?> future = m_runExecutor.submit(rr);
 		AssistantRun run = new AssistantRun(rr, future);
@@ -215,7 +205,7 @@ public class Assistant
 	 */
 	/*@ non_null @*/ public AssistantRun enqueue(/*@ non_null @*/ Collection<Experiment> experiments)
 	{
-		List<Experiment> ordered_list = sort(experiments);
+		List<Experiment> ordered_list = new ArrayList<Experiment>(experiments);
 		RunRunnable rr = new RunRunnable(ordered_list, getExecutor());
 		Future<?> future = m_runExecutor.submit(rr);
 		AssistantRun run = new AssistantRun(rr, future);
@@ -238,19 +228,6 @@ public class Assistant
 			exps.addAll(sel.select());
 		}
 		return enqueue(exps);
-	}
-
-	/**
-	 * Sets a scheduler that will prioritize the experiments in the assistant's
-	 * queue.
-	 * @param s The scheduler, or <tt>null</tt> to simply run the experiments
-	 * in order
-	 * @return This assistant
-	 */
-	/*@ non_null @*/ public Assistant setScheduler(/*@ null @*/ ExperimentScheduler s)
-	{
-		m_scheduler = s;
-		return this;
 	}
 
 	/**
@@ -357,25 +334,18 @@ public class Assistant
 	}
 
 	/**
-	 * Asks the scheduler to reorder the list of experiments to be executed by
-	 * the assistant, if a scheduler is provided. Note that this method assumes
-	 * it is called from a block that has the lock on the assistant's queue.
+	 * Asks a scheduler to reorder the list of experiments to be executed by
+	 * the assistant.
+	 * @param scheduler The scheduler that will reorder the experiments
+	 * @return This assistant
 	 */
-	/*@ non_null @*/ protected List<Experiment> sort(Experiment ... experiments)
+	/*@ non_null @*/ public Assistant apply(/*@ non_null @*/ ExperimentScheduler scheduler)
 	{
-		return sort(Arrays.asList(experiments));
+		List<Experiment> new_queue = scheduler.schedule(m_queue);
+		m_queue.clear();
+		m_queue.addAll(new_queue);
+		return this;
 
-	}
-
-	/*@ non_null @*/ protected List<Experiment> sort(Collection<Experiment> experiments)
-	{
-		if (m_scheduler == null)
-		{
-			ArrayList<Experiment> list = new ArrayList<Experiment>(experiments.size());
-			list.addAll(experiments);
-			return list;
-		}
-		return m_scheduler.schedule(experiments);
 	}
 	
 	/*@ non_null @*/ protected LabPalExecutorService getExecutor()

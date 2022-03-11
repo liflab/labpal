@@ -1,12 +1,33 @@
+/*
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2022 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.labpal;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * An ordered group of lab objects.
+ * @author Sylvain Hallé
+ *
+ * @param <T> The type of the objects in the group
+ */
 public abstract class Group<T extends Comparable<T>> implements Dependent<T>
 {
 	/**
@@ -17,7 +38,7 @@ public abstract class Group<T extends Comparable<T>> implements Dependent<T>
 	/**
 	 * The set of objects contained in this group.
 	 */
-	/*@ non_null @*/ protected Set<T> m_objects;
+	/*@ non_null @*/ protected List<T> m_objects;
 	
 	/**
 	 * The group's name.
@@ -39,7 +60,7 @@ public abstract class Group<T extends Comparable<T>> implements Dependent<T>
 		super();
 		m_name = name;
 		m_description = description;
-		m_objects = new HashSet<T>();
+		m_objects = new ArrayList<T>();
 	}
 	
 	/**
@@ -61,7 +82,10 @@ public abstract class Group<T extends Comparable<T>> implements Dependent<T>
 	{
 		for (T o : objects)
 		{
-			m_objects.add(o);
+			if (!m_objects.contains(o))
+			{
+				m_objects.add(o);
+			}
 		}
 		return this;
 	}
@@ -129,10 +153,10 @@ public abstract class Group<T extends Comparable<T>> implements Dependent<T>
 	}
 	
 	/**
-	 * Gets the set of objects contained within this group.
+	 * Gets the list of objects contained within this group.
 	 * @return The set of objects
 	 */
-	/*@ pure non_null @*/ public Set<T> getObjects()
+	/*@ pure non_null @*/ public List<T> getObjects()
 	{
 		return m_objects;
 	}

@@ -17,13 +17,19 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.assistant.AssistantRun;
+import ca.uqac.lif.labpal.assistant.BalanceObjects;
+import ca.uqac.lif.labpal.assistant.ExperimentScheduler;
+import ca.uqac.lif.labpal.assistant.Subsample;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.PlotExperimentSelector;
 import ca.uqac.lif.labpal.experiment.TableExperimentSelector;
@@ -61,7 +67,7 @@ public class AssistantPageCallback extends TemplatePageCallback
 			enqueueTable(uri, input);
 		}
 		Set<Integer> groups = fetchGroupIds(input);
-		Set<Experiment> exps = fetchExperiments(input, groups);
+		List<Experiment> exps = fetchExperiments(input, groups);
 		if (input.containsKey("enqueue"))
 		{
 			enqueueExperiments(input, exps);
@@ -73,6 +79,10 @@ public class AssistantPageCallback extends TemplatePageCallback
 		if (input.containsKey("reset"))
 		{
 			resetExperiments(input, exps);
+		}
+		if (input.containsKey("scheduler"))
+		{
+			applyScheduler(input);
 		}
 		if (input.containsKey("start"))
 		{
@@ -110,19 +120,46 @@ public class AssistantPageCallback extends TemplatePageCallback
 		}
 	}
 	
-	protected void enqueueExperiments(Map<String,Object> input, Set<Experiment> exps)
+	protected void applyScheduler(Map<String,Object> input)
+	{
+		if (!input.containsKey("scheduler-type"))
+		{
+			input.put("error", "No scheduler specified");
+		}
+		String scheduler_type = (String) input.get("scheduler-type");
+		ExperimentScheduler scheduler = null;
+		switch (scheduler_type)
+		{
+		case "balance":
+			scheduler = new BalanceObjects(m_server.getLaboratory().getPlots(), m_server.getLaboratory().getTables());
+			input.put("message", "Balance objects scheduler applied on experiment queue");
+			break;
+		case "subsample":
+			scheduler = new Subsample();
+			input.put("error", "Scheduler not implemented yet");
+			break;
+		default:
+			input.put("error", "Unrecognized scheduler");
+		}
+		if (scheduler != null)
+		{
+			m_server.getLaboratory().getAssistant().apply(scheduler);
+		}
+	}
+	
+	protected void enqueueExperiments(Map<String,Object> input, List<Experiment> exps)
 	{
 		int processed = m_server.getLaboratory().getAssistant().addToQueue(exps);
 		input.put("message", processed + " experiment(s) enqueued");
 	}
 	
-	protected void dequeueExperiments(Map<String,Object> input, Set<Experiment> exps)
+	protected void dequeueExperiments(Map<String,Object> input, List<Experiment> exps)
 	{
 		int processed = m_server.getLaboratory().getAssistant().removeFromQueue(exps);
 		input.put("message", processed + " experiment(s) dequeued");
 	}
 	
-	protected void resetExperiments(Map<String,Object> input, Set<Experiment> exps)
+	protected void resetExperiments(Map<String,Object> input, List<Experiment> exps)
 	{
 		int processed = exps.size();
 		for (Experiment e : exps)
@@ -173,9 +210,9 @@ public class AssistantPageCallback extends TemplatePageCallback
 		return groups;
 	}
 	
-	protected Set<Experiment> fetchExperiments(Map<String,Object> input, Set<Integer> groups)
+	protected List<Experiment> fetchExperiments(Map<String,Object> input, Set<Integer> groups)
 	{
-		Set<Experiment> exps = new HashSet<Experiment>();
+		List<Experiment> exps = new ArrayList<Experiment>();
 		for (String key : input.keySet())
 		{
 			if (key.startsWith("exp-chh-g"))
@@ -206,6 +243,7 @@ public class AssistantPageCallback extends TemplatePageCallback
 				}
 			}
 		}
+		Collections.sort(exps);
 		return exps;
 	}
 }

@@ -15,9 +15,15 @@
   <p>No experiment currently in the queue.</p>
 <#else>
   <form name="current-queue" method="post" action="/assistant">
-  <p>
+  <p class="line-align">
   <input type="submit" class="btn btn-start" id="start" name="start" value="Start a new run" />
   <input type="submit" class="btn btn-delete" id="dequeue" name="dequeue" value="Remove from queue" />
+  <label for="scheduler-type">Scheduler:</label>
+  <select name="scheduler-type" id="scheduler-type">
+    <option value="balance">Balance objects</option>
+    <option value="subsample">Sub-sample</option>
+  </select>
+  <input type="submit" class="btn btn-queue" id="scheduler" name="scheduler" value="Apply" />
   </p>
   <#include "experiment-list.ftlh">
   </form>

@@ -22,11 +22,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 import ca.uqac.lif.labpal.Dependent;
-import ca.uqac.lif.labpal.experiment.DependencyExperimentSelector;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
 /**
@@ -58,16 +56,12 @@ import ca.uqac.lif.labpal.experiment.Experiment;
  * an experiment for an object that has been "covered" the longest time ago.
  * Overall, this creates a list where experiments cover each object more or
  * less evenly.
- *  
+ * 
+ * @since 3.0
  * @author Sylvain Hallé
  */
-public class BalanceObjects implements ExperimentScheduler
+public class BalanceObjects extends DependencyScheduler
 {
-	/**
-	 * An array of collections of dependent objects
-	 */
-	protected transient Collection<? extends Dependent<?>>[] m_objects;
-	
 	/**
 	 * Creates a new instance of the scheduler.
 	 * @param objects A list of collections of dependent objects that need to be
@@ -76,45 +70,27 @@ public class BalanceObjects implements ExperimentScheduler
 	@SafeVarargs
 	public BalanceObjects(Collection<? extends Dependent<?>> ... objects)
 	{
-		super();
-		m_objects = objects;
-	}
-	
-	@Override
-	public List<Experiment> schedule(Collection<Experiment> experiments)
-	{
-		List<Experiment> list = new ArrayList<Experiment>(experiments.size());
-		list.addAll(experiments);
-		return scheduleFromList(list, m_objects);
+		super(objects);
 	}
 
-	@Override
-	public List<Experiment> schedule(Queue<Experiment> experiments)
-	{
-		List<Experiment> list = new ArrayList<Experiment>(experiments.size());
-		list.addAll(experiments);
-		return scheduleFromList(list, m_objects);
-	}
-	
-	/**
-	 * Orders a list of experiments.
-	 * @param experiments The original list of experiments
-	 * @param objects A list of collections of dependent objects
-	 * @return The reordered list
-	 */
-	@SafeVarargs
-	protected static List<Experiment> scheduleFromList(List<Experiment> experiments, Collection<? extends Dependent<?>> ... objects)
+	@SuppressWarnings("unchecked")
+	protected List<Experiment> scheduleFromList(List<Experiment> experiments, Collection<? extends Dependent<?>> ... objects)
 	{
 		List<Experiment> out_list = new ArrayList<Experiment>(experiments.size());
 		// Gets triplets
-		List<ObjectTriplet> pairs = getDependencies(experiments, objects);
+		List<ObjectTriplet> ot_pairs = getDependencies(experiments, objects);
+		List<BalancedObjectTriplet> pairs = new ArrayList<BalancedObjectTriplet>(ot_pairs.size());
+		for (ObjectTriplet ot : ot_pairs)
+		{
+			pairs.add((BalancedObjectTriplet) ot);
+		}
 		Collections.sort(pairs);
 		Set<Experiment> remaining = new HashSet<Experiment>(experiments.size());
 		remaining.addAll(experiments);
 		while (!pairs.isEmpty())
 		{
 			// Pick triplet with largest integer
-			ObjectTriplet op = pairs.get(0);
+			BalancedObjectTriplet op = pairs.get(0);
 			List<Experiment> exps = op.getExperiments();
 			if (exps.isEmpty())
 			{
@@ -125,7 +101,7 @@ public class BalanceObjects implements ExperimentScheduler
 			Experiment e = exps.get(0);
 			out_list.add(e);
 			remaining.remove(e);
-			for (ObjectTriplet p : pairs)
+			for (BalancedObjectTriplet p : pairs)
 			{
 				p.pick(e);
 			}
@@ -136,49 +112,16 @@ public class BalanceObjects implements ExperimentScheduler
 		return out_list;
 	}
 
-	/**
-	 * Creates a list associating lab objects with the subset of a given list of
-	 * experiments on which these objects depend. Each element of the list
-	 * contains an object, the sublist of experiments it depends on, and an
-	 * integer (set to 0).
-	 * @param experiments The list of experiments
-	 * @param objects A list of collections of dependent objects
-	 * @return The list of triplets
-	 */
-	@SafeVarargs
-	protected static List<ObjectTriplet> getDependencies(List<Experiment> experiments, Collection<? extends Dependent<?>> ... objects)
+	protected ObjectTriplet getObjectTriplet(Object o, List<Experiment> dependencies)
 	{
-		List<ObjectTriplet> pairs = new ArrayList<ObjectTriplet>();
-		for (Collection<? extends Dependent<?>> o_set : objects)
-		{
-			for (Dependent<?> o : o_set)
-			{
-				List<Experiment> deps = new ArrayList<Experiment>(experiments);
-				deps.retainAll(DependencyExperimentSelector.getDependencyList(o));
-				if (!deps.isEmpty())
-				{
-					pairs.add(new ObjectTriplet(o, deps, 0));
-				}
-			}
-		}
-		return pairs;
+		return new BalancedObjectTriplet(o, dependencies, 0);
 	}
 	
 	/**
 	 * Association between an object, a list of experiments and an integer.
 	 */
-	protected static class ObjectTriplet implements Comparable<ObjectTriplet>
+	protected static class BalancedObjectTriplet extends ObjectTriplet implements Comparable<BalancedObjectTriplet>
 	{
-		/**
-		 * The object in the object triplet.
-		 */
-		/*@ non_null @*/ protected Object m_object;
-		
-		/**
-		 * The experiments this object depends on.
-		 */
-		/*@ non_null @*/ protected List<Experiment> m_experiments;
-		
 		/**
 		 * The integer to which this object is associated.
 		 */
@@ -190,39 +133,10 @@ public class BalanceObjects implements ExperimentScheduler
 		 * @param exps The experiments this object depends on
 		 * @param d The integer to which this object is associated
 		 */
-		public ObjectTriplet(/*@ non_null @*/ Object o, /*@ non_null @*/ List<Experiment> exps, int d)
+		public BalancedObjectTriplet(/*@ non_null @*/ Object o, /*@ non_null @*/ List<Experiment> exps, int d)
 		{
-			super();
-			m_object = o;
-			m_experiments = exps;
+			super(o, exps);
 			this.m_d = d;
-		}
-		
-		/**
-		 * Gets the object of this object triplet.
-		 * @return The object
-		 */
-		/*@ pure non_null @*/ public Object getObject()
-		{
-			return m_object;
-		}
-		
-		/**
-		 * Gets the experiments this object depends on.
-		 * @return The experiments
-		 */
-		/*@ pure non_null @*/ public List<Experiment> getExperiments()
-		{
-			return m_experiments;
-		}
-		
-		/**
-		 * Gets the integer of this object triplet.
-		 * @return The integer
-		 */
-		/*@ pure @*/ public int getValue()
-		{
-			return m_d;
 		}
 		
 		/**
@@ -253,25 +167,9 @@ public class BalanceObjects implements ExperimentScheduler
 		}
 
 		@Override
-		public int compareTo(ObjectTriplet p)
+		public int compareTo(BalancedObjectTriplet p)
 		{
 			return p.m_d - m_d;
-		}
-		
-		@Override
-		public int hashCode()
-		{
-			return m_object.hashCode();
-		}
-		
-		@Override
-		public boolean equals(Object o)
-		{
-			if (!(o instanceof ObjectTriplet))
-			{
-				return false;
-			}
-			return m_object.equals(((ObjectTriplet) o).m_object);
 		}
 	}
 }

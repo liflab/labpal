@@ -14,6 +14,7 @@
 <#if experiments?size == 0>
   <p>No experiment currently in the queue.</p>
 <#else>
+  <p>${experiments?size} experiment(s) currently in the queue.</p>
   <form name="current-queue" method="post" action="/assistant">
   <p class="line-align">
   <input type="submit" class="btn btn-start" id="start" name="start" value="Start a new run" />
@@ -21,7 +22,9 @@
   <label for="scheduler-type">Scheduler:</label>
   <select name="scheduler-type" id="scheduler-type">
     <option value="balance">Balance objects</option>
-    <option value="subsample">Sub-sample</option>
+    <option value="decimate">Decimate 50%</option>
+    <option value="shuffle">Shuffle</option>
+    <option value="subsample">Sub-sample 50%</option>
   </select>
   <input type="submit" class="btn btn-queue" id="scheduler" name="scheduler" value="Apply" />
   </p>

@@ -29,6 +29,8 @@ import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.assistant.AssistantRun;
 import ca.uqac.lif.labpal.assistant.BalanceObjects;
 import ca.uqac.lif.labpal.assistant.ExperimentScheduler;
+import ca.uqac.lif.labpal.assistant.RandomDecimate;
+import ca.uqac.lif.labpal.assistant.Shuffle;
 import ca.uqac.lif.labpal.assistant.Subsample;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.PlotExperimentSelector;
@@ -134,9 +136,17 @@ public class AssistantPageCallback extends TemplatePageCallback
 			scheduler = new BalanceObjects(m_server.getLaboratory().getPlots(), m_server.getLaboratory().getTables());
 			input.put("message", "Balance objects scheduler applied on experiment queue");
 			break;
+		case "decimate":
+			scheduler = new RandomDecimate();
+			input.put("message", "Random decimate scheduler applied on experiment queue");
+			break;
+		case "shuffle":
+			scheduler = new Shuffle();
+			input.put("message", "Shuffle scheduler applied on experiment queue");
+			break;
 		case "subsample":
-			scheduler = new Subsample();
-			input.put("error", "Scheduler not implemented yet");
+			scheduler = new Subsample(0.5f, m_server.getLaboratory().getPlots(), m_server.getLaboratory().getTables());
+			input.put("message", "Subsampling at 50% applied on experiment queue");
 			break;
 		default:
 			input.put("error", "Unrecognized scheduler");

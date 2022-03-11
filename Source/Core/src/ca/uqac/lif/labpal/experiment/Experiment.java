@@ -299,7 +299,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	 * @return The object corresponding to that parameter's value, or
 	 * <tt>null</tt> if no parameter has that name
 	 */
-	/*@ null @*/ public final Object read(String key)
+	/*@ pure null @*/ public final Object read(/*@ non_null @*/ String key)
 	{
 		boolean found = false;
 		Object o = null;
@@ -322,7 +322,13 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		return o;
 	}
 
-	public String readString(String key)
+	/**
+	 * Reads an experiment parameter and casts it into a <tt>String</tt>.
+	 * @param key The parameter name
+	 * @return The string value, or <tt>null</tt> if the key does not exist
+	 * or is associated to a null value
+	 */
+	/*@ pure null @*/ public final String readString(/*@ non_null @*/ String key)
 	{
 		Object o = read(key);
 		if (o == null)
@@ -330,6 +336,38 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 			return null;
 		}
 		return o.toString();
+	}
+	
+	/**
+	 * Reads an experiment parameter and casts it into a <tt>float</tt>.
+	 * @param key The parameter name
+	 * @return The float value, or 0 if the key does not have a numerical
+	 * value
+	 */
+	/*@ pure @*/ public final float readFloat(/*@ non_null @*/ String key)
+	{
+		Object o = read(key);
+		if (!(o instanceof Number))
+		{
+			return 0;
+		}
+		return ((Number) o).floatValue();
+	}
+	
+	/**
+	 * Reads an experiment parameter and casts it into an <tt>int</tt>.
+	 * @param key The parameter name
+	 * @return The int value, or 0 if the key does not have a numerical
+	 * value
+	 */
+	/*@ pure @*/ public final float readInt(/*@ non_null @*/ String key)
+	{
+		Object o = read(key);
+		if (!(o instanceof Number))
+		{
+			return 0;
+		}
+		return ((Number) o).intValue();
 	}
 
 	/**

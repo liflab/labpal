@@ -136,6 +136,7 @@ public class TransformedTable extends Table
 		{
 			ins[i] = m_inputTables.get(i).getSpreadsheet();
 		}
+		m_transformation.reset();
 		Object[] out = m_transformation.evaluate(ins);
 		if (!(out[0] instanceof Spreadsheet))
 		{

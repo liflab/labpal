@@ -128,7 +128,12 @@ public class Subsample extends DependencyScheduler
 			{
 				SubsampleTriplet st = (SubsampleTriplet) ot;
 				st.m_experiments.retainAll(start_list);
-				pairs.add(st);
+				if (!st.getExperiments().isEmpty() && (iteration > 0 || st.getMaxFraction() >= m_threshold))
+				{
+					// If an object already has a coverage below the threshold at the
+					// start of the process, we do not consider it in the process
+					pairs.add(st);
+				}
 			}
 			Collections.sort(pairs);
 			while (!pairs.isEmpty())
@@ -235,6 +240,21 @@ public class Subsample extends DependencyScheduler
 				return 1;
 			}
 			return (float) m_picked / (float) m_total;
+		}
+		
+		/**
+		 * Gets the maximum coverage that this object would get if all experiments
+		 * were picked.
+		 * @return The fraction, or 1 if no experiments were originally put into
+		 * this triplet
+		 */
+		public float getMaxFraction()
+		{
+			if (m_total == 0)
+			{
+				return 1;
+			}
+			return (float) m_experiments.size() / (float) m_total;
 		}
 
 		@Override

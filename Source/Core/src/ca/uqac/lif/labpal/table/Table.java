@@ -312,6 +312,12 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		return ((Table) o).getId() == m_id;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return "T" + m_id;
+	}
+	
 	protected static Object pick(Set<?> set)
 	{
 		for (Object o : set)

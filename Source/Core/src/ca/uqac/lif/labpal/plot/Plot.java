@@ -307,4 +307,10 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Statef
 		}
 		return ((Plot) o).getId() == m_id;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "P" + m_id;
+	}
 }

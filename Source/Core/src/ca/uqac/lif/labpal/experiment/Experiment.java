@@ -727,10 +727,23 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 				future.get(timeout, TimeUnit.MILLISECONDS);
 			}
 		}
-		catch (InterruptedException | ExecutionException e)
+		catch (InterruptedException e)
 		{
 			setStatus(Status.INTERRUPTED);
 			declareInterruption(null);
+		}
+		catch (ExecutionException e)
+		{
+			setStatus(Status.FAILED);
+			Throwable t = e.getCause();
+			if (t instanceof Exception)
+			{
+				declareInterruption((Exception) t);
+			}
+			else
+			{
+				declareInterruption(e);
+			}
 		}
 		catch (TimeoutException e)
 		{
@@ -939,7 +952,16 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 					{
 						m_prereqTime = System.currentTimeMillis();
 						m_endTime = System.currentTimeMillis();
-						setStatus(Status.INTERRUPTED);
+						Throwable t = e.getCause();
+						if (t instanceof RuntimeException)
+						{
+							m_exception = (RuntimeException) t;
+							setStatus(Status.FAILED);
+						}
+						else
+						{
+							setStatus(Status.INTERRUPTED);
+						}
 						return;
 					}
 				}

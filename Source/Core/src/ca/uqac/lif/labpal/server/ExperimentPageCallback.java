@@ -58,6 +58,10 @@ public class ExperimentPageCallback extends TemplatePageCallback
 		}
 		else
 		{
+			if (uri.contains("reset"))
+			{
+				e.reset();
+			}
 			input.put("id", id);
 			input.put("title", "Experiment " + id);
 			Map<String,String> ins = formatParameters(e.getInputParameters());

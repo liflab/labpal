@@ -44,7 +44,7 @@ public class AssistantTest
 	
 	public static final Time t_0ms = new Second(0);
 	
-	@Test(timeout = 5000)
+	@Test//(timeout = 5000)
 	public void testQueueSingleThread1()
 	{
 		Assistant assistant = new Assistant();
@@ -104,6 +104,18 @@ public class AssistantTest
 		run.join();
 		assertEquals(Status.INTERRUPTED, de2.getStatus());
 		assertTrue(de2.hasTimedOut());
+		assertEquals(Status.DONE, de3.getStatus());
+	}
+	
+	@Test(timeout = 5000)
+	public void testTimeoutSingleThread4()
+	{
+		Assistant assistant = new Assistant();
+		Experiment de2 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Experiment de3 = new DummyExperiment().setDuration(t_0ms).setTimeout(t_200ms);
+		AssistantRun run = assistant.enqueue(de2, de3);
+		run.join();
+		assertEquals(Status.DONE, de2.getStatus());
 		assertEquals(Status.DONE, de3.getStatus());
 	}
 	

@@ -17,48 +17,53 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Calendar;
-import com.sun.net.httpserver.HttpExchange;
+
 import ca.uqac.lif.jerrydog.CallbackResponse;
-import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.jerrydog.Server;
+import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.labpal.util.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.Stateful.Status;
-import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.labpal.table.LatexTableRenderer;
 
+import com.sun.net.httpserver.HttpExchange;
+
 /**
- * Callback to download a LaTeX file defining a unique command for each plot of
- * the lab. This file is to be used in conjunction with the
- * {@link AllPlotsCallback}, which produces a single, multi-page PDF file.
+ * Callback to download all tables as a single LaTeX file.
  * 
  * @author Sylvain Hallé
  *
  */
-public class AllPlotsLatexCallback extends LaboratoryCallback
+public class AllTablesCallback extends LaboratoryCallback
 {
-	protected static final String s_barberPoleCode =  FileHelper.internalFileToString(AllPlotsLatexCallback.class, "resource/plot-barber-pole.tex");
+	protected static final String s_barberPoleCode =  FileHelper.internalFileToString(AllPlotsLatexCallback.class, "resource/table-barber-pole.tex");
 	
-  public AllPlotsLatexCallback(LabPalServer s)
+  public AllTablesCallback(LabPalServer s)
   {
-    super(s, Method.GET, "/plots/tex");
+    super(s, Method.GET, "/tables/tex");
   }
 
   @Override
   public CallbackResponse process(HttpExchange t)
   {
     CallbackResponse response = new CallbackResponse(t);
-    StringBuilder out = generateBodyLatex(m_server.getLaboratory());
     response.setContentType(ContentType.LATEX);
-    String filename = Server.urlEncode("labpal-plots.tex");
+    String filename = Server.urlEncode("labpal-tables.tex");
     response.setAttachment(filename);
-    response.setContents(out.toString());
+    response.setContents(getLatexFile());
     return response;
   }
 
-  public static StringBuilder generateBodyLatex(Laboratory m_lab)
+  /**
+   * Generates the LaTeX file
+   * 
+   * @return The contents of the file
+   */
+  public String getLatexFile()
   {
     StringBuilder out = new StringBuilder();
     out.append("% ----------------------------------------------------------------")
@@ -67,43 +72,44 @@ public class AllPlotsLatexCallback extends LaboratoryCallback
         .append(FileHelper.CRLF);
     out.append("% Date:     ").append(String.format("%1$te-%1$tm-%1$tY", Calendar.getInstance()))
         .append(FileHelper.CRLF);
-    out.append("% Lab name: ").append(m_lab.getName()).append(FileHelper.CRLF);
+    out.append("% Lab name: ").append(m_server.getLaboratory().getName()).append(FileHelper.CRLF);
     out.append("%").append(FileHelper.CRLF)
-        .append("% To insert one of the figures into your text, do:").append(FileHelper.CRLF);
-    out.append("% \\begin{figure}").append(FileHelper.CRLF).append("% \\usebox{\\boxname}")
-        .append(FileHelper.CRLF).append("% \\end{figure}").append(FileHelper.CRLF);
+        .append("% To insert one of the tables into your text, do:").append(FileHelper.CRLF);
+    out.append("% \\begin{table}").append(FileHelper.CRLF).append("% \\usebox{\\boxname}")
+        .append(FileHelper.CRLF).append("% \\end{table}").append(FileHelper.CRLF);
     out.append("% where \\boxname is one of the boxes defined in the file below")
         .append(FileHelper.CRLF);
     out.append("% ----------------------------------------------------------------")
         .append(FileHelper.CRLF).append(FileHelper.CRLF);
     out.append(s_barberPoleCode);
     out.append(FileHelper.CRLF);
-    int page_nb = 0;
-    for (Plot plot : m_lab.getPlots())
+    for (Table tab : m_server.getLaboratory().getTables())
     {
-      page_nb++;
-      Table tab = plot.getTable();
-      String box_name = "p" + plot.getTitle();
-      if (!plot.getNickname().isEmpty())
+      if (!tab.showsInList())
       {
-        box_name = plot.getNickname();
+        continue;
       }
-      else if (!tab.getNickname().isEmpty())
+      LatexTableRenderer renderer = new LatexTableRenderer(tab);
+      String box_name = "t" + tab.getTitle();
+      if (!tab.getNickname().isEmpty())
       {
-        box_name = "plot" + tab.getNickname();
+        box_name = tab.getNickname();
       }
       if (box_name.compareTo("Untitled") == 0)
       {
-        box_name += plot.getId();
+        box_name += tab.getId();
       }
       box_name = LatexTableRenderer.formatName(box_name);
-      String plots_filename = Server.urlEncode(AllPlotsCallback.getPlotsFilename(m_lab));
-      out.append("% ----------------------").append(FileHelper.CRLF).append("% Plot: ")
-          .append(box_name).append(FileHelper.CRLF);
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      renderer.render(new PrintStream(baos));
+      String tab_contents = baos.toString();
+      out.append("% ----------------------").append(FileHelper.CRLF).append("% Table: ")
+          .append(box_name).append(FileHelper.CRLF).append("% ")
+          .append(LatexTableRenderer.formatName(tab.getTitle())).append(FileHelper.CRLF);
       out.append("% ----------------------").append(FileHelper.CRLF);
       out.append("\\newsavebox{\\").append(box_name).append("}").append(FileHelper.CRLF);
       out.append("\\begin{lrbox}{\\").append(box_name).append("}").append(FileHelper.CRLF);
-      Status st = plot.getStatus();
+      Status st = tab.getStatus();
       boolean barber_pole = false;
       if (st == Status.FAILED || st == Status.INTERRUPTED)
       {
@@ -113,17 +119,14 @@ public class AllPlotsLatexCallback extends LaboratoryCallback
       {
       	out.append("\\myplotstripbox{").append(FileHelper.CRLF);
       }
-      out.append("\\href{").append("P" + plot.getId()).append("}{");
-      out.append("\\includegraphics[page=").append(page_nb).append(",width=\\linewidth]{")
-          .append(plots_filename).append("}");
-      out.append("}");
+      out.append(tab_contents);
       if (barber_pole)
       {
-      	out.append("}").append(FileHelper.CRLF);
+      	out.append("}");
       }
-      out.append(FileHelper.CRLF).append("\\end{lrbox}").append(FileHelper.CRLF);
-      out.append(FileHelper.CRLF);
+      out.append(FileHelper.CRLF).append("\\end{lrbox}").append(FileHelper.CRLF)
+          .append(FileHelper.CRLF);
     }
-    return out;
+    return out.toString();
   }
 }

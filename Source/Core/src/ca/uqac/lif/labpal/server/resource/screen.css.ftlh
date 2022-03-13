@@ -419,8 +419,12 @@ table.exp-table td {
   background: white url('/images/info-32.png') left center no-repeat;
 }
 
+.message.warning {
+  background: #fec url('/images/error-32.png') left center no-repeat;
+}
+
 .message.error {
-  background: #fcc url('/images/error-32.png') left center no-repeat;
+  background: #fbb url('/images/abort-32.png') left center no-repeat;
 }
 
 .progress-bar {

@@ -73,7 +73,7 @@ public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 				ps.println("{\\color{red}");
 			}
 		}
-		String table_type = m_mergeCells ? "longtable" : "table";
+		String table_type = m_mergeCells ? "longtable" : "tabular";
 		ps.print("\\begin{" + table_type + "}{|");
 		for (int i = 0; i < s.getWidth(); i++)
 		{

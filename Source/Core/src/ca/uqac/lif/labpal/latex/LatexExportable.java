@@ -15,7 +15,8 @@ public interface LatexExportable
    * identifiers in LaTeX commands can only have letters, numbers and other
    * symbols must be replaced into something else to create a valid
    * identifier. The basic replacement scheme is to change every occurrence
-   * of a digit into a unique letter that somehow "looks" like the digit.
+   * of a digit into a unique letter that somehow "looks" like the digit
+   * (with some imagination).
    * @param s The string to replace
    * @return The replaced string
    */
@@ -36,6 +37,8 @@ public interface LatexExportable
     s = s.replaceAll(",", "C");
     s = s.replaceAll(" ", "P");
     s = s.replaceAll("_", "U");
+    s = s.replaceAll("=", "E");
+    s = s.replaceAll(":", "L");
     return s;
   }
 }

@@ -181,15 +181,15 @@ public class AssistantPageCallback extends TemplatePageCallback
 	
 	protected void enqueueTable(String uri, Map<String,Object> input) throws PageRenderingException
 	{
-		int table_id = fetchId(s_tableIdPattern, uri);
-		Table t = m_server.getLaboratory().getTable(table_id);
+		int plot_id = fetchId(s_tableIdPattern, uri);
+		Table t = m_server.getLaboratory().getTable(plot_id);
 		if (t == null)
 		{
 			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such table");
 		}
 		TableExperimentSelector selector = new TableExperimentSelector(m_server.getLaboratory(), t);
 		int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
-		input.put("message", added + " experiment(s) enqueued to generate Table " + table_id);
+		input.put("message", added + " experiment(s) enqueued to generate Table " + plot_id);
 	}
 	
 	protected void enqueuePlot(String uri, Map<String,Object> input) throws PageRenderingException

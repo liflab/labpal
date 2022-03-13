@@ -1,0 +1,52 @@
+%% ---
+%% The code below defines a new box type used to show plots with a
+%% "barber pole" pattern. For this code to work, the document preamble
+%% must load the following packages:
+%% 
+%% \usepackage{tikz}
+%% \usepackage[many]{tcolorbox}
+%% \usetikzlibrary{patterns}
+%% ---
+\newlength{\phatchspread}
+\newlength{\phatchthickness}
+\newlength{\phatchshift}
+\newcommand{\phatchcolor}{}
+\tikzset{phatchspread/.code={\setlength{\phatchspread}{#1}},
+         phatchthickness/.code={\setlength{\phatchthickness}{#1}},
+         phatchshift/.code={\setlength{\phatchshift}{#1}},% must be >= 0
+         phatchcolor/.code={\renewcommand{\phatchcolor}{#1}}}
+\tikzset{phatchspread=3pt,
+         phatchthickness=0.4pt,
+         phatchshift=0pt,% must be >= 0
+         phatchcolor=black}                                                                                      
+\pgfdeclarepatternformonly[\phatchspread,\phatchthickness,\phatchshift,\phatchcolor]% variables
+   {pcustom north east lines}% name
+   {\pgfqpoint{\dimexpr-2\phatchthickness}{\dimexpr-2\phatchthickness}}% lower left corner
+   {\pgfqpoint{\dimexpr\phatchspread+2\phatchthickness}{\dimexpr\phatchspread+2\phatchthickness}}% upper right corner
+   {\pgfqpoint{\dimexpr\phatchspread}{\dimexpr\phatchspread}}% tile size
+   {% shape description
+    \pgfsetlinewidth{\phatchthickness}
+    \pgfpathmoveto{\pgfqpoint{0pt}{\dimexpr\phatchspread+\phatchshift}}
+    \pgfpathlineto{\pgfqpoint{\dimexpr\phatchspread+0.15pt+\phatchshift}{-0.15pt}}
+    \ifdim \phatchshift > 0pt
+      \pgfpathmoveto{\pgfqpoint{0pt}{\phatchshift}}
+      \pgfpathlineto{\pgfqpoint{\dimexpr0.15pt+\phatchshift}{-0.15pt}}
+    \fi
+    \pgfsetstrokecolor{\phatchcolor}
+%    \pgfsetdash{{1pt}{1pt}}{0pt}% dashing cannot work correctly in all situation this way
+    \pgfusepath{stroke}
+   }
+\newtcbox{\myplotstripbox}{
+  enhanced,
+  size=minimal,
+  frame code={},
+  interior code={
+    \path[
+      pattern=pcustom north east lines,
+      phatchspread=12pt,
+      phatchthickness=4pt,
+      phatchcolor=red!40
+    ]
+    (frame.south east) rectangle (frame.north west);
+  }
+}

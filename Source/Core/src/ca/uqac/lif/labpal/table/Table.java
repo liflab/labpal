@@ -24,6 +24,7 @@ import ca.uqac.lif.labpal.Dependent;
 import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
+import ca.uqac.lif.labpal.latex.LatexExportable;
 import ca.uqac.lif.labpal.provenance.LeafFetcher;
 import ca.uqac.lif.labpal.region.Region;
 import ca.uqac.lif.petitpoucet.NodeFactory;
@@ -151,7 +152,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	}
 	
 	/**
-	 * Sets the title associated to this plot, based on the values
+	 * Sets the title and nickname associated to this plot, based on the values
 	 * of a region.
 	 * @param prefix A string prefix to put before the auto-generated
 	 * title
@@ -160,26 +161,22 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 */
 	/*@ non_null @*/ public Table setTitle(String prefix, Region r)
 	{
-		StringBuilder out = new StringBuilder();
-		out.append(prefix);
-		boolean first = true;
-		for (String d : r.getDimensions())
-		{
-			Set<Object> domain = r.getDomain(d);
-			if (domain.size() == 1)
-			{
-				if (first)
-				{
-					first = false;
-				}
-				else
-				{
-					out.append(", ");
-				}
-				out.append(d + "=" + pick(domain));
-			}
-		}
-		setTitle(out.toString());
+		setTitle(getTitle(prefix, r));
+		return this;
+	}
+	
+	/**
+	 * Sets the title <em>and</em> nickname of a table based on the values of a
+	 * region.
+	 * @param prefix A string prefix to put before the auto-generated
+	 * title
+	 * @param r The region
+	 * @return This table
+	 */
+	public Table name(String prefix, Region r)
+	{
+		setTitle(getTitle(prefix, r));
+		setNickname(LatexExportable.latexify(m_title));
 		return this;
 	}
 
@@ -325,5 +322,38 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 			return o;
 		}
 		return null;
+	}
+	
+	/**
+	 * Auto-generates a table title from a region. The method does so by
+	 * concatenating all key-value pairs of the region that have a dimension of
+	 * 1. Optionally a string can be prepended at the beginning of the title.
+	 * @param prefix A string prefix to put before the auto-generated
+	 * title
+	 * @param r The region
+	 * @return The title
+	 */
+	protected static String getTitle(String prefix, Region r)
+	{
+		StringBuilder out = new StringBuilder();
+		out.append(prefix);
+		boolean first = true;
+		for (String d : r.getDimensions())
+		{
+			Set<Object> domain = r.getDomain(d);
+			if (domain.size() == 1)
+			{
+				if (first)
+				{
+					first = false;
+				}
+				else
+				{
+					out.append(", ");
+				}
+				out.append(d + "=" + pick(domain));
+			}
+		}
+		return out.toString();
 	}
 }

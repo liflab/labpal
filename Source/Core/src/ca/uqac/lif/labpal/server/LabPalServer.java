@@ -67,6 +67,7 @@ public class LabPalServer extends Server
 		registerCallback(new LabStatusCallback(this, Method.GET, "/lab/status"));
 		registerCallback(new AssistantStatusCallback(this, Method.GET, "/assistant/status"));
 		registerCallback(new AssistantPageCallback(this, Method.GET, "/assistant", "assistant.ftlh"));
+		registerCallback(new AllTablesCallback(this));
 		registerCallback(new TablesStatusCallback(this, Method.GET, "/tables/status"));
 		registerCallback(new TablePageCallback(this, Method.GET, "/table/", "table.ftlh"));
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/tables", "tables.ftlh", "top-menu-tables").setTitle("Tables"));

@@ -26,9 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 
@@ -355,104 +353,5 @@ public class Assistant
 			return new SingleThreadExecutor();
 		}
 		return m_executor.newInstance();
-	}
-
-	protected static class RunRunnable implements Runnable
-	{
-		protected long m_startTime;
-		
-		protected long m_endTime;
-		
-		protected List<Experiment> m_experiments;
-
-		protected LabPalExecutorService m_executor;
-
-		public RunRunnable(List<Experiment> experiments, LabPalExecutorService executor)
-		{
-			super();
-			m_experiments = experiments;
-			m_executor = executor;
-			m_startTime = -1;
-			m_endTime = -1;
-		}
-		
-		/**
-		 * Determines if an experiment is waiting to be executed.
-		 * @param e The experiment
-		 * @return <tt>true</tt> if the experiment is queued, <tt>false</tt>
-		 * otherwise
-		 */
-		public boolean isQueued(Experiment e)
-		{
-			if (!m_experiments.contains(e))
-			{
-				return false;
-			}
-			Experiment.Status s = e.getStatus();
-			return s == Status.READY || s == Status.UNINITIALIZED;
-		}
-
-		@Override
-		public void run()
-		{			
-			m_startTime = System.currentTimeMillis();
-			for (Experiment e : m_experiments) 
-			{
-				Future<?> future = m_executor.submit(e);
-				FutureWatcher w = new FutureWatcher(e, future);
-				Thread th = new Thread(w);
-				th.start();
-			}
-			m_executor.shutdownAtEnd();
-			try
-			{
-				m_executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-			}
-			catch (InterruptedException e1) 
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			m_endTime = System.currentTimeMillis();
-		}
-		
-		public void shutdown(boolean now) throws InterruptedException
-		{
-			if (now)
-			{
-				m_executor.shutdownNow();
-				m_executor.awaitTermination(0, TimeUnit.MILLISECONDS);	
-			}
-			else
-			{
-				m_executor.shutdown();
-				m_executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);	
-			}	
-		}
-		
-		public long getStartTime()
-		{
-			return m_startTime;
-		}
-		
-		public long getEndTime()
-		{
-			return m_endTime;
-		}
-		
-		public Set<Experiment> getRunning()
-		{
-			Set<Experiment> running = new HashSet<Experiment>();
-			return running;
-		}
-		
-		/**
-		 * Gets the list of experiments that are included in this run.
-		 * @return The list of experiments
-		 */
-		/*@ pure non_null @*/ public List<Experiment> getExperiments()
-		{
-			return m_experiments;
-		}
 	}
 }

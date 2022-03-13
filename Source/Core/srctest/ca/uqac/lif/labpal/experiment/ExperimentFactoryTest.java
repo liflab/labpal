@@ -57,12 +57,9 @@ public class ExperimentFactoryTest
 	
 	public static class PointExperiment extends Experiment
 	{
-		public PointExperiment(Point p)
+		public PointExperiment(Point p) throws ExperimentException
 		{
-			super();
-			writeInput("a", p.get("a"));
-			writeInput("b", p.get("b"));
-			writeInput("c", p.get("c"));
+			super(p);
 		}
 	}
 }

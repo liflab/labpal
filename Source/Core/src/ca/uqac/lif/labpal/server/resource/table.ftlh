@@ -25,6 +25,10 @@ ${tablecontents?no_esc}
 </ul>
 </div>
 
+<h3>Nickname</h3>
+
+<p>To include this table in a LaTeX document, refer to the box named <tt>${table.getNickname()}</tt>.</p>
+
 <h3>Dependencies</h3>
 
 <p>Below is the list of all the experiments in the lab on which this table depends.</p>

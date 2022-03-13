@@ -24,6 +24,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -32,7 +38,11 @@ import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Persistent;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.region.Point;
+import ca.uqac.lif.units.Dimension;
+import ca.uqac.lif.units.DimensionValue;
+import ca.uqac.lif.units.Scalar;
 import ca.uqac.lif.units.Time;
+import ca.uqac.lif.units.other.DayHourMinuteSecond;
 import ca.uqac.lif.units.si.Second;
 
 /**
@@ -146,12 +156,22 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	/*@ non_null @*/ private transient Map<String,String> m_parameterDescriptions;
 
 	/**
+	 * A map associating parameter names to their dimension.
+	 */
+	/*@ non_null @*/ private transient Map<String,Dimension> m_parameterDimensions;
+
+	/**
 	 * A list of experiments, which are the other instances this experiment
 	 * directly depends on.
 	 * @see #dependsOn()
 	 * @see Dependent
 	 */
 	/*@ non_null @*/ private List<Experiment> m_dependencies;
+	
+	/**
+	 * The exception thrown by the execution of the experiment, if any.
+	 */
+	/*@ null @*/ private Exception m_exception;
 
 	/**
 	 * Creates a new empty experiment instance and prepares its internal
@@ -168,6 +188,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		m_inputParameters = new HashMap<String,Object>();
 		m_outputParameters = new HashMap<String,Object>();
 		m_parameterDescriptions = new HashMap<String,String>();
+		m_parameterDimensions = new HashMap<String,Dimension>();
 		m_dependencies = new ArrayList<Experiment>();
 		m_timeRatio = 0;
 		m_startTime = 0;
@@ -176,19 +197,22 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		m_status = Status.UNINITIALIZED;
 		m_hasTimedOut = false;
 		m_timeout = s_zeroSeconds;
+		m_exception = null;
 	}
 
 	/**
 	 * Creates an experiment by writing all dimensions of a point as its
 	 * input parameters.
 	 * @param p The point
+	 * @throws UnitException Thrown if one of the values is incompatible with
+	 * with the declared dimension of this parameter.
 	 */
-	public Experiment(/*@ non_null @*/ Point p)
+	public Experiment(/*@ non_null @*/ Point p) throws UnitException
 	{
 		this();
 		for (String d : p.getDimensions())
 		{
-			writeInput(d, p.get(d));
+			writeInput(d, p.get(d), true);
 		}
 	}
 
@@ -223,6 +247,17 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	/*@ pure @*/ public final int getId()
 	{
 		return m_id;
+	}
+	
+	/**
+	 * Retrieves the exception thrown by the experiment when it was executed, if
+	 * such an exception was thrown.
+	 * @return The exception, or <tt>null</tt> if no exception was thrown (or
+	 * the experiment has not yet been executed)
+	 */
+	/*@ pure null @*/ public Exception getException()
+	{
+		return m_exception;
 	}
 
 	/**
@@ -261,30 +296,167 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		m_outputParametersLock.unlock();
 		return map;
 	}
-
-	/*@ non_null @*/ public final Experiment writeInput(String key, Object value)
+	
+	/**
+	 * Checks if a potential value for an experiment parameter is compatible with
+	 * the declared dimension of this parameter.
+	 * @param key The name of the parameter
+	 * @param value The candidate value to give to this parameter 
+	 * @throws UnitException Thrown if the value has incorrect dimensions
+	 */
+	protected void checkDimension(String key, Object value) throws UnitException
 	{
+		if (!m_parameterDimensions.containsKey(key))
+		{
+			return;
+		}
+		Dimension d = m_parameterDimensions.get(key);
+		if (!d.equals(Scalar.DIMENSION))
+		{
+			if (!(value instanceof DimensionValue))
+			{
+				throw new UnitException("Attempting to set " + key + " to a scalar, expected " + d);
+			}
+			else
+			{
+				DimensionValue dv = (DimensionValue) value;
+				Dimension dvd = dv.getDimension();
+				if (!dvd.equals(d))
+				{
+					throw new UnitException("Attempting to set " + key + " in " + dvd + ", expected " + d);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Writes a value to an experiment's input parameter.
+	 * @param key The name of the parameter
+	 * @param value The value
+	 * @return This experiment
+	 * @throws UnitException Thrown if the value's dimension is incompatible
+	 * with the declared dimension of this parameter.
+	 */
+	/*@ non_null @*/ public final Experiment writeInput(String key, Object value) throws UnitException
+	{
+		return writeInput(key, value, false);
+	}
+
+	/**
+	 * Writes a value to an experiment's output parameter.
+	 * @param key The name of the parameter
+	 * @param value The value
+	 * @return This experiment
+	 * @throws UnitException Thrown if the value's dimension is incompatible
+	 * with the declared dimension of this parameter.
+	 */
+	/*@ non_null @*/ public final Experiment writeOutput(String key, Object value) throws UnitException
+	{
+		return writeOutput(key, value, false);
+	}
+	
+	/**
+	 * Writes a value to an experiment's output parameter.
+	 * @param key The name of the parameter
+	 * @param value The value
+	 * @param ignore_dimensions Set to <tt>true</tt> to bypass the dimensional
+	 * compatibility checking
+	 * @return This experiment
+	 * @throws UnitException Thrown if the value's dimension is incompatible
+	 * with the declared dimension of this parameter.
+	 */
+	/*@ non_null @*/ private final Experiment writeOutput(String key, Object value, boolean ignore_dimensions) throws UnitException
+	{
+		if (!ignore_dimensions)
+		{
+			checkDimension(key, value);
+		}
+		m_outputParametersLock.lock();
+		m_outputParameters.put(key, value);
+		m_outputParametersLock.unlock();
+		return this;
+	}
+	
+	/**
+	 * Writes a value to an experiment's input parameter.
+	 * @param key The name of the parameter
+	 * @param value The value
+	 * @param ignore_dimensions Set to <tt>true</tt> to bypass the dimensional
+	 * compatibility checking
+	 * @return This experiment
+	 * @throws UnitException Thrown if the value's dimension is incompatible
+	 * with the declared dimension of this parameter.
+	 */
+	/*@ non_null @*/ private final Experiment writeInput(String key, Object value, boolean ignore_dimensions) throws UnitException
+	{
+		if (!ignore_dimensions)
+		{
+			checkDimension(key, value);
+		}
 		m_inputParametersLock.lock();
 		m_inputParameters.put(key, value);
 		m_inputParametersLock.unlock();
 		return this;
 	}
 
-	/*@ non_null @*/ public final Experiment writeOutput(String key, Object value)
+	/**
+	 * Sets the textual description of a parameter in the experiment, and sets
+	 * its dimension to scalar.
+	 * @param key The name of the parameter
+	 * @param description Its textual description
+	 * @return This experiment
+	 * @throws UnitException Thrown if the parameter already has a value,
+	 * and this value has incompatible dimensions with the declared dimension
+	 */
+	/*@ non_null @*/ public final Experiment describe(String key, String description) throws UnitException
 	{
-		m_outputParametersLock.lock();
-		m_outputParameters.put(key, value);
-		m_outputParametersLock.unlock();
-		return this;
+		return describe(key, description, Scalar.DIMENSION);
 	}
 
-	/*@ non_null @*/ public final Experiment setDescription(String key, String description)
+	/**
+	 * Sets the textual description and dimension of a parameter in the
+	 * experiment.
+	 * @param key The name of the parameter
+	 * @param description Its textual description
+	 * @param d The dimension of this parameter
+	 * @return This experiment
+	 * @throws UnitException Thrown if the parameter already has a value,
+	 * and this value has incompatible dimensions with the declared dimension
+	 */
+	/*@ non_null @*/ public final Experiment describe(String key, String description, Dimension d) throws UnitException
 	{
 		m_parameterDescriptions.put(key, description);
+		m_parameterDimensions.put(key, d);
+		Object o = read(key);
+		if (o != null)
+		{
+			checkDimension(key, o);
+		}
 		return this;
 	}
 
-	/*@ non_null @*/ public final String getDescription(String key)
+	/**
+	 * Gets the declared dimension of a parameter in the experiment.
+	 * @param key The name of the parameter
+	 * @return Its dimension, or an <tt>null</tt> if no parameter with
+	 * this name exists
+	 */
+	/*@ pure null @*/ public final Dimension getDimension(String key)
+	{
+		if (m_parameterDimensions.containsKey(key))
+		{
+			return m_parameterDimensions.get(key);
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the textual description of a parameter in the experiment.
+	 * @param key The name of the parameter
+	 * @return Its textual description, or an empty string if no parameter with
+	 * this name exists
+	 */
+	/*@ pure non_null @*/ public final String getDescription(String key)
 	{
 		if (m_parameterDescriptions.containsKey(key))
 		{
@@ -337,7 +509,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		}
 		return o.toString();
 	}
-	
+
 	/**
 	 * Reads an experiment parameter and casts it into a <tt>float</tt>.
 	 * @param key The parameter name
@@ -353,14 +525,14 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		}
 		return ((Number) o).floatValue();
 	}
-	
+
 	/**
 	 * Reads an experiment parameter and casts it into an <tt>int</tt>.
 	 * @param key The parameter name
 	 * @return The int value, or 0 if the key does not have a numerical
 	 * value
 	 */
-	/*@ pure @*/ public final float readInt(/*@ non_null @*/ String key)
+	/*@ pure @*/ public final int readInt(/*@ non_null @*/ String key)
 	{
 		Object o = read(key);
 		if (!(o instanceof Number))
@@ -442,11 +614,11 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		{
 			if (m_endTime > 0)
 			{
-				return new Second((float) (m_endTime - m_startTime) / 1000f);
+				return new DayHourMinuteSecond((float) (m_endTime - m_startTime) / 1000f);
 			}
 			else
 			{
-				return new Second((float) (System.currentTimeMillis() - m_startTime) / 1000f);
+				return new DayHourMinuteSecond((float) (System.currentTimeMillis() - m_startTime) / 1000f);
 			}
 		}
 		return new Second(0);
@@ -541,62 +713,29 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 			// Experiment has already completed, do not run again
 			return;
 		}
-		m_startTime = System.currentTimeMillis();
-		if (m_status == Status.UNINITIALIZED)
-		{
-			if (!prerequisitesFulfilled())
-			{
-				try
-				{
-					setStatus(Status.PREPARING);
-					fulfillPrerequisites();
-				}
-				catch (ExperimentException e)
-				{
-					setStatus(Status.FAILED);
-					return;
-				}
-				catch (InterruptedException e)
-				{
-					setStatus(Status.INTERRUPTED);
-					return;
-				}
-			}
-			m_prereqTime = System.currentTimeMillis();
-			setStatus(Status.READY);
-		}
-		else
-		{
-			// If no prerequisites are handled, force this lap time to be equal
-			// to the start time (avoids meaningless delays of a few ms)
-			m_prereqTime = m_startTime;
-		}
-		boolean success = true;
+		ExecutorService ex = Executors.newSingleThreadExecutor();
+		Future<?> future = ex.submit(new InnerRunnable());
+		long timeout = (long) (new Second(getTimeout()).get().floatValue() * 1000f);
 		try
 		{
-			setStatus(Status.RUNNING);
-			execute();
+			if (timeout <= 0)
+			{
+				future.get();
+			}
+			else
+			{
+				future.get(timeout, TimeUnit.MILLISECONDS);
+			}
 		}
-		catch (ExperimentException e)
-		{
-			setStatus(Status.FAILED);
-			success = false;
-			return;
-		}
-		catch (InterruptedException e)
+		catch (InterruptedException | ExecutionException e)
 		{
 			setStatus(Status.INTERRUPTED);
-			success = false;
+			declareInterruption(null);
 		}
-		m_endTime = System.currentTimeMillis();
-		if (success && m_status == Status.RUNNING)
+		catch (TimeoutException e)
 		{
-			// Can only move to Done from Running (traps the case where the thread
-			// set it to Timeout or Cancelled)
-			setStatus(Status.DONE);
-			m_progressionLock.lock();
-			m_progression = 1; // Force progression to 100%
-			m_progressionLock.unlock();
+			setStatus(Status.INTERRUPTED);
+			declareTimeout();
 		}
 	}
 
@@ -661,7 +800,24 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	 */
 	public final void declareTimeout()
 	{
+		declareInterruption(null);
 		m_hasTimedOut = true;
+	}
+	
+	/**
+	 * Tells the experiment that it has ended in an interruption.
+	 */
+	public final void declareInterruption(Exception e)
+	{
+		if (m_endTime == 0)
+		{
+			m_endTime = System.currentTimeMillis();
+		}
+		if (m_prereqTime == 0)
+		{
+			m_prereqTime = m_endTime;
+		}
+		m_exception = e;
 	}
 
 	/**
@@ -727,7 +883,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		Status s = getStatus();
 		return s == Status.DONE || s == Status.INTERRUPTED || s == Status.FAILED;
 	}
-	
+
 	@Override
 	/*@ pure non_null @*/ public String toString()
 	{
@@ -748,5 +904,85 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 			return "-";
 		}
 		return s_dateFormat.format(new Date(timestamp));
+	}
+	
+	protected class InnerRunnable implements Runnable
+	{
+
+		@Override
+		public void run()
+		{
+			if (isFinished())
+			{
+				// Experiment has already completed, do not run again
+				return;
+			}
+			m_startTime = System.currentTimeMillis();
+			if (m_status == Status.UNINITIALIZED)
+			{
+				if (!prerequisitesFulfilled())
+				{
+					try
+					{
+						setStatus(Status.PREPARING);
+						fulfillPrerequisites();
+					}
+					catch (ExperimentException | UnitException e)
+					{
+						m_exception = e;
+						m_prereqTime = System.currentTimeMillis();
+						m_endTime = System.currentTimeMillis();
+						setStatus(Status.FAILED);
+						return;
+					}
+					catch (InterruptedException e)
+					{
+						m_prereqTime = System.currentTimeMillis();
+						m_endTime = System.currentTimeMillis();
+						setStatus(Status.INTERRUPTED);
+						return;
+					}
+				}
+				m_prereqTime = System.currentTimeMillis();
+				setStatus(Status.READY);
+			}
+			else
+			{
+				// If no prerequisites are handled, force this lap time to be equal
+				// to the start time (avoids meaningless delays of a few ms)
+				m_prereqTime = m_startTime;
+			}
+			boolean success = true;
+			try
+			{
+				setStatus(Status.RUNNING);
+				execute();
+			}
+			catch (ExperimentException e)
+			{
+				m_exception = e;
+				setStatus(Status.FAILED);
+				m_endTime = System.currentTimeMillis();
+				success = false;
+				return;
+			}
+			catch (InterruptedException e)
+			{
+				setStatus(Status.INTERRUPTED);
+				m_endTime = System.currentTimeMillis();
+				success = false;
+			}
+			m_endTime = System.currentTimeMillis();
+			if (success && m_status == Status.RUNNING)
+			{
+				// Can only move to Done from Running (traps the case where the thread
+				// set it to Timeout or Cancelled)
+				setStatus(Status.DONE);
+				m_progressionLock.lock();
+				m_progression = 1; // Force progression to 100%
+				m_progressionLock.unlock();
+			}
+		}
+		
 	}
 }

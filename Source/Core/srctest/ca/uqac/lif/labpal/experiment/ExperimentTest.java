@@ -46,6 +46,14 @@ public class ExperimentTest
 	public static final Time t_250ms = new Second(0.25);
 
 	public static final Time t_0s = new Second(0);
+	
+	public static final Time t_500ms = new Second(0.5);
+	
+	public static final Time t_100ms = new Second(0.1);
+	
+	public static final Time t_50ms = new Second(0.05);
+	
+	public static final Time t_0ms = new Second(0);
 
 	@Test
 	public void testLifecycle1()
@@ -192,10 +200,10 @@ public class ExperimentTest
 	}
 
 	@Test
-	public void testReset1()
+	public void testReset1() throws ExperimentException
 	{
 		Experiment de = new DummyExperiment() {
-			public void execute() {
+			public void execute() throws ExperimentException {
 				writeOutput("foo", 42);
 			}
 		}.setDuration(t_1s).setTimeout(t_0s);
@@ -265,7 +273,7 @@ public class ExperimentTest
 		}
 
 		@Override
-		public void execute()
+		public void execute() throws ExperimentException
 		{
 			ArrayList<Object> list = new ArrayList<>();
 			list.add("foo");
@@ -304,5 +312,41 @@ public class ExperimentTest
 			m_fulfillCalled = Boolean.TRUE.equals(list.get(0));
 			m_hasPrerequisites = Boolean.TRUE.equals(list.get(1));
 		}
+	}
+	
+	@Test
+	public void testTimeout1() throws InterruptedException
+	{
+		// Experiment runs to completion
+		Experiment e = new DummyExperiment().setDuration(t_100ms).setTimeout(t_500ms);
+		Thread t = new Thread(e);
+		t.start();
+		t.join();
+		assertEquals(Status.DONE, e.getStatus());
+	}
+	
+	@Test
+	public void testTimeout2() throws InterruptedException
+	{
+		// Experiment times out and is stopped by FutureWatcher
+		Experiment e = new DummyExperiment().setDuration(t_500ms).setTimeout(t_50ms);
+		Thread t = new Thread(e);
+		t.start();
+		t.join();
+		assertEquals(Status.INTERRUPTED, e.getStatus());
+		assertTrue(e.hasTimedOut());
+	}
+	
+	@Test
+	public void testInterrupt1() throws InterruptedException
+	{
+		// Experiment is externally interrupted before it ends
+		Experiment e = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
+		Thread t = new Thread(e);
+		t.start();
+		Thread.sleep(50);
+		t.interrupt();
+		Thread.sleep(50);
+		assertEquals(Status.INTERRUPTED, e.getStatus());
 	}
 }

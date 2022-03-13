@@ -1,0 +1,52 @@
+%% ---
+%% The code below defines a new box type used to show tables with a
+%% "barber pole" pattern. For this code to work, the document preamble
+%% must load the following packages:
+%% 
+%% \usepackage{tikz}
+%% \usepackage[many]{tcolorbox}
+%% \usetikzlibrary{patterns}
+%% ---
+\newlength{\thatchspread}
+\newlength{\thatchthickness}
+\newlength{\thatchshift}
+\newcommand{\thatchcolor}{}
+\tikzset{thatchspread/.code={\setlength{\thatchspread}{#1}},
+         thatchthickness/.code={\setlength{\thatchthickness}{#1}},
+         thatchshift/.code={\setlength{\thatchshift}{#1}},% must be >= 0
+         thatchcolor/.code={\renewcommand{\thatchcolor}{#1}}}
+\tikzset{thatchspread=3pt,
+         thatchthickness=0.4pt,
+         thatchshift=0pt,% must be >= 0
+         thatchcolor=black}                                                                                      
+\pgfdeclarepatternformonly[\thatchspread,\thatchthickness,\thatchshift,\thatchcolor]% variables
+   {tcustom north east lines}% name
+   {\pgfqpoint{\dimexpr-2\thatchthickness}{\dimexpr-2\thatchthickness}}% lower left corner
+   {\pgfqpoint{\dimexpr\thatchspread+2\thatchthickness}{\dimexpr\thatchspread+2\thatchthickness}}% upper right corner
+   {\pgfqpoint{\dimexpr\thatchspread}{\dimexpr\thatchspread}}% tile size
+   {% shape description
+    \pgfsetlinewidth{\thatchthickness}
+    \pgfpathmoveto{\pgfqpoint{0pt}{\dimexpr\thatchspread+\thatchshift}}
+    \pgfpathlineto{\pgfqpoint{\dimexpr\thatchspread+0.15pt+\thatchshift}{-0.15pt}}
+    \ifdim \thatchshift > 0pt
+      \pgfpathmoveto{\pgfqpoint{0pt}{\thatchshift}}
+      \pgfpathlineto{\pgfqpoint{\dimexpr0.15pt+\thatchshift}{-0.15pt}}
+    \fi
+    \pgfsetstrokecolor{\thatchcolor}
+%    \pgfsetdash{{1pt}{1pt}}{0pt}% dashing cannot work correctly in all situation this way
+    \pgfusepath{stroke}
+   }
+\newtcbox{\mytablestripbox}{
+  enhanced,
+  size=minimal,
+  frame code={},
+  interior code={
+    \path[
+      pattern=tcustom north east lines,
+      thatchspread=12pt,
+      thatchthickness=4pt,
+      thatchcolor=red!40
+    ]
+    (frame.south east) rectangle (frame.north west);
+  }
+}

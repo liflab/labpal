@@ -44,6 +44,15 @@ ${environment_message}
 <tr><th title="A factor of the speed of the host relative to a reference machine">Relative speed:</th><td>${lab.getParkMips()}</td></tr>
 </table>
 
+<#assign non_unique = lab.getNonUniqueNicknames()>
+<#if (non_unique?size > 0)>
+<p class="message warning"><span>Some lab elements have conflicting nicknames:
+  <#list non_unique as nick>
+  <tt>${nick}</tt>
+  </#list>
+</span>
+</#if>
+
 <h2>Claims</h2>
 
 <p>Claims are user-defined assertions on the lab's data that are automatically checked.</p>

@@ -410,6 +410,41 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		return total;
 	}
+	
+	/**
+	 * Gets the list of all nicknames shared by two or more lab objects.
+	 * Exporting these objects to LaTeX produce compilation errors, as LaTeX
+	 * expects each identifier to be defined exactly once. 
+	 * @return
+	 */
+	/*@ pure non_null @*/ public List<String> getNonUniqueNicknames()
+	{
+		List<String> duplicates = new ArrayList<String>();
+		Set<String> names = new HashSet<String>();
+		for (Plot p : m_plots.values())
+		{
+			String n = p.getNickname();
+			if (names.contains(n) && !duplicates.contains(n))
+			{
+				duplicates.add(n);
+			}
+			names.add(n);
+		}
+		for (Table t : m_tables.values())
+		{
+			if (!t.showsInList())
+			{
+				continue; // This table won't be exported anyway
+			}
+			String n = t.getNickname();
+			if (names.contains(n) && !duplicates.contains(n))
+			{
+				duplicates.add(n);
+			}
+			names.add(n);
+		}
+		return duplicates;
+	}
 
 	/**
 	 * Gets the list of experiment groups contained in this lab.
@@ -1138,6 +1173,10 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		if (new_lab.m_cliArguments.hasOption("threads"))
 		{
 			int num_threads = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("threads"));
+			if (num_threads == 1)
+			{
+				new Assistant(new SingleThreadExecutor());
+			}
 			if (num_threads < 1)
 			{
 				stdout.println("Invalid number of threads");
@@ -1147,7 +1186,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		else
 		{
-			lab_assistant = new Assistant(new SingleThreadExecutor());
+			lab_assistant = new Assistant(new QueuedThreadPoolExecutor(2));
 		}
 		new_lab.setAssistant(lab_assistant);
 

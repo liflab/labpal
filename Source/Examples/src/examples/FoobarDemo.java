@@ -38,16 +38,15 @@ public class FoobarDemo
 		public void setup()	{
 			ExperimentFactory<?> f = new ExperimentFactory<>(this, RunTool.class);
 
-			Region pr = filter(product(range("abc", 0, 10), range("def", 0, 10),
-					extension("tool", "Foobar", "Foobaz")),
-					(p) -> {
+			Region pr = filter(product(range("abc", 0, 5), range("def", 0, 5),
+					extension("tool", "Foobar", "Foobaz")), (p) -> {
 						return p.getInt("abc") % 2 == 0 || p.getInt("abc") >= p.getInt("def");});
 
 			for (String[] x : permute("abc", "def"))
 				for (Region r : pr.all(x[0]))
 					add(new Plot(
 							add(transform(table(x[1], "tool", "duration").add(f, r)
-									.setTitle("Impact of " + x[1] + " with ", r), 
+									.name("Impact of " + x[1] + " with ", r), 
 									new ExpandAsColumns("tool", "duration"), new Sort().by(0))),
 							new GnuplotScatterplot()));
 		}

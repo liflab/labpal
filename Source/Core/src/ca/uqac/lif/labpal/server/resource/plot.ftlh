@@ -33,6 +33,10 @@
 </div>
 <div style="clear:both"></div>
 
+<h3>Nickname</h3>
+
+<p>To include this plot in a LaTeX document, refer to the box named <tt>${plot.getNickname()}</tt>.</p>
+
 <h3>Dependencies</h3>
 
 <p>Below is the list of all the experiments in the lab on which this plot depends.</p>

@@ -15,38 +15,23 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.labpal.experiment;
+package ca.uqac.lif.labpal.region;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import ca.uqac.lif.units.si.Meter;
 
 /**
- * Exception that can be thrown during the execution of an experiment to signal
- * an error condition.
- * 
- * @author Sylvain Hallé
- * @since 2.0
+ * Unit tests for {@link DimensionRange}.
  */
-public class ExperimentException extends Exception
+public class DimensionRangeTest
 {
-	/**
-	 * Dummy UID.
-	 */
-	private static final long serialVersionUID = 2L;
-
-	/**
-	 * Creates an experiment exception by encapsulating another throwable
-	 * object.
-	 * @param t The throwable object
-	 */
-	public ExperimentException(Throwable t)
+	@Test//(timeout = 1000)
+	public void test1()
 	{
-		super(t);
-	}
-	
-	/**
-	 * Creates an experiment exception by specifying an error message.
-	 * @param message The message
-	 */
-	public ExperimentException(String message)
-	{
-		super(message);
+		DimensionRange dr = new DimensionRange("foo", new Meter(0), new Meter(5), new Meter(1));
+		assertEquals(6, dr.size());
 	}
 }

@@ -77,7 +77,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Statef
 	/**
 	 * The {@link Chart} object used to create an output.
 	 */
-	protected Chart m_plot;
+	protected Chart m_chart;
 
 	/**
 	 * Resets the global plot counter.
@@ -97,13 +97,10 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Statef
 		super(0, 1);
 		m_id = id;
 		m_table = t;
-		m_plot = p;
+		m_chart = p;
 		m_nickname = "";
 		setTitle(t.getTitle());
-		if (!t.getNickname().isEmpty())
-		{
-			setNickname("p" + t.getNickname());
-		}
+		setNickname("p" + t.getNickname());
 	}
 
 	/**
@@ -193,7 +190,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Statef
 	 */
 	/*@ pure @*/ public boolean supportsGnuplot()
 	{
-		return m_plot instanceof Gnuplot;
+		return m_chart instanceof Gnuplot;
 	}
 
 	/**
@@ -233,7 +230,7 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Statef
 		Spreadsheet s = m_table.getSpreadsheet();
 		try
 		{
-			m_plot.render(baos, s, format, with_title);
+			m_chart.render(baos, s, format, with_title);
 			return baos.toByteArray();
 		}
 		catch (IllegalArgumentException e)
@@ -261,14 +258,14 @@ public class Plot extends AtomicFunction implements ExplanationQueryable, Statef
 	 */
 	public String toGnuplot(ChartFormat format, String plot_title, boolean with_title)
 	{
-		if (!(m_plot instanceof Gnuplot))
+		if (!(m_chart instanceof Gnuplot))
 		{
 			return null;
 		}
 		Spreadsheet s = m_table.getSpreadsheet();
-		m_plot.setTitle(plot_title);
+		m_chart.setTitle(plot_title);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		((Gnuplot) m_plot).toGnuplot(new PrintStream(baos), s, format, with_title);
+		((Gnuplot) m_chart).toGnuplot(new PrintStream(baos), s, format, with_title);
 		return baos.toString();
 	}
 

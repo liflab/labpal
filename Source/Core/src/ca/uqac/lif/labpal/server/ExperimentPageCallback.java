@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.labpal.server;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +62,13 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			input.put("title", "Experiment " + id);
 			Map<String,String> ins = formatParameters(e.getInputParameters());
 			input.put("inputs", ins);
+			Exception ex = e.getException();
+			if (ex != null)
+			{
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ex.printStackTrace(new PrintStream(baos));
+				input.put("exceptionmessage", baos.toString());
+			}
 		}
 	}
 

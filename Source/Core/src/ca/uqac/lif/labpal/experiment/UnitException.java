@@ -18,13 +18,13 @@
 package ca.uqac.lif.labpal.experiment;
 
 /**
- * Exception that can be thrown during the execution of an experiment to signal
- * an error condition.
+ * Exception that can be thrown when writing values to a parameter with
+ * incorrect dimensions or units.
  * 
  * @author Sylvain Hallé
- * @since 2.0
+ * @since 3.0
  */
-public class ExperimentException extends Exception
+public class UnitException extends RuntimeException
 {
 	/**
 	 * Dummy UID.
@@ -36,7 +36,7 @@ public class ExperimentException extends Exception
 	 * object.
 	 * @param t The throwable object
 	 */
-	public ExperimentException(Throwable t)
+	public UnitException(Throwable t)
 	{
 		super(t);
 	}
@@ -45,7 +45,7 @@ public class ExperimentException extends Exception
 	 * Creates an experiment exception by specifying an error message.
 	 * @param message The message
 	 */
-	public ExperimentException(String message)
+	public UnitException(String message)
 	{
 		super(message);
 	}

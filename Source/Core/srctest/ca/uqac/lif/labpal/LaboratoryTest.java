@@ -36,6 +36,7 @@ import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.labpal.table.Table;
 
 /**
@@ -107,6 +108,24 @@ public class LaboratoryTest
 		Experiment e = exps.get(0);
 		assertEquals(de1, e);
 		assertEquals(Status.DONE, de1.getStatus());
+	}
+	
+	@Test
+	public void testUniqueNicknames1()
+	{
+		MyLab lab = new MyLab();
+		lab.add(new ExperimentTable("a").setNickname("foo"), new ExperimentTable("a").setNickname("bar"));
+		assertTrue(lab.getNonUniqueNicknames().isEmpty());
+	}
+	
+	@Test
+	public void testUniqueNicknames2()
+	{
+		MyLab lab = new MyLab();
+		lab.add(new ExperimentTable("a").setNickname("foo"), new ExperimentTable("a").setNickname("bar"), new ExperimentTable("a").setNickname("foo"));
+		List<String> dups = lab.getNonUniqueNicknames();
+		assertEquals(1, dups.size());
+		assertEquals("foo", dups.get(0));
 	}
 
 	protected static class MyLab extends Laboratory

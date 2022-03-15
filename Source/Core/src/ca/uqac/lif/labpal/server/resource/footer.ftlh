@@ -13,6 +13,7 @@
 <#assign sel_plots = "">
 <#assign sel_tables = "">
 <#assign sel_macros = "">
+<#assign sel_claims = "">
 <#assign sel_find = "">
 <#assign sel_help = "">
 <#switch menuhighlight!"top-menu-home">
@@ -37,6 +38,9 @@
    <#case "top-menu-macros">
     <#assign sel_macros = "selected">
     <#break>
+   <#case "top-menu-claims">
+    <#assign sel_claims = "selected">
+    <#break>
    <#case "top-menu-find">
     <#assign sel_find = "selected">
     <#break>
@@ -52,6 +56,7 @@
 <li class="${sel_plots}" title="View the plots created from the lab's data"><a href="/plots" id="top-menu-plots"><span class="menu-text">Plots</span></a></li>
 <li class="${sel_tables}" title="View the tables created from the lab's data"><a href="/tables" id="top-menu-tables"><span class="menu-text">Tables</span></a></li>
 <li class="${sel_macros}" title="View the macros created from the lab's data"><a href="/macros" id="top-menu-macros"><span class="menu-text">Macros</span></a></li>
+<li class="${sel_claims}" title="View the claims created from the lab's data"><a href="/claims" id="top-menu-claims"><span class="menu-text">Claims</span></a></li>
 <li class="${sel_find}" title="Find a data point by its identifier"><a href="/find" id="top-menu-find"><span class="menu-text">Find</span></a></li>
 <li class="${sel_help}" title="Get some help on how to use LabPal"><a href="/help" id="top-menu-help"><span class="menu-text">Help</span></a></li>
 </ul>

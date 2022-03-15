@@ -30,6 +30,7 @@ import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.assistant.Assistant;
 import ca.uqac.lif.labpal.assistant.QueuedThreadPoolExecutor;
 import ca.uqac.lif.labpal.assistant.SingleThreadExecutor;
+import ca.uqac.lif.labpal.claim.Claim;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 import ca.uqac.lif.labpal.macro.Macro;
@@ -180,6 +181,11 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	 * A map associating macro IDs to macro instances.
 	 */
 	/*@ non_null @*/ private transient Map<Integer,Macro> m_macros;
+	
+	/**
+	 * A map associating macro IDs to claim instances.
+	 */
+	/*@ non_null @*/ private transient Map<Integer,Claim> m_claims;
 
 	/**
 	 * An assistant instance used to run experiments inside the lab.
@@ -231,6 +237,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		m_plots = new HashMap<Integer,Plot>();
 		m_tables = new HashMap<Integer,Table>();
 		m_macros = new HashMap<Integer,Macro>();
+		m_claims = new HashMap<Integer,Claim>();
 		m_assistant = new Assistant();
 		m_experimentGroups = new ArrayList<ExperimentGroup>();
 		m_doi = "";
@@ -602,6 +609,21 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		return null;
 	}
+	
+	/**
+	 * Returns a claim instance with given ID, if it exists.
+	 * @param id The claim ID
+	 * @return The claim instance, or <tt>null</tt> if the claim
+	 * does not exist in the lab
+	 */
+	/*@ pure null @*/ public final Claim getClaim(int id)
+	{
+		if (m_claims.containsKey(id))
+		{
+			return m_claims.get(id);
+		}
+		return null;
+	}
 
 	/**
 	 * Returns a table instance with given ID, if it exists.
@@ -681,6 +703,23 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		return exps;
 	}
+	
+	/**
+	 * Returns a list of all claims in the lab, sorted by ID.
+	 * @return The list of claims
+	 */
+	/*@ pure non_null @*/ public final List<Claim> getClaims()
+	{
+		List<Integer> l_ids = new ArrayList<Integer>();
+		l_ids.addAll(m_claims.keySet());
+		Collections.sort(l_ids);
+		List<Claim> exps = new ArrayList<Claim>();
+		for (int id : l_ids)
+		{
+			exps.add(m_claims.get(id));
+		}
+		return exps;
+	}
 
 	/**
 	 * Returns a list of all tables in the lab, sorted by ID.
@@ -700,7 +739,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	}
 
 	/**
-	 * Adds a list of experiments to the lab
+	 * Adds a list of experiments to the lab.
 	 * @param experiments The experiments to add
 	 * @return This lab
 	 */
@@ -714,7 +753,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	}
 
 	/**
-	 * Adds a list of tables to the lab
+	 * Adds a list of tables to the lab.
 	 * @param tables The tables to add
 	 * @return The first table in the arguments
 	 */
@@ -730,9 +769,27 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		return null;
 	}
+	
+	/**
+	 * Adds a list of claims to the lab.
+	 * @param claims The claims to add
+	 * @return The first claim in the arguments
+	 */
+	/*@ non_null @*/ public Claim add(Claim ... claims)
+	{
+		for (Claim c : claims)
+		{
+			m_claims.put(c.getId(), c);
+		}
+		if (claims.length > 0)
+		{
+			return claims[0];
+		}
+		return null;
+	}
 
 	/**
-	 * Adds a list of macros to the lab
+	 * Adds a list of macros to the lab.
 	 * @param macros The macros to add
 	 * @return This lab
 	 */
@@ -746,7 +803,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	}
 
 	/**
-	 * Adds a list of plots to the lab
+	 * Adds a list of plots to the lab.
 	 * @param experiments The plots to add
 	 * @return This lab
 	 */
@@ -888,12 +945,12 @@ public class Laboratory implements ExplanationQueryable, Persistent
 			int index = Integer.parseInt(parts[1]);
 			return new TrackedValue(null, new NthElement(index), subject);
 		}
-		/*else if (parts[0].startsWith("C"))
+		else if (parts[0].startsWith("C"))
 		{
 			// Claim
 			Claim subject = getClaim(id);
 			return new TrackedValue(null, NthOutput.FIRST, subject);
-		}*/
+		}
 		return null;
 	}
 
@@ -924,11 +981,11 @@ public class Laboratory implements ExplanationQueryable, Persistent
 			child = ((Plot) o).getExplanation(p);
 			root_part = ComposedPart.compose(p, new PlotNumber(((Plot) o).getId()));
 		}
-		/*else if (o instanceof Claim)
+		else if (o instanceof Claim)
 		{
-			child = ((Plot) o).getExplanation(p);
+			child = ((Claim) o).getExplanation(p);
 			root_part = ComposedPart.compose(p, new ClaimNumber(((Claim) o).getId()));
-		}*/
+		}
 		else
 		{
 			child = f.getUnknownNode();
@@ -1189,6 +1246,12 @@ public class Laboratory implements ExplanationQueryable, Persistent
 			lab_assistant = new Assistant(new QueuedThreadPoolExecutor(2));
 		}
 		new_lab.setAssistant(lab_assistant);
+		
+		// Auto-start
+		if (argument_map.hasOption("autostart"))
+		{
+			lab_assistant.enqueue(new_lab.getExperiments());
+		}
 
 		/*
 		// Sets an experiment filter

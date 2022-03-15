@@ -19,7 +19,6 @@ package ca.uqac.lif.labpal.server;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.dag.Pin;
@@ -28,6 +27,7 @@ import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentValue;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.provenance.GraphViewer;
+import ca.uqac.lif.labpal.provenance.LabPalLineageGraphUtilities;
 import ca.uqac.lif.labpal.table.Table;
 import ca.uqac.lif.petitpoucet.AndNode;
 import ca.uqac.lif.petitpoucet.OrNode;
@@ -40,11 +40,6 @@ import ca.uqac.lif.spreadsheet.chart.ChartFormat;
 
 public class ExplainCallback extends TemplatePageCallback
 {
-	/**
-	 * The pattern to extract the experiment ID from the URL.
-	 */
-	protected static final Pattern s_idPattern = Pattern.compile("experiment/(\\d+)");
-	
 	public ExplainCallback(LabPalServer server, Method m, String path, String template_location)
 	{
 		super(server, m, path, template_location, "top-menu-experiments");
@@ -57,14 +52,15 @@ public class ExplainCallback extends TemplatePageCallback
 		String datapoint_id = (String) input.get("id");
 		StringBuilder out = new StringBuilder();
 		PartNode node = m_server.getLaboratory().getExplanation(datapoint_id);
-		explanationToHtml(node, out);
+		Node simplified = LabPalLineageGraphUtilities.simplify(node);
+		//explanationToHtml(node, out);
 		input.put("exptree", out.toString());
 		input.put("imageurl", "/explain/graph?id=" + datapoint_id);
 		GraphViewer renderer = new GraphViewer();
-		byte[] image = renderer.toImage(node, ChartFormat.SVG, false);
+		byte[] image = renderer.toImage(simplified, ChartFormat.SVG, false);
 		input.put("imagesvg", hackSvg(image));
 	}
-	
+
 	/**
 	 * Transforms the original SVG.
 	 * @param image The byte array with the original SVG
@@ -74,7 +70,7 @@ public class ExplainCallback extends TemplatePageCallback
 	{
 		return new String(image);
 	}
-	
+
 	protected void explanationToHtml(Node node, StringBuilder out)
 	{
 		out.append(

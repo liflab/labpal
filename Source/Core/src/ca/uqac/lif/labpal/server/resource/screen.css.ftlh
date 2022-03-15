@@ -108,6 +108,11 @@ html, body {
   padding-left: 56px;
 }
 
+#top-menu-claims {
+  background: url('/images/claim-48.png') left center no-repeat;
+  padding-left: 56px;
+}
+
 #top-menu-find {
   background: url('/images/find-48.png') left center no-repeat;
   padding-left: 56px;

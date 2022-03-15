@@ -7,9 +7,16 @@ import static ca.uqac.lif.labpal.region.ExtensionDomain.extension;
 import static ca.uqac.lif.labpal.region.ProductRegion.product;
 import static ca.uqac.lif.labpal.table.ExperimentTable.table;
 import static ca.uqac.lif.labpal.table.TransformedTable.transform;
-import static ca.uqac.lif.labpal.util.PermutationIterator.permute;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import ca.uqac.lif.dag.NodeConnector;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.Stateful;
+import ca.uqac.lif.labpal.claim.FunctionClaim;
+import ca.uqac.lif.labpal.claim.TrooleanCondition;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
 import ca.uqac.lif.labpal.experiment.ExperimentFactory;
@@ -18,6 +25,12 @@ import ca.uqac.lif.labpal.region.Point;
 import ca.uqac.lif.labpal.region.Region;
 
 import ca.uqac.lif.labpal.util.Stopwatch;
+import ca.uqac.lif.labpal.claim.TrooleanQuantifier.AllObjects;
+import ca.uqac.lif.labpal.claim.ValueOf;
+import ca.uqac.lif.petitpoucet.function.Circuit;
+import ca.uqac.lif.petitpoucet.function.Constant;
+import ca.uqac.lif.petitpoucet.function.Function;
+import ca.uqac.lif.petitpoucet.function.number.IsGreaterThan;
 import ca.uqac.lif.spreadsheet.chart.Chart.Axis;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
@@ -80,14 +93,16 @@ public class FoobarExtended
 								new ExpandAsColumns(TOOL, DURATION), new Sort().by(0), new MoveUnitsToHeader())),
 						new GnuplotScatterplot().setCaption(Axis.X, ABC).setCaption(Axis.Y, DURATION)));
 			}
+			
+			add(new DurationClaim(this));
 		}
 
 		/**
-		 * An experiment that simulates the fictitous execution of two entities
+		 * An experiment that simulates the fictional execution of two entities
 		 * called "Foobar" and "Foobaz", according to two parameters named "abc"
 		 * (supposed to be a physical length) and "def".
 		 * As Foobar and Foobaz do not really exist, the experiment
-		 * fakes some processing by simply waiting some amount of time arbitrarily
+		 * fakes some processing by simply waiting for an amount of time arbitrarily
 		 * based on the values of abc and def.
 		 * <p>
 		 * The code inside {@link #execute()} contains some logic destined to
@@ -125,12 +140,12 @@ public class FoobarExtended
 				describe(DURATION, "The time taken to run", Time.DIMENSION);
 				describe(VALUE, "The value produced by the tool", Time.DIMENSION);
 
-				/* Sets a maximum duration for the experiment of 4 seconds. An
+				/* Sets a maximum duration for the experiment of 0.5 seconds. An
 				 * experiment instance taking longer than this duration will be
 				 * forcibly interrupted by the assistant and be placed in a failure
 				 * state. Calling this method is optional; the experiment is allowed
 				 * to run for as long as it needs if no timeout is given. */
-				setTimeout(new Second(4));
+				setTimeout(new Second(0.5));
 			}
 
 			@Override
@@ -189,6 +204,49 @@ public class FoobarExtended
 			/* This will throw a division by zero exception when def = 0. This in
 			 * turn will cause the that runs this code to end in a FAILED state. */
 			return 1 / def;
+		}
+		
+		public static class DurationClaim extends FunctionClaim
+		{
+			protected Laboratory m_lab;
+			
+			public DurationClaim(Laboratory lab)
+			{
+				super(getCondition());
+				m_lab = lab;
+				setStatement("In all experiments, the value of def is always greater than 1.");
+			}
+			
+			protected static Function getCondition()
+			{
+				Circuit c = new Circuit(1, 1, "def&gt;1");
+				{
+					TrooleanCondition gt = new TrooleanCondition(new IsGreaterThan());
+					ValueOf v = new ValueOf(DEF);
+					Constant one = new Constant(1);
+					NodeConnector.connect(v, 0, gt, 0);
+					NodeConnector.connect(one, 0, gt, 1);
+					c.addNodes(gt, v, one);
+					c.associateInput(0, v.getInputPin(0));
+					c.associateOutput(0, gt.getOutputPin(0));
+				}
+				AllObjects ao = new AllObjects(c);
+				return ao;
+			}
+
+			@Override
+			public Collection<Stateful> dependsOn()
+			{
+				return null;
+			}
+
+			@Override
+			protected Object[] getInput()
+			{
+				List<Experiment> exps = new ArrayList<Experiment>();
+				exps.addAll(m_lab.getExperiments());
+				return new Object[] {exps};
+			}
 		}
 
 		public static void main(String[] args)

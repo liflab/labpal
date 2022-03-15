@@ -308,7 +308,7 @@ function updateExperimentStatus() {
     }
     if (status == "RUNNING" || status != last_e_status) {
 	    $.ajax({
-	    url: "/experiment/${id}/output/html"
+	    url: "/experiment/${id}/output/html?highlight=${highlight}"
 	  	}).done(function (data) {
 	    	$("#exp-output-params").html(data);
 	    })

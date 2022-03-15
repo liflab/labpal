@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.labpal.table;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Set;
 
 import ca.uqac.lif.dag.Node;
@@ -40,7 +42,7 @@ import ca.uqac.lif.spreadsheet.Spreadsheet;
  * An explainable 0:1 function that outputs a {@link Spreadsheet}.
  * @author Sylvain Hallé
  */
-public abstract class Table extends AtomicFunction implements ExplanationQueryable, Stateful, Identifiable, Dependent<Experiment>
+public abstract class Table extends AtomicFunction implements ExplanationQueryable, Stateful, Identifiable, Dependent<Experiment>, LatexExportable
 {
 	/**
 	 * A counter for table IDs.
@@ -62,7 +64,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 * The description associated to this table.
 	 */
 	protected String m_description = "";
-	
+
 	/**
 	 * The title of this table.
 	 */
@@ -72,7 +74,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 * A unique ID given to the table in the lab.
 	 */
 	protected int m_id;
-	
+
 	/**
 	 * Whether the output spreadsheet for the table has already been computed
 	 * at least once.
@@ -116,7 +118,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		m_description = description;
 		return this;
 	}
-	
+
 	/**
 	 * Gets the description associated to this table.
 	 * @return The description
@@ -139,7 +141,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		m_title = title;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the title associated to this plot, based on the values
 	 * of a region.
@@ -150,7 +152,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	{
 		return setTitle("", r);
 	}
-	
+
 	/**
 	 * Sets the title and nickname associated to this plot, based on the values
 	 * of a region.
@@ -164,7 +166,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		setTitle(getTitle(prefix, r));
 		return this;
 	}
-	
+
 	/**
 	 * Sets the title <em>and</em> nickname of a table based on the values of a
 	 * region.
@@ -180,17 +182,14 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		return this;
 	}
 
-	/**
-	 * Gets the nickname given to this table.
-	 * @return The name
-	 */
+	@Override
 	/*@ pure @*/ public String getNickname()
 	{
 		return m_nickname;
 	}
 
 	/**
-	 * Gets the nickname given to this table.
+	 * Sets the nickname given to this table.
 	 * @param nickname The name
 	 * @return This table
 	 */
@@ -218,7 +217,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	{
 		return m_showsInList;
 	}
-	
+
 	/**
 	 * Gets the spreadsheet produced by this table.
 	 * @return The spreadsheet
@@ -235,7 +234,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 * @return The spreadsheet
 	 */
 	/*@ null @*/ protected abstract Spreadsheet calculateSpreadsheet();
-	
+
 	/**
 	 * Gets the table on which a cell of the spreadsheet immediately depends
 	 * on.
@@ -245,7 +244,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	 * table
 	 */
 	/*@ null @*/ public abstract Table dependsOn(int col, int row);
-	
+
 	@Override
 	public float getProgression()
 	{
@@ -274,9 +273,9 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		}
 		return prog / total;
 	}
-	
+
 	protected abstract PartNode explain(Part d, NodeFactory f);
-	
+
 	@Override
 	public final PartNode getExplanation(Part d, NodeFactory f)
 	{
@@ -292,13 +291,13 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	{
 		return new Object[] {getSpreadsheet()};
 	}
-	
+
 	@Override
 	public int hashCode()
 	{
 		return 11 * m_id;
 	}
-	
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -308,11 +307,19 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		}
 		return ((Table) o).getId() == m_id;
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		return "T" + m_id;
+	}
+
+	@Override
+	public String toLatex()
+	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		new LatexTableRenderer(this).render(new PrintStream(baos));
+		return baos.toString();
 	}
 	
 	protected static Object pick(Set<?> set)
@@ -323,7 +330,7 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Auto-generates a table title from a region. The method does so by
 	 * concatenating all key-value pairs of the region that have a dimension of

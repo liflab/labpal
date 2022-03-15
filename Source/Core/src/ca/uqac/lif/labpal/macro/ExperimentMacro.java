@@ -200,4 +200,11 @@ public class ExperimentMacro extends Macro implements Dependent<Experiment>
 	{
 		return m_experiments;
 	}
+
+	@Override
+	public String getNickname()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

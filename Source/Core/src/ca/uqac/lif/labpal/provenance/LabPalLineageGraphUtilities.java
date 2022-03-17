@@ -56,9 +56,11 @@ public class LabPalLineageGraphUtilities
 	 */
 	public static Node simplify(Node graph)
 	{
+		deleteConstantLeaves(graph);
 		Node new_graph = GraphUtilities.simplify(graph);
 		deleteConstantLeaves(new_graph);
-		return new_graph;
+		Node n_new_graph = GraphUtilities.simplify(new_graph);
+		return n_new_graph;
 	}
 
 	/**
@@ -76,7 +78,9 @@ public class LabPalLineageGraphUtilities
 		{
 			deleteConstantLeaves(root);
 		}
-		return out;
+		// We run another pass of simplify, since deleting leaves
+		// may make some nodes redundant
+		return GraphUtilities.simplify(out);
 	}
 
 	/**

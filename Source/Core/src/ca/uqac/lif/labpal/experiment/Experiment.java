@@ -298,6 +298,30 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	}
 	
 	/**
+	 * Determines if a given parameter name corresponds to an input parameter
+	 * of the experiment.
+	 * <p>
+	 * Note that the equivalent method for output parameters is deliberately
+	 * absent. By definition, input parameters exist at the experiment's
+	 * creation and are expected to be fixed. In contrast, output parameters may
+	 * only be created when the experiment runs, in which case a
+	 * method <tt>isOutput</tt> would be unable to reliably determine if a key
+	 * corresponds to a possible output parameter.
+	 * 
+	 * @param key The name of the parameter
+	 * @return <tt>true</tt> if an input parameter with this name exists,
+	 * <tt>false</tt> otherwise
+	 */
+	/*@ pure @*/ public final boolean isInput(String key)
+	{
+		boolean has_key;
+		m_inputParametersLock.lock();
+		has_key = m_inputParameters.containsKey(key);
+		m_inputParametersLock.unlock();
+		return has_key;
+	}
+	
+	/**
 	 * Checks if a potential value for an experiment parameter is compatible with
 	 * the declared dimension of this parameter.
 	 * @param key The name of the parameter

@@ -21,13 +21,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Set;
 
+import ca.uqac.lif.dag.LeafCrawler.LeafFetcher;
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.labpal.Dependent;
 import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.latex.LatexExportable;
-import ca.uqac.lif.labpal.provenance.LeafFetcher;
 import ca.uqac.lif.labpal.region.Region;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;

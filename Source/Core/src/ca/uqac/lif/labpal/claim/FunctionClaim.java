@@ -72,6 +72,11 @@ public abstract class FunctionClaim extends Claim
 	@Override
 	public PartNode getExplanation(Part part, NodeFactory factory)
 	{
+		if (m_input == null)
+		{
+			// Claim needs to be calculated once before an explanation is available
+			evaluate();
+		}
 		PartNode root = ((ExplanationQueryable) m_condition).getExplanation(part, factory);
 		if (m_input == null || !(m_input[0] instanceof List))
 		{

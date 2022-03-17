@@ -36,9 +36,9 @@ import ca.uqac.lif.petitpoucet.function.NthOutput;
 
 /**
  * A function that fetches the value of a parameter in an experiment. The
- * function is particular in that it returns <tt>null</tt> if the experiment is
- * in any state except <em>done</em>. This is to indicate that the value
- * pointed to should not be trusted.
+ * function is particular in that, for an output parameter, it returns
+ * <tt>null</tt> if the experiment is in any state except <em>done</em>. This
+ * is to indicate that the value pointed to should not be trusted.
  * @author Sylvain Hallé
  */
 public class ValueOf extends AtomicFunction
@@ -87,15 +87,15 @@ public class ValueOf extends AtomicFunction
 		}
 		Object[] out = new Object[1];
 		Experiment e = (Experiment) inputs[0];
-		if (e.getStatus() != Status.DONE)
-		{
-			out[0] = null;
-			m_wasDefined = false;
-		}
-		else
+		if (/*e.isInput(m_parameter) ||*/ e.getStatus() == Status.DONE)
 		{
 			out[0] = e.read(m_parameter);
 			m_wasDefined = true;
+		}
+		else
+		{
+			out[0] = null;
+			m_wasDefined = false;			
 		}
 		return out;
 	}

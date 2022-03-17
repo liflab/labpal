@@ -164,15 +164,7 @@ ${outparams?no_esc}
 
 <div id="exp-input-params">
 
-<#if inputs?size == 0>
-  <p>This experiment has no input parameters.</p>
-<#else>
-  <table class="json-table">
-  <#list inputs?keys as k>
-    <tr><th>${k}</th><td>${inputs[k]}</td></tr>
-  </#list>
-  </table>
-</#if>
+${inparams?no_esc}
 
 </div>
 
@@ -308,7 +300,7 @@ function updateExperimentStatus() {
     }
     if (status == "RUNNING" || status != last_e_status) {
 	    $.ajax({
-	    url: "/experiment/${id}/output/html?highlight=${highlight}"
+	    url: "/experiment/${id}/output/html<#if highlight?has_content>?highlight=${highlight}</#if>"
 	  	}).done(function (data) {
 	    	$("#exp-output-params").html(data);
 	    })

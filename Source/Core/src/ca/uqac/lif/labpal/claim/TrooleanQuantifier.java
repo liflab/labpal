@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.uqac.lif.dag.LabelledNode;
+import ca.uqac.lif.dag.LeafCrawler.LeafFetcher;
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.labpal.claim.Troolean.Value;
-import ca.uqac.lif.labpal.provenance.LeafFetcher;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;

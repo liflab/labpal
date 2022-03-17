@@ -64,8 +64,7 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			}
 			input.put("id", id);
 			input.put("title", "Experiment " + id);
-			Map<String,String> ins = formatParameters(e.getInputParameters());
-			input.put("inputs", ins);
+			input.put("inparams", formatTable(input, e, e.getInputParameters()));
 			Exception ex = e.getException();
 			if (ex != null)
 			{
@@ -84,13 +83,13 @@ public class ExperimentPageCallback extends TemplatePageCallback
       to_highlight = getKeysToHighlight((String) input.get("highlight"));
     }
     String outparams = "";
-    if (e.getOutputParameters().isEmpty())
+    if (params.isEmpty())
     {
     	outparams = "<p>No parameter is defined.</p>";
     }
     else
     {
-    	outparams = renderHtml(e.getOutputParameters(), "", e, to_highlight).toString();
+    	outparams = renderHtml(params, "", e, to_highlight).toString();
     }
     return outparams;
 	}

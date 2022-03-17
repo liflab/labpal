@@ -109,7 +109,7 @@ html, body {
 }
 
 #top-menu-claims {
-  background: url('/images/claim-48.png') left center no-repeat;
+  background: url('/images/claim-48-t.png') left center no-repeat;
   padding-left: 56px;
 }
 

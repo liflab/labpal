@@ -272,11 +272,11 @@ public class GraphViewer
 				String highlight_string = "";
 				if (d instanceof All)
 				{
-					message = "Experiment " + e.getId();
+					message = "E" + e.getId();
 				}
 				else
 				{
-					message = d.toString() + " of " + "Experiment " + e.getId();
+					message = d.toString() + " of " + "E" + e.getId();
 					ExperimentValue mentioned = ExperimentValue.mentionedValue(d);
 					if (mentioned != null)
 					{
@@ -307,7 +307,7 @@ public class GraphViewer
 				String highlight_string = "";
 				if (d instanceof All)
 				{
-					message = "Table " + t.getId();
+					message = "T" + t.getId();
 				}
 				else
 				{
@@ -316,7 +316,7 @@ public class GraphViewer
 					{
 						highlight_string = "?highlight=" + mentioned.getRow() + "." + mentioned.getColumn();
 					}
-					message = d.toString() + " of " + "Table " + t.getId();
+					message = d.toString() + " of " + "T" + t.getId();
 				}
 				ps.println(m_indent + n_id + " [height=0.25,label=<" + message + ">,href=\"" + url + highlight_string + "\",fillcolor=\"" + color + "\"];");
 			}			

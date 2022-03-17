@@ -5,6 +5,10 @@ html, body {
   padding: 0px;
 }
 
+tt {
+  font-family: Consolas,Deja Vu Sans Mono,monospace;
+}
+
 #main {
   display: grid;
   grid-template-columns: 1fr;
@@ -315,6 +319,11 @@ table.exp-table td {
   padding-left: 40px;
 }
 
+.btn-info {
+  background: ${color4} url('/images/info-24.png') 4px 4px no-repeat;
+  padding-left: 40px;
+}
+
 .btn-queue {
   background: ${color4} url('/images/queue-24.png') 4px 4px no-repeat;
   padding-left: 40px;
@@ -489,16 +498,35 @@ table.exp-table td {
 }
 
 .running-exps {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
   padding-left: 0px;
 }
 
 .running-exps li {
-  display: inline-block;
   list-style-type: none;
-  background: url('/images/erlenmeyer-16.png') left no-repeat;
+  border: solid 1px lightgray;
+  background: url('/images/erlenmeyer-16.png') 4px no-repeat;
+  width: 50pt;
   padding-left: 22px;
+  padding-right: 4px;
+  padding-bottom: 4px;
+  padding-top: 4px;
   margin-right: 10px;
+  margin-bottom: 10px;
   border-radius: 3px;
+  background-color: rgba(220,220,220,0.5);
+  box-shadow: 2px 2px 0px 0px rgba(115,115,115,0.5);
+}
+
+.running-exps li a {
+  display: flex;
+  justify-content: space-between;
+}
+
+.running-exps li a .status-icon {
+  margin: 0;
 }
 
 .running-exps li:hover {
@@ -596,6 +624,11 @@ ul.plotlist > li ul li, ul.plot-buttons li {
 
 .btn-all-plots-latex {
   background: ${color4} url('/images/tex-24.png') 4px 4px no-repeat;
+  padding-left: 28px;
+}
+
+.btn-all-tables{
+  background: ${color4} url('images/pages-24.png') 4px 4px no-repeat;
   padding-left: 28px;
 }
 

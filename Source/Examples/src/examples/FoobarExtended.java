@@ -16,6 +16,7 @@ import ca.uqac.lif.dag.NodeConnector;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.claim.FunctionClaim;
+import ca.uqac.lif.labpal.claim.RegionClaim;
 import ca.uqac.lif.labpal.claim.TrooleanCondition;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
@@ -94,7 +95,7 @@ public class FoobarExtended
 						new GnuplotScatterplot().setCaption(Axis.X, ABC).setCaption(Axis.Y, DURATION)));
 			}
 			
-			add(new DurationClaim(this));
+			add(new DurationClaim(f, pr));
 		}
 
 		/**
@@ -206,15 +207,13 @@ public class FoobarExtended
 			return 1 / def;
 		}
 		
-		public static class DurationClaim extends FunctionClaim
+		public static class DurationClaim extends RegionClaim
 		{
-			protected Laboratory m_lab;
-			
-			public DurationClaim(Laboratory lab)
+			public DurationClaim(ExperimentFactory<?> factory, Region r)
 			{
-				super(getCondition());
-				m_lab = lab;
-				setStatement("In all experiments, the value of def is always greater than 1.");
+				super(getCondition(), factory, r);
+				setStatement("The value of def is always greater than 1.");
+				setDescription("In the whole lab, this claim looks at the value of parameter def across all experiments and checks that it is greater than 1.");
 			}
 			
 			protected static Function getCondition()
@@ -232,20 +231,6 @@ public class FoobarExtended
 				}
 				AllObjects ao = new AllObjects(c);
 				return ao;
-			}
-
-			@Override
-			public Collection<Stateful> dependsOn()
-			{
-				return null;
-			}
-
-			@Override
-			protected Object[] getInput()
-			{
-				List<Experiment> exps = new ArrayList<Experiment>();
-				exps.addAll(m_lab.getExperiments());
-				return new Object[] {exps};
 			}
 		}
 

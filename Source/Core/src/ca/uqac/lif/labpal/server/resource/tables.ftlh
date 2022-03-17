@@ -1,5 +1,7 @@
 <#include "header.ftlh">
 
+<p><a class="btn-24 btn-all-tables" title="Download all tables as a single LaTeX file" href="all-tables">Download all tables</a></p>
+
 <#assign tables = lab.getTables()>
 
 <#if (tables?size > 0)>

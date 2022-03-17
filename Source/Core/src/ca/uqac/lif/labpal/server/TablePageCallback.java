@@ -20,7 +20,6 @@ package ca.uqac.lif.labpal.server;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -49,7 +48,7 @@ public class TablePageCallback extends TemplatePageCallback
 	public CallbackResponse process(HttpExchange h)
 	{
 		String uri = h.getRequestURI().toString();
-		int id = fetchId(uri);
+		int id = fetchId(s_idPattern, uri);
 		Table t = m_server.getLaboratory().getTable(id);
 		if (uri.contains("/csv"))
 		{
@@ -122,7 +121,7 @@ public class TablePageCallback extends TemplatePageCallback
 	public void fillInputModel(String uri, Map<String,String> req_parameters, Map<String,Object> input, Map<String,byte[]> parts) throws PageRenderingException
 	{
 		super.fillInputModel(uri, req_parameters, input, parts);
-		int id = fetchId(uri);
+		int id = fetchId(s_idPattern, uri);
 		Table t = m_server.getLaboratory().getTable(id);
 		if (t == null)
 		{
@@ -144,15 +143,5 @@ public class TablePageCallback extends TemplatePageCallback
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		renderer.render(new PrintStream(baos));
 		input.put("tablecontents", baos.toString());
-	}
-
-	protected static int fetchId(String uri)
-	{
-		Matcher mat = s_idPattern.matcher(uri);
-		if (!mat.find())
-		{
-			return -1; // No ID
-		}
-		return Integer.parseInt(mat.group(1));
 	}
 }

@@ -82,6 +82,7 @@ public class LabPalServer extends Server
 		registerCallback(new ExplainImageCallback(this));
 		registerCallback(new ExplainCallback(this, Method.GET, "/explain", "explain.ftlh").setTitle("Explanation"));
 		registerCallback(new ClaimsPageCallback(this, Method.GET, "/claims", "claims.ftlh").setTitle("Claims"));
+		registerCallback(new ClaimPageCallback(this, Method.GET, "/claim/", "claim.ftlh"));
 		registerCallback(new DownloadCallback(this));
 		registerCallback(new UploadCallback(this, "status.ftlh"));
 		registerCallback(new CssCallback(this, Method.GET, "/screen.css", "screen.css.ftlh"));

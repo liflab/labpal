@@ -87,7 +87,7 @@ public class ValueOf extends AtomicFunction
 		}
 		Object[] out = new Object[1];
 		Experiment e = (Experiment) inputs[0];
-		if (/*e.isInput(m_parameter) ||*/ e.getStatus() == Status.DONE)
+		if (e.isInput(m_parameter) || e.getStatus() == Status.DONE)
 		{
 			out[0] = e.read(m_parameter);
 			m_wasDefined = true;

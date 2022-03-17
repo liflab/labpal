@@ -25,7 +25,7 @@ import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 
 /**
- * A statement expressed over the contents of lab elements, and which can be
+ * A description expressed over the contents of lab elements, and which can be
  * take one of three possible truth values. The meaning of each of these truth
  * values is broadly expected to follow these rules:
  * <ul>
@@ -59,9 +59,14 @@ public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>
 	private int m_id;
 	
 	/**
-	 * A one-sentence statement describing the meaning of the claim.
+	 * A one-sentence description describing the meaning of the claim.
 	 */
 	/*@ non_null @*/ private String m_statement;
+	
+	/**
+	 * A longer description of the claim and how it is calculated.
+	 */
+	/*@ non_null @*/ private String m_description;
 	
 	/**
 	 * Creates a new claim.
@@ -71,11 +76,12 @@ public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>
 		super();
 		m_id = s_idCounter++;
 		m_statement = "";
+		m_description = "";
 	}
 	
 	/**
-	 * Sets the claim's statement.
-	 * @param s A one-sentence statement describing the meaning of the claim
+	 * Sets the claim's description.
+	 * @param s A one-sentence description describing the meaning of the claim
 	 * @return This claim
 	 */
 	/*@ non_null @*/ public final Claim setStatement(/*@ non_null @*/ String s)
@@ -85,12 +91,32 @@ public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>
 	}
 	
 	/**
-	 * Gets the claim's statement.
-	 * @return A one-sentence statement describing the meaning of the claim
+	 * Gets the claim's description.
+	 * @return A one-sentence description describing the meaning of the claim
 	 */
 	/*@ non_null @*/ public final String getStatement()
 	{
 		return m_statement;
+	}
+	
+	/**
+	 * Sets the claim's description.
+	 * @param s A description describing the meaning of the claim
+	 * @return This claim
+	 */
+	/*@ non_null @*/ public final Claim setDescription(/*@ non_null @*/ String s)
+	{
+		m_description = s;
+		return this;
+	}
+	
+	/**
+	 * Gets the claim's description.
+	 * @return A description describing the meaning of the claim
+	 */
+	/*@ non_null @*/ public final String getDescription()
+	{
+		return m_description;
 	}
 	
 	@Override

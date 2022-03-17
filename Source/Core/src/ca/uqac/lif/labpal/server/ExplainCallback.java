@@ -26,6 +26,7 @@ import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.claim.Claim;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentValue;
+import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.provenance.GraphViewer;
 import ca.uqac.lif.labpal.provenance.LabPalLineageGraphUtilities;
@@ -41,6 +42,11 @@ import ca.uqac.lif.spreadsheet.chart.ChartFormat;
 
 public class ExplainCallback extends TemplatePageCallback
 {
+	/**
+	 * A flag indicating if the explanation graph should be simplified.
+	 */
+	protected boolean m_simplifyGraph = true;
+	
 	public ExplainCallback(LabPalServer server, Method m, String path, String template_location)
 	{
 		super(server, m, path, template_location, "top-menu-experiments");
@@ -53,12 +59,15 @@ public class ExplainCallback extends TemplatePageCallback
 		String datapoint_id = (String) input.get("id");
 		StringBuilder out = new StringBuilder();
 		PartNode node = m_server.getLaboratory().getExplanation(datapoint_id);
-		Node simplified = LabPalLineageGraphUtilities.simplify(node);
+		if (m_simplifyGraph)
+		{
+			node = (PartNode) LabPalLineageGraphUtilities.simplify(node);
+		}
 		//explanationToHtml(node, out);
 		input.put("exptree", out.toString());
 		input.put("imageurl", "/explain/graph?id=" + datapoint_id);
 		GraphViewer renderer = new GraphViewer();
-		byte[] image = renderer.toImage(simplified, ChartFormat.SVG, false);
+		byte[] image = renderer.toImage(node, ChartFormat.SVG, false);
 		input.put("imagesvg", hackSvg(image));
 	}
 
@@ -273,15 +282,15 @@ public class ExplainCallback extends TemplatePageCallback
 		{
 			url += "/claim/" + ((Claim) subject).getId();
 		}
-		/*else if (subject instanceof Macro)
+		else if (subject instanceof Macro)
 		{
-			url += "/macros?highlight=" + ((Table) subject).getId();
+			url += "/macros?highlight=" + ((Macro) subject).getId();
 			if (part.head() instanceof NthElement)
 			{
 				NthElement n = (NthElement) part.head();
 				url += ":" + n.getIndex();
 			}
-		}*/
+		}
 		else
 		{
 			url = "#";

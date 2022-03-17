@@ -30,6 +30,7 @@ import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentValue;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.claim.Claim;
 import ca.uqac.lif.labpal.server.ExplainCallback;
 import ca.uqac.lif.labpal.server.TemplatePageCallback;
 import ca.uqac.lif.labpal.table.Table;
@@ -228,9 +229,34 @@ public class GraphViewer
 				renderLabNode(ps, current, n_id);
 				return;
 			}
+			else if (o instanceof Claim)
+			{
+				renderClaimNode(ps, current, n_id);
+				return;
+			}
 			else
 			{
 				super.renderPartNode(ps, current, n_id);
+			}
+		}
+		
+		protected void renderClaimNode(PrintStream ps, PartNode current, String n_id)
+		{
+			Part d = current.getPart();
+			String color = getPartNodeColor(d);
+			if (m_noCaptions && ((!GraphUtilities.isLeaf(current) && !m_roots.contains(current)) || m_nestingLevel > 0))
+			{
+				ps.println(m_indent + n_id + " [height=0.25,shape=\"circle\",label=\"\",fillcolor=\"" + color + "\"];");
+			}
+			else
+			{
+				String message = "";
+				if (!(d instanceof All))
+				{
+					message = d.toString() + " of ";
+				}
+				message += "Claim " + ((Claim) current.getSubject()).getId();
+				ps.println(m_indent + n_id + " [height=0.25,label=<" + message + ">,fillcolor=\"" + color + "\"];");
 			}
 		}
 

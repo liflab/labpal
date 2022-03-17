@@ -508,7 +508,7 @@ table.exp-table td {
   list-style-type: none;
   border: solid 1px lightgray;
   background: url('/images/erlenmeyer-16.png') 4px no-repeat;
-  width: 50pt;
+  width: 40pt;
   padding-left: 22px;
   padding-right: 4px;
   padding-bottom: 4px;
@@ -523,6 +523,11 @@ table.exp-table td {
 .running-exps li a {
   display: flex;
   justify-content: space-between;
+  width: 100%;
+}
+
+.running-exps li a span {
+  margin: 0;
 }
 
 .running-exps li a .status-icon {

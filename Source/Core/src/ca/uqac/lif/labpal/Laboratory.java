@@ -949,7 +949,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		{
 			// Claim
 			Claim subject = getClaim(id);
-			return new TrackedValue(null, Part.all, subject);
+			return new TrackedValue(null, NthOutput.FIRST, subject);
 		}
 		return null;
 	}

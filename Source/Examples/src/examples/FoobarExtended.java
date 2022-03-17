@@ -212,17 +212,17 @@ public class FoobarExtended
 			public DurationClaim(ExperimentFactory<?> factory, Region r)
 			{
 				super(getCondition(), factory, r);
-				setStatement("The value of def is always greater than 1.");
-				setDescription("In the whole lab, this claim looks at the value of parameter def across all experiments and checks that it is greater than 1.");
+				setStatement("The value of def is always greater than 0.");
+				setDescription("In the whole lab, this claim looks at the value of parameter def across all experiments and checks that it is greater than 0.");
 			}
 			
 			protected static Function getCondition()
 			{
-				Circuit c = new Circuit(1, 1, "def&gt;1");
+				Circuit c = new Circuit(1, 1, "def&gt;0");
 				{
 					TrooleanCondition gt = new TrooleanCondition(new IsGreaterThan());
 					ValueOf v = new ValueOf(DEF);
-					Constant one = new Constant(1);
+					Constant one = new Constant(0);
 					NodeConnector.connect(v, 0, gt, 0);
 					NodeConnector.connect(one, 0, gt, 1);
 					c.addNodes(gt, v, one);

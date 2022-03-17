@@ -19,7 +19,9 @@ package ca.uqac.lif.labpal.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -31,6 +33,7 @@ import ca.uqac.lif.labpal.experiment.DependencyExperimentSelector;
 import ca.uqac.lif.labpal.table.CsvTableRenderer;
 import ca.uqac.lif.labpal.table.LatexTableRenderer;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.spreadsheet.Cell;
 
 public class TablePageCallback extends TemplatePageCallback
 {
@@ -82,6 +85,11 @@ public class TablePageCallback extends TemplatePageCallback
 				return cbr;
 			}
 			HtmlTableRenderer renderer = new HtmlTableRenderer(t);
+			Map<String,String> req_parameters = getParameters(h);
+			if (req_parameters.containsKey("highlight"))
+			{
+				renderer.highlight(getCellsToHighlight(req_parameters.get("highlight")));
+			}
 			cbr.setCode(CallbackResponse.HTTP_OK);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			renderer.render(new PrintStream(baos));
@@ -127,7 +135,7 @@ public class TablePageCallback extends TemplatePageCallback
 		{
 			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such table");
 		}
-		if (uri.endsWith("/html"))
+		if (uri.contains("/html"))
 		{
 			input.put("onlytable", true);
 		}
@@ -140,8 +148,36 @@ public class TablePageCallback extends TemplatePageCallback
 		input.put("table", t);
 		input.put("expdeps", DependencyExperimentSelector.getDependencyList(t));
 		HtmlTableRenderer renderer = new HtmlTableRenderer(t);
+		if (req_parameters.containsKey("highlight"))
+		{
+			renderer.highlight(getCellsToHighlight(req_parameters.get("highlight")));
+		}
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		renderer.render(new PrintStream(baos));
 		input.put("tablecontents", baos.toString());
+	}
+	
+	/**
+	 * Parses the URL's <tt>highlight</tt> parameter to retrieve the set of cells
+	 * to highlight in the table.
+	 * @param key The value of the <tt>highlight</tt> parameter
+	 * @return A set of cells
+	 */
+	/*@ non_null @*/ protected static Set<Cell> getCellsToHighlight(String key)
+	{
+		Set<Cell> cells = new HashSet<Cell>();
+		String[] parts = key.split(",");
+		for (String part : parts)
+		{
+			String[] coords = part.split("[:\\.]");
+			if (coords.length != 2)
+			{
+				continue;
+			}
+			int col = Integer.parseInt(coords[0]);
+			int row = Integer.parseInt(coords[1]);
+			cells.add(Cell.get(col, row));
+		}
+		return cells;
 	}
 }

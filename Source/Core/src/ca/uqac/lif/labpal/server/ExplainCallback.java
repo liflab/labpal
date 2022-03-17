@@ -23,6 +23,7 @@ import java.util.Map;
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.dag.Pin;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.claim.Claim;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentValue;
 import ca.uqac.lif.labpal.plot.Plot;
@@ -132,11 +133,11 @@ public class ExplainCallback extends TemplatePageCallback
 		/*else if (subject instanceof Macro)
 		{
 			out.append("Macro #").append(((Macro) subject).getId());
-		}
+		}*/
 		else if (subject instanceof Claim)
 		{
 			out.append("Claim #").append(((Claim) subject).getId());
-		}*/
+		}
 		else if (subject == null)
 		{
 			out.append("null");
@@ -153,7 +154,7 @@ public class ExplainCallback extends TemplatePageCallback
 		if (node instanceof PartNode)
 		{
 			Object o = ((PartNode) node).getSubject();
-			if (o instanceof Laboratory || o instanceof Experiment || o instanceof Table /*|| o instanceof Macro*/ || o instanceof Plot)
+			if (o instanceof Laboratory || o instanceof Experiment || o instanceof Table /*|| o instanceof Macro*/ || o instanceof Plot || o instanceof Claim)
 			{
 				return (PartNode) node;
 			}
@@ -268,11 +269,11 @@ public class ExplainCallback extends TemplatePageCallback
 				}
 			}
 		}
-		/*else if (subject instanceof Claim)
+		else if (subject instanceof Claim)
 		{
-			// TODO
+			url += "/claim/" + ((Claim) subject).getId();
 		}
-		else if (subject instanceof Macro)
+		/*else if (subject instanceof Macro)
 		{
 			url += "/macros?highlight=" + ((Table) subject).getId();
 			if (part.head() instanceof NthElement)

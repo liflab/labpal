@@ -516,7 +516,7 @@ table.exp-table td {
   margin-right: 10px;
   margin-bottom: 10px;
   border-radius: 3px;
-  background-color: rgba(220,220,220,0.5);
+  background-color: rgba(230,230,230,0.5);
   box-shadow: 2px 2px 0px 0px rgba(115,115,115,0.5);
 }
 
@@ -530,8 +530,7 @@ table.exp-table td {
 }
 
 .running-exps li:hover {
-  background-color: #eee;
-  background-opacity: 0.5;
+  background-color: #ddd;
 }
 
 #top-menu ul li.small-screen {

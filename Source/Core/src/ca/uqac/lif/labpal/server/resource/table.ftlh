@@ -71,7 +71,7 @@ function updateTableStatus() {
               }
   })
   $.ajax({
-    url: "/table/${tid}/html"
+    url: "/table/${tid}/html<#if highlight?has_content>?highlight=${highlight}</#if>"
   }).done(function (data) {
               $("#tablecontents").html(data);
               setTimeout(updateTableStatus, 3100);

@@ -181,7 +181,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	 * A map associating macro IDs to macro instances.
 	 */
 	/*@ non_null @*/ private transient Map<Integer,Macro> m_macros;
-	
+
 	/**
 	 * A map associating macro IDs to claim instances.
 	 */
@@ -417,7 +417,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		return total;
 	}
-	
+
 	/**
 	 * Gets the list of all nicknames shared by two or more lab objects.
 	 * Exporting these objects to LaTeX produce compilation errors, as LaTeX
@@ -609,7 +609,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a claim instance with given ID, if it exists.
 	 * @param id The claim ID
@@ -703,7 +703,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		return exps;
 	}
-	
+
 	/**
 	 * Returns a list of all claims in the lab, sorted by ID.
 	 * @return The list of claims
@@ -769,7 +769,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Adds a list of claims to the lab.
 	 * @param claims The claims to add
@@ -949,7 +949,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		{
 			// Claim
 			Claim subject = getClaim(id);
-			return new TrackedValue(null, NthOutput.FIRST, subject);
+			return new TrackedValue(null, Part.all, subject);
 		}
 		return null;
 	}
@@ -990,9 +990,13 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		{
 			child = f.getUnknownNode();
 		}
-		PartNode root = f.getPartNode(root_part, this);
-		root.addChild(child);
-		return root;
+		if (root_part != null)
+		{
+			PartNode root = f.getPartNode(root_part, this);
+			root.addChild(child);
+			return root;
+		}
+		return null;
 	}
 
 	@Override
@@ -1030,14 +1034,14 @@ public class Laboratory implements ExplanationQueryable, Persistent
 				root.addChild(o.getExplanation(d.tail(), f));
 			}
 		}
-		/*else if (head instanceof ClaimNumber)
+		else if (head instanceof ClaimNumber)
 		{
 			Claim o = getClaim(id);
 			if (o != null)
 			{
 				root.addChild(o.getExplanation(d.tail(), f));
 			}
-		}*/
+		}
 		else
 		{
 			root.addChild(f.getUnknownNode());
@@ -1218,7 +1222,6 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		}
 		List<LaboratoryCallback> callbacks = new ArrayList<>();
 		new_lab.setupCallbacks(callbacks);
-		int code = ERR_OK;
 		/*if (!filename.isEmpty())
 		{
 			stdout.println("Loading lab from " + filename);
@@ -1246,7 +1249,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 			lab_assistant = new Assistant(new QueuedThreadPoolExecutor(2));
 		}
 		new_lab.setAssistant(lab_assistant);
-		
+
 		// Auto-start
 		if (argument_map.hasOption("autostart"))
 		{

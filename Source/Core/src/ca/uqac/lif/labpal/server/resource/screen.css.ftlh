@@ -511,7 +511,7 @@ table.exp-table td {
   width: 40pt;
   padding-left: 22px;
   padding-right: 4px;
-  padding-bottom: 4px;
+  padding-bott           om: 4px;
   padding-top: 4px;
   margin-right: 10px;
   margin-bottom: 10px;

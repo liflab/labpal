@@ -28,6 +28,7 @@
   </#switch></a>
   </td>
   <td>${claim.getStatement()?no_esc}</td>
+  <td><a href="/assistant/enqueue/claim/${cid}" title="Add experiments linked to this claim to the assistant's queue"><span class="btn-24 btn-queue"><span class="text-only">Enqueue</span></span></a></td>
 </tr>
 </#list>
 </table>

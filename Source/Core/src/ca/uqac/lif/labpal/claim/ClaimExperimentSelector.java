@@ -15,39 +15,51 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.labpal.experiment;
+package ca.uqac.lif.labpal.claim;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.Stateful;
+import ca.uqac.lif.labpal.experiment.ConcreteExperimentSelector;
+import ca.uqac.lif.labpal.experiment.Experiment;
 
 /**
- * Selects the experiments necessary to render a plot.
+ * Selects the experiments necessary to evaluate a claim.
  * @author Sylvain Hallé
  *
  */
-public class PlotExperimentSelector extends ConcreteExperimentSelector 
+public class ClaimExperimentSelector extends ConcreteExperimentSelector 
 {
 	/**
-	 * The plot relative to which the experiments are selected.
+	 * The claim relative to which the experiments are selected.
 	 */
-	/*@ non_null @*/ protected final Plot m_plot;
+	/*@ non_null @*/ protected final Claim m_claim;
 	
 	/**
 	 * Creates a new instance of the selector.
 	 * @param lab The lab from which to select experiments
-	 * @param p The plot relative to which the experiments are selected
+	 * @param c The claim relative to which the experiments are selected
 	 */
-	public PlotExperimentSelector(/*@ non_null @*/ Laboratory lab, /*@ non_null @*/ Plot p)
+	public ClaimExperimentSelector(/*@ non_null @*/ Laboratory lab, /*@ non_null @*/ Claim c)
 	{
 		super(lab);
-		m_plot = p;
+		m_claim = c;
 	}
 
 	@Override
 	/*@ non_null @*/ public Collection<Experiment> select()
 	{
-		return m_plot.dependsOn().get(0).dependsOn();
+		Set<Experiment> deps = new HashSet<Experiment>();
+		for (Stateful s : m_claim.dependsOn())
+		{
+			if (s instanceof Experiment)
+			{
+				deps.add((Experiment) s);
+			}
+		}
+		return deps;
 	}
 }

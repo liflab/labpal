@@ -32,11 +32,15 @@ import ca.uqac.lif.labpal.assistant.ExperimentScheduler;
 import ca.uqac.lif.labpal.assistant.RandomDecimate;
 import ca.uqac.lif.labpal.assistant.Shuffle;
 import ca.uqac.lif.labpal.assistant.Subsample;
+import ca.uqac.lif.labpal.claim.Claim;
+import ca.uqac.lif.labpal.claim.ClaimExperimentSelector;
 import ca.uqac.lif.labpal.experiment.Experiment;
-import ca.uqac.lif.labpal.experiment.PlotExperimentSelector;
-import ca.uqac.lif.labpal.experiment.TableExperimentSelector;
+import ca.uqac.lif.labpal.macro.Macro;
+import ca.uqac.lif.labpal.macro.MacroExperimentSelector;
 import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.plot.PlotExperimentSelector;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.table.TableExperimentSelector;
 
 public class AssistantPageCallback extends TemplatePageCallback
 {
@@ -49,6 +53,16 @@ public class AssistantPageCallback extends TemplatePageCallback
 	 * The pattern to extract the table ID from the URL.
 	 */
 	protected static final Pattern s_tableIdPattern = Pattern.compile("assistant/enqueue/table/(\\d+)");
+	
+	/**
+	 * The pattern to extract the claim ID from the URL.
+	 */
+	protected static final Pattern s_claimIdPattern = Pattern.compile("assistant/enqueue/claim/(\\d+)");
+	
+	/**
+	 * The pattern to extract the macro ID from the URL.
+	 */
+	protected static final Pattern s_macroIdPattern = Pattern.compile("assistant/enqueue/macro/(\\d+)");
 
 	public AssistantPageCallback(LabPalServer server, Method m, String path, String template_location)
 	{
@@ -67,6 +81,14 @@ public class AssistantPageCallback extends TemplatePageCallback
 		if (uri.contains("enqueue/table"))
 		{
 			enqueueTable(uri, input);
+		}
+		if (uri.contains("enqueue/claim"))
+		{
+			enqueueClaim(uri, input);
+		}
+		if (uri.contains("enqueue/macro"))
+		{
+			enqueueMacro(uri, input);
 		}
 		Set<Integer> groups = fetchGroupIds(input);
 		List<Experiment> exps = fetchExperiments(input, groups);
@@ -179,6 +201,13 @@ public class AssistantPageCallback extends TemplatePageCallback
 		input.put("message", processed + " experiment(s) reset");
 	}
 	
+	/**
+	 * Adds the experiments on which a table depends to the lab assistant's
+	 * queue.
+	 * @param uri The URI from which a table ID will be parsed
+	 * @param input The input model of the output HTML page
+	 * @throws PageRenderingException Thrown if no table can be found
+	 */
 	protected void enqueueTable(String uri, Map<String,Object> input) throws PageRenderingException
 	{
 		int plot_id = fetchId(s_tableIdPattern, uri);
@@ -192,6 +221,13 @@ public class AssistantPageCallback extends TemplatePageCallback
 		input.put("message", added + " experiment(s) enqueued to generate Table " + plot_id);
 	}
 	
+	/**
+	 * Adds the experiments on which a plot depends to the lab assistant's
+	 * queue.
+	 * @param uri The URI from which a plot ID will be parsed
+	 * @param input The input model of the output HTML page
+	 * @throws PageRenderingException Thrown if no plot can be found
+	 */
 	protected void enqueuePlot(String uri, Map<String,Object> input) throws PageRenderingException
 	{
 		int plot_id = fetchId(s_plotIdPattern, uri);
@@ -203,6 +239,46 @@ public class AssistantPageCallback extends TemplatePageCallback
 		PlotExperimentSelector selector = new PlotExperimentSelector(m_server.getLaboratory(), p);
 		int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
 		input.put("message", added + " experiment(s) enqueued to generate Plot " + plot_id);
+	}
+	
+	/**
+	 * Adds the experiments on which a claim depends to the lab assistant's
+	 * queue.
+	 * @param uri The URI from which a claim ID will be parsed
+	 * @param input The input model of the output HTML page
+	 * @throws PageRenderingException Thrown if no claim can be found
+	 */
+	protected void enqueueClaim(String uri, Map<String,Object> input) throws PageRenderingException
+	{
+		int claim_id = fetchId(s_claimIdPattern, uri);
+		Claim c = m_server.getLaboratory().getClaim(claim_id);
+		if (c == null)
+		{
+			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such claim");
+		}
+		ClaimExperimentSelector selector = new ClaimExperimentSelector(m_server.getLaboratory(), c);
+		int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
+		input.put("message", added + " experiment(s) enqueued to generate Claim " + claim_id);
+	}
+	
+	/**
+	 * Adds the experiments on which a macro depends to the lab assistant's
+	 * queue.
+	 * @param uri The URI from which a macro ID will be parsed
+	 * @param input The input model of the output HTML page
+	 * @throws PageRenderingException Thrown if no macro can be found
+	 */
+	protected void enqueueMacro(String uri, Map<String,Object> input) throws PageRenderingException
+	{
+		int macro_id = fetchId(s_macroIdPattern, uri);
+		Macro m = m_server.getLaboratory().getMacro(macro_id);
+		if (m == null)
+		{
+			throw new PageRenderingException(CallbackResponse.HTTP_NOT_FOUND, "Not found", "No such macro");
+		}
+		MacroExperimentSelector selector = new MacroExperimentSelector(m_server.getLaboratory(), m);
+		int added = m_server.getLaboratory().getAssistant().addToQueue(selector.select());
+		input.put("message", added + " experiment(s) enqueued to generate Macro " + macro_id);
 	}
 	
 	protected Set<Integer> fetchGroupIds(Map<String,Object> input)

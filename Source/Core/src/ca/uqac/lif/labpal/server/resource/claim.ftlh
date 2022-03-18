@@ -32,6 +32,13 @@ ${description?no_esc}
 </div>
 </#if>
 
+<div>
+<ul class="plot-buttons line-align">
+<li><a class="btn-24 btn-tex" href="/claim/${cid}/tex?dl=1" title="Download as LaTeX"><span>LaTeX</span></a></li>
+<li><a class="btn-24 btn-queue" href="/assistant/enqueue/claim/${cid}" title="Add experiments linked to this claim to the assistant's queue"><span>Enqueue</span></a></li>
+</ul>
+</div>
+
 <h3>Dependencies</h3>
 
 <p>Below is the list of all the experiments in the lab on which this claim directly or indirectly depends.</p>

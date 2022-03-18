@@ -6,13 +6,13 @@
 <h2 class="line-align"><span>Claim #${cid}</span>
 <#switch verdict>
     <#case "TRUE">
-      <span id="status-icon-${cid}" class="status-icon status-done" title="True"><span class="text-only">T</span></span>
+      <span id="status-icon-${cid}" class="status-icon status-troolean-t" title="True"><span class="text-only">T</span></span>
       <#break>
     <#case "FALSE">
-      <span id="status-icon-${cid}" class="status-icon status-failed" title="False"><span class="text-only">F</span></span>
+      <span id="status-icon-${cid}" class="status-icon status-troolean-f" title="False"><span class="text-only">F</span></span>
       <#break>
     <#default>
-      <span id="status-icon-${cid}" class="status-icon status-unknown" title="Inconclusive"><span class="text-only">?</span></span>
+      <span id="status-icon-${cid}" class="status-icon status-troolean-i" title="Inconclusive"><span class="text-only">?</span></span>
       <#break>
   </#switch>
 </h2>

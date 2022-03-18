@@ -20,6 +20,7 @@ package ca.uqac.lif.labpal.claim;
 import ca.uqac.lif.labpal.Dependent;
 import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Stateful;
+import ca.uqac.lif.labpal.latex.LatexExportable;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
@@ -46,7 +47,7 @@ import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
  * @since 2.10
  *
  */
-public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>, Identifiable
+public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>, Identifiable, LatexExportable
 {
 	/**
 	 * A counter to provide unique IDs to claims.
@@ -57,6 +58,11 @@ public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>
 	 * The unique ID given to a claim instance.
 	 */
 	private int m_id;
+	
+	/**
+	 * A nickname given to this claim.
+	 */
+	/*@ non_null @*/ private String m_nickname;
 	
 	/**
 	 * A one-sentence description describing the meaning of the claim.
@@ -77,6 +83,7 @@ public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>
 		m_id = s_idCounter++;
 		m_statement = "";
 		m_description = "";
+		m_nickname = LatexExportable.latexify("Claim" + m_id);
 	}
 	
 	/**
@@ -119,10 +126,38 @@ public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>
 		return m_description;
 	}
 	
+	/**
+	 * Sets the claim's nickname.
+	 * @param name The nickname for this claim. It must be a valid LaTeX
+	 * identifier
+	 * @return This claim
+	 * @see LatexExportable#latexify(String)
+	 */
+	/*@ non_null @*/ public final Claim setNickname(/*@ non_null @*/ String name)
+	{
+		m_nickname = name;
+		return this;
+	}
+	
 	@Override
 	public final int getId()
 	{
 		return m_id;
+	}
+	
+	@Override
+	public String getNickname()
+	{
+		return m_nickname;
+	}
+	
+	@Override
+	public String toLatex()
+	{
+		StringBuilder out = new StringBuilder();
+		out.append("\\newcommand{\\").append(getNickname()).append("}");
+		out.append("{").append(getStatement()).append("}");
+		return out.toString();
 	}
 	
 	protected void continueExplanation(PartNode from, NodeFactory f)

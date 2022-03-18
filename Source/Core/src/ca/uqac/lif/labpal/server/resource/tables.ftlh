@@ -1,10 +1,11 @@
 <#include "header.ftlh">
 
-<p><a class="btn-24 btn-all-tables" title="Download all tables as a single LaTeX file" href="all-tables">Download all tables</a></p>
+<p><a class="btn-24 btn-all-tables" title="Download all tables as a single LaTeX file" href="/tables/tex">Download all tables</a></p>
 
 <#assign tables = lab.getTables()>
 
 <#if (tables?size > 0)>
+<p>
 <table class="tables">
 <#list tables as table>
 <#assign tid = table.getId()>
@@ -20,6 +21,7 @@
 </tr>
 </#list>
 </table>
+</p>
 </#if>
 
 <script type="text/javascript">

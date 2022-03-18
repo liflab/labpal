@@ -203,7 +203,7 @@ public class FoobarExtended
 		{
 			Thread.sleep((long) (Math.random() * 150 * def));
 			/* This will throw a division by zero exception when def = 0. This in
-			 * turn will cause the that runs this code to end in a FAILED state. */
+			 * turn will cause the experiment that runs this code to end in a FAILED state. */
 			return 1 / def;
 		}
 		

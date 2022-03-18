@@ -201,6 +201,18 @@ table.exp-table td {
   margin-right: 12px;
 }
 
+.status-icon.status-troolean-t {
+  background: url('/images/troolean-t-24.png') left center no-repeat;
+}
+
+.status-icon.status-troolean-f {
+  background: url('/images/troolean-f-24.png') left center no-repeat;
+}
+
+.status-icon.status-troolean-i {
+  background: url('/images/troolean-i-24.png') left center no-repeat;
+}
+
 .status-icon.status-done {
   background: url('/images/status-done-24.png') left center no-repeat;
 }

@@ -71,4 +71,17 @@ public interface LatexExportable
     s = s.replaceAll(":", "L");
     return s;
   }
+  
+  /**
+   * Escapes LaTeX characters in a string.
+   * @param s The string
+   * @return The escaped string
+   */
+  public static String escape(String s)
+  {
+  	s = s.replaceAll("&", "\\&");
+  	s = s.replaceAll("\\$", "\\$");
+  	s = s.replaceAll("_", "\\_");
+  	return s;
+  }
 }

@@ -52,7 +52,7 @@ public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>
 	/**
 	 * A counter to provide unique IDs to claims.
 	 */
-	private int s_idCounter = 1;
+	private static int s_idCounter = 1;
 	
 	/**
 	 * The unique ID given to a claim instance.

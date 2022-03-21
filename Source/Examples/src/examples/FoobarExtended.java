@@ -21,6 +21,7 @@ import ca.uqac.lif.labpal.claim.TrooleanCondition;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
 import ca.uqac.lif.labpal.experiment.ExperimentFactory;
+import ca.uqac.lif.labpal.experiment.SingleClassExperimentFactory;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.region.Point;
 import ca.uqac.lif.labpal.region.Region;
@@ -67,7 +68,7 @@ public class FoobarExtended
 		@Override
 		public void setup()	
 		{
-			ExperimentFactory<?> f = new ExperimentFactory<>(this, RunTool.class);
+			ExperimentFactory<?> f = new SingleClassExperimentFactory<>(this, RunTool.class);
 
 			Region pr = filter(product(range(ABC, new Centimeter(0), new Centimeter(5), new Centimeter(1)), range(DEF, 0, 5),
 					extension(TOOL, "Foobar", "Foobaz")), (p) -> {

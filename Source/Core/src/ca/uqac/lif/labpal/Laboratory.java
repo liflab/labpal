@@ -775,7 +775,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	 * @param claims The claims to add
 	 * @return The first claim in the arguments
 	 */
-	/*@ non_null @*/ public Claim add(Claim ... claims)
+	/*@ null @*/ public Claim add(Claim ... claims)
 	{
 		for (Claim c : claims)
 		{
@@ -791,29 +791,37 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	/**
 	 * Adds a list of macros to the lab.
 	 * @param macros The macros to add
-	 * @return This lab
+	 * @return The first macro in the arguments
 	 */
-	/*@ non_null @*/ public Laboratory add(Macro ... macros)
+	/*@ null @*/ public Macro add(Macro ... macros)
 	{
 		for (Macro m : macros)
 		{
 			m_macros.put(m.getId(), m);
 		}
-		return this;
+		if (macros.length > 0)
+		{
+			return macros[0];
+		}
+		return null;
 	}
 
 	/**
 	 * Adds a list of plots to the lab.
 	 * @param experiments The plots to add
-	 * @return This lab
+	 * @return The first plot in the arguments
 	 */
-	/*@ non_null @*/ public Laboratory add(Plot ... plots)
+	/*@ null @*/ public Plot add(Plot ... plots)
 	{
 		for (Plot p : plots)
 		{
 			m_plots.put(p.getId(), p);
 		}
-		return this;
+		if (plots.length > 0)
+		{
+			return plots[0];
+		}
+		return null;
 	}
 
 	/**

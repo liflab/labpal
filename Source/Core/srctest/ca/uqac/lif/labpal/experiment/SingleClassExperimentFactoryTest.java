@@ -28,7 +28,7 @@ import ca.uqac.lif.labpal.region.PointFactory;
 /**
  * Unit tests for {@link ExperimentFactory}.
  */
-public class ExperimentFactoryTest 
+public class SingleClassExperimentFactoryTest 
 {
 	protected static PointFactory s_factory = new PointFactory("a", "b", "c");
 	
@@ -36,7 +36,7 @@ public class ExperimentFactoryTest
 	public void test1()
 	{
 		Laboratory lab = new Laboratory();
-		ExperimentFactory<PointExperiment> f = new ExperimentFactory<PointExperiment>(lab, PointExperiment.class);
+		ExperimentFactory<PointExperiment> f = new SingleClassExperimentFactory<PointExperiment>(lab, PointExperiment.class);
 		PointExperiment e = f.get(s_factory.get("foo", 3, true));
 		assertTrue(lab.contains(e));
 		assertEquals("foo", e.read("a"));
@@ -50,7 +50,7 @@ public class ExperimentFactoryTest
 	public void test2()
 	{
 		Laboratory lab = new Laboratory();
-		ExperimentFactory<Experiment> f = new ExperimentFactory<Experiment>(lab, Experiment.class);
+		ExperimentFactory<Experiment> f = new SingleClassExperimentFactory<Experiment>(lab, Experiment.class);
 		Experiment e = f.get(s_factory.get("foo", 3, true));
 		assertNull(e); // Since Experiment does not have a constructor accepting a Point
 	}

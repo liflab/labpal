@@ -65,6 +65,13 @@ public interface Region
 	/*@ non_null @*/ public Set<Point> allPoints();
 	
 	/**
+	 * Gets one of the points contained in this region. If the region contains
+	 * more than one point, the choice is arbitrary.
+	 * @return A point instance, or <tt>null</tt> if the region contains no point
+	 */
+	/*@ null @*/ public Point asPoint();
+	
+	/**
 	 * Gets the number of points contained within the region.
 	 * @return The size of the region
 	 */

@@ -60,6 +60,12 @@ public class EmptyRegion implements Region
 		return 0;
 	}
 	
+	@Override
+	public Point asPoint()
+	{
+		return null;
+	}
+	
 	/**
 	 * An {@link Iterable} that enumerates nothing.
 	 */

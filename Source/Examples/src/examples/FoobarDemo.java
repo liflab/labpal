@@ -11,6 +11,7 @@ import static ca.uqac.lif.labpal.util.PermutationIterator.permute;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentFactory;
+import ca.uqac.lif.labpal.experiment.SingleClassExperimentFactory;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.region.Region;
 
@@ -36,7 +37,7 @@ public class FoobarDemo
 	public static class MyLab extends Laboratory
 	{
 		public void setup()	{
-			ExperimentFactory<?> f = new ExperimentFactory<>(this, RunTool.class);
+			ExperimentFactory<?> f = new SingleClassExperimentFactory<>(this, RunTool.class);
 
 			Region pr = filter(product(range("abc", 0, 5), range("def", 0, 5),
 					extension("tool", "Foobar", "Foobaz")), (p) -> {

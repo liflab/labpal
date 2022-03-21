@@ -298,11 +298,11 @@ public class GraphViewer
 				String highlight_string = "";
 				if (d instanceof All)
 				{
-					message = "E" + e.getId();
+					message = e.toString();
 				}
 				else
 				{
-					message = d.toString() + " of " + "E" + e.getId();
+					message = d.toString() + " of " + e.toString();
 					ExperimentValue mentioned = ExperimentValue.mentionedValue(d);
 					if (mentioned != null)
 					{

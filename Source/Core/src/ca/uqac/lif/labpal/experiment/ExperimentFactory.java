@@ -42,31 +42,16 @@ import ca.uqac.lif.labpal.region.Region;
  * 
  * @author Sylvain Hallé
  *
- * @param <T> The class of the experiments that are to be created
+ * @param <E> The class of the experiments that are to be created
  * 
  * @since 2.10
  */
-public class ExperimentFactory<E extends Experiment>
+public abstract class ExperimentFactory<E extends Experiment>
 {
 	/**
-	 * The class of the experiments to be instantiated.
+	 * The lab to which experiments are added when the factory is called.
 	 */
-	protected Class<E> m_class;
-
-	/**
-	 * The experiment constructor taking a point as its argument.
-	 */
-	protected Constructor<E> m_pointConstructor;
-
-	/**
-	 * The experiment constructor taking a point as its argument.
-	 */
-	protected Constructor<E> m_emptyConstructor;
-
-	/**
-	 * The lab to which experiments 
-	 */
-	protected final Laboratory m_lab;
+	/*@ non_null @*/ protected final Laboratory m_lab;
 
 	/**
 	 * A map between points and experiment instances created by this factory.
@@ -75,29 +60,10 @@ public class ExperimentFactory<E extends Experiment>
 	 */
 	/*@ non_null @*/ protected final Map<Point,E> m_added;
 
-	public ExperimentFactory(Laboratory lab, Class<E> clazz)
+	public ExperimentFactory(/*@ non_null @*/ Laboratory lab)
 	{
 		super();
 		m_lab = lab;
-		m_class = clazz;
-		try 
-		{
-			m_pointConstructor = clazz.getConstructor(Point.class);
-		} 
-		catch (NoSuchMethodException | SecurityException e) 
-		{
-			// Do nothing
-			m_pointConstructor = null;
-		}
-		try 
-		{
-			m_emptyConstructor = clazz.getConstructor(Void.class);
-		} 
-		catch (NoSuchMethodException | SecurityException e) 
-		{
-			// Do nothing
-			m_emptyConstructor = null;
-		}
 		m_added = new HashMap<Point,E>();
 	}
 
@@ -106,7 +72,7 @@ public class ExperimentFactory<E extends Experiment>
 	 * @param r The region
 	 * @return The set of experiments
 	 */
-	/*@ non_null @*/ public Set<E> get(Region r)
+	/*@ non_null @*/ public Set<E> get(/*@ non_null @*/ Region r)
 	{
 		Set<E> experiments = new HashSet<E>();
 		for (Point p : r.allPoints())
@@ -126,7 +92,7 @@ public class ExperimentFactory<E extends Experiment>
 	 * @param p The point
 	 * @return The experiment
 	 */
-	/*@ null @*/ public E get(Point p)
+	/*@ null @*/ public final E get(/*@ non_null @*/ Point p)
 	{
 		Point pp = project(p);
 		if (pp == null)
@@ -170,22 +136,25 @@ public class ExperimentFactory<E extends Experiment>
 	 */
 	/*@ pure null @*/ protected E createExperiment(Point p)
 	{
-		if (m_pointConstructor != null)
+		Constructor<? extends E> point_constructor = getPointConstructor(p);
+		
+		if (point_constructor != null)
 		{
 			try
 			{
-				return m_pointConstructor.newInstance(p);
+				return point_constructor.newInstance(p);
 			}
 			catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) 
 			{
 				return null;
 			}
 		}
-		if (m_emptyConstructor != null)
+		Constructor<? extends E> empty_constructor = getEmptyConstructor(p);
+		if (empty_constructor != null)
 		{
 			try
 			{
-				E e = m_emptyConstructor.newInstance();
+				E e = empty_constructor.newInstance();
 				for (String d : p.getDimensions())
 				{
 					e.writeInput(d, p.get(d));
@@ -199,8 +168,13 @@ public class ExperimentFactory<E extends Experiment>
 		}
 		try
 		{
+			Class<? extends E> clazz = getClass(p);
+			if (clazz == null)
+			{
+				return null;
+			}
 			@SuppressWarnings("deprecation")
-			E e = m_class.newInstance();
+			E e = clazz.newInstance();
 			for (String d : p.getDimensions())
 			{
 				e.writeInput(d, p.get(d));
@@ -214,4 +188,27 @@ public class ExperimentFactory<E extends Experiment>
 		}
 		return null;
 	}
+	
+	/**
+	 * Gets the constructor taking a {@link Point} as argument for the experiment
+	 * corresponding to a given point.
+	 * @param p The point
+	 * @return The constructor, or <tt>null</tt> if no such constructor exists
+	 */
+	/*@ null @*/ protected abstract Constructor<? extends E> getPointConstructor(Point p);
+	
+	/**
+	 * Gets the no-args constructor for the experiment corresponding to a given
+	 * point.
+	 * @param p The point
+	 * @return The constructor, or <tt>null</tt> if no such constructor exists
+	 */
+	/*@ null @*/ protected abstract Constructor<? extends E> getEmptyConstructor(Point p);
+	
+	/**
+	 * Gets the class for the experiment corresponding to a given point.
+	 * @param p The point
+	 * @return The class, or <tt>null</tt> if no class corresponds to this point
+	 */
+	/*@ null @*/ protected abstract Class<? extends E> getClass(Point p);
 }

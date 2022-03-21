@@ -374,4 +374,14 @@ class ExtensionRegion implements Region
 		}
 		return m_contents.get(name).keySet();
 	}
+
+	@Override
+	public Point asPoint()
+	{
+		for (Point p : m_points)
+		{
+			return p;
+		}
+		return null;
+	}
 }

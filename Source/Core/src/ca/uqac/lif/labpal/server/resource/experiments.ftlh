@@ -44,8 +44,10 @@
   <p class="group-description">${g.getDescription()}</p>
 </#if>
 
+<p>
 <#include "experiment-list.ftlh">
-   
+</p>
+
 <#if (groups?size > 1)>
   </div>
   </div>

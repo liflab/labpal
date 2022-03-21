@@ -117,7 +117,17 @@ public abstract class TrooleanConnective extends AtomicFunction
 		}
 		else
 		{
-			process(root, p, and_list, f.getAndNode(), f);
+			if (or_list.isEmpty() && m_inconclusives.isEmpty())
+			{
+				// All elements under the AND: just return the whole input
+				// instead of conjunction of each part
+				Part new_p = NthOutput.replaceOutByIn(p, 0);
+				root.addChild(f.getPartNode(new_p, this));
+			}
+			else
+			{
+				process(root, p, and_list, f.getAndNode(), f);
+			}
 		}
 		return root;
 	}

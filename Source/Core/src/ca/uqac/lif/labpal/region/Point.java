@@ -17,22 +17,33 @@
  */
 package ca.uqac.lif.labpal.region;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ca.uqac.lif.spreadsheet.Spreadsheet;
+
 /**
- * A set of associations between a dimension name and a value.
+ * A set of associations between a dimension name and a value. Points can
+ * be ordered by comparing the values of their respective dimensinos.
  * 
  * @since 3.0
  */
-public class Point
+public class Point implements Comparable<Point>
 {
 	/**
 	 * A map keeping the association between dimension names and their
 	 * corresponding values.
 	 */
-	protected final Map<String,Object> m_values;
+	/*@ non_null @*/ protected final Map<String,Object> m_values;
+	
+	/**
+	 * A list keeping the names of all dimensions of this point in sorted order.
+	 */
+	/*@ non_null @*/ protected final List<String> m_dimensions;
 
 	/**
 	 * Creates a new empty point.
@@ -41,6 +52,18 @@ public class Point
 	{
 		super();
 		m_values = new HashMap<String,Object>();
+		m_dimensions = new ArrayList<String>();
+	}
+	
+	/**
+	 * Creates a point by copying the contents of another point.
+	 * @param p The other point
+	 */
+	public Point(/*@ non_null @*/ Point p)
+	{
+		this();
+		m_values.putAll(p.m_values);
+		m_dimensions.addAll(p.m_dimensions);
 	}
 	
 	/**
@@ -69,6 +92,11 @@ public class Point
 	public Point set(String name, Object value)
 	{
 		m_values.put(name, value);
+		if (!m_dimensions.contains(name))
+		{
+			m_dimensions.add(name);
+			Collections.sort(m_dimensions);
+		}
 		return this;
 	}
 	
@@ -101,6 +129,16 @@ public class Point
 		}
 		Number n = (Number) o;
 		return n.intValue();
+	}
+	
+	public String getString(String name)
+	{
+		Object o = get(name);
+		if (o == null)
+		{
+			return null;
+		}
+		return o.toString();
 	}
 	
 	/**
@@ -201,5 +239,24 @@ public class Point
 			return ((Number) o1).floatValue() == ((Number) o2).floatValue();
 		}
 		return o1.equals(o2);
+	}
+
+	@Override
+	public int compareTo(Point p)
+	{
+		for (String d : m_dimensions)
+		{
+			if (!p.m_dimensions.contains(d))
+			{
+				// Cannot compare
+				return 0;
+			}
+			int value = Spreadsheet.compare(m_values.get(d), p.m_values.get(d));
+			if (value != 0)
+			{
+				return value;
+			}
+		}
+		return 0;
 	}
 }

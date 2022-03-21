@@ -101,7 +101,8 @@ public abstract class FunctionClaim extends Claim
 				if (elem_index < in_list.size())
 				{
 					Part new_part = getElementPart(pnp_leaf);
-					pn_leaf.addChild(factory.getPartNode(new_part, in_list.get(elem_index)));
+					PartNode pn_child = factory.getPartNode(new_part, in_list.get(elem_index));
+					pn_leaf.addChild(pn_child);
 				}
 				else
 				{
@@ -134,15 +135,20 @@ public abstract class FunctionClaim extends Claim
 		}
 		if (p instanceof ComposedPart)
 		{
-			List<Part> desigs = new ArrayList<Part>();
 			ComposedPart cp = (ComposedPart) p;
+			int last_index = -1;
 			for (int i = 0; i < cp.size(); i++)
 			{
 				Part in_p = cp.get(i);
 				if (in_p instanceof NthElement)
 				{
-					break;
+					last_index = i;
 				}
+			}
+			List<Part> desigs = new ArrayList<Part>();
+			for (int i = 0; i < last_index; i++)
+			{
+				Part in_p = cp.get(i);
 				desigs.add(in_p);
 			}
 			return ComposedPart.compose(desigs);

@@ -57,7 +57,7 @@ public class SortingLab extends Laboratory
 		
 		/* Define a default range of list lengths. */ 
 		int min_length = 5000;
-		int max_length = 30000;
+		int max_length = 35000;
 		int increment = 5000;
 		
 		/* Override this range by user-supplied CLI arguments if any. */

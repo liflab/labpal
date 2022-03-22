@@ -2,6 +2,7 @@ package examples.sorting;
 
 import ca.uqac.lif.dag.NodeConnector;
 import ca.uqac.lif.labpal.claim.RegionClaim;
+//import ca.uqac.lif.labpal.claim.TrooleanQuantifier.AllObjects;
 import ca.uqac.lif.labpal.experiment.ExperimentFactory;
 import ca.uqac.lif.labpal.region.Region;
 import ca.uqac.lif.petitpoucet.function.Circuit;
@@ -11,7 +12,6 @@ import ca.uqac.lif.petitpoucet.function.Identity;
 import ca.uqac.lif.petitpoucet.function.booleans.AllObjects;
 import ca.uqac.lif.petitpoucet.function.number.IsLessOrEqual;
 import ca.uqac.lif.petitpoucet.function.reflect.Call;
-import ca.uqac.lif.petitpoucet.function.vector.AsList;
 import ca.uqac.lif.petitpoucet.function.vector.ElementAt;
 import ca.uqac.lif.petitpoucet.function.vector.Window;
 
@@ -25,13 +25,13 @@ public class Sorted extends RegionClaim
 	
 	protected static Function getFunction()
 	{
-		Circuit c = new Circuit(1, 1);
+		Circuit c = new Circuit(1, 1, "Allsort");
 		{
 			Call gl = new Call("getSortedList");
 			c.associateInput(0, gl.getInputPin(0));
 			Window w = new Window(new Identity(1), 2);
 			NodeConnector.connect(gl, 0, w, 0);
-			Circuit gt = new Circuit(1, 1);
+			Circuit gt = new Circuit(1, 1, "Pairsort");
 			{
 				Fork f = new Fork(2);
 				gt.associateInput(0, f.getInputPin(0));

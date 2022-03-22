@@ -114,6 +114,7 @@ public class SortingLab extends Laboratory
 		add(new IncreasingTime(f, global_r));
 		add(new SlowerThan(GnomeSort.NAME, BubbleSort.NAME, f, global_r));
 		add(new SlowerThan(QuickSort.NAME, ShellSort.NAME, f, global_r));
+		add(new Sorted(f, global_r.set(ALGORITHM, BadSort.NAME)));
 	}
 	
 	@Override

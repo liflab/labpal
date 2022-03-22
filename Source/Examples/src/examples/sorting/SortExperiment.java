@@ -18,6 +18,8 @@
 package examples.sorting;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import ca.uqac.lif.labpal.experiment.Experiment;
@@ -58,6 +60,11 @@ public abstract class SortExperiment extends Experiment
 	 * A random generator to produce the lists to sort.
 	 */
 	protected static final transient Random s_random = new Random();
+	
+	/**
+	 * The list of elements, as it was sorted by the algorithm.
+	 */
+	protected List<Integer> m_sortedList;
 
 	public SortExperiment(String name, int size)
 	{
@@ -67,6 +74,7 @@ public abstract class SortExperiment extends Experiment
 		describe(DURATION, "Sorting time", Second.DIMENSION);
 		writeInput(ALGORITHM, name);
 		writeInput(SIZE, size);
+		m_sortedList = new ArrayList<Integer>(size);
 	}
 
 	@Override
@@ -116,6 +124,15 @@ public abstract class SortExperiment extends Experiment
 		int size = readInt(SIZE);
 		return s_dataDir + "list-" + size + ".txt";
 	}
+	
+	/**
+	 * Returns the sorted list produced by this experiment.
+	 * @return The sorted list
+	 */
+	public List<Integer> getSortedList()
+	{
+		return m_sortedList;
+	}
 
 	@Override
 	public void execute() throws ExperimentException
@@ -128,6 +145,10 @@ public abstract class SortExperiment extends Experiment
 		Stopwatch.start(this);
 		sort(array);
 		writeOutput(DURATION, new Millisecond(Stopwatch.stop(this)));
+		for (int i : array)
+		{
+			m_sortedList.add(i);
+		}
 	}
 
 	protected final int[] getArray()
@@ -167,5 +188,4 @@ public abstract class SortExperiment extends Experiment
 	{
 		return "Sorts an array of size " + readInt(SIZE) + " using " + readString(ALGORITHM);
 	}
-
 }

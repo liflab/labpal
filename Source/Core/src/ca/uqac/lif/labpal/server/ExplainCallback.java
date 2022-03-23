@@ -25,6 +25,7 @@ import ca.uqac.lif.dag.Pin;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.claim.Claim;
 import ca.uqac.lif.labpal.experiment.Experiment;
+import ca.uqac.lif.labpal.experiment.ExperimentException;
 import ca.uqac.lif.labpal.experiment.ExperimentValue;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.plot.Plot;
@@ -146,6 +147,10 @@ public class ExplainCallback extends TemplatePageCallback
 		else if (subject instanceof Claim)
 		{
 			out.append("Claim #").append(((Claim) subject).getId());
+		}
+		else if (subject instanceof ExperimentException)
+		{
+			out.append("Exception #").append(((ExperimentException) subject).getId());
 		}
 		else if (subject == null)
 		{

@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.experiment.Experiment;
+import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 
 public class ExperimentPageCallback extends TemplatePageCallback
 {
@@ -65,12 +66,18 @@ public class ExperimentPageCallback extends TemplatePageCallback
 			input.put("id", id);
 			input.put("title", "Experiment " + id);
 			input.put("inparams", formatTable(input, e, e.getInputParameters()));
+			input.put("exceptionexplainable", false);
 			Exception ex = e.getException();
 			if (ex != null)
 			{
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ex.printStackTrace(new PrintStream(baos));
 				input.put("exceptionmessage", baos.toString());
+				if (ex instanceof ExplanationQueryable)
+				{
+					// This exception can be explained
+					input.put("exceptionexplainable", true);
+				}
 			}
 		}
 	}

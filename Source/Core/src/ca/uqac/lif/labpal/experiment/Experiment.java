@@ -855,6 +855,10 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 			m_prereqTime = m_endTime;
 		}
 		m_exception = e;
+		if (e instanceof ExperimentException)
+		{
+			((ExperimentException) e).setId(m_id);
+		}
 	}
 
 	/**

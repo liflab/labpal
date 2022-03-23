@@ -48,7 +48,7 @@ public class BubbleSort extends SortExperiment
 			for( j=0;  j < array.length -1;  j++ )
 			{
 				comp++;
-				if ( array[ j ] < array[j+1] )   // change to > for ascending sort
+				if ( array[ j ] > array[j+1] )   // change to > for ascending sort
 				{
 					temp = array[ j ];                //swap elements
 					array[ j ] = array[ j+1 ];

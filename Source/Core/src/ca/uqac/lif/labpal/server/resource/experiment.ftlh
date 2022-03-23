@@ -179,7 +179,8 @@ ${outparams?no_esc}
 <#if exceptionmessage?has_content>
 <h2>Error Message</h2>
 
-<p>The experiment ended by throwing the following exception.</p>
+<p>The experiment ended by throwing the following exception.
+<#if exceptionexplainable><a href="/explain?id=X${id}"><span class="btn-24 btn-info"><span>Explain the error</span></span></a></#if></p>
 
 <pre>${exceptionmessage}</pre>
 </#if>

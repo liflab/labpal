@@ -17,6 +17,8 @@
  */
 package ca.uqac.lif.labpal.experiment;
 
+import ca.uqac.lif.labpal.Identifiable;
+
 /**
  * Exception that can be thrown during the execution of an experiment to signal
  * an error condition.
@@ -24,12 +26,18 @@ package ca.uqac.lif.labpal.experiment;
  * @author Sylvain Hallé
  * @since 2.0
  */
-public class ExperimentException extends Exception
+public class ExperimentException extends Exception implements Identifiable
 {
 	/**
 	 * Dummy UID.
 	 */
 	private static final long serialVersionUID = 2L;
+	
+	/**
+	 * The ID of this exception. By convention, exceptions take the ID of the
+	 * experiment that throws them.
+	 */
+	protected int m_id = -1;
 
 	/**
 	 * Creates an experiment exception by encapsulating another throwable
@@ -48,5 +56,25 @@ public class ExperimentException extends Exception
 	public ExperimentException(String message)
 	{
 		super(message);
+	}
+	
+	/**
+	 * Sets the ID of this exception.
+	 * @param id The ID
+	 * @return This exception
+	 */
+	public ExperimentException setId(int id)
+	{
+		m_id = id;
+		return this;
+	}
+	
+	/**
+	 * Gets the ID of this exception.
+	 * @return The ID, or -1 if no ID has yet been assigned to this exception 
+	 */
+	/*@ pure @*/ public int getId()
+	{
+		return m_id;
 	}
 }

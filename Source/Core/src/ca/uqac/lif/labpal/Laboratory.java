@@ -32,11 +32,13 @@ import ca.uqac.lif.labpal.assistant.QueuedThreadPoolExecutor;
 import ca.uqac.lif.labpal.assistant.SingleThreadExecutor;
 import ca.uqac.lif.labpal.claim.Claim;
 import ca.uqac.lif.labpal.experiment.Experiment;
+import ca.uqac.lif.labpal.experiment.ExperimentException;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 import ca.uqac.lif.labpal.macro.Macro;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.provenance.LaboratoryPart;
 import ca.uqac.lif.labpal.provenance.LaboratoryPart.ClaimNumber;
+import ca.uqac.lif.labpal.provenance.LaboratoryPart.ExceptionNumber;
 import ca.uqac.lif.labpal.provenance.LaboratoryPart.MacroNumber;
 import ca.uqac.lif.labpal.provenance.LaboratoryPart.PlotNumber;
 import ca.uqac.lif.labpal.provenance.LaboratoryPart.TableNumber;
@@ -55,6 +57,7 @@ import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
+import ca.uqac.lif.petitpoucet.function.FunctionException;
 import ca.uqac.lif.petitpoucet.function.NthOutput;
 import ca.uqac.lif.petitpoucet.function.vector.NthElement;
 import ca.uqac.lif.spreadsheet.Cell;
@@ -959,6 +962,17 @@ public class Laboratory implements ExplanationQueryable, Persistent
 			Claim subject = getClaim(id);
 			return new TrackedValue(null, NthOutput.FIRST, subject);
 		}
+		else if (parts[0].startsWith("X"))
+		{
+			// Exception thrown by an experiment
+			Experiment e = getExperiment(id);
+			if (e == null)
+			{
+				return null;
+			}
+			Exception subject = e.getException();
+			return new TrackedValue(null, NthOutput.FIRST, subject);
+		}
 		return null;
 	}
 
@@ -993,6 +1007,11 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		{
 			child = ((Claim) o).getExplanation(p);
 			root_part = ComposedPart.compose(p, new ClaimNumber(((Claim) o).getId()));
+		}
+		else if (o instanceof ExperimentException && o instanceof ExplanationQueryable)
+		{
+			child = ((ExplanationQueryable) o).getExplanation(p);
+			root_part = ComposedPart.compose(p, new ExceptionNumber(((ExperimentException) o).getId()));
 		}
 		else
 		{

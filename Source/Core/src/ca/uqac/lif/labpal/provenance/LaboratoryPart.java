@@ -145,7 +145,7 @@ public abstract class LaboratoryPart implements Part
 			{
 				return false;
 			}
-			return m_id == ((PlotNumber) o).m_id;
+			return m_id == ((TableNumber) o).m_id;
 		}
 	}
 	
@@ -172,7 +172,7 @@ public abstract class LaboratoryPart implements Part
 			{
 				return false;
 			}
-			return m_id == ((PlotNumber) o).m_id;
+			return m_id == ((MacroNumber) o).m_id;
 		}
 	}
 	
@@ -199,7 +199,34 @@ public abstract class LaboratoryPart implements Part
 			{
 				return false;
 			}
-			return m_id == ((PlotNumber) o).m_id;
+			return m_id == ((ClaimNumber) o).m_id;
+		}
+	}
+	
+	/**
+	 * A part designating an exception thrown by an experiment.
+	 */
+	public static class ExceptionNumber extends LaboratoryPart
+	{
+		public ExceptionNumber(int id)
+		{
+			super(id);
+		}
+		
+		@Override
+		public String toString()
+		{
+			return "Exception #" + m_id;
+		}
+		
+		@Override
+		public boolean equals(Object o)
+		{
+			if (o == null || !(o instanceof ExceptionNumber))
+			{
+				return false;
+			}
+			return m_id == ((ExceptionNumber) o).m_id;
 		}
 	}
 	

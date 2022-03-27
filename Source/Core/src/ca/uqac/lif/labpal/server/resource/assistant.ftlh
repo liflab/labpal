@@ -10,6 +10,7 @@
 
 <#assign g = lab.getAssistant().getQueueAsGroup()>
 <#assign experiments = g.getObjects()>
+<#assign claims = lab.getClaims()>
 
 <#if experiments?size == 0>
   <p>No experiment currently in the queue.</p>
@@ -18,16 +19,29 @@
   <form name="current-queue" method="post" action="/assistant">
   <p class="line-align">
   <input type="submit" class="btn btn-start" id="start" name="start" value="Start a new run" />
-  <input type="submit" class="btn btn-delete" id="dequeue" name="dequeue" value="Remove from queue" />
-  <label for="scheduler-type">Scheduler:</label>
+  <#if (claims?size > 0)>
+    <label for="enqueue-condition" style="margin-left:10pt;margin-right:10pt">conditional to</label>
+    <select name="enqueue-condition">
+      <option value="">(None)</option>
+    <#list claims as claim>
+      <#assign cid = claim.getId()>
+      <option value="C${cid}">C${cid}</option>
+    </#list>
+    </select>
+  </#if>
+  </p>
+  <p class="line-align">
+  <input type="submit" class="btn btn-queue" id="scheduler" name="scheduler" value="Schedule" />
+  <label for="scheduler-type" style="margin-left:10pt;margin-right:10pt"> using </label>
   <select name="scheduler-type" id="scheduler-type">
     <option value="balance">Balance objects</option>
     <option value="decimate">Decimate 50%</option>
     <option value="shuffle">Shuffle</option>
     <option value="subsample">Sub-sample 50%</option>
   </select>
-  <input type="submit" class="btn btn-queue" id="scheduler" name="scheduler" value="Apply" />
+  
   </p>
+  <p class="line-align"><input type="submit" class="btn btn-delete" id="dequeue" name="dequeue" value="Remove from queue" /></p>
   <#include "experiment-list.ftlh">
   </form>
 </#if>

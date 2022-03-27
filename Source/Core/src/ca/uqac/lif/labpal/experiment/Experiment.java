@@ -597,6 +597,11 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		return m_startTime;
 	}
 
+	/**
+	 * Gets the time and date when the experiment started, formatted as a
+	 * human-readable string.
+	 * @return The start date
+	 */
 	/*@ pure non_null @*/ public final String getStartDate()
 	{
 		return formatDate(m_startTime);
@@ -627,11 +632,23 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		return m_endTime;
 	}
 
+	/**
+	 * Gets the time and date when the experiment ended, formatted as a
+	 * human-readable string.
+	 * @return The end date
+	 */
 	/*@ pure non_null @*/ public final String getEndDate()
 	{
 		return formatDate(m_endTime);
 	}
 
+	/**
+	 * Gets the total duration of the experiment. This time is calculated as the
+	 * interval between the end time and the start time. If the experiment is not
+	 * started, a time of 0 is returned. If the experiment is running, the
+	 * running time so far is returned. 
+	 * @return A time object representing the duration
+	 */
 	/*@ non_null @*/ public final Time getTotalDuration()
 	{
 		if (m_startTime > 0)
@@ -728,7 +745,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		params.put("progression", m_progression);
 		return params;
 	}
-
+	
 	@Override
 	public final void run()
 	{
@@ -776,6 +793,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		}
 	}
 
+	@Override
 	/*@ pure non_null @*/ public final Status getStatus()
 	{
 		Status s;

@@ -26,6 +26,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import ca.uqac.lif.labpal.claim.Condition;
+
 /**
  * Extension of Java's {@link ExecutorService} providing an alternate means of
  * shutting down the execution of tasks. Three methods for shutting down are
@@ -136,6 +138,15 @@ public abstract class LabPalExecutorService implements ExecutorService
 	public Future<?> submit(Runnable r)
 	{
 		return m_executor.submit(r);
+	}
+	
+	public Future<?> submit(/*@ non_null @*/ Runnable r, /*@ null @*/ Condition c)
+	{
+		if (c == null)
+		{
+			return m_executor.submit(r);	
+		}
+		return m_executor.submit(new ConditionalRunnable(r, c));
 	}
 
 	@Override

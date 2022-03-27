@@ -111,8 +111,24 @@ public class AssistantPageCallback extends TemplatePageCallback
 		if (input.containsKey("start"))
 		{
 			// Start run with current queue contents
-			AssistantRun run = m_server.getLaboratory().getAssistant().enqueueCurrent();
-			input.put("message", "Run #" + run.getId() + " added to assistant's jobs");
+			Claim cond = null;
+			int claim_id = -1;
+			if (input.containsKey("enqueue-condition"))
+			{
+				String e_cond = (String) input.get("enqueue-condition");
+				if (!e_cond.isEmpty())
+				{
+					claim_id = Integer.parseInt(e_cond.substring(1));
+					cond = m_server.getLaboratory().getClaim(claim_id);
+				}
+			}
+			AssistantRun run = m_server.getLaboratory().getAssistant().enqueueCurrent(cond);
+			String message = "Run #" + run.getId() + " added to assistant's jobs";
+			if (cond != null)
+			{
+				message += ", conditional to claim #" + claim_id;
+			}
+			input.put("message", message);
 		}
 		String message = null;
 		for (String key : input.keySet())
@@ -303,7 +319,7 @@ public class AssistantPageCallback extends TemplatePageCallback
 		{
 			if (key.startsWith("exp-chh-g"))
 			{
-				if (input.get(key).toString().compareTo("1") == 0)
+				//if (input.get(key).toString().compareTo("1") == 0)
 				{
 					String[] parts = key.split("-");
 					int g_id = Integer.parseInt(parts[3]);

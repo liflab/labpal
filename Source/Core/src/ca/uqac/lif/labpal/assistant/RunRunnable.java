@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import ca.uqac.lif.labpal.Stateful.Status;
+import ca.uqac.lif.labpal.claim.Condition;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
 /**
@@ -39,12 +40,19 @@ class RunRunnable implements Runnable
 	protected List<Experiment> m_experiments;
 
 	protected LabPalExecutorService m_executor;
+	
+	/**
+	 * An optional condition used to determine if each experiment in the run
+	 * should be executed.
+	 */
+	/*@ null @*/ protected Condition m_condition;
 
-	public RunRunnable(List<Experiment> experiments, LabPalExecutorService executor)
+	public RunRunnable(/*@ non_null @*/ List<Experiment> experiments, /*@ non_null @*/ LabPalExecutorService executor, /*@ null @*/ Condition c)
 	{
 		super();
 		m_experiments = experiments;
 		m_executor = executor;
+		m_condition = c;
 		m_startTime = -1;
 		m_endTime = -1;
 	}
@@ -71,7 +79,7 @@ class RunRunnable implements Runnable
 		m_startTime = System.currentTimeMillis();
 		for (Experiment e : m_experiments) 
 		{
-			m_executor.submit(e);
+			m_executor.submit(e, m_condition);
 		}
 		m_executor.shutdownAtEnd();
 		try

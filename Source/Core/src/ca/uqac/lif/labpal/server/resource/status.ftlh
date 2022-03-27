@@ -6,7 +6,7 @@
 <tr><th title="The name given to this lab">Lab name:</th><td>${lab.getName()}</td></tr>
 <tr><th title="The process responsible for managing the queue of experiments to be run">Lab assistant:</th><td>${lab.getAssistant().getName()}</td></tr>
 <#if lab.getDoi()?has_content>
-<tr><th title="The Digital Object Identifier assigned to this lab">Lab assistant:</th><td>${lab.getDoi()}</td></tr>
+<tr><th title="The Digital Object Identifier assigned to this lab">DOI:</th><td>${lab.getDoi()}</td></tr>
 </#if>
 <tr><th title="The author of this lab">Author:</th><td>${lab.getAuthor()}</td></tr>
 <tr><th title="The starting value used to initialize the lab's random number generator">Random seed:</th><td>${lab.getSeed()}</td></tr>

@@ -23,10 +23,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import ca.uqac.lif.labpal.claim.Condition;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 
@@ -41,7 +40,7 @@ public class Assistant
 	/**
 	 * The executor used to execute runs sequentially.
 	 */
-	/*@ non_null @*/ protected transient ExecutorService m_runExecutor;
+	/*@ non_null @*/ protected transient LabPalExecutorService m_runExecutor;
 	
 	/**
 	 * The executor used to execute experiments in each run.
@@ -71,7 +70,7 @@ public class Assistant
 	public Assistant()
 	{
 		super();
-		m_runExecutor = Executors.newSingleThreadExecutor();
+		m_runExecutor = new SingleThreadExecutor();
 		m_runs = new ArrayList<AssistantRun>();
 		m_queue = new ArrayList<Experiment>();
 	}
@@ -169,12 +168,12 @@ public class Assistant
 	{
 		if (experiments == null || experiments.length == 0)
 		{
-			AssistantRun run = enqueue(m_queue);
+			AssistantRun run = enqueue(m_queue, null);
 			m_queue.clear();
 			return run;
 		}
 		List<Experiment> ordered_list = Arrays.asList(experiments);
-		RunRunnable rr = new RunRunnable(ordered_list, getExecutor());
+		RunRunnable rr = new RunRunnable(ordered_list, getExecutor(), null);
 		Future<?> future = m_runExecutor.submit(rr);
 		AssistantRun run = new AssistantRun(rr, future);
 		m_runs.add(run);
@@ -188,7 +187,23 @@ public class Assistant
 	 */
 	/*@ non_null @*/ public AssistantRun enqueueCurrent()
 	{
-		AssistantRun run = enqueue(m_queue);
+		return enqueueCurrent(null);
+	}
+	
+	/**
+	 * Adds experiments to be eventually executed in the next run of the
+	 * assistant from the assistant's current queue, and makes this run
+	 * dependent on a Troolean condition. An experiment in the run will be
+	 * skipped if the condition does not evaluate to <em>inconclusive</em> at the
+	 * moment it is due to be started. 
+	 * @param c The condition that will be evaluated before starting each
+	 * experiment of the run. If set to <tt>null</tt>, all experiments will be
+	 * run unconditionally.
+	 * @return The run corresponding to these experiments
+	 */
+	/*@ non_null @*/ public AssistantRun enqueueCurrent(/*@ null @*/ Condition c)
+	{
+		AssistantRun run = enqueue(m_queue, c);
 		m_queue.clear();
 		return run;
 	}
@@ -201,11 +216,11 @@ public class Assistant
 	 * experiments
 	 * @return The run corresponding to these experiments
 	 */
-	/*@ non_null @*/ public AssistantRun enqueue(/*@ non_null @*/ Collection<Experiment> experiments)
+	/*@ non_null @*/ public AssistantRun enqueue(/*@ non_null @*/ Collection<Experiment> experiments, Condition c)
 	{
 		List<Experiment> ordered_list = new ArrayList<Experiment>(experiments);
-		RunRunnable rr = new RunRunnable(ordered_list, getExecutor());
-		Future<?> future = m_runExecutor.submit(rr);
+		RunRunnable rr = new RunRunnable(ordered_list, getExecutor(), c);
+		Future<?> future = m_runExecutor.submit(rr, c);
 		AssistantRun run = new AssistantRun(rr, future);
 		m_runs.add(run);
 		return run;
@@ -225,7 +240,7 @@ public class Assistant
 		{
 			exps.addAll(sel.select());
 		}
-		return enqueue(exps);
+		return enqueue(exps, null);
 	}
 
 	/**

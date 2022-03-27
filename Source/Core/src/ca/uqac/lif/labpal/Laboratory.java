@@ -1280,7 +1280,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		// Auto-start
 		if (argument_map.hasOption("autostart"))
 		{
-			lab_assistant.enqueue(new_lab.getExperiments());
+			lab_assistant.enqueue(new_lab.getExperiments(), null);
 		}
 
 		/*

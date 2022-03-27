@@ -1,5 +1,6 @@
 <#assign params = g.getInputParameters()>
 <#assign gid = g.getId()>
+   <p>
    <table class="exp-table tablesorter">
    <thead>
    <tr><th class="top-td"><input type="checkbox" id="top-checkbox-${gid}" name="top-checkbox-${gid}" /></th><th>#</th><#list params as p><th>${p}</th></#list><th>Status</th></tr>
@@ -20,3 +21,4 @@
    </#list>
    </tbody>
    </table>
+   </p>

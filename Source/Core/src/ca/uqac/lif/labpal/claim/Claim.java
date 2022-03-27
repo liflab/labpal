@@ -47,7 +47,7 @@ import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
  * @since 2.10
  *
  */
-public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>, Identifiable, LatexExportable
+public abstract class Claim implements Condition, ExplanationQueryable, Dependent<Stateful>, Identifiable, LatexExportable
 {
 	/**
 	 * A counter to provide unique IDs to claims.
@@ -170,5 +170,6 @@ public abstract class Claim implements ExplanationQueryable, Dependent<Stateful>
 	 * @return The result of evaluating the claim on the current contents of the
 	 * lab.
 	 */
+	@Override
 	/*@ non_null @*/ public abstract Troolean.Value evaluate();
 }

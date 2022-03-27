@@ -21,8 +21,9 @@ package ca.uqac.lif.labpal.region;
  * A value associated with a displayable name. This class is useful when
  * creating a region where some of its dimensions contain non-scalar values
  * such as arbitrary objects. In such a case, one can encase each of these
- * objects into a named value, to that a value can be associated with a
- * printable string.
+ * objects into a named value, so that a value can be associated with a
+ * printable string. It is hence possible to use objects that have no
+ * {@link #toString()} method.
  * <p>
  * Uniqueness of named values rests on the uniqueness of their name only.
  * That is, two named values with the same name will report as being equal

@@ -537,7 +537,9 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	}
 
 	/**
-	 * Adds a group to the lab and assigns it a unique ID.
+	 * Adds an experiment group to the lab and assigns it a unique ID. If the
+	 * group contains experiments that are not already added to the lab,
+	 * these experiments are added as well.
 	 * @param g The group
 	 * @return This lab
 	 */
@@ -545,6 +547,34 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	{
 		g.setId(m_experimentGroups.size() + 1);
 		m_experimentGroups.add(g);
+		for (Experiment e : g.getObjects())
+		{
+			if (!m_experiments.containsKey(e.getId()))
+			{
+				m_experiments.put(e.getId(), e);
+			}
+		}
+		return this;
+	}
+	
+	/**
+	 * Adds a macro group to the lab and assigns it a unique ID.  If the
+	 * group contains macros that are not already added to the lab,
+	 * these macros are added as well.
+	 * @param g The group
+	 * @return This lab
+	 */
+	public Laboratory add(MacroGroup g)
+	{
+		g.setId(m_experimentGroups.size() + 1);
+		m_macroGroups.add(g);
+		for (Macro m : g.getObjects())
+		{
+			if (!m_macros.containsKey(m.getId()))
+			{
+				m_macros.put(m.getId(), m);
+			}
+		}
 		return this;
 	}
 

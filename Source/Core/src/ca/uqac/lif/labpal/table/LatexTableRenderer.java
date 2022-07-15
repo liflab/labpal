@@ -91,7 +91,7 @@ public class LatexTableRenderer extends StructuredSpreadsheetPrinter
 	protected void printTableEnd(Spreadsheet s, PrintStream ps)
 	{
 		ps.println("\\hline");
-		String table_type = m_mergeCells ? "longtable" : "table";
+		String table_type = m_mergeCells ? "longtable" : "tabular";
 		ps.print("\\end{" + table_type + "}");
 		if (m_colorWhenError)
 		{

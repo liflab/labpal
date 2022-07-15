@@ -17,10 +17,10 @@ ${outparams?no_esc}
 <#assign e_running = (e.getStatus() == "RUNNING" || e.getStatus() == "PREPARING")>
 
 <#if groupdesc?has_content>
-  ${groupdesc}
+  ${groupdesc?no_esc}
 </#if>
 
-<div class="description">${e.getDescription()}</div>
+<div class="description">${e.getDescription()?no_esc}</div>
 
 <#assign startdate = e.getStartDate()>
 <#assign enddate = e.getEndDate()>

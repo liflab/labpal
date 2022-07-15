@@ -24,6 +24,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.json.JsonPrinter;
+import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.labpal.Laboratory;
@@ -81,7 +82,7 @@ public class DownloadCallback extends LaboratoryCallback
 				filename += ".json";
 			}
 		}
-		catch (PrintException | IOException | PersistenceException e)
+		catch (PrintException | IOException | PersistenceException | FileSystemException e)
 		{
 			// Baaad request
 			response.setCode(CallbackResponse.HTTP_BAD_REQUEST);

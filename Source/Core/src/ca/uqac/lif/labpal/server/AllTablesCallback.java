@@ -24,10 +24,10 @@ import java.util.Calendar;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
-import ca.uqac.lif.labpal.util.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.table.Table;
+import ca.uqac.lif.labpal.util.FileHelper;
 import ca.uqac.lif.labpal.table.LatexTableRenderer;
 
 import com.sun.net.httpserver.HttpExchange;

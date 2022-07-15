@@ -29,6 +29,7 @@ import org.junit.Test;
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.azrael.json.JsonPrinter;
+import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.Persistent.PersistenceException;
@@ -91,7 +92,7 @@ public class LaboratoryTest
 	}
 	
 	@Test
-	public void testZip1() throws IOException, PrintException, ReadException, JsonParseException, PersistenceException
+	public void testZip1() throws IOException, PrintException, ReadException, JsonParseException, PersistenceException, FileSystemException
 	{
 		MyLab lab = new MyLab();
 		lab.setup();

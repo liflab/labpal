@@ -22,6 +22,8 @@ import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.azrael.json.JsonPrinter;
 import ca.uqac.lif.azrael.json.JsonReader;
 import ca.uqac.lif.dag.LabelledNode;
+import ca.uqac.lif.fs.FileSystemException;
+import ca.uqac.lif.fs.WriteZipFile;
 import ca.uqac.lif.jerrydog.Server;
 import ca.uqac.lif.json.JsonElement;
 import ca.uqac.lif.json.JsonParser;
@@ -70,6 +72,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -285,10 +288,11 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	/**
 	 * Adds callbacks to the LabPal web server that will be launched for this
 	 * lab.
+	 * @param server The server to which the callbacks will be added
 	 * @param callbacks An empty list of callbacks. The method can instantiate
 	 * new callbacks and add them to this list. 
 	 */
-	public void setupCallbacks(List<LaboratoryCallback> callbacks)
+	public void setupCallbacks(LabPalServer server, List<LaboratoryCallback> callbacks)
 	{
 		// Do nothing
 	}
@@ -1247,8 +1251,6 @@ public class Laboratory implements ExplanationQueryable, Persistent
 			int seed = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("seed"));
 			new_lab.setRandomSeed(seed);
 		}
-		List<LaboratoryCallback> callbacks = new ArrayList<>();
-		new_lab.setupCallbacks(callbacks);
 		/*if (!filename.isEmpty())
 		{
 			stdout.println("Loading lab from " + filename);
@@ -1319,6 +1321,8 @@ public class Laboratory implements ExplanationQueryable, Persistent
 
 		// Start LabPal's web interface
 		LabPalServer server = new LabPalServer(new_lab);
+		List<LaboratoryCallback> callbacks = new ArrayList<>();
+		new_lab.setupCallbacks(server, callbacks);
 		if (callbacks != null)
 		{
 			// Register custom callbacks, if any
@@ -1367,19 +1371,17 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	 * @throws PrintException
 	 *           Thrown if the serialization of the lab failed for some reason
 	 */
-	public byte[] saveToZip() throws IOException, PrintException, PersistenceException
+	public byte[] saveToZip() throws FileSystemException, IOException, PrintException, PersistenceException
 	{
 		String filename = Server.urlEncode(getName());
 		Object o = saveState();
-		String lab_contents = new JsonPrinter().print(o).toString();
+		String lab_contents = new JsonPrinter().print(o).toString();		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ZipOutputStream zos = new ZipOutputStream(bos);
-		String ZE = filename + ".json";
-		ZipEntry ze = new ZipEntry(ZE);
-		zos.putNextEntry(ze);
-		zos.write(lab_contents.getBytes());
-		zos.closeEntry();
-		zos.close();
+		WriteZipFile zip = new WriteZipFile(bos);
+		PrintStream ps = new PrintStream(zip.writeTo(filename + ".json"));
+		ps.write(lab_contents.getBytes());
+		ps.close();
+		zip.close();
 		return bos.toByteArray();
 	}
 

@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import ca.uqac.lif.fs.FileSystemException;
+import ca.uqac.lif.fs.HardDisk;
+import ca.uqac.lif.fs.TempFolder;
 import ca.uqac.lif.labpal.DummyExperiment;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.assistant.Assistant;
@@ -35,7 +38,7 @@ import ca.uqac.lif.units.si.Second;
 
 public class ServerTest {
 
-	public static void main(String[] args) throws IOException 
+	public static void main(String[] args) throws IOException, FileSystemException 
 	{
 		Laboratory lab = new Laboratory();
 		//lab.setAssistant(new Assistant(new SingleThreadExecutor()));
@@ -80,7 +83,13 @@ public class ServerTest {
 			m.add(e);
 		}
 		LabPalServer s = new LabPalServer(lab);
+		TempFolder hd = new TempFolder("labpal");
+		hd.open();
+		System.out.println(hd.getRoot());
+		hd.deleteOnClose(false);
 		s.startServer();
+		s.saveToEpub(hd);
+		System.out.println("Saving done");
 	}
 
 }

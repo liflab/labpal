@@ -25,15 +25,16 @@ import java.util.List;
 import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
+
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
 import ca.uqac.lif.jerrydog.RestCallback;
 import ca.uqac.lif.jerrydog.Server;
-import ca.uqac.lif.labpal.util.FileHelper;
 import ca.uqac.lif.spreadsheet.chart.ChartFormat;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
+import ca.uqac.lif.labpal.util.FileHelper;
 
 /**
  * Callback to download all plots as a single, multi-page PDF file. This

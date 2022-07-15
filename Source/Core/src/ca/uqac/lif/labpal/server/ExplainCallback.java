@@ -140,10 +140,10 @@ public class ExplainCallback extends TemplatePageCallback
 		{
 			out.append("Plot #").append(((Plot) subject).getId());
 		}
-		/*else if (subject instanceof Macro)
+		else if (subject instanceof Macro)
 		{
 			out.append("Macro #").append(((Macro) subject).getId());
-		}*/
+		}
 		else if (subject instanceof Claim)
 		{
 			out.append("Claim #").append(((Claim) subject).getId());
@@ -168,7 +168,7 @@ public class ExplainCallback extends TemplatePageCallback
 		if (node instanceof PartNode)
 		{
 			Object o = ((PartNode) node).getSubject();
-			if (o instanceof Laboratory || o instanceof Experiment || o instanceof Table /*|| o instanceof Macro*/ || o instanceof Plot || o instanceof Claim)
+			if (o instanceof Laboratory || o instanceof Experiment || o instanceof Table || o instanceof Macro || o instanceof Plot || o instanceof Claim)
 			{
 				return (PartNode) node;
 			}

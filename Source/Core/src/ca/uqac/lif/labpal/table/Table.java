@@ -210,12 +210,25 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Determines if the table is displayed in the list of tables from the lab.
+	 * @return <tt>true</tt> if the table shows in the list, <tt>false</tt>
+	 * otherwise
 	 */
 	public boolean showsInList()
 	{
 		return m_showsInList;
+	}
+	
+	/**
+	 * Sets whether the table is displayed in the list of tables from the lab.
+	 * @param b Set to <tt>true</tt> to show the table in the list,
+	 * <tt>false</tt> otherwise
+	 * @return This table
+	 */
+	public Table setShowInList(boolean b)
+	{
+		m_showsInList = b;
+		return this;
 	}
 
 	/**

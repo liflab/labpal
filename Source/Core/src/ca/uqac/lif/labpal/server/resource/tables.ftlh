@@ -9,6 +9,7 @@
 <table class="tables">
 <#list tables as table>
 <#assign tid = table.getId()>
+<#if table.showsInList()>
 <tr>
 <td class="id-cell"><a href="/table/${tid}">${tid}</a></td>
 <td class="table-icon"></td>
@@ -19,6 +20,7 @@
 <td><a class="nickname" href="/table/${tid}">${table.getNickname()}</a></td>
 <td><@statusChunk e=table prefix="t" /></td>
 </tr>
+</#if>
 </#list>
 </table>
 </p>

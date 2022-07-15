@@ -23,7 +23,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,10 +33,8 @@ import com.sun.net.httpserver.HttpExchange;
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
 
 /**
  * A page exposing the entire lab as a template variable.
@@ -46,28 +43,16 @@ import freemarker.template.TemplateExceptionHandler;
  */
 public class TemplatePageCallback extends LaboratoryCallback
 {
-	protected static String s_templateBaseDir = "resource";
-
-	protected static String s_errorTemplate = "error.ftlh";
 
 	protected String m_templateLocation;
 
 	protected String m_title;
 
-	private static Configuration s_config;
-
 	protected String m_menuHighlight;
 	
 	protected boolean m_getParts = false;
 
-	static
-	{
-		s_config = new Configuration(Configuration.VERSION_2_3_29);
-		s_config.setClassForTemplateLoading(TemplatePageCallback.class, s_templateBaseDir);
-		s_config.setDefaultEncoding("UTF-8");
-		s_config.setLocale(Locale.US);
-		s_config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-	}
+	
 
 	public static byte[] render(Map<String,Object> input, String template_location) 
 	{

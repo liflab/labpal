@@ -37,6 +37,7 @@ import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 import ca.uqac.lif.labpal.macro.Macro;
+import ca.uqac.lif.labpal.macro.MacroGroup;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.provenance.LaboratoryPart;
 import ca.uqac.lif.labpal.provenance.LaboratoryPart.ClaimNumber;
@@ -59,7 +60,6 @@ import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
-import ca.uqac.lif.petitpoucet.function.FunctionException;
 import ca.uqac.lif.petitpoucet.function.NthOutput;
 import ca.uqac.lif.petitpoucet.function.vector.NthElement;
 import ca.uqac.lif.spreadsheet.Cell;
@@ -172,6 +172,11 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	 * A list of experiment groups.
 	 */
 	/*@ non_null @*/ private transient List<ExperimentGroup> m_experimentGroups;
+	
+	/**
+	 * A list of macro groups.
+	 */
+	/*@ non_null @*/ private transient List<MacroGroup> m_macroGroups;
 
 	/**
 	 * A map associating plot IDs to plot instances.
@@ -246,6 +251,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		m_claims = new HashMap<Integer,Claim>();
 		m_assistant = new Assistant();
 		m_experimentGroups = new ArrayList<ExperimentGroup>();
+		m_macroGroups = new ArrayList<MacroGroup>();
 		m_doi = "";
 		m_author = "Fred Flintstone";
 		m_name = "Untitled";
@@ -473,6 +479,20 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		all_groups.addAll(m_experimentGroups);
 		return all_groups;
 	}
+	
+	/**
+	 * Gets the list of macro groups contained in this lab.
+	 * @return The list of macro groups, including the group of
+	 * orphan macros
+	 * {@see getOrphanMacros()}
+	 */
+	public final List<MacroGroup> getMacroGroups()
+	{
+		List<MacroGroup> all_groups = new ArrayList<MacroGroup>(m_macroGroups.size() + 1);
+		all_groups.add(getOrphanMacros());
+		all_groups.addAll(m_macroGroups);
+		return all_groups;
+	}
 
 	/**
 	 * Gets an experiment group made of all experiments that do not belong to
@@ -490,6 +510,27 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		s_orphans.addAll(m_experiments.values());
 		s_orphans.removeAll(in_group);
 		ExperimentGroup g = new ExperimentGroup("Ungrouped experiments");
+		g.add(s_orphans);
+		g.setId(0); // 0 is always the ID of the "orphan" group
+		return g;
+	}
+	
+	/**
+	 * Gets a macro group made of all macros that do not belong to
+	 * any other group.
+	 * @return The group of macros
+	 */
+	/*@ pure non_null @*/ protected MacroGroup getOrphanMacros()
+	{
+		Set<Macro> in_group = new HashSet<Macro>();
+		for (Group<Macro> g : m_macroGroups)
+		{
+			in_group.addAll(g.getObjects());
+		}
+		Collection<Macro> s_orphans = new HashSet<Macro>();
+		s_orphans.addAll(m_macros.values());
+		s_orphans.removeAll(in_group);
+		MacroGroup g = new MacroGroup("Ungrouped macros");
 		g.add(s_orphans);
 		g.setId(0); // 0 is always the ID of the "orphan" group
 		return g;
@@ -690,6 +731,23 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		for (int id : l_ids)
 		{
 			exps.add(m_experiments.get(id));
+		}
+		return exps;
+	}
+	
+	/**
+	 * Returns a list of all macros in the lab, sorted by ID.
+	 * @return The list of macros
+	 */
+	/*@ pure non_null @*/ public final List<Macro> getMacros()
+	{
+		List<Integer> l_ids = new ArrayList<Integer>();
+		l_ids.addAll(m_macros.keySet());
+		Collections.sort(l_ids);
+		List<Macro> exps = new ArrayList<Macro>();
+		for (int id : l_ids)
+		{
+			exps.add(m_macros.get(id));
 		}
 		return exps;
 	}

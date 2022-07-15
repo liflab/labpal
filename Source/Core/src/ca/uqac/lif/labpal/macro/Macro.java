@@ -17,10 +17,6 @@
  */
 package ca.uqac.lif.labpal.macro;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -28,20 +24,16 @@ import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.latex.LatexExportable;
-import ca.uqac.lif.labpal.table.LatexTableRenderer;
-import ca.uqac.lif.labpal.util.FileHelper;
 import ca.uqac.lif.petitpoucet.NodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 
 /**
- * A generic object producing key-value pairs computed over the contents of a
- * lab.
+ * An object that calculates and returns a value.
  * @author Sylvain Hallé
- * @since 2.7
  */
-public abstract class Macro implements ExplanationQueryable, Identifiable, Stateful, LatexExportable
+public abstract class Macro implements Comparable<Macro>, ExplanationQueryable, Identifiable, Stateful, LatexExportable
 {
 	/**
 	 * Resets the ID counter for macros.
@@ -50,217 +42,121 @@ public abstract class Macro implements ExplanationQueryable, Identifiable, State
 	{
 		s_idCounter = 1;
 	}
-	
+
 	/**
 	 * The macro's ID
 	 */
 	protected int m_id;
 
 	/**
-	 * A counter for auto-incrementing macro IDs
+	 * A counter for auto-incrementing macro IDs.
 	 */
 	private static int s_idCounter = 1;
 
 	/**
-	 * A lock for accessing the counter
+	 * A lock for accessing the counter.
 	 */
 	private static Lock s_counterLock = new ReentrantLock();
-	
+
 	/**
-	 * The lab associated to the macro
+	 * The lab associated to the macro.
 	 */
-	protected final Laboratory m_lab;
-	
+	/*@ non_null @*/ protected final Laboratory m_lab;
+
 	/**
-	 * The names of the data points
+	 * The macro's name.
 	 */
-	protected List<String> m_names;
-	
+	/*@ non_null @*/ protected String m_name;
+
 	/**
-	 * A description for the macro itself.
+	 * The macro's nickname.
 	 */
-	protected String m_description;
-	
+	/*@ non_null @*/ protected String m_nickname;
+
 	/**
-	 * A description for each data point inside the macro.
+	 * Creates a new macro.
+	 * @param lab The lab associated to the macro
+	 * @param nickname The macro's nickname
 	 */
-	protected Map<String,String> m_descriptions;
-	
-	/**
-	 * Creates a new macro
-	 * @param lab The lab this macro is associated with
-	 */
-	protected Macro(Laboratory lab, String ... names)
+	public Macro(/*@ non_null @*/ Laboratory lab, /*@ non_null @*/ String name, /*@ non_null @*/ String nickname)
 	{
 		super();
 		s_counterLock.lock();
 		m_id = s_idCounter++;
 		s_counterLock.unlock();
 		m_lab = lab;
-		m_descriptions = new HashMap<String,String>();
-		m_description = "";
-		m_names = new ArrayList<String>(names.length);
-		for (String name : names)
-		{
-			m_names.add(name.intern());
-			m_descriptions.put(name, "");
-		}
+		m_name = name;
+		m_nickname = nickname;
 	}
 
 	/**
-	 * Gets the ID associated to the data point
-	 * @return The ID
+	 * Gets the macro's name.
+	 * @return The name
 	 */
+	/*@ pure non_null @*/ public String getName()
+	{
+		return m_name;
+	}
+	
 	@Override
-	public int getId()
+	/*@ pure @*/ public int getId()
 	{
 		return m_id;
 	}
-	
-	/**
-	 * Gets the laboratory associated to the macro
-	 * @return The lab
-	 */
-	public Laboratory getLaboratory()
+
+	@Override
+	/*@ pure non_null @*/ public String getNickname()
 	{
-		return m_lab;
+		return m_nickname;
 	}
 	
-	/**
-	 * Adds a new named data point and its description
-	 * @param name The name
-	 * @param description The description
-	 * @return This map
-	 */
-	public Macro add(String name, String description)
+	@Override
+	public int compareTo(Macro m)
 	{
-		m_names.add(name);
-		m_descriptions.put(name, description);
-		return this;
-	}
-	
-	/**
-	 * Gets the ordered list of data point names defined in this macro
-	 * @return The list of names
-	 */
-	public List<String> getNames()
-	{
-		return m_names;
-	}
-	
-	/**
-	 * Gets the description associated to the macro as a whole.
-	 * @param name The name of the data point
-	 * @return The description
-	 */
-	/*@ non_null @*/ public String getDescription()
-	{
-		return m_description;
-	}
-	
-	/**
-	 * Gets the description associated to a data point
-	 * @param name The name of the data point
-	 * @return The description, or the empty string if the data point
-	 * does not exist
-	 */
-	public String getDescription(String name)
-	{
-		if (m_descriptions.containsKey(name))
+		if (m == null)
 		{
-			return m_descriptions.get(name);
+			return -1;
 		}
-		return "";
+		return m_name.compareTo(m.getName());
 	}
 	
-	/**
-	 * Sets a description for a data point.
-	 * @param name The name of the data point
-	 * @param description The description
-	 * @return This macro
-	 */
-	/*@ non_null @*/ public Macro setDescription(String name, String description)
+	@Override
+	public PartNode getExplanation(Part part)
 	{
-		m_descriptions.put(name, description);
-		return this;
+		return getExplanation(part, NodeFactory.getFactory());
 	}
-	
-	/**
-	 * Sets a description for the macro as a whole.
-	 * @param description The description
-	 * @return This macro
-	 */
-	/*@ non_null @*/ public Macro setDescription(String description)
-	{
-		m_description = description;
-		return this;
-	}
-	
-	/**
-	 * Gets a map of all the values computed for each named data point in this
-	 * macro
-	 * @return The map
-	 */
-	public final Map<String,Object> getValues()
-	{
-		Map<String,Object> map = new HashMap<String,Object>();
-		for (String name : m_names)
-		{
-			map.put(name, null);
-		}
-		computeValues(map);
-		return map;
-	}
-	
-	/**
-	 * Populates the map of all the values computed for each named
-	 * data point in this macro
-	 * @param map A map, pre-filled with all the defined keys, each
-	 * temporarily associated to the null value
-	 */
-	public abstract void computeValues(Map<String,Object> map);
 	
 	@Override
 	public String toLatex()
 	{
-		boolean with_comments = true;
 		StringBuilder out = new StringBuilder();
-		Map<String,Object> values = getValues();
-		for (int i = 0; i < m_names.size(); i++)
+		Object value = getValue();
+		
+		out.append("\\newcommand{\\").append(m_nickname).append("}{");
+		if (value == null)
 		{
-			String name = m_names.get(i);
-			Object value = values.get(name);
-			String description = getDescription(name);
-			if (with_comments)
-			{
-				out.append("% ").append(name).append(FileHelper.CRLF);
-				out.append("% ").append(description).append(FileHelper.CRLF);
-			}
-			out.append("\\newcommand{\\").append(name).append("}{\\href{").append("M" + m_id + ":" + i).append("}{");
-			if (value == null)
-			{
-				out.append("null");
-			}
-			else
-			{
-				out.append(LatexTableRenderer.escape(value.toString()));	
-			}
-			out.append("}}").append(FileHelper.CRLF).append(FileHelper.CRLF);
+			out.append("null");
 		}
+		else
+		{
+			out.append(LatexExportable.escape(getValue().toString()));
+		}
+		out.append("}");
 		return out.toString();
 	}
-	
-	@Override
-	public PartNode getExplanation(Part d)
-	{
-		return getExplanation(d, NodeFactory.getFactory());
-	}
 
-	@Override
-	public PartNode getExplanation(Part d, NodeFactory f)
+	/**
+	 * Gets the value produced by this macro.
+	 * @return The value
+	 */
+	public abstract Object getValue();
+	
+	/**
+	 * Gets the description for this macro.
+	 * @return The description
+	 */
+	public String getDescription()
 	{
-		PartNode root = f.getPartNode(d, this);
-		root.addChild(f.getUnknownNode());
-		return root;
+		return "";
 	}
 }

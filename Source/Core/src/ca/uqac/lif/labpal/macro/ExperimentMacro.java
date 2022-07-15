@@ -19,7 +19,6 @@ package ca.uqac.lif.labpal.macro;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import ca.uqac.lif.dag.LabelledNode;
@@ -37,17 +36,18 @@ import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 
 /**
- * Macro producing values based on a set of experiments from a lab.
+ * Macro producing a value based on a set of experiments from a lab.
  * @author Sylvain Hallé
  * @since 3.0
  */
-public class ExperimentMacro extends Macro implements Dependent<Experiment>
+public abstract class ExperimentMacro extends Macro implements Dependent<Experiment>
 {
 	protected transient Set<Experiment> m_experiments;
 	
-	public ExperimentMacro(Laboratory lab, String ... names)
+	public ExperimentMacro(Laboratory lab, String name, String nickname)
 	{
-		super(lab, names);
+		super(lab, name, nickname);
+		m_experiments = new HashSet<Experiment>();
 	}
 	
 	/**
@@ -57,7 +57,6 @@ public class ExperimentMacro extends Macro implements Dependent<Experiment>
 	 */
 	/*@ non_null @*/ public ExperimentMacro add(Experiment ... experiments)
 	{
-		m_experiments = new HashSet<Experiment>(experiments.length);
 		for (Experiment e : experiments)
 		{
 			m_experiments.add(e);
@@ -72,7 +71,6 @@ public class ExperimentMacro extends Macro implements Dependent<Experiment>
 	 */
 	/*@ non_null @*/ public ExperimentMacro add(Collection<Experiment> experiments)
 	{
-		m_experiments = new HashSet<Experiment>(experiments.size());
 		m_experiments.addAll(experiments);
 		return this;
 	}
@@ -110,29 +108,13 @@ public class ExperimentMacro extends Macro implements Dependent<Experiment>
 	}
 	
 	/**
-	 * Populates the map of all the values computed for each named
-	 * data point in this macro
-	 * @param map A map, pre-filled with all the defined keys, each
-	 * temporarily associated to the null value
-	 */
-	@Override
-	public final void computeValues(Map<String,Object> map)
-	{
-		computeValues(m_experiments, map);
-	}
-	
-	/**
-	 * Populates the map of all the values computed for each named
-	 * data point in this macro. This method should be overridden to calculate
-	 * the appropriate values.
+	 * Computes the value for this macro This method should be implemented to
+	 * calculate the appropriate value.
 	 * @param experiments The set of experiments associated to this macro
 	 * @param map A map, pre-filled with all the defined keys, each
 	 * temporarily associated to the null value
 	 */
-	public void computeValues(Set<Experiment> experiments, Map<String,Object> map)
-	{
-		// Do nothing
-	}
+	protected abstract Object getValue(Set<Experiment> experiments);
 	
 	/**
 	 * Gets the parts of each experiment that are actually accessed by the
@@ -145,6 +127,12 @@ public class ExperimentMacro extends Macro implements Dependent<Experiment>
 	protected Part[] getExperimentParts()
 	{
 		return new Part[] {Part.all};
+	}
+	
+	@Override
+	public Object getValue()
+	{
+		return getValue(m_experiments);
 	}
 
 	@Override
@@ -199,12 +187,5 @@ public class ExperimentMacro extends Macro implements Dependent<Experiment>
 	public Collection<Experiment> dependsOn() 
 	{
 		return m_experiments;
-	}
-
-	@Override
-	public String getNickname()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

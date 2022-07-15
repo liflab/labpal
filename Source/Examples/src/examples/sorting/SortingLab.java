@@ -18,6 +18,7 @@
 package examples.sorting;
 
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.macro.ConstantMacro;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.region.DiscreteRange;
 import ca.uqac.lif.labpal.region.ExtensionDomain;
@@ -106,9 +107,9 @@ public class SortingLab extends Laboratory
 				.setCaption(Axis.X, "Total size").setCaption(Axis.Y, "Time (ms)")));
 
 		// Create a few macros showing summary information
-		/*add(new ConstantNumberMacro(this, "maxSize", "The maximum size of the arrays sorted in the experiments", max_length));
-		add(new ConstantNumberMacro(this, "numAlgos", "The number of algorithms compared in this lab", 4));
-		add(new SlowestMacro(this));*/
+		add(new ConstantMacro(this, "Maximum array size", "maxSize", "The maximum size of the arrays sorted in the experiments", max_length));
+		add(new ConstantMacro(this, "Number of algorithms", "numAlgos", "The number of algorithms compared in this lab", 4));
+		add(new SlowestMacro(this));
 		
 		/* Adds a claim */
 		add(new IncreasingTime(f, global_r));

@@ -90,6 +90,7 @@ public class LabPalServer extends Server
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/tables", "tables.ftlh", "top-menu-tables").setTitle("Tables"));
 		registerCallback(new AllPlotsCallback(lab));
 		registerCallback(new AllPlotsLatexCallback(this));
+		registerCallback(new AllMacrosLatexCallback(this));
 		registerCallback(new PlotsStatusCallback(this, Method.GET, "/plots/status"));
 		registerCallback(new TemplatePageCallback(this, Method.GET, "/plots", "plots.ftlh", "top-menu-plots").setTitle("Plots"));
 		registerCallback(new PlotImageCallback(lab));
@@ -101,6 +102,7 @@ public class LabPalServer extends Server
 		registerCallback(new AllClaimsCallback(this));
 		registerCallback(new ClaimsPageCallback(this, Method.GET, "/claims", "claims.ftlh").setTitle("Claims"));
 		registerCallback(new ClaimPageCallback(this, Method.GET, "/claim/", "claim.ftlh"));
+		registerCallback(new MacrosPageCallback(this, Method.GET, "/macros", "macros.ftlh", "top-menu-macros").setTitle("Macros"));
 		registerCallback(new DownloadCallback(this));
 		registerCallback(new UploadCallback(this, "status.ftlh"));
 		registerCallback(new CssCallback(this, Method.GET, "/screen.css", "screen.css.ftlh"));
@@ -161,21 +163,7 @@ public class LabPalServer extends Server
 	{
 		return s_colorSchemes.get(m_colorScheme);
 	}
-	
-	public void saveToEpub(FileSystem fs) throws FileSystemException
-	{
-		JarFile inner = new JarFile(LabPalServer.class);
-		inner.open();
-		inner.chdir("epub");
-		FileUtils.copy(inner, fs);
-		String contents_ops = new String(FileUtils.toBytes(inner.readFrom("OEBPS/content.opf")));
-		FileUtils.copy(FileUtils.toStream(populateContents(contents_ops)), fs.writeTo("OEBPS/content.opf"));
-		inner.close();
-		fs.pushd("OEBPS");
-		saveToHtml(fs);
-		fs.popd();
-	}
-	
+
 	protected String populateContents(String contents_opf) throws FileSystemException
 	{
 		StringBuilder out = new StringBuilder();
@@ -298,7 +286,7 @@ public class LabPalServer extends Server
 		FileUtils.copy(FileUtils.toStream(fixed_page.getBytes()), os);
 		os.close();
 	}
-	
+
 	protected void saveFile(String url, OutputStream os) throws IOException, FileSystemException
 	{
 		OfflineHttpExchange t = new OfflineHttpExchange(url);
@@ -306,7 +294,7 @@ public class LabPalServer extends Server
 		FileUtils.copy(FileUtils.toStream(t.getResponse()), os);
 		os.close();
 	}
-	
+
 	/**
 	 * Converts paths of all known resources to a relative path and corresponding
 	 * filename. For example, from the <tt>/claims</tt> page, the URL
@@ -322,7 +310,7 @@ public class LabPalServer extends Server
 		page = page.replaceAll("<meta http-equiv=\"Cache-Control\".*?>", "");
 		page = page.replaceAll("<meta http-equiv=\"Pragma\".*?>", "");
 		page = page.replaceAll("<meta http-equiv=\"Expires\".*?>", "");
-		
+
 		// Correct paths
 		page = page.replaceAll("href=\"/index", "href=\"" + path + "index.html");
 		page = page.replaceAll("href=\"/status", "href=\"" + path + "status.html");
@@ -352,12 +340,12 @@ public class LabPalServer extends Server
 		 * The body of the request; only used with POST.
 		 */
 		/*@ non_null @*/ protected byte[] m_requestBody;
-		
+
 		/**
 		 * The request method.
 		 */
 		/*@ non_null @*/ protected String m_requestMethod;
-		
+
 		public OfflineHttpExchange(String url)
 		{
 			super(url);
@@ -369,18 +357,18 @@ public class LabPalServer extends Server
 		{
 			return m_responseBody.toByteArray();
 		}
-		
+
 		public void setRequestBody(/*@ non_null @*/ byte[] contents)
 		{
 			m_requestBody = contents;
 		}
-		
+
 		@Override
 		public InputStream getRequestBody()
 		{
 			return new ByteArrayInputStream(m_requestBody);
 		}
-		
+
 		@Override
 		public String getRequestMethod()
 		{

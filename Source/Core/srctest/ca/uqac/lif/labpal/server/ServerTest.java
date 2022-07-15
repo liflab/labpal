@@ -18,11 +18,9 @@
 package ca.uqac.lif.labpal.server;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 
 import ca.uqac.lif.fs.FileSystemException;
-import ca.uqac.lif.fs.HardDisk;
 import ca.uqac.lif.fs.TempFolder;
 import ca.uqac.lif.labpal.DummyExperiment;
 import ca.uqac.lif.labpal.Laboratory;
@@ -36,7 +34,8 @@ import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.units.si.Second;
 
-public class ServerTest {
+public class ServerTest 
+{
 
 	public static void main(String[] args) throws IOException, FileSystemException 
 	{
@@ -50,14 +49,14 @@ public class ServerTest {
 		lab.add(et);
 		Plot p = new Plot(et, new GnuplotScatterplot());
 		lab.add(p);
-		ExperimentMacro m = new ExperimentMacro(lab, "maxY") {
-			public void computeValues(Set<Experiment> set, Map<String,Object> contents) {
+		ExperimentMacro m = new ExperimentMacro(lab, "Maximum of y", "maxY") {
+			public Object getValue(Set<Experiment> set) {
 				float max = 0;
 				for (Experiment e : set) {
 					Number m = (Number) e.read("y");
 					if (m != null) max = Math.max(max, m.floatValue());
 				}
-				contents.put("maxY", max);
+				return max;
 			}
 		};
 		for (int i = 0; i < 10; i++)
@@ -88,7 +87,6 @@ public class ServerTest {
 		System.out.println(hd.getRoot());
 		hd.deleteOnClose(false);
 		s.startServer();
-		s.saveToEpub(hd);
 		System.out.println("Saving done");
 	}
 

@@ -1,0 +1,53 @@
+%% ---
+%% The code below defines a new box type used to show macros with a
+%% "barber pole" pattern. For this code to work, the document preamble
+%% must load the following packages:
+%% 
+%% \usepackage{tikz}
+%% \usepackage[many]{tcolorbox}
+%% \usetikzlibrary{patterns}
+%% ---
+\newlength{\chatchspread}
+\newlength{\chatchthickness}
+\newlength{\chatchshift}
+\newcommand{\chatchcolor}{}
+\tikzset{chatchspread/.code={\setlength{\chatchspread}{#1}},
+         chatchthickness/.code={\setlength{\chatchthickness}{#1}},
+         chatchshift/.code={\setlength{\chatchshift}{#1}},% must be >= 0
+         chatchcolor/.code={\renewcommand{\chatchcolor}{#1}}}
+\tikzset{chatchspread=3pt,
+         chatchthickness=0.4pt,
+         chatchshift=0pt,% must be >= 0
+         chatchcolor=black}                                                                                      
+\pgfdeclarepatternformonly[\chatchspread,\chatchthickness,\chatchshift,\chatchcolor]% variables
+   {pcustom north east lines}% name
+   {\pgfqpoint{\dimexpr-2\chatchthickness}{\dimexpr-2\chatchthickness}}% lower left corner
+   {\pgfqpoint{\dimexpr\chatchspread+2\chatchthickness}{\dimexpr\chatchspread+2\chatchthickness}}% upper right corner
+   {\pgfqpoint{\dimexpr\chatchspread}{\dimexpr\chatchspread}}% tile size
+   {% shape description
+    \pgfsetlinewidth{\chatchthickness}
+    \pgfpathmoveto{\pgfqpoint{0pt}{\dimexpr\chatchspread+\chatchshift}}
+    \pgfpathlineto{\pgfqpoint{\dimexpr\chatchspread+0.15pt+\chatchshift}{-0.15pt}}
+    \ifdim \chatchshift > 0pt
+      \pgfpathmoveto{\pgfqpoint{0pt}{\chatchshift}}
+      \pgfpathlineto{\pgfqpoint{\dimexpr0.15pt+\chatchshift}{-0.15pt}}
+    \fi
+    \pgfsetstrokecolor{\chatchcolor}
+%    \pgfsetdash{{1pt}{1pt}}{0pt}% dashing cannot work correctly in all situation this way
+    \pgfusepath{stroke}
+   }
+\newtcbox{\mymacrostripbox}{
+  enhanced,
+  size=fbox,
+  on line,
+  frame code={},
+  interior code={
+    \path[
+      pattern=custom north east lines,
+      thatchspread=6pt,
+      thatchthickness=2pt,
+      thatchcolor=red!40
+    ]
+    (frame.south east) rectangle (frame.north west);
+  }
+}

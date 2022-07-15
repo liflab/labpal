@@ -57,7 +57,7 @@ public class ExperimentsPageCallback extends TemplatePageCallback
 		}
 		else
 		{
-			input.put("groups", m_server.m_lab.getExperimentGroups());
+			input.put("groups", getServer().getLaboratory().getExperimentGroups());
 		}
 	}
 	

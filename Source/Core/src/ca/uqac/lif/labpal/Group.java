@@ -115,7 +115,7 @@ public abstract class Group<T extends Comparable<T>> implements Dependent<T>
 	 * @param objects The objects to add
 	 * @return This group
 	 */
-	public Group<T> add(Collection<T> objects)
+	public Group<T> add(Collection<? extends T> objects)
 	{
 		m_objects.addAll(objects);
 		return this;

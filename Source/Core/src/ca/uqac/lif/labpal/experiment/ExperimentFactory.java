@@ -62,9 +62,28 @@ public abstract class ExperimentFactory<E extends Experiment>
 
 	public ExperimentFactory(/*@ non_null @*/ Laboratory lab)
 	{
+		this(lab, new HashMap<Point,E>());
+	}
+	
+	public ExperimentFactory(/*@ non_null @*/ Laboratory lab, /*@ non_null @*/ Map<Point,E> added)
+	{
 		super();
 		m_lab = lab;
-		m_added = new HashMap<Point,E>();
+		m_added = added;
+	}
+	
+	public ExperimentFactory(/*@ non_null @*/ ExperimentFactory<E> factory)
+	{
+		this(factory.m_lab, factory.m_added);
+	}
+	
+	/**
+	 * Gets the 
+	 * @return
+	 */
+	/*@ non_null @*/ public Map<Point,E> getAdded()
+	{
+		return m_added;
 	}
 
 	/**

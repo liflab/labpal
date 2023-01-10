@@ -1,5 +1,5 @@
 <#include "header.ftlh">
 
-${lab.getDescription()}
+${lab.getDescription()?no_esc}
 
 <#include "footer.ftlh">

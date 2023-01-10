@@ -42,6 +42,11 @@
     <ant dir="Core" target="clean" />
     <ant dir="Examples" target="clean" />
   </target>
+
+  <target name="wipe">
+    <ant dir="Core" target="wipe" />
+    <ant dir="Examples" target="wipe" />
+  </target>
   
   <target name="test">
     <ant dir="Core" target="test" />

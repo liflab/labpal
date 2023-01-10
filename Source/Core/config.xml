@@ -33,7 +33,7 @@
   <mainclass>ca.uqac.lif.labpal.Laboratory</mainclass>
   
   <jar>
-    <filename>labpal.jar</filename>
+    <filename>../labpal.jar</filename>
   </jar>
   
   <srcdir>src</srcdir>
@@ -76,7 +76,7 @@
       <name>Petit Poucet (Core)</name>
       <classname>ca.uqac.lif.petitpoucet.Queryable</classname>
       <files>
-        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.1-beta3/petitpoucet-core.jar</jar>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.2/petitpoucet-core.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -84,7 +84,7 @@
       <name>Petit Poucet (Functions)</name>
       <classname>ca.uqac.lif.petitpoucet.function.Function</classname>
       <files>
-        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.1-beta3/petitpoucet-functions.jar</jar>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.2/petitpoucet-functions.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -100,7 +100,15 @@
       <name>lif-units</name>
       <classname>ca.uqac.lif.units.Unit</classname>
       <files>
-        <jar>https://github.com/liflab/lif-units/releases/download/v1.1/lif-units.jar</jar>
+        <jar>https://github.com/liflab/lif-units/releases/download/v1.2/lif-units.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>lif-fs</name>
+      <classname>ca.uqac.lif.fs.FileSystem</classname>
+      <files>
+        <jar>https://github.com/liflab/lif-fs/releases/download/v0.2/lif-fs-core.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>

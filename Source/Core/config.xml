@@ -32,8 +32,13 @@
   <!-- The project's main class -->
   <mainclass>ca.uqac.lif.labpal.Laboratory</mainclass>
   
+  <!-- The project's version number -->
+  <version>2.99-beta2</version>
+  
+  <targetjdk>8</targetjdk>
+  
   <jar>
-    <filename>../labpal.jar</filename>
+    <filename>../labpal</filename>
   </jar>
   
   <srcdir>src</srcdir>
@@ -108,7 +113,7 @@
       <name>lif-fs</name>
       <classname>ca.uqac.lif.fs.FileSystem</classname>
       <files>
-        <jar>https://github.com/liflab/lif-fs/releases/download/v0.2/lif-fs-core.jar</jar>
+        <jar>https://github.com/liflab/lif-fs/releases/download/v0.2.1/lif-fs-core-0.2.1.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>

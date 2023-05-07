@@ -56,7 +56,7 @@ import ca.uqac.lif.labpal.util.CommandRunner;
 import ca.uqac.lif.labpal.util.FileHelper;
 import ca.uqac.lif.labpal.util.Stopwatch;
 import ca.uqac.lif.petitpoucet.ComposedPart;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
@@ -1075,7 +1075,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		{
 			return null;
 		}
-		NodeFactory f = NodeFactory.getFactory();
+		RelationNodeFactory f = RelationNodeFactory.getFactory();
 		Part root_part = null;
 		Part p = tv.getPart();
 		Object o = tv.getSubject();
@@ -1119,7 +1119,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	}
 
 	@Override
-	public PartNode getExplanation(Part d, NodeFactory f)
+	public PartNode getExplanation(Part d, RelationNodeFactory f)
 	{
 		PartNode root = f.getPartNode(d, this);
 		Part head = d.head();
@@ -1171,7 +1171,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	@Override
 	public PartNode getExplanation(Part d)
 	{
-		return getExplanation(d, NodeFactory.getFactory());
+		return getExplanation(d, RelationNodeFactory.getFactory());
 	}
 
 	@SuppressWarnings("unchecked")

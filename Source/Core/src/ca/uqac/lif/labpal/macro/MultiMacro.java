@@ -30,7 +30,7 @@ import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.latex.LatexExportable;
 import ca.uqac.lif.labpal.table.LatexTableRenderer;
 import ca.uqac.lif.labpal.util.FileHelper;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
@@ -253,11 +253,11 @@ public abstract class MultiMacro implements ExplanationQueryable, Identifiable, 
 	@Override
 	public PartNode getExplanation(Part d)
 	{
-		return getExplanation(d, NodeFactory.getFactory());
+		return getExplanation(d, RelationNodeFactory.getFactory());
 	}
 
 	@Override
-	public PartNode getExplanation(Part d, NodeFactory f)
+	public PartNode getExplanation(Part d, RelationNodeFactory f)
 	{
 		PartNode root = f.getPartNode(d, this);
 		root.addChild(f.getUnknownNode());

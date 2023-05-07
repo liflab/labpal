@@ -18,7 +18,7 @@
 package ca.uqac.lif.labpal.claim;
 
 import ca.uqac.lif.labpal.experiment.Experiment;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
@@ -111,7 +111,7 @@ public class ExperimentPair
 		}
 		
 		@Override
-		public PartNode getExplanation(Part p, NodeFactory f)
+		public PartNode getExplanation(Part p, RelationNodeFactory f)
 		{
 			PartNode root = f.getPartNode(p, this);
 			Part new_p = NthOutput.replaceOutByIn(p, 0);
@@ -157,7 +157,7 @@ public class ExperimentPair
 		}
 		
 		@Override
-		public PartNode getExplanation(Part p, NodeFactory f)
+		public PartNode getExplanation(Part p, RelationNodeFactory f)
 		{
 			PartNode root = f.getPartNode(p, this);
 			Part new_p = NthOutput.replaceOutByIn(p, 0);

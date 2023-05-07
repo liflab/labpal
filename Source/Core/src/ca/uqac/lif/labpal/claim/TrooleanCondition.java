@@ -6,7 +6,7 @@ import java.util.List;
 import ca.uqac.lif.dag.LabelledNode;
 import ca.uqac.lif.dag.LeafCrawler.LeafFetcher;
 import ca.uqac.lif.dag.Node;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.OrNode;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
@@ -86,12 +86,12 @@ public class TrooleanCondition extends AtomicFunction
 	}
 	
 	@Override
-	public PartNode getExplanation(Part p, NodeFactory f)
+	public PartNode getExplanation(Part p, RelationNodeFactory f)
 	{
 		PartNode root = f.getPartNode(p, this);
 		if (m_nullInputs.isEmpty())
 		{
-			NodeFactory sub_factory = f.getFactory(p, m_function);
+			RelationNodeFactory sub_factory = f.getFactory(p, m_function);
 			PartNode sub_root = ((ExplanationQueryable) m_function).getExplanation(p, sub_factory);
 			root.addChild(sub_root);
 			LeafFetcher lf = new LeafFetcher(sub_root);

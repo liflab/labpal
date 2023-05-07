@@ -18,7 +18,7 @@
 package ca.uqac.lif.labpal.macro;
 
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 
@@ -70,7 +70,7 @@ public class ConstantMacro extends Macro
 	}
 
 	@Override
-	public PartNode getExplanation(Part part, NodeFactory factory)
+	public PartNode getExplanation(Part part, RelationNodeFactory factory)
 	{
 		PartNode root = factory.getPartNode(part, this);
 		PartNode child = factory.getPartNode(Part.all, m_value);

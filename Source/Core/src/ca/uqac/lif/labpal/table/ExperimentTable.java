@@ -33,7 +33,7 @@ import ca.uqac.lif.labpal.experiment.ExperimentValue;
 import ca.uqac.lif.labpal.provenance.TrackedValue;
 import ca.uqac.lif.labpal.region.Region;
 import ca.uqac.lif.petitpoucet.ComposedPart;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
@@ -257,7 +257,7 @@ public class ExperimentTable extends Table
 	}
 
 	@Override
-	protected PartNode explain(Part d, NodeFactory f)
+	protected PartNode explain(Part d, RelationNodeFactory f)
 	{
 		PartNode root = f.getPartNode(d, this);
 		Cell c = Cell.mentionedCell(d);

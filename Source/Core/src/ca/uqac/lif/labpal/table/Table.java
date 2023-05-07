@@ -29,7 +29,7 @@ import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.latex.LatexExportable;
 import ca.uqac.lif.labpal.region.Region;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
@@ -287,10 +287,10 @@ public abstract class Table extends AtomicFunction implements ExplanationQueryab
 		return prog / total;
 	}
 
-	protected abstract PartNode explain(Part d, NodeFactory f);
+	protected abstract PartNode explain(Part d, RelationNodeFactory f);
 
 	@Override
-	public final PartNode getExplanation(Part d, NodeFactory f)
+	public final PartNode getExplanation(Part d, RelationNodeFactory f)
 	{
 		if (!m_calculated)
 		{

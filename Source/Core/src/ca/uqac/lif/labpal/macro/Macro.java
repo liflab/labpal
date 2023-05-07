@@ -24,7 +24,7 @@ import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.latex.LatexExportable;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
@@ -123,7 +123,7 @@ public abstract class Macro implements Comparable<Macro>, ExplanationQueryable, 
 	@Override
 	public PartNode getExplanation(Part part)
 	{
-		return getExplanation(part, NodeFactory.getFactory());
+		return getExplanation(part, RelationNodeFactory.getFactory());
 	}
 	
 	@Override

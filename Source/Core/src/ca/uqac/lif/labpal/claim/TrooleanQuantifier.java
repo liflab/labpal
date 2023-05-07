@@ -24,7 +24,7 @@ import ca.uqac.lif.dag.LabelledNode;
 import ca.uqac.lif.dag.LeafCrawler.LeafFetcher;
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.labpal.claim.Troolean.Value;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
@@ -90,7 +90,7 @@ public abstract class TrooleanQuantifier extends TrooleanConnective
 	}
 	
 	@Override
-	protected LabelledNode process(Part p, List<Integer> list, LabelledNode conn, NodeFactory f)
+	protected LabelledNode process(Part p, List<Integer> list, LabelledNode conn, RelationNodeFactory f)
 	{
 		if (list.isEmpty())
 		{
@@ -107,10 +107,10 @@ public abstract class TrooleanQuantifier extends TrooleanConnective
 		return conn;
 	}
 	
-	protected LabelledNode processChild(Part p, NodeFactory f, int i)
+	protected LabelledNode processChild(Part p, RelationNodeFactory f, int i)
 	{
 		Function c_i = m_conditions.get(i);
-		NodeFactory sub_factory = f.getFactory(p, c_i);
+		RelationNodeFactory sub_factory = f.getFactory(p, c_i);
 		PartNode sub_root = ((ExplanationQueryable) c_i).getExplanation(p, sub_factory);
 		LeafFetcher lf = new LeafFetcher(sub_root);
 		lf.crawl();

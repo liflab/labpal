@@ -23,7 +23,7 @@ import java.util.List;
 import ca.uqac.lif.dag.LabelledNode;
 import ca.uqac.lif.labpal.claim.Troolean.Value;
 import ca.uqac.lif.petitpoucet.AndNode;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
@@ -90,7 +90,7 @@ public abstract class TrooleanConnective extends AtomicFunction
 	}
 	
 	@Override
-	public PartNode getExplanation(Part p, NodeFactory f)
+	public PartNode getExplanation(Part p, RelationNodeFactory f)
 	{
 		PartNode root = f.getPartNode(p, this);
 		List<Integer> or_list = getOrList();
@@ -132,7 +132,7 @@ public abstract class TrooleanConnective extends AtomicFunction
 		return root;
 	}
 	
-	protected void process(LabelledNode root, Part p, List<Integer> list, LabelledNode conn, NodeFactory f)
+	protected void process(LabelledNode root, Part p, List<Integer> list, LabelledNode conn, RelationNodeFactory f)
 	{
 		LabelledNode child = process(p, list, conn, f);
 		if (child != null)
@@ -141,7 +141,7 @@ public abstract class TrooleanConnective extends AtomicFunction
 		}
 	}
 	
-	protected LabelledNode process(Part p, List<Integer> list, LabelledNode conn, NodeFactory f)
+	protected LabelledNode process(Part p, List<Integer> list, LabelledNode conn, RelationNodeFactory f)
 	{
 		if (list.isEmpty())
 		{

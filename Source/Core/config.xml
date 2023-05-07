@@ -34,7 +34,11 @@
   
   <!-- The project's version number -->
   <version>2.99-beta2</version>
+
+  <!-- The project's package (with a trailing slash) -->
+  <package>ca/uqac/lif/labpal/</package>
   
+  <!-- The JDK version to compile for -->
   <targetjdk>8</targetjdk>
   
   <jar>
@@ -81,7 +85,7 @@
       <name>Petit Poucet (Core)</name>
       <classname>ca.uqac.lif.petitpoucet.Queryable</classname>
       <files>
-        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.2/petitpoucet-core.jar</jar>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.3/petitpoucet-core-2.3.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -89,7 +93,7 @@
       <name>Petit Poucet (Functions)</name>
       <classname>ca.uqac.lif.petitpoucet.function.Function</classname>
       <files>
-        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.2/petitpoucet-functions.jar</jar>
+        <jar>https://github.com/liflab/petitpoucet/releases/download/v2.3/petitpoucet-functions-2.3.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -105,7 +109,7 @@
       <name>lif-units</name>
       <classname>ca.uqac.lif.units.Unit</classname>
       <files>
-        <jar>https://github.com/liflab/lif-units/releases/download/v1.2/lif-units.jar</jar>
+        <jar>https://github.com/liflab/lif-units/releases/download/v1.2/lif-units-1.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -121,7 +125,7 @@
       <name>Programmatic Spreadsheet (Core)</name>
       <classname>ca.uqac.lif.spreadsheet.Spreadsheet</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.1-beta/pss-core.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-core-0.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -129,7 +133,7 @@
       <name>Programmatic Spreadsheet (Charts)</name>
       <classname>ca.uqac.lif.spreadsheet.chart.Chart</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.1-beta/pss-charts.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-charts-0.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -137,7 +141,7 @@
       <name>Programmatic Spreadsheet (Gnuplot)</name>
       <classname>ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.1-beta/pss-charts-gnuplot.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-charts-gnuplot-0.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -145,7 +149,7 @@
       <name>Programmatic Spreadsheet (Units)</name>
       <classname>ca.uqac.lif.spreadsheet.units.Operations</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.1-beta/pss-units.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-units-0.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>

@@ -33,7 +33,7 @@ import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.petitpoucet.AndNode;
 import ca.uqac.lif.petitpoucet.ComposedPart;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.AtomicFunction;
@@ -159,7 +159,7 @@ public class TransformedTable extends Table
 	}
 
 	@Override
-	protected PartNode explain(Part d, NodeFactory f)
+	protected PartNode explain(Part d, RelationNodeFactory f)
 	{
 		if (!(d.head() instanceof NthOutput))
 		{

@@ -29,7 +29,7 @@ import ca.uqac.lif.labpal.claim.ExperimentPair;
 import ca.uqac.lif.labpal.claim.FunctionClaim;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.petitpoucet.ComposedPart;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.Part;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.Function;
@@ -109,7 +109,7 @@ public abstract class PairClaim extends FunctionClaim
 	}
 	
 	@Override
-	public PartNode getExplanation(Part part, NodeFactory factory)
+	public PartNode getExplanation(Part part, RelationNodeFactory factory)
 	{
 		PartNode root = super.getExplanation(part, factory);
 		LeafFetcher lf = new LeafFetcher(root);

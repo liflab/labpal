@@ -21,7 +21,7 @@ import ca.uqac.lif.labpal.Dependent;
 import ca.uqac.lif.labpal.Identifiable;
 import ca.uqac.lif.labpal.Stateful;
 import ca.uqac.lif.labpal.latex.LatexExportable;
-import ca.uqac.lif.petitpoucet.NodeFactory;
+import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;
 import ca.uqac.lif.petitpoucet.PartNode;
 import ca.uqac.lif.petitpoucet.function.ExplanationQueryable;
 
@@ -160,7 +160,7 @@ public abstract class Claim implements Condition, ExplanationQueryable, Dependen
 		return out.toString();
 	}
 	
-	protected void continueExplanation(PartNode from, NodeFactory f)
+	protected void continueExplanation(PartNode from, RelationNodeFactory f)
 	{
 		
 	}

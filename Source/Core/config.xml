@@ -33,7 +33,7 @@
   <mainclass>ca.uqac.lif.labpal.Laboratory</mainclass>
   
   <!-- The project's version number -->
-  <version>2.99-beta3</version>
+  <version>2.99-beta4</version>
 
   <!-- The project's package (with a trailing slash) -->
   <package>ca/uqac/lif/labpal/</package>
@@ -64,7 +64,7 @@
          </filenamepattern>
   </test>
   
-  <dependencies>
+<dependencies>
     <dependency>
       <name>Azrael (Core)</name>
       <classname>ca.uqac.lif.azrael.ObjectPrinter</classname>
@@ -101,7 +101,7 @@
       <name>Jerrydog</name>
       <classname>ca.uqac.lif.jerrydog.Server</classname>
       <files>
-        <zip>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.3.2/jerrydog-0.3.2.zip</zip>
+        <jar>https://github.com/sylvainhalle/Jerrydog/releases/download/v0.3.3/jerrydog-0.3.3.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -125,7 +125,7 @@
       <name>Programmatic Spreadsheet (Core)</name>
       <classname>ca.uqac.lif.spreadsheet.Spreadsheet</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-core-0.2.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-core-0.2.1.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -133,7 +133,7 @@
       <name>Programmatic Spreadsheet (Charts)</name>
       <classname>ca.uqac.lif.spreadsheet.chart.Chart</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-charts-0.2.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-charts-0.2.1.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -141,7 +141,7 @@
       <name>Programmatic Spreadsheet (Gnuplot)</name>
       <classname>ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-charts-gnuplot-0.2.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-charts-gnuplot.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -149,7 +149,7 @@
       <name>Programmatic Spreadsheet (Units)</name>
       <classname>ca.uqac.lif.spreadsheet.units.Operations</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-units-0.2.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2-beta/pss-units-0.2.1.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -157,7 +157,7 @@
       <name>Apache Freemarker</name>
       <classname>freemarker.template.Template</classname>
       <files>
-        <jar>https://repo1.maven.org/maven2/org/freemarker/freemarker/2.3.31/freemarker-2.3.31.jar</jar>
+        <jar>https://repo1.maven.org/maven2/org/freemarker/freemarker/2.3.32/freemarker-2.3.32.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -173,7 +173,7 @@
 	  <name>PDFBox</name>
 	  <classname>org.apache.pdfbox.util.Version</classname>
 	  <files>
-		<jar>https://repo1.maven.org/maven2/org/apache/pdfbox/pdfbox/2.0.25/pdfbox-2.0.25.jar</jar>
+		<jar>https://repo1.maven.org/maven2/org/apache/pdfbox/pdfbox/2.0.29/pdfbox-2.0.29.jar</jar>
 		<!-- These are not necessary
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/fontbox/2.0.0/fontbox-2.0.0.jar</jar>
 		<jar>http://central.maven.org/maven2/org/apache/pdfbox/jempbox/1.8.11/jempbox-1.8.11.jar</jar>

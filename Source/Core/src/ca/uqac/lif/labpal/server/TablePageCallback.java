@@ -85,6 +85,7 @@ public class TablePageCallback extends TemplatePageCallback
 				return cbr;
 			}
 			HtmlTableRenderer renderer = new HtmlTableRenderer(t);
+			renderer.mergeCells(true);
 			Map<String,String> req_parameters = getParameters(h);
 			if (req_parameters.containsKey("highlight"))
 			{

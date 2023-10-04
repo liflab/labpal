@@ -90,6 +90,7 @@ public class AllTablesCallback extends LaboratoryCallback
         continue;
       }
       LatexTableRenderer renderer = new LatexTableRenderer(tab);
+      renderer.mergeCells(true);
       String box_name = "t" + tab.getTitle();
       if (!tab.getNickname().isEmpty())
       {

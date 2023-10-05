@@ -24,28 +24,31 @@
   <!-- The author -->
   <property name="build.author" value="Sylvain Hallé"/>
   
+  <!-- Library version -->
+  <property name="lib.version" value="2.99-beta4" />
+  
   <target name="all">
     <!-- Compile core -->
     <ant dir="Core" target="jar" />
     <!-- Copy core to other projects -->
-    <copy file="labpal.jar" todir="Examples/lib" />
+    <copy file="labpal-${lib.version}.jar" todir="Examples/lib" />
     <!-- Compile Examples -->
-    <ant dir="Examples" target="jar" />
+    <!-- <ant dir="Examples" target="jar" /> -->
   </target>
   
   <target name="download-deps">
     <ant dir="Core" target="download-deps" />
-    <ant dir="Examples" target="download-deps" />
+    <!-- <ant dir="Examples" target="download-deps" /> -->
   </target>
   
   <target name="clean">
     <ant dir="Core" target="clean" />
-    <ant dir="Examples" target="clean" />
+    <!-- <ant dir="Examples" target="clean" /> -->
   </target>
 
   <target name="wipe">
     <ant dir="Core" target="wipe" />
-    <ant dir="Examples" target="wipe" />
+    <!-- <ant dir="Examples" target="wipe" /> -->
   </target>
   
   <target name="test">

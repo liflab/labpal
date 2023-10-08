@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2022 Sylvain Hallé
+  Copyright (C) 2015-2023 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -117,10 +117,12 @@ public abstract class Group<T extends Comparable<T>> implements Dependent<T>
 	 */
 	public Group<T> add(Collection<? extends T> objects)
 	{
-		m_objects.addAll(objects);
+		for (T t : objects)
+		{
+			add(t);
+		}
 		return this;
 	}
-	
 	
 	/**
 	 * Gets the textual description of this group.

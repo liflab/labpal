@@ -125,7 +125,7 @@
       <name>Programmatic Spreadsheet (Core)</name>
       <classname>ca.uqac.lif.spreadsheet.Spreadsheet</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2.1/pss-core-0.2.1.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2.2/pss-core-0.2.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -133,7 +133,7 @@
       <name>Programmatic Spreadsheet (Charts)</name>
       <classname>ca.uqac.lif.spreadsheet.chart.Chart</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2.1/pss-charts-0.2.1.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2.2/pss-charts-0.2.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -141,7 +141,7 @@
       <name>Programmatic Spreadsheet (Gnuplot)</name>
       <classname>ca.uqac.lif.spreadsheet.chart.gnuplot.Gnuplot</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2.1/pss-charts-gnuplot-0.2.1.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2.2/pss-charts-gnuplot-0.2.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -149,7 +149,7 @@
       <name>Programmatic Spreadsheet (Units)</name>
       <classname>ca.uqac.lif.spreadsheet.units.Operations</classname>
       <files>
-        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2.1/pss-units-0.2.1.jar</jar>
+        <jar>https://github.com/liflab/programmatic-spreadsheet/releases/download/v0.2.2/pss-units-0.2.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>

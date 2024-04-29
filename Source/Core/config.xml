@@ -117,7 +117,7 @@
       <name>lif-fs</name>
       <classname>ca.uqac.lif.fs.FileSystem</classname>
       <files>
-        <jar>https://github.com/liflab/lif-fs/releases/download/v0.2.1/lif-fs-core-0.2.1.jar</jar>
+        <jar>https://github.com/liflab/lif-fs/releases/download/v0.2.2/lif-fs-core-0.2.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>

@@ -25,7 +25,7 @@
   <property name="build.author" value="Sylvain Hallé"/>
   
   <!-- Library version -->
-  <property name="lib.version" value="2.99-beta4" />
+  <property name="lib.version" value="2.99-beta5" />
   
   <target name="all">
     <!-- Compile core -->

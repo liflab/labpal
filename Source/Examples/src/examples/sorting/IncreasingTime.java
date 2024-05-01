@@ -21,24 +21,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ca.uqac.lif.dag.NodeConnector;
-import ca.uqac.lif.labpal.claim.TrooleanQuantifier.AllObjects;
 import ca.uqac.lif.labpal.claim.ExperimentPair;
-import ca.uqac.lif.labpal.claim.ExperimentPair.First;
-import ca.uqac.lif.labpal.claim.ExperimentPair.Second;
-import ca.uqac.lif.labpal.claim.PairClaim;
-import ca.uqac.lif.labpal.claim.TrooleanCondition;
-import ca.uqac.lif.labpal.claim.ValueOf;
 import ca.uqac.lif.labpal.experiment.ExperimentFactory;
 import ca.uqac.lif.labpal.region.Point;
 import ca.uqac.lif.labpal.region.Region;
-import ca.uqac.lif.petitpoucet.function.Circuit;
-import ca.uqac.lif.petitpoucet.function.Fork;
-import ca.uqac.lif.petitpoucet.function.Function;
-import ca.uqac.lif.units.functions.CompareQuantities.QuantityIsLessThan;
-
 import static examples.sorting.SortExperiment.ALGORITHM;
-import static examples.sorting.SortExperiment.DURATION;
 
 public class IncreasingTime extends DurationComparison
 {

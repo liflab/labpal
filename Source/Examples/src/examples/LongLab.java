@@ -3,7 +3,6 @@ package examples;
 import java.math.BigInteger;
 
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.assistant.AssistantRun;
 import ca.uqac.lif.labpal.experiment.Experiment;
 
 public class LongLab extends Laboratory

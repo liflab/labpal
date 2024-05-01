@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2022 Sylvain Hallé
+  Copyright (C) 2015-2024 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@ import com.sun.net.httpserver.HttpExchange;
 
 import ca.uqac.lif.jerrydog.CallbackResponse;
 import ca.uqac.lif.jerrydog.CallbackResponse.ContentType;
-import ca.uqac.lif.jerrydog.RestCallback;
 import ca.uqac.lif.labpal.assistant.AssistantRun;
+import ca.uqac.lif.jerrydog.RestCallback;
 
 /**
  * A callback that produces a JSON string indicating the status and progression

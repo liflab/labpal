@@ -31,8 +31,6 @@ import org.junit.Test;
 import ca.uqac.lif.labpal.DummyExperiment;
 import ca.uqac.lif.labpal.Persistent.PersistenceException;
 import ca.uqac.lif.labpal.Stateful.Status;
-import ca.uqac.lif.labpal.experiment.Experiment;
-import ca.uqac.lif.labpal.experiment.ExperimentException;
 import ca.uqac.lif.units.Time;
 import ca.uqac.lif.units.si.Second;
 

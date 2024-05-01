@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2022 Sylvain Hallé
+  Copyright (C) 2015-2024 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,33 +17,25 @@
  */
 package ca.uqac.lif.labpal.assistant;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * An executor service that dispatches tasks sequentially on a single thread.
- * This class works exactly in the same way as Java's single thread executor.
- * In a single-thread situation, method {@link #shutdownAtEnd()} has the same
- * effect as {@link #shutdown()}.
- *   
+ * Assistant that runs experiments in a single thread.
  * @author Sylvain Hallé
- *
+ * @since 3.0
  */
-public class SingleThreadExecutor extends LabPalExecutorService
+public class SingleThreadAssistant extends Assistant
 {
-	public SingleThreadExecutor()
+	@Override
+	protected ExecutorService getExecutor()
 	{
-		super();
-		m_executor = Executors.newSingleThreadExecutor();
+		return Executors.newSingleThreadExecutor();
 	}
 
 	@Override
-	public SingleThreadExecutor newInstance() 
-	{
-		return new SingleThreadExecutor();
-	}
-	
-	@Override
-	public String toString()
+	public String getName()
 	{
 		return "ST";
 	}

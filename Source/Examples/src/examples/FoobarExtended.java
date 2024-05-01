@@ -8,14 +8,8 @@ import static ca.uqac.lif.labpal.region.ProductRegion.product;
 import static ca.uqac.lif.labpal.table.ExperimentTable.table;
 import static ca.uqac.lif.labpal.table.TransformedTable.transform;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import ca.uqac.lif.dag.NodeConnector;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.Stateful;
-import ca.uqac.lif.labpal.claim.FunctionClaim;
 import ca.uqac.lif.labpal.claim.RegionClaim;
 import ca.uqac.lif.labpal.claim.TrooleanCondition;
 import ca.uqac.lif.labpal.experiment.Experiment;

@@ -1,106 +1,72 @@
-/*
-  LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2022 Sylvain Hallé
-
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package ca.uqac.lif.labpal.assistant;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import ca.uqac.lif.labpal.claim.Condition;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
+import ca.uqac.lif.units.si.Millisecond;
 
-/**
- * An object allowing control and monitoring over the execution of a batch
- * of experiments. Assistant runs are objects returned by an {@link Assistant}
- * on a call to {@link Assistant#enqueue(Experiment...) enqueue()}. Using an
- * assistant run, it is possible to:
- * <ul>
- * <li>monitor the progress on the execution of experiments with
- * {@link #getProgression()} and {@link #getExecutionTime()}</li>
- * <li>get the set of currently running experiments with
- * {@link #getRunningExperiments()}</li>
- * <li>cancel the execution of a run using {@link #stop(boolean) stop()} or
- * cancel the queueing of individual experiments in the run with
- * {@link #cancel(Experiment...) cancel()}</li>
- * </ul>
- * Note that an assistant run can only be stopped, but not started. It is the
- * <em>assistant</em>'s job to enqueue and manage the execution of individual
- * runs. Also note that the contents of a run (i.e. the experiments it
- * contains) cannot be modified or reordered. 
- * 
- * @since 3.0
- * 
- * @author Sylvain Hallé
- */
-public class AssistantRun extends ExperimentGroup
+public class AssistantRun extends ExperimentGroup implements Runnable
 {
 	/**
 	 * A counter for run IDs
 	 */
 	protected static int s_idCounter = 1;
-	
-	protected RunRunnable m_runnable;
-	
-	protected Future<?> m_future;
-	
-	private final int m_id;
-	
-	public AssistantRun(RunRunnable runnable, Future<?> future)
+
+	/**
+	 * The executor service used to dispatch the experiments in this run
+	 * into threads.
+	 */
+	protected final ExecutorService m_executor;
+
+	/**
+	 * The start time of the run.
+	 */
+	protected long m_startTime;
+
+	/**
+	 * The end time of the run.
+	 */
+	protected long m_endTime;
+
+	/**
+	 * An optional condition used to determine if each experiment in the run
+	 * should be executed.
+	 */
+	/*@ null @*/ protected Condition m_condition;
+
+	public AssistantRun(/*@ non_null @*/ List<Experiment> experiments, /*@ non_null @*/ ExecutorService executor, /*@ null @*/ Condition c)
 	{
 		super("Run " + (s_idCounter + 1));
-		m_runnable = runnable;
-		m_future = future;
 		m_id = s_idCounter++;
-		m_objects.addAll(runnable.m_experiments);
+		m_objects.addAll(experiments);
+		m_executor = executor;
+		m_condition = c;
+		m_startTime = -1;
+		m_endTime = -1;
 	}
 	
-	public AssistantRun cancel(Experiment ... experiments)
+	public boolean isRunning()
 	{
-		return cancel(Arrays.asList(experiments));
+		return !m_executor.isTerminated();
 	}
-	
-	public AssistantRun cancel(List<Experiment> experiments)
-	{
-		return this;
-	}
-	
-	public long getExecutionTime()
-	{
-		if (m_runnable.getEndTime() <= 0)
-		{
-			return System.currentTimeMillis() - m_runnable.getStartTime();
-		}
-		return m_runnable.getEndTime() - m_runnable.getStartTime();
-	}
-	
+
 	/**
-	 * Determines if an experiment is waiting to be executed.
-	 * @param e The experiment
-	 * @return <tt>true</tt> if the experiment is queued, <tt>false</tt>
-	 * otherwise
+	 * Gets the list of experiments concerned by this run.
+	 * @return The list of experiments
 	 */
-	public boolean isQueued(Experiment e)
+	@Override
+	/*@ pure non_null @*/ public List<Experiment> dependsOn()
 	{
-		return m_runnable.isQueued(e);
+		return m_objects;
 	}
-	
+
 	/**
 	 * Gets the progression fraction of this run. The progression is taken as
 	 * the average of the progression fraction of the individual experiments
@@ -114,7 +80,7 @@ public class AssistantRun extends ExperimentGroup
 	{
 		float p = 0;
 		float t = 0;
-		for (Experiment e : m_runnable.getExperiments())
+		for (Experiment e : m_objects)
 		{
 			p += e.getProgression();
 			t++;
@@ -125,78 +91,16 @@ public class AssistantRun extends ExperimentGroup
 		}
 		return p / t;
 	}
-	
-	/**
-	 * Prevents the assistant from starting any new experiment in this run,
-	 * and optionally interrupts any currently running experiments.
-	 * @param now Set to <tt>true</tt> to immediately interrupt running
-	 * experiments; set to <tt>false</tt> to wait for these experiments to
-	 * finish.
-	 */
-	public void stop(boolean now)
-	{
-		try
-		{
-			m_runnable.shutdown(now);
-		}
-		catch (InterruptedException e)
-		{
-			// Do nothing
-		}
-	}
-	
-	/**
-	 * Gets the list of experiments concerned by this run.
-	 * @return The list of experiments
-	 */
-	@Override
-	/*@ pure non_null @*/ public List<Experiment> dependsOn()
-	{
-		return m_runnable.getExperiments();
-	}
-	
+
 	@Override
 	public void reset()
 	{
-		for (Experiment e : m_runnable.getExperiments())
+		for (Experiment e : m_objects)
 		{
 			e.reset();
 		}
 	}
-	
-	/**
-	 * Checks if this assistant run is still running.
-	 * @return <tt>true</tt> if it is running, <tt>false</tt> otherwise
-	 */
-	public boolean isRunning()
-	{
-		return !(m_future.isCancelled() || m_future.isDone());
-	}
-	
-	/**
-	 * Waits for the run to stop running before exiting.
-	 */
-	public void join()
-	{
-		try 
-		{
-			m_future.get();
-		}
-		catch (InterruptedException | ExecutionException e) 
-		{
-			// Do nothing
-		}
-	}
 
-	/**
-	 * Gets the experiments that are currently being run by the assistant.
-	 * @return The set of running experiments
-	 */
-	/*@ non_null @*/ public Set<Experiment> getRunningExperiments()
-	{
-		return m_runnable.getRunning();
-	}
-	
 	/**
 	 * Gets a unique ID string that represents this assistant's run.
 	 * @return The ID
@@ -205,4 +109,129 @@ public class AssistantRun extends ExperimentGroup
 	{
 		return m_id;
 	}
+
+	/**
+	 * Determines if an experiment is waiting to be executed.
+	 * @param e The experiment
+	 * @return <tt>true</tt> if the experiment is queued, <tt>false</tt>
+	 * otherwise
+	 */
+	public boolean isQueued(Experiment e)
+	{
+		if (!m_objects.contains(e))
+		{
+			return false;
+		}
+		Experiment.Status s = e.getStatus();
+		return s == Status.READY || s == Status.UNINITIALIZED;
+	}
+
+	@Override
+	public void run()
+	{
+		m_startTime = System.currentTimeMillis();
+		for (Experiment e : m_objects) 
+		{
+			Future<?> future = m_executor.submit(e, m_condition);
+			Millisecond ms = new Millisecond(e.getTimeout());
+			if (ms.get().intValue() <= 0)
+			{
+				// No timeout set, proceed to next experiment
+				continue;
+			}
+			ScheduledExecutorService timeoutExecutor = Executors.newScheduledThreadPool(1);
+			// Schedule a task to cancel the original task after a timeout
+			timeoutExecutor.schedule(() -> {
+				// This will interrupt the task if it's running by setting the interrupt flag
+				if (!future.isDone()) {
+					future.cancel(true);
+					System.out.println("Task was cancelled due to timeout");
+				}
+			}, ms.get().intValue(), TimeUnit.MILLISECONDS);
+			timeoutExecutor.shutdown();
+		}
+		m_executor.shutdown();
+		try
+		{
+			m_executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+		}
+		catch (InterruptedException e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		m_endTime = System.currentTimeMillis();
+	}
+
+	/**
+	 * Waits for the run to stop running before exiting.
+	 */
+	public void join()
+	{
+		try
+		{
+			m_executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+		}
+		catch (InterruptedException e)
+		{
+			// Do nothing
+		}
+	}
+
+	public long getExecutionTime()
+	{
+		if (m_endTime <= 0)
+		{
+			return System.currentTimeMillis() - m_startTime;
+		}
+		return m_endTime - m_startTime;
+	}
+
+	public void stop(boolean now)
+	{
+		try
+		{
+			if (now)
+			{
+				m_executor.shutdownNow();
+				m_executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+			}
+			else
+			{
+				m_executor.shutdown();
+				m_executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+			}
+		}
+		catch (InterruptedException e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		m_endTime = System.currentTimeMillis();
+	}
+
+	/**
+	 * Shuts down the executor service used to run the experiments in this run.
+	 * @param now If set to {@code true}, currently running experiments will be
+	 * forcibly interrupted and the executor will be shut down immediately. If
+	 * set to {@code false}, the executor will wait for all currently running
+	 * experiments to finish before shutting down, but will not allow any new
+	 * experiments to start.
+	 * 
+	 * @throws InterruptedException
+	 */
+	public void shutdown(boolean now) throws InterruptedException
+	{
+		if (now)
+		{
+			m_executor.shutdownNow();
+			m_executor.awaitTermination(0, TimeUnit.MILLISECONDS);	
+		}
+		else
+		{
+			m_executor.shutdown();
+			m_executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);	
+		}	
+	}
+
 }

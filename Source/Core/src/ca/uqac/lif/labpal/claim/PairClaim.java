@@ -25,8 +25,6 @@ import java.util.List;
 import ca.uqac.lif.dag.LeafCrawler.LeafFetcher;
 import ca.uqac.lif.dag.Node;
 import ca.uqac.lif.labpal.Stateful;
-import ca.uqac.lif.labpal.claim.ExperimentPair;
-import ca.uqac.lif.labpal.claim.FunctionClaim;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.petitpoucet.ComposedPart;
 import ca.uqac.lif.petitpoucet.function.RelationNodeFactory;

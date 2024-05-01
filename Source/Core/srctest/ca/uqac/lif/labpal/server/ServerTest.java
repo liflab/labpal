@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2022 Sylvain Hallé
+  Copyright (C) 2015-2024 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,8 +24,7 @@ import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.fs.TempFolder;
 import ca.uqac.lif.labpal.DummyExperiment;
 import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.assistant.Assistant;
-import ca.uqac.lif.labpal.assistant.QueuedThreadPoolExecutor;
+import ca.uqac.lif.labpal.assistant.MultiThreadAssistant;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 import ca.uqac.lif.labpal.macro.ExperimentMacro;
@@ -40,8 +39,8 @@ public class ServerTest
 	public static void main(String[] args) throws IOException, FileSystemException 
 	{
 		Laboratory lab = new Laboratory();
-		//lab.setAssistant(new Assistant(new SingleThreadExecutor()));
-		lab.setAssistant(new Assistant(new QueuedThreadPoolExecutor(3)));
+		//lab.setAssistant(new SingleThreadAssistant());
+		lab.setAssistant(new MultiThreadAssistant(3));
 		ExperimentGroup g = new ExperimentGroup("My group", "A group of experiments");
 		lab.add(g);
 		ExperimentTable et = new ExperimentTable("foo", "y");

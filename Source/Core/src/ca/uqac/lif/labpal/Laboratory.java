@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2022 Sylvain Hallé
+  Copyright (C) 2015-2024 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,8 +30,8 @@ import ca.uqac.lif.json.JsonParser;
 import ca.uqac.lif.json.JsonParser.JsonParseException;
 import ca.uqac.lif.labpal.Stateful.Status;
 import ca.uqac.lif.labpal.assistant.Assistant;
-import ca.uqac.lif.labpal.assistant.QueuedThreadPoolExecutor;
-import ca.uqac.lif.labpal.assistant.SingleThreadExecutor;
+import ca.uqac.lif.labpal.assistant.MultiThreadAssistant;
+import ca.uqac.lif.labpal.assistant.SingleThreadAssistant;
 import ca.uqac.lif.labpal.claim.Claim;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
@@ -87,7 +87,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 /**
  * An organized collection of experiments, tables, and plots. The lab is
@@ -249,7 +248,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 		m_tables = new HashMap<Integer,Table>();
 		m_macros = new HashMap<Integer,Macro>();
 		m_claims = new HashMap<Integer,Claim>();
-		m_assistant = new Assistant();
+		m_assistant = new SingleThreadAssistant();
 		m_experimentGroups = new ArrayList<ExperimentGroup>();
 		m_macroGroups = new ArrayList<MacroGroup>();
 		m_doi = "";
@@ -264,7 +263,7 @@ public class Laboratory implements ExplanationQueryable, Persistent
 	{
 		this();
 		m_experiments = new HashMap<Integer,Experiment>();
-		m_assistant = new Assistant();
+		m_assistant = new SingleThreadAssistant();
 	}
 
 	/**
@@ -1352,18 +1351,18 @@ public class Laboratory implements ExplanationQueryable, Persistent
 			int num_threads = Integer.parseInt(new_lab.m_cliArguments.getOptionValue("threads"));
 			if (num_threads == 1)
 			{
-				new Assistant(new SingleThreadExecutor());
+				new SingleThreadAssistant();
 			}
 			if (num_threads < 1)
 			{
 				stdout.println("Invalid number of threads");
 				return ERR_ARGUMENTS;
 			}
-			lab_assistant = new Assistant(new QueuedThreadPoolExecutor(num_threads));
+			lab_assistant = new MultiThreadAssistant(num_threads);
 		}
 		else
 		{
-			lab_assistant = new Assistant(new QueuedThreadPoolExecutor(2));
+			lab_assistant = new MultiThreadAssistant(2);
 		}
 		new_lab.setAssistant(lab_assistant);
 

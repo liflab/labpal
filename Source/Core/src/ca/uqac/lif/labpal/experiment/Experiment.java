@@ -1,6 +1,6 @@
 /*
   LabPal, a versatile environment for running experiments on a computer
-  Copyright (C) 2015-2022 Sylvain Hallé
+  Copyright (C) 2015-2024 Sylvain Hallé
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,12 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -167,7 +161,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	 * @see Dependent
 	 */
 	/*@ non_null @*/ private List<Experiment> m_dependencies;
-	
+
 	/**
 	 * The exception thrown by the execution of the experiment, if any.
 	 */
@@ -248,7 +242,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	{
 		return m_id;
 	}
-	
+
 	/**
 	 * Retrieves the exception thrown by the experiment when it was executed, if
 	 * such an exception was thrown.
@@ -296,7 +290,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		m_outputParametersLock.unlock();
 		return map;
 	}
-	
+
 	/**
 	 * Determines if a given parameter name corresponds to an input parameter
 	 * of the experiment.
@@ -320,7 +314,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		m_inputParametersLock.unlock();
 		return has_key;
 	}
-	
+
 	/**
 	 * Checks if a potential value for an experiment parameter is compatible with
 	 * the declared dimension of this parameter.
@@ -378,7 +372,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	{
 		return writeOutput(key, value, false);
 	}
-	
+
 	/**
 	 * Writes a value to an experiment's output parameter.
 	 * @param key The name of the parameter
@@ -400,7 +394,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		m_outputParametersLock.unlock();
 		return this;
 	}
-	
+
 	/**
 	 * Writes a value to an experiment's input parameter.
 	 * @param key The name of the parameter
@@ -473,7 +467,7 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets the textual description of a parameter in the experiment.
 	 * @param key The name of the parameter
@@ -745,7 +739,8 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		params.put("progression", m_progression);
 		return params;
 	}
-	
+
+	/*
 	@Override
 	public final void run()
 	{
@@ -754,26 +749,17 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 			// Experiment has already completed, do not run again
 			return;
 		}
-		ExecutorService ex = Executors.newSingleThreadExecutor();
-		Future<?> future = ex.submit(new InnerRunnable());
-		long timeout = (long) (new Second(getTimeout()).get().floatValue() * 1000f);
 		try
 		{
-			if (timeout <= 0)
-			{
-				future.get();
-			}
-			else
-			{
-				future.get(timeout, TimeUnit.MILLISECONDS);
-			}
+			execute();
 		}
 		catch (InterruptedException e)
 		{
+			System.out.println("Experiment " + getId() + " has caught interruption");
 			setStatus(Status.INTERRUPTED);
 			declareInterruption(null);
 		}
-		catch (ExecutionException e)
+		catch (ExperimentException e)
 		{
 			setStatus(Status.FAILED);
 			Throwable t = e.getCause();
@@ -786,12 +772,8 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 				declareInterruption(e);
 			}
 		}
-		catch (TimeoutException e)
-		{
-			setStatus(Status.INTERRUPTED);
-			declareTimeout();
-		}
-	}
+
+	}*/
 
 	@Override
 	/*@ pure non_null @*/ public final Status getStatus()
@@ -856,9 +838,10 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 	public final void declareTimeout()
 	{
 		declareInterruption(null);
+		System.out.println("Timeout declared");
 		m_hasTimedOut = true;
 	}
-	
+
 	/**
 	 * Tells the experiment that it has ended in an interruption.
 	 */
@@ -872,7 +855,10 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		{
 			m_prereqTime = m_endTime;
 		}
-		m_exception = e;
+		if (!(e instanceof InterruptedException))
+		{
+			m_exception = e;
+		}
 		if (e instanceof ExperimentException)
 		{
 			((ExperimentException) e).setId(m_id);
@@ -964,93 +950,88 @@ public class Experiment implements Runnable, Comparable<Experiment>, Stateful, I
 		}
 		return s_dateFormat.format(new Date(timestamp));
 	}
-	
-	protected class InnerRunnable implements Runnable
-	{
 
-		@Override
-		public void run()
+	@Override
+	public void run()
+	{
+		if (isFinished())
 		{
-			if (isFinished())
-			{
-				// Experiment has already completed, do not run again
-				return;
-			}
-			m_startTime = System.currentTimeMillis();
-			if (m_status == Status.UNINITIALIZED)
-			{
-				if (!prerequisitesFulfilled())
-				{
-					try
-					{
-						setStatus(Status.PREPARING);
-						fulfillPrerequisites();
-					}
-					catch (ExperimentException | UnitException e)
-					{
-						m_exception = e;
-						m_prereqTime = System.currentTimeMillis();
-						m_endTime = System.currentTimeMillis();
-						setStatus(Status.FAILED);
-						return;
-					}
-					catch (InterruptedException e)
-					{
-						m_prereqTime = System.currentTimeMillis();
-						m_endTime = System.currentTimeMillis();
-						Throwable t = e.getCause();
-						if (t instanceof RuntimeException)
-						{
-							m_exception = (RuntimeException) t;
-							setStatus(Status.FAILED);
-						}
-						else
-						{
-							setStatus(Status.INTERRUPTED);
-						}
-						return;
-					}
-				}
-				m_prereqTime = System.currentTimeMillis();
-				setStatus(Status.READY);
-			}
-			else
-			{
-				// If no prerequisites are handled, force this lap time to be equal
-				// to the start time (avoids meaningless delays of a few ms)
-				m_prereqTime = m_startTime;
-			}
-			boolean success = true;
-			try
-			{
-				setStatus(Status.RUNNING);
-				execute();
-			}
-			catch (ExperimentException e)
-			{
-				m_exception = e;
-				setStatus(Status.FAILED);
-				m_endTime = System.currentTimeMillis();
-				success = false;
-				return;
-			}
-			catch (InterruptedException e)
-			{
-				setStatus(Status.INTERRUPTED);
-				m_endTime = System.currentTimeMillis();
-				success = false;
-			}
-			m_endTime = System.currentTimeMillis();
-			if (success && m_status == Status.RUNNING)
-			{
-				// Can only move to Done from Running (traps the case where the thread
-				// set it to Timeout or Cancelled)
-				setStatus(Status.DONE);
-				m_progressionLock.lock();
-				m_progression = 1; // Force progression to 100%
-				m_progressionLock.unlock();
-			}
+			// Experiment has already completed, do not run again
+			return;
 		}
-		
+		m_startTime = System.currentTimeMillis();
+		if (m_status == Status.UNINITIALIZED)
+		{
+			if (!prerequisitesFulfilled())
+			{
+				try
+				{
+					setStatus(Status.PREPARING);
+					fulfillPrerequisites();
+				}
+				catch (ExperimentException | UnitException e)
+				{
+					m_exception = e;
+					m_prereqTime = System.currentTimeMillis();
+					m_endTime = System.currentTimeMillis();
+					setStatus(Status.FAILED);
+					return;
+				}
+				catch (InterruptedException e)
+				{
+					m_prereqTime = System.currentTimeMillis();
+					m_endTime = System.currentTimeMillis();
+					Throwable t = e.getCause();
+					if (t instanceof RuntimeException)
+					{
+						m_exception = (RuntimeException) t;
+						setStatus(Status.FAILED);
+					}
+					else
+					{
+						setStatus(Status.INTERRUPTED);
+					}
+					Thread.currentThread().interrupt();
+					return;
+				}
+			}
+			m_prereqTime = System.currentTimeMillis();
+			setStatus(Status.READY);
+		}
+		else
+		{
+			// If no prerequisites are handled, force this lap time to be equal
+			// to the start time (avoids meaningless delays of a few ms)
+			m_prereqTime = m_startTime;
+		}
+		boolean success = true;
+		try
+		{
+			setStatus(Status.RUNNING);
+			execute();
+		}
+		catch (ExperimentException e)
+		{
+			success = false;
+			setStatus(Status.FAILED);
+			declareInterruption(e);
+			return;
+		}
+		catch (InterruptedException e)
+		{
+			success = false;
+			setStatus(Status.INTERRUPTED);
+			declareInterruption(e);
+		}
+		m_endTime = System.currentTimeMillis();
+		if (success && m_status == Status.RUNNING)
+		{
+			// Can only move to Done from Running (traps the case where the thread
+			// set it to Timeout or Cancelled)
+			setStatus(Status.DONE);
+			m_progressionLock.lock();
+			m_progression = 1; // Force progression to 100%
+			m_progressionLock.unlock();
+		}
 	}
 }

@@ -1,7 +1,23 @@
+/*
+  LabPal, a versatile environment for running experiments on a computer
+  Copyright (C) 2015-2024 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package ca.uqac.lif.labpal.assistant;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -10,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import ca.uqac.lif.labpal.claim.Condition;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
+import ca.uqac.lif.units.Time;
 import ca.uqac.lif.units.si.Millisecond;
 
 public class AssistantRun extends ExperimentGroup implements Runnable
@@ -23,7 +40,7 @@ public class AssistantRun extends ExperimentGroup implements Runnable
 	 * The executor service used to dispatch the experiments in this run
 	 * into threads.
 	 */
-	protected final ExecutorService m_executor;
+	protected final ClearableExecutorService m_executor;
 
 	/**
 	 * The start time of the run.
@@ -41,7 +58,7 @@ public class AssistantRun extends ExperimentGroup implements Runnable
 	 */
 	/*@ null @*/ protected Condition m_condition;
 
-	public AssistantRun(/*@ non_null @*/ List<Experiment> experiments, /*@ non_null @*/ ExecutorService executor, /*@ null @*/ Condition c)
+	public AssistantRun(/*@ non_null @*/ List<Experiment> experiments, /*@ non_null @*/ ClearableExecutorService executor, /*@ null @*/ Condition c)
 	{
 		super("Run " + (s_idCounter + 1));
 		m_id = s_idCounter++;
@@ -51,7 +68,7 @@ public class AssistantRun extends ExperimentGroup implements Runnable
 		m_startTime = -1;
 		m_endTime = -1;
 	}
-	
+
 	public boolean isRunning()
 	{
 		return !m_executor.isTerminated();
@@ -132,23 +149,16 @@ public class AssistantRun extends ExperimentGroup implements Runnable
 		m_startTime = System.currentTimeMillis();
 		for (Experiment e : m_objects) 
 		{
-			Future<?> future = m_executor.submit(e, m_condition);
-			Millisecond ms = new Millisecond(e.getTimeout());
-			if (ms.get().intValue() <= 0)
+			if (e.getTimeout().get().doubleValue() <= 0)
 			{
-				// No timeout set, proceed to next experiment
-				continue;
+				// No timeout set, submit as is
+				m_executor.submit(e, m_condition);
 			}
-			ScheduledExecutorService timeoutExecutor = Executors.newScheduledThreadPool(1);
-			// Schedule a task to cancel the original task after a timeout
-			timeoutExecutor.schedule(() -> {
-				// This will interrupt the task if it's running by setting the interrupt flag
-				if (!future.isDone()) {
-					future.cancel(true);
-					System.out.println("Task was cancelled due to timeout");
-				}
-			}, ms.get().intValue(), TimeUnit.MILLISECONDS);
-			timeoutExecutor.shutdown();
+			else
+			{
+				// Timeout set, wrap in a task that will interrupt the experiment after a timeout
+				m_executor.submit(new TaskWithTimeout(e, e.getTimeout()), m_condition);
+			}
 		}
 		m_executor.shutdown();
 		try
@@ -198,7 +208,7 @@ public class AssistantRun extends ExperimentGroup implements Runnable
 			}
 			else
 			{
-				m_executor.shutdown();
+				m_executor.clearWaiting();
 				m_executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
 			}
 		}
@@ -232,6 +242,57 @@ public class AssistantRun extends ExperimentGroup implements Runnable
 			m_executor.shutdown();
 			m_executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);	
 		}	
+	}
+
+	protected class TaskWithTimeout implements Runnable
+	{
+		protected final Experiment m_experiment;
+
+		protected final Time m_timeout;
+
+		public TaskWithTimeout(Experiment e, Time timeout)
+		{
+			super();
+			m_timeout = timeout;
+			m_experiment = e;
+		}
+
+		@Override
+		public void run()
+		{
+			ScheduledExecutorService timeoutExecutor = Executors.newScheduledThreadPool(2);
+			Future<?> future = timeoutExecutor.schedule(() -> {
+				m_experiment.run();
+			}, 0, TimeUnit.MILLISECONDS);
+			// Schedule a task to cancel the original task after a timeout
+			Millisecond ms = new Millisecond(m_timeout);
+			timeoutExecutor.schedule(() -> {
+				// This will interrupt the task if it's running by setting the interrupt flag
+				if (!future.isDone()) {
+					System.out.println("Timeout reached for experiment " + m_experiment.getId());
+					future.cancel(true);
+					m_experiment.declareTimeout();
+				}
+				else {
+					System.out.println("TaskWithTimeout: Task already done for experiment " + m_experiment.getId());
+				}
+			}, ms.get().intValue(), TimeUnit.MILLISECONDS);
+			timeoutExecutor.shutdown();
+			// Wait until the future is either done (the experiment
+			// has completed) or cancelled (the timeout has been reached)
+			while (!(future.isDone() || future.isCancelled()))
+			{
+				try
+				{
+					Thread.sleep(200);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			System.out.println("TaskWithTimeout done for experiment " + m_experiment.getId());
+		}
 	}
 
 }

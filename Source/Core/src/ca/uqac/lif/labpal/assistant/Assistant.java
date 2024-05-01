@@ -333,5 +333,5 @@ public abstract class Assistant
 	 * assistant's threading strategy.
 	 * @return The executor
 	 */
-	/*@ non_null @*/ protected abstract ExecutorService getExecutor();
+	/*@ non_null @*/ protected abstract ClearableExecutorService getExecutor();
 }

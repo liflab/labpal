@@ -19,7 +19,6 @@ package ca.uqac.lif.labpal.assistant;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Assistant that runs experiments in a single thread.
@@ -29,9 +28,10 @@ import java.util.concurrent.ScheduledExecutorService;
 public class SingleThreadAssistant extends Assistant
 {
 	@Override
-	protected ExecutorService getExecutor()
+	protected ClearableExecutorService getExecutor()
 	{
-		return Executors.newSingleThreadExecutor();
+		return new QueuedThreadPoolExecutor(1);
+		//return Executors.newSingleThreadExecutor();
 	}
 
 	@Override

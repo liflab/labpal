@@ -4,13 +4,14 @@ import java.math.BigInteger;
 
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.experiment.Experiment;
+import ca.uqac.lif.units.si.Second;
 
 public class LongLab extends Laboratory
 {
 	@Override
 	public void setup()
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 1; i <= 10; i++)
 		{
 			add(new LongExperiment(i));
 		}
@@ -31,31 +32,39 @@ public class LongLab extends Laboratory
 		{
 			super();
 			m_id = id;
+			if (id == 2)
+			{
+				setTimeout(new Second(5));
+			}
 		}
 		
 		@Override
-		public void execute()
+		public void execute() throws InterruptedException
 		{
 		// Do something that takes a long time
 			boolean interrupted = false;
 			BigInteger i = BigInteger.ZERO;
 			BigInteger j = new BigInteger("999999");
-			System.out.println("Experiment in thread " + Thread.currentThread().hashCode());
+			if (m_id == 2)
+			{
+				j = new BigInteger("9999999");
+			}
 			while (i.compareTo(j) < 0)
 			{
 				i = i.add(BigInteger.ONE);
 				i.isProbablePrime(256);
-				if (Thread.currentThread().isInterrupted())
+				if (Thread.interrupted())
 				{
 					System.out.println("Interrupted " + m_id);
-					interrupted = true;
-					break;
+					throw new InterruptedException();
 				}
 			}
+			/*
 			if (!interrupted)
 			{
 				System.out.println("Done " + m_id);
 			}
+			*/
 		}
 	}
 }

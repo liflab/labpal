@@ -101,6 +101,7 @@ public class DummyExperiment extends Experiment
 	@Override
 	public void execute() throws ExperimentException, InterruptedException
 	{
+		System.out.println("Running experiment " + getId());
 		if (m_duration > 0)
 		{
 			for (int i = 0; i < m_duration / 50; i++)
@@ -111,6 +112,7 @@ public class DummyExperiment extends Experiment
 			}
 			catch (InterruptedException e) 
 			{
+				System.out.println("Interrupted");
 				throw e;
 			}
 		}

@@ -123,7 +123,11 @@ ${outparams?no_esc}
     <span id="box-running" class="status-icon status-running active"></span>
     <span id="dash-done" class="dash active"></span>
     <span id="box-done" class="status-icon status-timeout current"></span>
-    <span class="status-caption">Timed out</span>
+    <#if e.hasTimedOut()>
+      <span class="status-caption">Timed out</span>
+    <#else>
+      <span class="status-caption">Interrupted</span>
+    </#if>
     </div>
   	<#break>
 </#switch>

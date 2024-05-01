@@ -17,7 +17,9 @@
  */
 package ca.uqac.lif.labpal.assistant;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * Assistant that runs experiments in a configurable number of parallel
@@ -46,8 +48,10 @@ public class MultiThreadAssistant extends Assistant
 	}
 	
 	@Override
-	protected ExecutorService getExecutor()
+	protected ClearableExecutorService getExecutor()
 	{
+		//Executors.newScheduledThreadPool(m_threadCount);
+		//return Executors.newFixedThreadPool(m_threadCount);
 		return new QueuedThreadPoolExecutor(m_threadCount);
 	}
 	

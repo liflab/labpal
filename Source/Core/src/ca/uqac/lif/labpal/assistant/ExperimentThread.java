@@ -38,10 +38,11 @@ public class ExperimentThread extends Thread
 	public ExperimentThread(Runnable r)
 	{
 		super(r);
-		if (!(r instanceof Experiment))
-		{
-			throw new IllegalArgumentException("The argument must be an Experiment");
-		}
-		m_experiment = (Experiment) r;
+	}
+	
+	public void interrupt()
+	{
+		System.out.println("Interrupting thread");
+		super.interrupt();
 	}
 }

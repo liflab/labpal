@@ -216,7 +216,10 @@ public class AssistantTest
 		Experiment de2 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_200ms);
 		Experiment de3 = new DummyExperiment().setDuration(t_500ms).setTimeout(t_0ms);
 		AssistantRun run = assistant.enqueue(de1, de2, de3);
-		run.join();
+		while (run.isRunning())
+		{
+			// Wait for the run to finish
+		}
 		assertEquals(Status.DONE, de1.getStatus());
 		assertEquals(Status.INTERRUPTED, de2.getStatus());
 		assertTrue(de2.hasTimedOut());
